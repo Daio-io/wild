@@ -1,0 +1,57 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Lint
+        run: ./gradlew spotlessCheck composeDetekt lint
+
+      - name: Build
+        run: ./gradlew :wild:layout:assemble :wild:foundations:assemble :wild:components:assemble :wild:scaffold:assemble :wild:tv:assemble :wild:bottomsheet:assemble
+
+  deploy:
+    if: github.event_name == 'release'
+    runs-on: macos-14
+    needs: [ build ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Get current commit
+        id: commit-sha
+        run: echo "GITHUB_COMMIT=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Publish to GitHub packages
+        run: |
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository -PVERSION_NAME=${{ github.event.release.tag_name }} -PGitHubPackagesUsername=${{ secrets.DEPLOY_USER }} -PGitHubPackagesPassword=${{ secrets.USER_TOKEN }}
+        env:
+          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.USER_TOKEN }}
+          ORG_GRADLE_PROJECT_githubUser: ${{ secrets.DEPLOY_USER }}
+          ORG_GRADLE_PROJECT_githubPackage: ${{ secrets.DEPLOY_PACKAGE }}

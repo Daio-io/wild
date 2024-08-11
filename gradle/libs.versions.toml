@@ -1,0 +1,62 @@
+[versions]
+
+agp = "8.5.2"
+activity-compose = "1.9.1"
+androidx-appcompat = "1.6.1"
+compose-compiler = "1.5.7.1"
+compose-uitooling = "1.5.4"
+detekt = "1.23.6"
+ktlint = "1.0.1"
+kotlin = "2.0.10"
+roborazzi = "1.8.0-alpha-6"
+spotless = "6.23.0"
+tv-foundation = "1.0.0-alpha11"
+tv-material = "1.0.0-rc02"
+compose-multiplatform = "1.7.0-alpha02"
+core-ktx = "1.13.1"
+junit = "4.13.2"
+androidx-test-ext-junit = "1.2.1"
+espresso-core = "3.6.1"
+lifecycle-runtime-ktx = "2.8.4"
+compose-icons = "1.1.0"
+
+[libraries]
+# TV
+tv-foundation = { group = "androidx.tv", name = "tv-foundation", version.ref = "tv-foundation" }
+tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tv-material" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+ui = { group = "androidx.compose.ui", name = "ui" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version = "0.3.5" }
+tools-desugarjdklibs = "com.android.tools:desugar_jdk_libs:2.0.4"
+compose-icons-feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "compose-icons" }
+
+# Build logic dependencies
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
+spotless-gradlePlugin = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
+[plugins]
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
+cacheFixPlugin = { id = "org.gradle.android.cache-fix", version = "3.0" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
