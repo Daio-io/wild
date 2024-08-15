@@ -1,4 +1,4 @@
-package io.daio.wild.tv.foundation
+package io.daio.wild.foundation
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color

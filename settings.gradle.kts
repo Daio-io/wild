@@ -29,6 +29,7 @@ include(
     ":playbook:web",
     ":playbook:androidTv",
 )
-include(":tv:foundation")
+include("foundation")
+include(":tv:base")
 include(":tv:components:button")
 include(":tv:layout:container")

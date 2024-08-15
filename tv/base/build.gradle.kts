@@ -7,10 +7,9 @@ plugins {
 
 dependencies {
     implementation(compose.foundation)
-    api(projects.tv.base)
-    api(projects.tv.layout.container)
+    api(projects.foundation)
 }
 
 android {
-    namespace = "io.daio.wild.tv.components.button"
+    namespace = "io.daio.wild.tv.tv"
 }

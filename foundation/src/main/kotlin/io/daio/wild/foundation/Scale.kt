@@ -1,4 +1,4 @@
-package io.daio.wild.tv.foundation
+package io.daio.wild.foundation
 
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.AnimationSpec
@@ -44,7 +44,7 @@ data class Scale(
 // Will be fixed
 @Suppress("ModifierComposable")
 @Composable
-fun Modifier.tvScale(
+fun Modifier.wildScale(
     scale: Float,
     interactionSource: MutableInteractionSource,
     animationSpecProvider: (Interaction) -> AnimationSpec<Float> = { defaultScaleAnimationSpec(it) },

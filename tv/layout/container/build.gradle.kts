@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(compose.foundation)
-    api(projects.tv.foundation)
+    api(projects.tv.base)
 }
 
 android {

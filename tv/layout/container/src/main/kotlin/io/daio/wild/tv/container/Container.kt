@@ -18,22 +18,24 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.zIndex
-import io.daio.wild.tv.foundation.Colors
-import io.daio.wild.tv.foundation.Scale
-import io.daio.wild.tv.foundation.Shapes
-import io.daio.wild.tv.foundation.tvClickable
-import io.daio.wild.tv.foundation.tvScale
+import io.daio.wild.foundation.Alpha
+import io.daio.wild.foundation.Colors
+import io.daio.wild.foundation.Scale
+import io.daio.wild.foundation.Shapes
+import io.daio.wild.foundation.wildScale
+import io.daio.wild.tv.base.tvClickable
 
 @Composable
 @NonRestartableComposable
 fun Container(
     modifier: Modifier = Modifier,
-    colors: Colors = ContainerDefaults.colors(),
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    colors: Colors = ContainerDefaults.colors(),
     scale: Scale = ContainerDefaults.scale(),
     shapes: Shapes = ContainerDefaults.shapes(),
+    alpha: Alpha = ContainerDefaults.alpha(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -42,48 +44,42 @@ fun Container(
     val focused by interactionSource.collectIsFocusedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
 
-//    val surfaceAlpha =
-//        stateAlpha(enabled = enabled, focused = focused, pressed = pressed, selected = selected)
-
     val zIndex by animateFloatAsState(
         targetValue = if (focused) 0.5f else 0f,
         label = "zIndex",
     )
 
-    val shape = shapes.shapeFor(enabled, focused, pressed)
+    val shape = shapes.shapeFor(enabled = enabled, focused = focused, pressed = pressed)
+    val alpha = alpha.alphaFor(enabled = enabled, focused = focused, pressed = pressed)
 
     Box(
         modifier =
-            modifier
-                .tvClickable(
-                    enabled = enabled,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    interactionSource = interactionSource,
-                )
-                .tvScale(
-                    scale = scale.scaleFor(enabled, focused, pressed),
-                    interactionSource = interactionSource,
-                )
-                // Increasing the zIndex of this Surface when it is in the focused state to
-                // avoid the glowIndication from being overlapped by subsequent items if
-                // this Surface is inside a list composable (like a Row/Column).
-                .zIndex(zIndex)
+        modifier
+            .tvClickable(
+                enabled = enabled,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                interactionSource = interactionSource,
+            )
+            .wildScale(
+                scale = scale.scaleFor(enabled, focused, pressed),
+                interactionSource = interactionSource,
+            )
+            .zIndex(zIndex)
 //                .ifElse(border != Border.None, Modifier.tvSurfaceBorder(shape, border))
-                .background(colors.colorFor(enabled, focused, pressed), shape)
-                .graphicsLayer {
-//                    this.alpha = surfaceAlpha
-                    this.shape = shape
-                    this.clip = true
-                    this.compositingStrategy = CompositingStrategy.Offscreen
-                },
+            .background(colors.colorFor(enabled, focused, pressed), shape)
+            .graphicsLayer {
+                this.alpha = alpha
+                this.shape = shape
+                this.clip = true
+                this.compositingStrategy = CompositingStrategy.Offscreen
+            },
         propagateMinConstraints = true,
     ) {
         Box(
-            modifier =
-                Modifier.graphicsLayer {
-                    this.alpha = if (!enabled) 0.8f else 1f
-                },
+            modifier = Modifier.graphicsLayer {
+                this.alpha = alpha
+            },
             content = content,
         )
     }
@@ -124,5 +120,25 @@ object ContainerDefaults {
         scale: Float = 1f,
         focusedScale: Float = scale,
         pressedScale: Float = scale,
-    ): Scale = Scale(scale, focusedScale, pressedScale)
+    ): Scale =
+        Scale(
+            scale = scale,
+            focusedScale = focusedScale,
+            pressedScale = pressedScale,
+        )
+
+    fun alpha(
+        alpha: Float = 1f,
+        focusedAlpha: Float = alpha,
+        pressedAlpha: Float = alpha,
+        disabledAlpha: Float = .6f,
+        focusedDisabledAlpha: Float = disabledAlpha,
+    ): Alpha =
+        Alpha(
+            alpha = alpha,
+            focusedAlpha = focusedAlpha,
+            pressedAlpha = pressedAlpha,
+            disabledAlpha = disabledAlpha,
+            focusedDisabledAlpha = focusedDisabledAlpha,
+        )
 }

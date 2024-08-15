@@ -9,7 +9,8 @@ dependencies {
 
     implementation(compose.foundation)
     implementation(projects.tv.layout.container)
-    implementation(projects.tv.foundation)
+    implementation(projects.tv.components.button)
+    implementation(projects.tv.base)
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("androidx.activity:activity-compose:1.8.2")

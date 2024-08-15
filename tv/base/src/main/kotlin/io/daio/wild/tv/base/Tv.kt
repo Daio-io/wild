@@ -1,4 +1,4 @@
-package io.daio.wild.tv.foundation
+package io.daio.wild.tv.base
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
