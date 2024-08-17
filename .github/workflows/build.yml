@@ -30,8 +30,9 @@ jobs:
       - name: Build
         run: ./gradlew :foundation:assemble :tv:layout:container:assemble :tv:components:button:assemble
 
+  # Disabled for now
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: false
     runs-on: macos-14
     needs: [ build ]
 
