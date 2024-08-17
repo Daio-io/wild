@@ -34,10 +34,17 @@ jobs:
         id: commit-sha
         run: echo "GITHUB_COMMIT=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
 
+      - name: Get current version from gradle.properties
+        id: get-version
+        run: |
+          VERSION=$(grep 'VERSION_NAME=' gradle.properties | cut -d'=' -f2)
+          echo "VERSION_NAME=$VERSION-$GITHUB_COMMIT" >> $GITHUB_ENV
+
       - name: Publish to GitHub packages
         run: |
           ./gradlew publishAllPublicationsToGitHubPackagesRepository \
             -PuseGitHubPublishing \
+            -PVERSION_NAME=${{ env.VERSION_NAME)}} \
             -PgitCommit=${{ env.GITHUB_COMMIT }} \
             --no-configuration-cache
         env:
