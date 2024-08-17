@@ -29,11 +29,6 @@ gradlePlugin {
             implementationClass = "io.daio.gradle.PublishingConventionPlugin"
         }
 
-        register("GitHubPublish") {
-            id = "io.daio.publish.github"
-            implementationClass = "io.daio.gradle.GitHubPackagingConventionPlugin"
-        }
-
         register("root") {
             id = "io.daio.root"
             implementationClass = "io.daio.gradle.RootConventionPlugin"
