@@ -1,0 +1,48 @@
+name: GitHub Packages Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: macos-14
+
+    # Set GITHUB_TOKEN permissions for GitHub packages.
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Lint
+        run: ./gradlew spotlessCheck composeDetekt lint
+
+      - name: Get current commit
+        id: commit-sha
+        run: echo "GITHUB_COMMIT=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Publish to GitHub packages
+        run: |
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository \
+            -PuseGitHubPublishing \
+            -PgitCommit=${{ env.GITHUB_COMMIT }} \
+            --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_githubUser: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}
