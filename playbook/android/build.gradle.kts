@@ -5,10 +5,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":playbook:shared"))
-    implementation("androidx.activity:activity-compose:1.5.0")
+    implementation(projects.playbook.shared)
 }
 
 android {
-    namespace = "io.daio.wild"
+    namespace = "io.daio.wild.playbook.android"
 }

@@ -5,17 +5,13 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":playbook:shared"))
-
+    implementation(projects.playbook.shared)
     implementation(compose.foundation)
     implementation(projects.tv.layout.container)
     implementation(projects.tv.components.button)
     implementation(projects.tv.base)
-    implementation("io.coil-kt:coil-compose:2.4.0")
-
-    implementation("androidx.activity:activity-compose:1.8.2")
 }
 
 android {
-    namespace = "io.daio.wild.tv"
+    namespace = "io.daio.wild.playbook.tv"
 }

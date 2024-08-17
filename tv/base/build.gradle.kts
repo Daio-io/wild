@@ -11,5 +11,5 @@ dependencies {
 }
 
 android {
-    namespace = "io.daio.wild.tv.tv"
+    namespace = "io.daio.wild.tv.base"
 }
