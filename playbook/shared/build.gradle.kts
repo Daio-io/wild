@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.daio.wild"
+    namespace = "io.daio.wild.playbook.shared"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 }
 
@@ -19,8 +19,9 @@ kotlin {
 
         val androidMain by getting {
             dependencies {
-                api("androidx.appcompat:appcompat:1.5.1")
-                api("androidx.core:core-ktx:1.9.0")
+                api(libs.activity.compose)
+                api(libs.androidx.appcompat)
+                api(libs.core.ktx)
             }
         }
 
