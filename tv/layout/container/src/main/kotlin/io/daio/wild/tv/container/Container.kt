@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,9 +20,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.zIndex
 import io.daio.wild.foundation.Alpha
+import io.daio.wild.foundation.Border
+import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
+import io.daio.wild.foundation.wildBorder
 import io.daio.wild.foundation.wildScale
 import io.daio.wild.tv.base.tvClickable
 
@@ -34,6 +38,7 @@ fun Container(
     onLongClick: (() -> Unit)? = null,
     colors: Colors = ContainerDefaults.colors(),
     scale: Scale = ContainerDefaults.scale(),
+    borders: Borders = ContainerDefaults.borders(),
     shapes: Shapes = ContainerDefaults.shapes(),
     alpha: Alpha = ContainerDefaults.alpha(),
     interactionSource: MutableInteractionSource? = null,
@@ -50,7 +55,8 @@ fun Container(
     )
 
     val shape = shapes.shapeFor(enabled = enabled, focused = focused, pressed = pressed)
-    val alpha = alpha.alphaFor(enabled = enabled, focused = focused, pressed = pressed)
+    val containerAlpha = alpha.alphaFor(enabled = enabled, focused = focused, pressed = pressed)
+    val border = borders.borderFor(enabled = enabled, focused = focused, pressed = pressed)
 
     Box(
         modifier =
@@ -66,10 +72,10 @@ fun Container(
                     interactionSource = interactionSource,
                 )
                 .zIndex(zIndex)
-//                .ifElse(border != Border.None, Modifier.tvSurfaceBorder(shape, border))
+                .wildBorder(border, shape)
                 .background(colors.colorFor(enabled, focused, pressed), shape)
                 .graphicsLayer {
-                    this.alpha = alpha
+                    this.alpha = containerAlpha
                     this.shape = shape
                     this.clip = true
                     this.compositingStrategy = CompositingStrategy.Offscreen
@@ -77,16 +83,14 @@ fun Container(
         propagateMinConstraints = true,
     ) {
         Box(
-            modifier =
-                Modifier.graphicsLayer {
-                    this.alpha = alpha
-                },
+            modifier = Modifier.graphicsLayer { this.alpha = containerAlpha },
             content = content,
         )
     }
 }
 
 object ContainerDefaults {
+    @Stable
     fun colors(
         color: Color = Color.Black,
         focusedColor: Color = color,
@@ -102,6 +106,7 @@ object ContainerDefaults {
             focusedDisabledColor = focusedDisabledColor,
         )
 
+    @Stable
     fun shapes(
         shape: Shape = RectangleShape,
         focusedShape: Shape = shape,
@@ -117,6 +122,7 @@ object ContainerDefaults {
             focusedDisabledShape = focusedDisabledShape,
         )
 
+    @Stable
     fun scale(
         scale: Float = 1f,
         focusedScale: Float = scale,
@@ -128,6 +134,19 @@ object ContainerDefaults {
             pressedScale = pressedScale,
         )
 
+    @Stable
+    fun borders(
+        border: Border = Border(),
+        focusedBorder: Border = border,
+        pressedBorder: Border = border,
+    ): Borders =
+        Borders(
+            border = border,
+            focusedBorder = focusedBorder,
+            pressedBorder = pressedBorder,
+        )
+
+    @Stable
     fun alpha(
         alpha: Float = 1f,
         focusedAlpha: Float = alpha,

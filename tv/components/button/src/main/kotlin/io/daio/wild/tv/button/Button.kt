@@ -19,6 +19,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.Alpha
+import io.daio.wild.foundation.Border
+import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
@@ -33,6 +35,7 @@ fun Button(
     colors: Colors = ButtonDefaults.colors(),
     scale: Scale = ButtonDefaults.scale(),
     shapes: Shapes = ButtonDefaults.shapes(),
+    borders: Borders = ButtonDefaults.borders(),
     alpha: Alpha = ButtonDefaults.alpha(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     interactionSource: MutableInteractionSource? = null,
@@ -49,6 +52,7 @@ fun Button(
         onLongClick = onLongClick,
         scale = scale,
         shapes = shapes,
+        borders = borders,
         alpha = alpha,
         interactionSource = interactionSource,
         content = {
@@ -82,6 +86,17 @@ object ButtonDefaults {
             pressedColor = pressedColor,
             disabledColor = disabledColor,
             focusedDisabledColor = focusedDisabledColor,
+        )
+
+    fun borders(
+        border: Border = Border(),
+        focusedBorder: Border = border,
+        pressedBorder: Border = border,
+    ): Borders =
+        Borders(
+            border = border,
+            focusedBorder = focusedBorder,
+            pressedBorder = pressedBorder,
         )
 
     fun shapes(
