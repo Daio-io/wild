@@ -13,7 +13,7 @@ dependencies {
     implementation(projects.tv.base)
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.activity:activity-compose:1.9.1")
 }
 
 android {
