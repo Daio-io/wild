@@ -44,7 +44,7 @@ jobs:
         run: |
           ./gradlew publishAllPublicationsToGitHubPackagesRepository \
             -PuseGitHubPublishing \
-            -PVERSION_NAME=${{ env.VERSION_NAME)}} \
+            -PVERSION_NAME=${{ env.VERSION_NAME }} \
             -PgitCommit=${{ env.GITHUB_COMMIT }} \
             --no-configuration-cache
         env:
