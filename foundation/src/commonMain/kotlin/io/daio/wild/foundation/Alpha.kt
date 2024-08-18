@@ -2,6 +2,8 @@ package io.daio.wild.foundation
 
 import androidx.compose.runtime.Immutable
 
+internal const val DEFAULT_DISABLED_ALPHA = .6f
+
 @Immutable
 data class Alpha(
     val alpha: Float = 1f,

@@ -30,6 +30,7 @@ include(
     ":playbook:androidTv",
 )
 include("foundation")
+include("modifier")
 include(":tv:base")
 include(":tv:components:button")
 include(":tv:layout:container")

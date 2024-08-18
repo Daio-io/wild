@@ -7,10 +7,10 @@ import androidx.compose.ui.graphics.Shape
 @Immutable
 data class Shapes(
     val shape: Shape = RectangleShape,
-    val focusedShape: Shape,
-    val pressedShape: Shape,
-    val disabledShape: Shape,
-    val focusedDisabledShape: Shape,
+    val focusedShape: Shape = shape,
+    val pressedShape: Shape = focusedShape,
+    val disabledShape: Shape = shape,
+    val focusedDisabledShape: Shape = focusedShape,
 ) {
     fun shapeFor(
         enabled: Boolean,

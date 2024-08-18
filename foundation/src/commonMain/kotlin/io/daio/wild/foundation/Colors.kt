@@ -6,10 +6,10 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 data class Colors(
     val color: Color,
-    val focusedColor: Color,
-    val pressedColor: Color,
-    val disabledColor: Color,
-    val focusedDisabledColor: Color,
+    val focusedColor: Color = color,
+    val pressedColor: Color = focusedColor,
+    val disabledColor: Color = color.copy(alpha = DEFAULT_DISABLED_ALPHA),
+    val focusedDisabledColor: Color = disabledColor,
 ) {
     fun colorFor(
         enabled: Boolean,
