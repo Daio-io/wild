@@ -25,8 +25,8 @@ import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
+import io.daio.wild.foundation.animateInteractionScaleAsState
 import io.daio.wild.foundation.wildBorder
-import io.daio.wild.foundation.wildScale
 import io.daio.wild.tv.base.tvClickable
 
 @Composable
@@ -54,6 +54,11 @@ fun Container(
         label = "zIndex",
     )
 
+    val animatedScale by animateInteractionScaleAsState(
+        targetScale = scale.scaleFor(enabled = enabled, focused = focused, pressed = pressed),
+        interactionSource = interactionSource,
+    )
+
     val shape = shapes.shapeFor(enabled = enabled, focused = focused, pressed = pressed)
     val containerAlpha = alpha.alphaFor(enabled = enabled, focused = focused, pressed = pressed)
     val border = borders.borderFor(enabled = enabled, focused = focused, pressed = pressed)
@@ -67,10 +72,10 @@ fun Container(
                     onLongClick = onLongClick,
                     interactionSource = interactionSource,
                 )
-                .wildScale(
-                    scale = scale.scaleFor(enabled, focused, pressed),
-                    interactionSource = interactionSource,
-                )
+                .graphicsLayer {
+                    this.scaleX = animatedScale
+                    this.scaleY = animatedScale
+                }
                 .zIndex(zIndex)
                 .wildBorder(border, shape)
                 .background(colors.colorFor(enabled, focused, pressed), shape)
