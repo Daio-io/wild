@@ -11,11 +11,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 
 @Immutable
 data class Scale(
@@ -40,26 +39,44 @@ data class Scale(
     }
 }
 
-// Will be fixed
-@Suppress("ModifierComposable")
+/**
+ * Fire-and-forget animation function for [Float]. Using [animateFloatAsState] on the provided
+ * [targetScale] updating based on the current [Interaction] provided on the [interactionSource].
+ *
+ * [animateInteractionScaleAsState] returns a [State] object.
+ * The value of the state object will continuously be updated by the animation until the animation
+ * finishes.
+ *
+ * @param targetScale Target value of the animation.
+ * @param animationSpecProvider The animation to provide based on the current [Interaction] that
+ * will be used to change the value through time.
+ * @param visibilityThreshold An optional threshold for deciding when the animation value is
+ *                            considered close enough to the targetScale.
+ * @param label An optional label to differentiate from other animations in Android Studio.
+ * @param finishedListener An optional end listener to get notified when the animation is finished.
+ * @return A [State] object, the value of which is updated by animation.
+ */
 @Composable
-fun Modifier.wildScale(
-    scale: Float,
+fun animateInteractionScaleAsState(
+    targetScale: Float,
     interactionSource: MutableInteractionSource,
+    label: String = "interaction-scale",
+    visibilityThreshold: Float = 0.01f,
+    finishedListener: ((Float) -> Unit)? = null,
     animationSpecProvider: (Interaction) -> AnimationSpec<Float> = { defaultScaleAnimationSpec(it) },
-): Modifier {
-    val interaction by
-        interactionSource.interactions.collectAsState(initial = FocusInteraction.Focus())
+): State<Float> {
+    val interaction
+        by interactionSource.interactions.collectAsState(initial = FocusInteraction.Focus())
+
     val provider by rememberUpdatedState(animationSpecProvider)
 
-    val animatedScale by
-        animateFloatAsState(
-            targetValue = scale,
-            animationSpec = provider(interaction),
-            label = "tv-scale",
-        )
-
-    return this.graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
+    return animateFloatAsState(
+        targetValue = targetScale,
+        visibilityThreshold = visibilityThreshold,
+        finishedListener = finishedListener,
+        animationSpec = provider(interaction),
+        label = label,
+    )
 }
 
 private fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> =
