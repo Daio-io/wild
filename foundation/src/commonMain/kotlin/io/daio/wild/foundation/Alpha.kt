@@ -9,6 +9,7 @@ data class Alpha(
     val alpha: Float = 1f,
     val focusedAlpha: Float = alpha,
     val pressedAlpha: Float = alpha,
+    val selectedAlpha: Float = alpha,
     val disabledAlpha: Float = .6f,
     val focusedDisabledAlpha: Float = disabledAlpha,
 ) {
@@ -16,10 +17,12 @@ data class Alpha(
         enabled: Boolean,
         focused: Boolean,
         pressed: Boolean,
+        selected: Boolean,
     ): Float {
         return when {
             pressed && enabled -> pressedAlpha
             focused && enabled -> focusedAlpha
+            selected && enabled -> selectedAlpha
             !enabled && focused -> focusedDisabledAlpha
             !enabled -> disabledAlpha
             else -> alpha
