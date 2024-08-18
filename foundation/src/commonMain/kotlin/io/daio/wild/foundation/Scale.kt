@@ -20,7 +20,7 @@ import androidx.compose.runtime.rememberUpdatedState
 data class Scale(
     val scale: Float = 1f,
     val focusedScale: Float = scale,
-    val pressedScale: Float = scale,
+    val pressedScale: Float = focusedScale,
     val disabledScale: Float = scale,
     val focusedDisabledScale: Float = focusedScale,
 ) {
