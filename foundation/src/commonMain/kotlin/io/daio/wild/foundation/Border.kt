@@ -42,7 +42,7 @@ object BorderDefaults {
 data class Borders(
     val border: Border = BorderDefaults.None,
     val focusedBorder: Border = border,
-    val pressedBorder: Border = border,
+    val pressedBorder: Border = focusedBorder,
     val disabledBorder: Border = border,
     val focusedDisabledBorder: Border = disabledBorder,
 ) {
