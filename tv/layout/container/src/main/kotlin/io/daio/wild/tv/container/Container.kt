@@ -27,7 +27,9 @@ import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
 import io.daio.wild.foundation.animateInteractionScaleAsState
 import io.daio.wild.foundation.wildBorder
+import io.daio.wild.modifier.thenIf
 import io.daio.wild.tv.base.tvClickable
+import io.daio.wild.tv.base.tvSelectable
 
 @Composable
 @NonRestartableComposable
@@ -46,6 +48,86 @@ fun Container(
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    ContainerInternal(
+        modifier =
+            modifier.thenIf(
+                onClick != null || onLongClick != null,
+                ifTrueModifier =
+                    Modifier.tvClickable(
+                        enabled = enabled,
+                        onClick = onClick,
+                        onLongClick = onLongClick,
+                        interactionSource = interactionSource,
+                    ),
+            ),
+        enabled = enabled,
+        selected = false,
+        colors = colors,
+        interactionSource = interactionSource,
+        scale = scale,
+        shapes = shapes,
+        alpha = alpha,
+        borders = borders,
+        content = content,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+fun SelectableContainer(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    onLongClick: (() -> Unit)? = null,
+    colors: Colors = ContainerDefaults.colors(),
+    scale: Scale = ContainerDefaults.scale(),
+    borders: Borders = ContainerDefaults.borders(),
+    shapes: Shapes = ContainerDefaults.shapes(),
+    alpha: Alpha = ContainerDefaults.alpha(),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    ContainerInternal(
+        modifier =
+            modifier.tvSelectable(
+                enabled = enabled,
+                selected = selected,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                interactionSource = interactionSource,
+            ),
+        enabled = enabled,
+        selected = selected,
+        colors = colors,
+        interactionSource = interactionSource,
+        scale = scale,
+        shapes = shapes,
+        alpha = alpha,
+        borders = borders,
+        content = content,
+    )
+}
+
+@Composable
+private fun ContainerInternal(
+    interactionSource: MutableInteractionSource?,
+    scale: Scale,
+    enabled: Boolean,
+    selected: Boolean,
+    shapes: Shapes,
+    alpha: Alpha,
+    borders: Borders,
+    colors: Colors,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val focused by interactionSource.collectIsFocusedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
 
@@ -55,30 +137,47 @@ fun Container(
     )
 
     val animatedScale by animateInteractionScaleAsState(
-        targetScale = scale.scaleFor(enabled = enabled, focused = focused, pressed = pressed),
+        targetScale =
+            scale.scaleFor(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                selected = selected,
+            ),
         interactionSource = interactionSource,
     )
-
-    val shape = shapes.shapeFor(enabled = enabled, focused = focused, pressed = pressed)
-    val containerAlpha = alpha.alphaFor(enabled = enabled, focused = focused, pressed = pressed)
-    val border = borders.borderFor(enabled = enabled, focused = focused, pressed = pressed)
+    val shape =
+        shapes.shapeFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
+    val containerAlpha =
+        alpha.alphaFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
+    val border =
+        borders.borderFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
 
     Box(
         modifier =
             modifier
-                .tvClickable(
-                    enabled = enabled,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    interactionSource = interactionSource,
-                )
                 .graphicsLayer {
                     this.scaleX = animatedScale
                     this.scaleY = animatedScale
                 }
                 .zIndex(zIndex)
                 .wildBorder(border, shape)
-                .background(colors.colorFor(enabled, focused, pressed), shape)
+                .background(colors.colorFor(enabled, focused, pressed, selected), shape)
                 .graphicsLayer {
                     this.alpha = containerAlpha
                     this.shape = shape

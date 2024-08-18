@@ -43,6 +43,7 @@ data class Borders(
     val border: Border = BorderDefaults.None,
     val focusedBorder: Border = border,
     val pressedBorder: Border = focusedBorder,
+    val selectedBorder: Border = border,
     val disabledBorder: Border = border,
     val focusedDisabledBorder: Border = disabledBorder,
 ) {
@@ -50,10 +51,12 @@ data class Borders(
         enabled: Boolean,
         focused: Boolean,
         pressed: Boolean,
+        selected: Boolean,
     ): Border {
         return when {
             pressed && enabled -> pressedBorder
             focused && enabled -> focusedBorder
+            selected && enabled -> selectedBorder
             !enabled && focused -> focusedDisabledBorder
             !enabled -> disabledBorder
             else -> border
