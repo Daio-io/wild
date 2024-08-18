@@ -21,6 +21,7 @@ data class Scale(
     val scale: Float = 1f,
     val focusedScale: Float = scale,
     val pressedScale: Float = focusedScale,
+    val selectedScale: Float = scale,
     val disabledScale: Float = scale,
     val focusedDisabledScale: Float = focusedScale,
 ) {
@@ -28,10 +29,12 @@ data class Scale(
         enabled: Boolean,
         focused: Boolean,
         pressed: Boolean,
+        selected: Boolean,
     ): Float {
         return when {
             pressed && enabled -> pressedScale
             focused && enabled -> focusedScale
+            selected && enabled -> selectedScale
             !enabled && focused -> focusedDisabledScale
             !enabled -> disabledScale
             else -> scale

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.launch
 
@@ -32,6 +33,76 @@ fun Modifier.handleDpadEnter(
     onLongClick: (() -> Unit)? = null,
     selected: Boolean = false,
 ): Modifier = this then TvDpadEnterElement(enabled, interactionSource, onClick, onLongClick, selected)
+
+fun Modifier.tvClickable(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)?,
+) = handleDpadEnter(
+    enabled = enabled,
+    interactionSource = interactionSource,
+    onClick = onClick,
+    onLongClick = onLongClick,
+)
+    // We are not using "clickable" modifier here because if we set "enabled" to false
+    // then the Surface won't be focusable as well. But, in TV use case, a disabled surface
+    // should be focusable
+    .focusable(interactionSource = interactionSource)
+    .semantics(mergeDescendants = true) {
+        onClick {
+            onClick?.let { nnOnClick ->
+                nnOnClick()
+                return@onClick true
+            }
+            false
+        }
+        onLongClick {
+            onLongClick?.let { nnOnLongClick ->
+                nnOnLongClick()
+                return@onLongClick true
+            }
+            false
+        }
+        if (!enabled) {
+            disabled()
+        }
+    }
+
+fun Modifier.tvSelectable(
+    enabled: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)?,
+    interactionSource: MutableInteractionSource,
+) = handleDpadEnter(
+    enabled = enabled,
+    interactionSource = interactionSource,
+    selected = selected,
+    onClick = onClick,
+    onLongClick = onLongClick,
+)
+    // We are not using "selectable" modifier here because if we set "enabled" to false
+    // then the Surface won't be focusable as well. But, in TV use case, a disabled surface
+    // should be focusable
+    .focusable(interactionSource = interactionSource)
+    .semantics(mergeDescendants = true) {
+        this.selected = selected
+        onClick {
+            onClick()
+            true
+        }
+        onLongClick {
+            onLongClick?.let { nnOnLongClick ->
+                nnOnLongClick()
+                return@onLongClick true
+            }
+            false
+        }
+        if (!enabled) {
+            disabled()
+        }
+    }
 
 private data class TvDpadEnterElement(
     val enabled: Boolean,
@@ -58,6 +129,12 @@ private data class TvDpadEnterElement(
     }
 
     override fun InspectorInfo.inspectableProperties() {
+        name = "TvDpadEnter"
+        properties["enabled"] = enabled
+        properties["interactionSource"] = interactionSource
+        properties["onClick"] = onClick
+        properties["onLongClick"] = onLongClick
+        properties["selected"] = selected
     }
 }
 
@@ -135,38 +212,3 @@ private class TvDpadEnterEventNode(
         }
     }
 }
-
-fun Modifier.tvClickable(
-    enabled: Boolean,
-    interactionSource: MutableInteractionSource,
-    onLongClick: (() -> Unit)? = null,
-    onClick: (() -> Unit)?,
-) = handleDpadEnter(
-    enabled = enabled,
-    interactionSource = interactionSource,
-    onClick = onClick,
-    onLongClick = onLongClick,
-)
-    // We are not using "clickable" modifier here because if we set "enabled" to false
-    // then the Surface won't be focusable as well. But, in TV use case, a disabled surface
-    // should be focusable
-    .focusable(interactionSource = interactionSource)
-    .semantics(mergeDescendants = true) {
-        onClick {
-            onClick?.let { nnOnClick ->
-                nnOnClick()
-                return@onClick true
-            }
-            false
-        }
-        onLongClick {
-            onLongClick?.let { nnOnLongClick ->
-                nnOnLongClick()
-                return@onLongClick true
-            }
-            false
-        }
-        if (!enabled) {
-            disabled()
-        }
-    }
