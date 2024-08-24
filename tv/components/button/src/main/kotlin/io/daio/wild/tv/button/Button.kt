@@ -1,5 +1,6 @@
 package io.daio.wild.tv.button
 
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -26,6 +27,29 @@ import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
 import io.daio.wild.tv.container.Container
 
+/**
+ * [Button] Simple button component for Tv.
+ *
+ * @param onClick callback to be called when the button is clicked.
+ * @param modifier Modifier to be applied to the layout corresponding to the surface
+ * @param enabled Whether or not the button is enabled.
+ * @param onLongClick callback to be called when the button is long clicked.
+ * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
+ * function.
+ * @param scale Defines the button scale based on the current state via it's [Scale.scaleFor]
+ * function.
+ * @param borders Defines the border based on the current state via it's [Colors.colorFor]
+ * function.
+ * @param shapes Defines the button shape based on its current state via it's [Shapes.shapeFor]
+ * function.
+ * @param alpha Defines the button alpha based on its current state via it's [Alpha.alphaFor]
+ * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
+ * provided by convenience to help state driven Alpha.
+ * @param contentPadding [PaddingValues] to be set on the inner content.
+ * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
+ * emitting [Interaction]s for this button.
+ * @param content defines the [Composable] content inside the button.
+ */
 @Composable
 fun Button(
     onClick: () -> Unit,
