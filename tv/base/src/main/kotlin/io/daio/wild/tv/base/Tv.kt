@@ -26,6 +26,9 @@ private val AcceptableKeys =
         NativeKeyEvent.KEYCODE_NUMPAD_ENTER,
     )
 
+/**
+ * Modifier to set up handling Tv remote Dpad Enter.
+ */
 fun Modifier.handleDpadEnter(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
@@ -34,6 +37,9 @@ fun Modifier.handleDpadEnter(
     selected: Boolean = false,
 ): Modifier = this then TvDpadEnterElement(enabled, interactionSource, onClick, onLongClick, selected)
 
+/**
+ * Modifier to set up handling of clickable on Tv.
+ */
 fun Modifier.tvClickable(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
@@ -69,6 +75,9 @@ fun Modifier.tvClickable(
         }
     }
 
+/**
+ * Modifier to set up handling of selectables on Tv.
+ */
 fun Modifier.tvSelectable(
     enabled: Boolean,
     selected: Boolean,
