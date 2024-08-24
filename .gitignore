@@ -41,6 +41,9 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+## Android ##
+local.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
