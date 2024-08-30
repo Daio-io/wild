@@ -38,7 +38,7 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version = "0.4.10" }
-tools-desugarjdklibs = "com.android.tools:desugar_jdk_libs:2.0.4"
+tools-desugarjdklibs = "com.android.tools:desugar_jdk_libs:2.1.1"
 
 # Build logic dependencies
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
