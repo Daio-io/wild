@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(compose.foundation)
-    api(projects.foundation)
+    api(projects.foundations)
 }
 
 android {
