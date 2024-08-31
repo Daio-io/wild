@@ -14,6 +14,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(compose.foundation)
+                api(projects.foundations)
             }
         }
 
