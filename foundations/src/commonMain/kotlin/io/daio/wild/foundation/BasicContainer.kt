@@ -128,6 +128,7 @@ object ContainerDefaults {
         focusedColor: Color = color,
         pressedColor: Color = color,
         disabledColor: Color = color,
+        selectedColor: Color = color,
         focusedDisabledColor: Color = disabledColor,
     ): Colors =
         Colors(
@@ -135,6 +136,7 @@ object ContainerDefaults {
             focusedColor = focusedColor,
             pressedColor = pressedColor,
             disabledColor = disabledColor,
+            selectedColor = selectedColor,
             focusedDisabledColor = focusedDisabledColor,
         )
 
@@ -144,6 +146,7 @@ object ContainerDefaults {
         focusedShape: Shape = shape,
         pressedShape: Shape = shape,
         disabledShape: Shape = shape,
+        selectedShape: Shape = shape,
         focusedDisabledShape: Shape = disabledShape,
     ): Shapes =
         Shapes(
@@ -151,6 +154,7 @@ object ContainerDefaults {
             focusedShape = focusedShape,
             pressedShape = pressedShape,
             disabledShape = disabledShape,
+            selectedShape = selectedShape,
             focusedDisabledShape = focusedDisabledShape,
         )
 
@@ -159,23 +163,27 @@ object ContainerDefaults {
         scale: Float = 1f,
         focusedScale: Float = scale,
         pressedScale: Float = scale,
+        selectedScale: Float = scale,
     ): Scale =
         Scale(
             scale = scale,
             focusedScale = focusedScale,
             pressedScale = pressedScale,
+            selectedScale = selectedScale,
         )
 
     @Stable
     fun borders(
-        border: Border = Border(),
+        border: Border = BorderDefaults.None,
         focusedBorder: Border = border,
         pressedBorder: Border = border,
+        selectedBorder: Border = border,
     ): Borders =
         Borders(
             border = border,
             focusedBorder = focusedBorder,
             pressedBorder = pressedBorder,
+            selectedBorder = selectedBorder,
         )
 
     @Stable
@@ -183,6 +191,7 @@ object ContainerDefaults {
         alpha: Float = 1f,
         focusedAlpha: Float = alpha,
         pressedAlpha: Float = alpha,
+        selectedAlpha: Float = alpha,
         disabledAlpha: Float = .6f,
         focusedDisabledAlpha: Float = disabledAlpha,
     ): Alpha =
@@ -190,6 +199,7 @@ object ContainerDefaults {
             alpha = alpha,
             focusedAlpha = focusedAlpha,
             pressedAlpha = pressedAlpha,
+            selectedAlpha = selectedAlpha,
             disabledAlpha = disabledAlpha,
             focusedDisabledAlpha = focusedDisabledAlpha,
         )

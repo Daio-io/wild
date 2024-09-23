@@ -1,6 +1,7 @@
 package io.daio.wild.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
@@ -12,6 +13,7 @@ data class Colors(
     val disabledColor: Color = color.copy(alpha = DEFAULT_DISABLED_ALPHA),
     val focusedDisabledColor: Color = disabledColor,
 ) {
+    @Stable
     fun colorFor(
         enabled: Boolean,
         focused: Boolean,
