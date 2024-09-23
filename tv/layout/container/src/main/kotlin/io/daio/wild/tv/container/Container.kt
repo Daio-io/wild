@@ -15,8 +15,8 @@ import io.daio.wild.foundation.ContainerDefaults
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
 import io.daio.wild.modifier.thenIf
-import io.daio.wild.tv.base.tvClickable
-import io.daio.wild.tv.base.tvSelectable
+import io.daio.wild.tv.common.tvClickable
+import io.daio.wild.tv.common.tvSelectable
 
 /**
  * [Container] is a building block component that can be used for any Tv element or on its own as a

@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ data class Scale(
     val disabledScale: Float = scale,
     val focusedDisabledScale: Float = focusedScale,
 ) {
+    @Stable
     fun scaleFor(
         enabled: Boolean,
         focused: Boolean,

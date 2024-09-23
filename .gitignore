@@ -58,3 +58,6 @@ local.properties
 .DS_Store
 
 *.hprof
+
+### MkDocs ###
+site/
