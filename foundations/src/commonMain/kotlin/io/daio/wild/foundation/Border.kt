@@ -3,6 +3,7 @@ package io.daio.wild.foundation
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -47,6 +48,7 @@ data class Borders(
     val disabledBorder: Border = border,
     val focusedDisabledBorder: Border = disabledBorder,
 ) {
+    @Stable
     fun borderFor(
         enabled: Boolean,
         focused: Boolean,

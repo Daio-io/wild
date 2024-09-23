@@ -1,6 +1,7 @@
 package io.daio.wild.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 
 internal const val DEFAULT_DISABLED_ALPHA = .6f
 
@@ -13,6 +14,7 @@ data class Alpha(
     val disabledAlpha: Float = .6f,
     val focusedDisabledAlpha: Float = disabledAlpha,
 ) {
+    @Stable
     fun alphaFor(
         enabled: Boolean,
         focused: Boolean,

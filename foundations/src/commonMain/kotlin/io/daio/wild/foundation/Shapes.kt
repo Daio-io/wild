@@ -1,6 +1,7 @@
 package io.daio.wild.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 
@@ -13,6 +14,7 @@ data class Shapes(
     val disabledShape: Shape = shape,
     val focusedDisabledShape: Shape = focusedShape,
 ) {
+    @Stable
     fun shapeFor(
         enabled: Boolean,
         focused: Boolean,

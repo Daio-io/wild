@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.Alpha
 import io.daio.wild.foundation.Border
+import io.daio.wild.foundation.BorderDefaults
 import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
 import io.daio.wild.foundation.Scale
@@ -97,6 +99,7 @@ object ButtonDefaults {
     val defaultHeight: Dp = 32.dp
     val defaultWidth: Dp = 100.dp
 
+    @Stable
     fun colors(
         color: Color = Color.Black,
         focusedColor: Color = color,
@@ -112,8 +115,9 @@ object ButtonDefaults {
             focusedDisabledColor = focusedDisabledColor,
         )
 
+    @Stable
     fun borders(
-        border: Border = Border(),
+        border: Border = BorderDefaults.None,
         focusedBorder: Border = border,
         pressedBorder: Border = border,
     ): Borders =
@@ -123,6 +127,7 @@ object ButtonDefaults {
             pressedBorder = pressedBorder,
         )
 
+    @Stable
     fun shapes(
         shape: Shape = RectangleShape,
         focusedShape: Shape = shape,
@@ -138,6 +143,7 @@ object ButtonDefaults {
             focusedDisabledShape = focusedDisabledShape,
         )
 
+    @Stable
     fun scale(
         scale: Float = 1f,
         focusedScale: Float = scale,
@@ -149,6 +155,7 @@ object ButtonDefaults {
             pressedScale = pressedScale,
         )
 
+    @Stable
     fun alpha(
         alpha: Float = 1f,
         focusedAlpha: Float = alpha,
