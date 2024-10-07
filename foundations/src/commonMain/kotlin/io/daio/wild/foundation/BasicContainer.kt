@@ -13,6 +13,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
@@ -26,17 +27,7 @@ import androidx.compose.ui.zIndex
  *
  * @param modifier Modifier to be applied to the layout corresponding to the container
  * @param enabled Whether or not the container is enabled.
- * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
- * function.
- * @param scale Defines the container scale based on the current state via it's [Scale.scaleFor]
- * function.
- * @param borders Defines the border based on the current state via it's [Colors.colorFor]
- * function.
- * @param shapes Defines the container shape based on its current state via it's [Shapes.shapeFor]
- * function.
- * @param alpha Defines the container alpha based on its current state via it's [Alpha.alphaFor]
- * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
- * provided by convenience to help state driven Alpha.
+ * @param style Style for the container based on its current state.
  * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
  * @param content defines the [Composable] content inside the container.
@@ -46,79 +37,21 @@ fun BasicContainer(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     selected: Boolean = false,
-    colors: Colors = ContainerDefaults.colors(),
-    scale: Scale = ContainerDefaults.scale(),
-    borders: Borders = ContainerDefaults.borders(),
-    shapes: Shapes = ContainerDefaults.shapes(),
-    alpha: Alpha = ContainerDefaults.alpha(),
+    style: Style = Style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-    val focused by interactionSource.collectIsFocusedAsState()
-    val pressed by interactionSource.collectIsPressedAsState()
-
-    val zIndex by animateFloatAsState(
-        targetValue = if (focused) 0.5f else 0f,
-        label = "zIndex",
-    )
-
-    val animatedScale by animateInteractionScaleAsState(
-        targetScale =
-            scale.scaleFor(
-                enabled = enabled,
-                focused = focused,
-                pressed = pressed,
-                selected = selected,
-            ),
-        interactionSource = interactionSource,
-    )
-    val shape =
-        shapes.shapeFor(
-            enabled = enabled,
-            focused = focused,
-            pressed = pressed,
-            selected = selected,
-        )
-    val containerAlpha =
-        alpha.alphaFor(
-            enabled = enabled,
-            focused = focused,
-            pressed = pressed,
-            selected = selected,
-        )
-    val border =
-        borders.borderFor(
-            enabled = enabled,
-            focused = focused,
-            pressed = pressed,
-            selected = selected,
-        )
-
     Box(
         modifier =
-            modifier
-                .graphicsLayer {
-                    this.scaleX = animatedScale
-                    this.scaleY = animatedScale
-                }
-                .zIndex(zIndex)
-                .wildBorder(border, shape)
-                .background(colors.colorFor(enabled, focused, pressed, selected), shape)
-                .graphicsLayer {
-                    this.alpha = containerAlpha
-                    this.shape = shape
-                    this.clip = true
-                    this.compositingStrategy = CompositingStrategy.Offscreen
-                },
+            modifier.interactionStyle(
+                interactionSource = interactionSource,
+                style = style,
+                enabled = enabled,
+                selected = selected,
+            ),
         propagateMinConstraints = true,
-    ) {
-        Box(
-            modifier = Modifier.graphicsLayer { this.alpha = containerAlpha },
-            content = content,
-        )
-    }
+        content = content,
+    )
 }
 
 object ContainerDefaults {
@@ -203,4 +136,74 @@ object ContainerDefaults {
             disabledAlpha = disabledAlpha,
             focusedDisabledAlpha = focusedDisabledAlpha,
         )
+}
+
+// TODO we need to be able to use the same interaction source as Clickable
+// We should see about wrapping in an Indication that way it can be passed with the
+// Clickable. The indication will then be passed the same interaction source.
+fun Modifier.interactionStyle(
+    style: Style,
+    interactionSource: MutableInteractionSource? = null,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+) = composed {
+    val (colors, borders, scale, shapes, alpha) = style
+
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    val focused by interactionSource.collectIsFocusedAsState()
+    val pressed by interactionSource.collectIsPressedAsState()
+
+    val zIndex by animateFloatAsState(
+        targetValue = if (focused) 0.5f else 0f,
+        label = "zIndex",
+    )
+
+    val animatedScale by animateInteractionScaleAsState(
+        targetScale =
+            scale.scaleFor(
+                enabled = enabled,
+                focused = focused,
+                pressed = pressed,
+                selected = selected,
+            ),
+        interactionSource = interactionSource,
+    )
+    val shape =
+        shapes.shapeFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
+    val containerAlpha =
+        alpha.alphaFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
+    val border =
+        borders.borderFor(
+            enabled = enabled,
+            focused = focused,
+            pressed = pressed,
+            selected = selected,
+        )
+
+    this
+        .graphicsLayer {
+            this.scaleX = animatedScale
+            this.scaleY = animatedScale
+        }
+        .zIndex(zIndex)
+        .border(border.shape, border.width, border.color, border.inset)
+        .background(colors.colorFor(enabled, focused, pressed, selected), shape)
+        .graphicsLayer {
+            this.alpha = containerAlpha
+            this.shape = shape
+            this.clip = true
+            this.compositingStrategy = CompositingStrategy.Offscreen
+        }
 }

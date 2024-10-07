@@ -2,6 +2,7 @@ package io.daio.wild.tv.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
@@ -9,14 +10,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import io.daio.wild.foundation.Alpha
 import io.daio.wild.foundation.BasicContainer
-import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
-import io.daio.wild.foundation.ContainerDefaults
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
+import io.daio.wild.foundation.Style
+import io.daio.wild.foundation.clickable
+import io.daio.wild.foundation.interactionStyle
+import io.daio.wild.foundation.tvSelectable
 import io.daio.wild.modifier.thenIf
-import io.daio.wild.tv.common.tvClickable
-import io.daio.wild.tv.common.tvSelectable
 
 /**
  * [Container] is a building block component that can be used for any Tv element or on its own as a
@@ -50,37 +51,31 @@ fun Container(
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ContainerDefaults.colors(),
-    scale: Scale = ContainerDefaults.scale(),
-    borders: Borders = ContainerDefaults.borders(),
-    shapes: Shapes = ContainerDefaults.shapes(),
-    alpha: Alpha = ContainerDefaults.alpha(),
+    style: Style = Style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
-    BasicContainer(
+    Box(
         modifier =
             modifier.thenIf(
                 onClick != null || onLongClick != null,
                 ifTrueModifier =
-                    Modifier.tvClickable(
+                    Modifier.clickable(
                         enabled = enabled,
-                        onClick = onClick,
+                        onClick = onClick ?: {},
                         onLongClick = onLongClick,
                         interactionSource = interactionSource,
                     ),
+            ).interactionStyle(
+                interactionSource = interactionSource,
+                style = style,
+                enabled = enabled,
+                selected = false,
             ),
-        enabled = enabled,
-        selected = false,
-        colors = colors,
-        interactionSource = interactionSource,
-        scale = scale,
-        shapes = shapes,
-        alpha = alpha,
-        borders = borders,
+        propagateMinConstraints = true,
         content = content,
     )
 }
@@ -120,11 +115,7 @@ fun SelectableContainer(
     enabled: Boolean = true,
     selected: Boolean = false,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ContainerDefaults.colors(),
-    scale: Scale = ContainerDefaults.scale(),
-    borders: Borders = ContainerDefaults.borders(),
-    shapes: Shapes = ContainerDefaults.shapes(),
-    alpha: Alpha = ContainerDefaults.alpha(),
+    style: Style = Style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -132,6 +123,7 @@ fun SelectableContainer(
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
     BasicContainer(
+        style = style,
         modifier =
             modifier.tvSelectable(
                 enabled = enabled,
@@ -142,12 +134,7 @@ fun SelectableContainer(
             ),
         enabled = enabled,
         selected = selected,
-        colors = colors,
         interactionSource = interactionSource,
-        scale = scale,
-        shapes = shapes,
-        alpha = alpha,
-        borders = borders,
         content = content,
     )
 }

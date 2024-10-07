@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.BasicContainer
 import io.daio.wild.foundation.ContainerDefaults
+import io.daio.wild.foundation.Style
 
 @Composable
 fun App(modifier: Modifier = Modifier) {
@@ -23,11 +24,14 @@ fun App(modifier: Modifier = Modifier) {
     ) {
         items(100) {
             BasicContainer(
-                colors =
-                    ContainerDefaults.colors(
-                        color = Color.Red,
-                        pressedColor = Color.Blue,
-                        focusedColor = Color.Black,
+                style =
+                    Style(
+                        colors =
+                            ContainerDefaults.colors(
+                                color = Color.Red,
+                                pressedColor = Color.Blue,
+                                focusedColor = Color.Black,
+                            ),
                     ),
                 modifier =
                     Modifier.clickable {

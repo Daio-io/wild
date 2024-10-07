@@ -1,9 +1,15 @@
-package io.daio.wild.tv.common
+package io.daio.wild.foundation
 
+import android.content.pm.PackageManager.FEATURE_LEANBACK
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
@@ -12,9 +18,12 @@ import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.NativeKeyEvent
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.launch
@@ -26,23 +35,46 @@ private val AcceptableKeys =
         NativeKeyEvent.KEYCODE_NUMPAD_ENTER,
     )
 
-/**
- * Modifier to set up handling Tv remote Dpad Enter.
- */
-fun Modifier.handleDpadEnter(
+@OptIn(ExperimentalFoundationApi::class)
+fun Modifier.clickable(
     enabled: Boolean,
-    interactionSource: MutableInteractionSource,
-    onClick: (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    role: Role? = null,
     onLongClick: (() -> Unit)? = null,
-    selected: Boolean = false,
-): Modifier = this then TvDpadEnterElement(enabled, interactionSource, onClick, onLongClick, selected)
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val isTv = LocalContext.current.packageManager.hasSystemFeature(FEATURE_LEANBACK)
+
+    if (isTv) {
+        Modifier.tvClickable(
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onClick = onClick,
+        )
+    } else {
+        Modifier.combinedClickable(
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = enabled,
+            role = role,
+            onLongClick = onLongClick,
+            onClick = onClick,
+        )
+    }
+}
 
 /**
  * Modifier to set up handling of clickable on Tv.
  */
-fun Modifier.tvClickable(
+private fun Modifier.tvClickable(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
+    role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)?,
 ) = handleDpadEnter(
@@ -56,6 +88,7 @@ fun Modifier.tvClickable(
     // should be focusable
     .focusable(interactionSource = interactionSource)
     .semantics(mergeDescendants = true) {
+        this.role = role ?: this.role
         onClick {
             onClick?.let { nnOnClick ->
                 nnOnClick()
@@ -112,6 +145,17 @@ fun Modifier.tvSelectable(
             disabled()
         }
     }
+
+/**
+ * Modifier to set up handling Tv remote Dpad Enter.
+ */
+internal fun Modifier.handleDpadEnter(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    selected: Boolean = false,
+): Modifier = this then TvDpadEnterElement(enabled, interactionSource, onClick, onLongClick, selected)
 
 private data class TvDpadEnterElement(
     val enabled: Boolean,

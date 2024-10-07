@@ -27,6 +27,7 @@ import io.daio.wild.foundation.Borders
 import io.daio.wild.foundation.Colors
 import io.daio.wild.foundation.Scale
 import io.daio.wild.foundation.Shapes
+import io.daio.wild.foundation.Style
 import io.daio.wild.tv.container.Container
 
 /**
@@ -58,11 +59,7 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ButtonDefaults.colors(),
-    scale: Scale = ButtonDefaults.scale(),
-    shapes: Shapes = ButtonDefaults.shapes(),
-    borders: Borders = ButtonDefaults.borders(),
-    alpha: Alpha = ButtonDefaults.alpha(),
+    style: Style = Style(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
@@ -72,14 +69,10 @@ fun Button(
             modifier
                 .size(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
                 .semantics { role = Role.Button },
-        colors = colors,
         enabled = enabled,
+        style = style,
         onClick = onClick,
         onLongClick = onLongClick,
-        scale = scale,
-        shapes = shapes,
-        borders = borders,
-        alpha = alpha,
         interactionSource = interactionSource,
         content = {
             Box(

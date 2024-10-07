@@ -31,6 +31,5 @@ include(
 )
 include("foundations")
 include("modifier")
-include(":tv:common")
 include(":tv:components:button")
 include(":tv:layout:container")

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isUnspecified
 
 @Immutable
 data class Border(
@@ -30,9 +31,7 @@ data class Border(
     val color: Color = Color.Transparent,
     val inset: Dp = 0.dp,
     val shape: Shape = RectangleShape,
-) {
-    val borderStroke = BorderStroke(width = width, color = color)
-}
+)
 
 object BorderDefaults {
     val BorderDefaultShape = GenericShape { _, _ -> close() }
@@ -66,22 +65,30 @@ data class Borders(
     }
 }
 
-fun Modifier.wildBorder(
-    border: Border,
-    shape: Shape = border.shape,
+fun Modifier.border(border: Border) = then(Modifier.border(border.shape, border.width, border.color, border.inset))
+
+fun Modifier.border(
+    shape: Shape = RectangleShape,
+    width: Dp = Dp.Unspecified,
+    color: Color = Color.Transparent,
+    inset: Dp = 0.dp,
 ): Modifier {
     return then(
-        if (border == BorderDefaults.None) {
+        if (width.isUnspecified) {
             Modifier
         } else {
             BorderElement(
                 shape = shape,
-                border = border,
+                width = width,
+                color = color,
+                inset = inset,
                 inspectorInfo =
                     debugInspectorInfo {
                         name = "wildBorder"
                         properties["shape"] = shape
-                        properties["border"] = border
+                        properties["width"] = width
+                        properties["color"] = color
+                        properties["inset"] = inset
                     },
             )
         },
@@ -89,21 +96,27 @@ fun Modifier.wildBorder(
 }
 
 private class BorderElement(
-    private val shape: Shape,
-    private val border: Border,
+    private val shape: Shape = RectangleShape,
+    private val width: Dp = Dp.Unspecified,
+    private val color: Color = Color.Transparent,
+    private val inset: Dp = Dp.Unspecified,
     private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<BorderNode>() {
     override fun create(): BorderNode {
         return BorderNode(
             shape = shape,
-            border = border,
+            width = width,
+            color = color,
+            inset = inset,
         )
     }
 
     override fun update(node: BorderNode) {
         node.reactToUpdates(
             newShape = shape,
-            newBorder = border,
+            newWidth = width,
+            newColor = color,
+            newInset = inset,
         )
     }
 
@@ -111,45 +124,59 @@ private class BorderElement(
         inspectorInfo()
     }
 
-    override fun hashCode(): Int {
-        var result = shape.hashCode()
-        result = 31 * result + border.hashCode()
-        return result
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as BorderElement
+
+        if (shape != other.shape) return false
+        if (width != other.width) return false
+        if (color != other.color) return false
+        if (inset != other.inset) return false
+
+        return true
     }
 
-    override fun equals(other: Any?): Boolean {
-        val otherTyped = other as? BorderElement ?: return false
-        return shape == otherTyped.shape && border == otherTyped.border
+    override fun hashCode(): Int {
+        var result = shape.hashCode()
+        result = 31 * result + width.hashCode()
+        result = 31 * result + color.hashCode()
+        result = 31 * result + inset.hashCode()
+        return result
     }
 }
 
 private class BorderNode(
     private var shape: Shape,
-    private var border: Border,
+    private var width: Dp,
+    private var color: Color,
+    private var inset: Dp,
 ) : DrawModifierNode, Modifier.Node() {
     private var shapeOutlineCache: ShapeOutlineCache? = null
     private var outlineStrokeCache: OutlineStrokeCache? = null
+    private var borderStroke = BorderStroke(width, color)
 
     fun reactToUpdates(
         newShape: Shape,
-        newBorder: Border,
+        newWidth: Dp,
+        newColor: Color,
+        newInset: Dp,
     ) {
         shape = newShape
-        border = newBorder
+        width = newWidth
+        color = newColor
+        inset = newInset
+        borderStroke = BorderStroke(newWidth, newColor)
     }
 
     override fun ContentDrawScope.draw() {
         drawContent()
 
-        val borderStroke = border.borderStroke
-
-        val borderShape =
-            if (border.shape == BorderDefaults.BorderDefaultShape) shape else border.shape
-
         if (shapeOutlineCache == null) {
             shapeOutlineCache =
                 ShapeOutlineCache(
-                    shape = borderShape,
+                    shape = shape,
                     size = size,
                     layoutDirection = layoutDirection,
                     density = this,
@@ -160,10 +187,10 @@ private class BorderNode(
             outlineStrokeCache = OutlineStrokeCache(widthPx = borderStroke.width.toPx())
         }
 
-        inset(inset = -border.inset.toPx()) {
+        inset(inset = -inset.toPx()) {
             val shapeOutline =
                 shapeOutlineCache!!.updatedOutline(
-                    shape = borderShape,
+                    shape = shape,
                     size = size,
                     layoutDirection = layoutDirection,
                     density = this,
