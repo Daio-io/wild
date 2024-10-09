@@ -1,14 +1,12 @@
-package io.daio.wild.foundation
+package io.daio.wild.style
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,39 +20,46 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.zIndex
 
 /**
- * [BasicContainer] is a building block component that can be used for any component or as a
- * standalone container. By default this container provides no interactive support.
+ * Style class for components.
  *
- * @param modifier Modifier to be applied to the layout corresponding to the container
- * @param enabled Whether or not the container is enabled.
- * @param style Style for the container based on its current state.
- * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
- * emitting [Interaction]s for this container.
- * @param content defines the [Composable] content inside the container.
+ * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
+ * function.
+ * @param scale Defines the button scale based on the current state via it's [Scale.scaleFor]
+ * function.
+ * @param borders Defines the border based on the current state via it's [Colors.colorFor]
+ * function.
+ * @param shapes Defines the button shape based on its current state via it's [Shapes.shapeFor]
+ * function.
+ * @param alpha Defines the button alpha based on its current state via it's [Alpha.alphaFor]
+ * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
+ * provided by convenience to help state driven Alpha.
  */
-@Composable
-fun BasicContainer(
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    selected: Boolean = false,
-    style: Style = Style(),
-    interactionSource: MutableInteractionSource? = null,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    Box(
-        modifier =
-            modifier.interactionStyle(
-                interactionSource = interactionSource,
-                style = style,
-                enabled = enabled,
-                selected = selected,
-            ),
-        propagateMinConstraints = true,
-        content = content,
-    )
-}
+@Immutable
+data class Style(
+    val colors: Colors,
+    val borders: Borders,
+    val scale: Scale,
+    val shapes: Shapes,
+    val alpha: Alpha,
+)
 
-object ContainerDefaults {
+object StyleDefaults {
+    @Stable
+    fun style(
+        colors: Colors = colors(),
+        borders: Borders = borders(),
+        scale: Scale = scale(),
+        shapes: Shapes = shapes(),
+        alpha: Alpha = alpha(),
+    ): Style =
+        Style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
+
     @Stable
     fun colors(
         color: Color = Color.Black,
@@ -138,15 +143,13 @@ object ContainerDefaults {
         )
 }
 
-// TODO we need to be able to use the same interaction source as Clickable
-// We should see about wrapping in an Indication that way it can be passed with the
-// Clickable. The indication will then be passed the same interaction source.
 fun Modifier.interactionStyle(
     style: Style,
     interactionSource: MutableInteractionSource? = null,
     enabled: Boolean = true,
     selected: Boolean = false,
 ) = composed {
+    clickable { }
     val (colors, borders, scale, shapes, alpha) = style
 
     @Suppress("NAME_SHADOWING")

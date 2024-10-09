@@ -22,6 +22,16 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+// Lib
+include(
+    "foundations",
+    "style",
+    "modifier",
+    ":tv:components:button",
+    ":tv:layout:container",
+)
+
+// Playbook
 include(
     ":playbook:android",
     ":playbook:desktop",
@@ -29,7 +39,3 @@ include(
     ":playbook:web",
     ":playbook:androidTv",
 )
-include("foundations")
-include("modifier")
-include(":tv:components:button")
-include(":tv:layout:container")

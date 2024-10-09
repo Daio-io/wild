@@ -1,4 +1,4 @@
-package io.daio.wild.foundation
+package io.daio.wild.style
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.GenericShape
@@ -84,7 +84,7 @@ fun Modifier.border(
                 inset = inset,
                 inspectorInfo =
                     debugInspectorInfo {
-                        name = "wildBorder"
+                        name = "border"
                         properties["shape"] = shape
                         properties["width"] = width
                         properties["color"] = color

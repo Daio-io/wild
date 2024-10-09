@@ -23,6 +23,7 @@ kotlin {
                 api(libs.activity.compose)
                 api(libs.androidx.appcompat)
                 api(libs.core.ktx)
+                api(projects.tv.layout.container)
             }
         }
 

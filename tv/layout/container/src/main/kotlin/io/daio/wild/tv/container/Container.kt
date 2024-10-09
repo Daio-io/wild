@@ -8,16 +8,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import io.daio.wild.foundation.Alpha
-import io.daio.wild.foundation.BasicContainer
-import io.daio.wild.foundation.Colors
-import io.daio.wild.foundation.Scale
-import io.daio.wild.foundation.Shapes
-import io.daio.wild.foundation.Style
 import io.daio.wild.foundation.clickable
-import io.daio.wild.foundation.interactionStyle
-import io.daio.wild.foundation.tvSelectable
+import io.daio.wild.foundation.selectable
 import io.daio.wild.modifier.thenIf
+import io.daio.wild.style.Alpha
+import io.daio.wild.style.Colors
+import io.daio.wild.style.Scale
+import io.daio.wild.style.Shapes
+import io.daio.wild.style.Style
+import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.interactionStyle
 
 /**
  * [Container] is a building block component that can be used for any Tv element or on its own as a
@@ -51,7 +51,7 @@ fun Container(
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
-    style: Style = Style(),
+    style: Style = StyleDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -115,26 +115,27 @@ fun SelectableContainer(
     enabled: Boolean = true,
     selected: Boolean = false,
     onLongClick: (() -> Unit)? = null,
-    style: Style = Style(),
+    style: Style = StyleDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
-    BasicContainer(
-        style = style,
+    Box(
         modifier =
-            modifier.tvSelectable(
+            modifier.selectable(
+                selected = selected,
+                enabled = enabled,
+                onClick = onClick,
+                interactionSource = interactionSource,
+            ).interactionStyle(
+                interactionSource = interactionSource,
+                style = style,
                 enabled = enabled,
                 selected = selected,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                interactionSource = interactionSource,
             ),
-        enabled = enabled,
-        selected = selected,
-        interactionSource = interactionSource,
+        propagateMinConstraints = true,
         content = content,
     )
 }

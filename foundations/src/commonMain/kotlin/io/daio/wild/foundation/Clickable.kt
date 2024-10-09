@@ -1,24 +1,26 @@
 package io.daio.wild.foundation
 
-import android.content.pm.PackageManager.FEATURE_LEANBACK
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.KeyInputModifierNode
-import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
@@ -29,10 +31,10 @@ import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.launch
 
 private val AcceptableKeys =
-    intArrayOf(
-        NativeKeyEvent.KEYCODE_DPAD_CENTER,
-        NativeKeyEvent.KEYCODE_ENTER,
-        NativeKeyEvent.KEYCODE_NUMPAD_ENTER,
+    longArrayOf(
+        Key.DirectionCenter.keyCode,
+        Key.Enter.keyCode,
+        Key.NumPadEnter.keyCode,
     )
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -46,7 +48,7 @@ fun Modifier.clickable(
 ) = composed {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-    val isTv = LocalContext.current.packageManager.hasSystemFeature(FEATURE_LEANBACK)
+    val isTv = LocalPlatform.current == Platform.Tv
 
     if (isTv) {
         Modifier.tvClickable(
@@ -71,7 +73,7 @@ fun Modifier.clickable(
 /**
  * Modifier to set up handling of clickable on Tv.
  */
-private fun Modifier.tvClickable(
+fun Modifier.tvClickable(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
     role: Role? = null,
@@ -88,7 +90,9 @@ private fun Modifier.tvClickable(
     // should be focusable
     .focusable(interactionSource = interactionSource)
     .semantics(mergeDescendants = true) {
-        this.role = role ?: this.role
+        if (role != null) {
+            this.role = role
+        }
         onClick {
             onClick?.let { nnOnClick ->
                 nnOnClick()
@@ -108,15 +112,48 @@ private fun Modifier.tvClickable(
         }
     }
 
+fun Modifier.selectable(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    role: Role? = null,
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val isTv = LocalPlatform.current == Platform.Tv
+
+    if (isTv) {
+        Modifier.tvSelectable(
+            selected = selected,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onClick = onClick,
+        )
+    } else {
+        Modifier.selectable(
+            selected = selected,
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = enabled,
+            role = role,
+            onClick = onClick,
+        )
+    }
+}
+
 /**
  * Modifier to set up handling of selectables on Tv.
  */
 fun Modifier.tvSelectable(
     enabled: Boolean,
     selected: Boolean,
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)?,
     interactionSource: MutableInteractionSource,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
 ) = handleDpadEnter(
     enabled = enabled,
     interactionSource = interactionSource,
@@ -129,6 +166,9 @@ fun Modifier.tvSelectable(
     // should be focusable
     .focusable(interactionSource = interactionSource)
     .semantics(mergeDescendants = true) {
+        if (role != null) {
+            this.role = role
+        }
         this.selected = selected
         onClick {
             onClick()
@@ -204,10 +244,10 @@ private class TvDpadEnterEventNode(
     private var isLongClick: Boolean = false
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (AcceptableKeys.contains(event.nativeKeyEvent.keyCode)) {
-            when (event.nativeKeyEvent.action) {
-                NativeKeyEvent.ACTION_DOWN -> {
-                    when (event.nativeKeyEvent.repeatCount) {
+        if (AcceptableKeys.contains(event.key.keyCode)) {
+            when (event.type) {
+                KeyEventType.KeyDown -> {
+                    when (event.repeatCount) {
                         0 ->
                             coroutineScope.launch {
                                 interactionSource.emit(pressInteraction)
@@ -228,7 +268,7 @@ private class TvDpadEnterEventNode(
                     }
                 }
 
-                NativeKeyEvent.ACTION_UP -> {
+                KeyEventType.KeyUp -> {
                     if (!isLongClick) {
                         coroutineScope.launch {
                             interactionSource.emit(
@@ -265,3 +305,5 @@ private class TvDpadEnterEventNode(
         }
     }
 }
+
+internal expect val KeyEvent.repeatCount: Int

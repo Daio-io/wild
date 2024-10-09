@@ -10,9 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.daio.wild.foundation.Border
-import io.daio.wild.foundation.ContainerDefaults
-import io.daio.wild.foundation.Style
+import io.daio.wild.style.Border
+import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.button.Button
 import io.daio.wild.tv.button.ButtonDefaults
 
@@ -27,8 +26,8 @@ fun TvLayout(modifier: Modifier = Modifier) {
             item {
                 Button(
                     style =
-                        Style(
-                            colors = ContainerDefaults.colors(Color.Black, focusedColor = Color.Red),
+                        StyleDefaults.style(
+                            colors = StyleDefaults.colors(Color.Black, focusedColor = Color.Red),
                             scale = ButtonDefaults.scale(focusedScale = 1.5f),
                             borders =
                                 ButtonDefaults.borders(
