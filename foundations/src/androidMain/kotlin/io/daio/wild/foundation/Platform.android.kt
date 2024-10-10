@@ -4,7 +4,7 @@ import android.content.pm.PackageManager.FEATURE_LEANBACK
 import androidx.compose.runtime.CompositionLocalAccessorScope
 import androidx.compose.ui.platform.LocalContext
 
-internal actual fun CompositionLocalAccessorScope.getPlatform(): Platform {
+internal actual fun CompositionLocalAccessorScope.getPlatformInteractions(): PlatformInteractions {
     val isTv = LocalContext.currentValue.packageManager.hasSystemFeature(FEATURE_LEANBACK)
-    return if (isTv) Platform.Tv else Platform.Mobile
+    return PlatformInteractions(requiresHardwareInput = isTv)
 }

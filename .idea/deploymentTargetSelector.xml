@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="playbook.androidTv">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-05T17:00:49.271383Z">
+        <DropdownSelection timestamp="2024-10-10T05:45:15.118817Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/dai/.android/avd/Television_1080p_API_34.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/dai/.android/avd/Pixel_7.avd" />
             </handle>
           </Target>
         </DropdownSelection>

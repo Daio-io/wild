@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.style.Border
-import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.container.Container
+import io.daio.wild.tv.container.ContainerDefaults
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,15 +29,15 @@ class MainActivity : AppCompatActivity() {
                     item {
                         Container(
                             style =
-                                StyleDefaults.style(
+                                ContainerDefaults.style(
                                     colors =
-                                        StyleDefaults.colors(
+                                        ContainerDefaults.colors(
                                             Color.Black,
                                             focusedColor = Color.Red,
                                         ),
-                                    scale = StyleDefaults.scale(focusedScale = 1.5f),
+                                    scale = ContainerDefaults.scale(focusedScale = 1.5f),
                                     borders =
-                                        StyleDefaults.borders(
+                                        ContainerDefaults.borders(
                                             focusedBorder =
                                                 Border(
                                                     color = Color.Blue,

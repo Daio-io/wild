@@ -7,7 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -53,6 +53,7 @@ data class Scale(
  * finishes.
  *
  * @param targetScale Target value of the animation.
+ * @param interactionSource The interaction source to listen to interactions.
  * @param animationSpecProvider The animation to provide based on the current [Interaction] that
  * will be used to change the value through time.
  * @param visibilityThreshold An optional threshold for deciding when the animation value is
@@ -64,7 +65,7 @@ data class Scale(
 @Composable
 fun animateInteractionScaleAsState(
     targetScale: Float,
-    interactionSource: MutableInteractionSource,
+    interactionSource: InteractionSource,
     label: String = "interaction-scale",
     visibilityThreshold: Float = 0.01f,
     finishedListener: ((Float) -> Unit)? = null,

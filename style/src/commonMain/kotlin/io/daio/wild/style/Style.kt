@@ -2,7 +2,7 @@ package io.daio.wild.style
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -102,12 +102,16 @@ object StyleDefaults {
         focusedScale: Float = scale,
         pressedScale: Float = scale,
         selectedScale: Float = scale,
+        disabledScale: Float = scale,
+        focusedDisabledScale: Float = focusedScale,
     ): Scale =
         Scale(
             scale = scale,
             focusedScale = focusedScale,
             pressedScale = pressedScale,
             selectedScale = selectedScale,
+            disabledScale = disabledScale,
+            focusedDisabledScale = focusedDisabledScale,
         )
 
     @Stable
@@ -116,12 +120,16 @@ object StyleDefaults {
         focusedBorder: Border = border,
         pressedBorder: Border = border,
         selectedBorder: Border = border,
+        disabledBorder: Border = border,
+        focusedDisabledBorder: Border = disabledBorder,
     ): Borders =
         Borders(
             border = border,
             focusedBorder = focusedBorder,
             pressedBorder = pressedBorder,
             selectedBorder = selectedBorder,
+            disabledBorder = disabledBorder,
+            focusedDisabledBorder = focusedDisabledBorder,
         )
 
     @Stable
@@ -143,13 +151,20 @@ object StyleDefaults {
         )
 }
 
+/**
+ * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
+ *
+ * @param style The [Style] to apply to the element.
+ * @param interactionSource The [InteractionSource] used to listen to user interactions.
+ * @param enabled Whether the element is currently enabled.
+ * @param selected Whether the element is currently selected.
+ */
 fun Modifier.interactionStyle(
     style: Style,
-    interactionSource: MutableInteractionSource? = null,
+    interactionSource: InteractionSource? = null,
     enabled: Boolean = true,
     selected: Boolean = false,
 ) = composed {
-    clickable { }
     val (colors, borders, scale, shapes, alpha) = style
 
     @Suppress("NAME_SHADOWING")

@@ -119,11 +119,17 @@ object ButtonDefaults {
         border: Border = BorderDefaults.None,
         focusedBorder: Border = border,
         pressedBorder: Border = border,
+        selectedBorder: Border = border,
+        disabledBorder: Border = border,
+        focusedDisabledBorder: Border = disabledBorder,
     ): Borders =
         Borders(
             border = border,
             focusedBorder = focusedBorder,
             pressedBorder = pressedBorder,
+            selectedBorder = selectedBorder,
+            disabledBorder = disabledBorder,
+            focusedDisabledBorder = focusedDisabledBorder,
         )
 
     @Stable
@@ -147,11 +153,17 @@ object ButtonDefaults {
         scale: Float = 1f,
         focusedScale: Float = scale,
         pressedScale: Float = scale,
+        selectedScale: Float = scale,
+        disabledScale: Float = scale,
+        focusedDisabledScale: Float = focusedScale,
     ): Scale =
         Scale(
             scale = scale,
             focusedScale = focusedScale,
             pressedScale = pressedScale,
+            selectedScale = selectedScale,
+            disabledScale = disabledScale,
+            focusedDisabledScale = focusedDisabledScale,
         )
 
     @Stable
