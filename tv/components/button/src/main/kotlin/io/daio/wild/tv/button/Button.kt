@@ -20,13 +20,14 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.daio.wild.foundation.Alpha
-import io.daio.wild.foundation.Border
-import io.daio.wild.foundation.BorderDefaults
-import io.daio.wild.foundation.Borders
-import io.daio.wild.foundation.Colors
-import io.daio.wild.foundation.Scale
-import io.daio.wild.foundation.Shapes
+import io.daio.wild.style.Alpha
+import io.daio.wild.style.Border
+import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.Borders
+import io.daio.wild.style.Colors
+import io.daio.wild.style.Scale
+import io.daio.wild.style.Shapes
+import io.daio.wild.style.Style
 import io.daio.wild.tv.container.Container
 
 /**
@@ -36,17 +37,7 @@ import io.daio.wild.tv.container.Container
  * @param modifier Modifier to be applied to the layout corresponding to the surface
  * @param enabled Whether or not the button is enabled.
  * @param onLongClick callback to be called when the button is long clicked.
- * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
- * function.
- * @param scale Defines the button scale based on the current state via it's [Scale.scaleFor]
- * function.
- * @param borders Defines the border based on the current state via it's [Colors.colorFor]
- * function.
- * @param shapes Defines the button shape based on its current state via it's [Shapes.shapeFor]
- * function.
- * @param alpha Defines the button alpha based on its current state via it's [Alpha.alphaFor]
- * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
- * provided by convenience to help state driven Alpha.
+ * @param style The style of the button.
  * @param contentPadding [PaddingValues] to be set on the inner content.
  * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this button.
@@ -58,11 +49,7 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ButtonDefaults.colors(),
-    scale: Scale = ButtonDefaults.scale(),
-    shapes: Shapes = ButtonDefaults.shapes(),
-    borders: Borders = ButtonDefaults.borders(),
-    alpha: Alpha = ButtonDefaults.alpha(),
+    style: Style = ButtonDefaults.style(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
@@ -72,14 +59,10 @@ fun Button(
             modifier
                 .size(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
                 .semantics { role = Role.Button },
-        colors = colors,
         enabled = enabled,
+        style = style,
         onClick = onClick,
         onLongClick = onLongClick,
-        scale = scale,
-        shapes = shapes,
-        borders = borders,
-        alpha = alpha,
         interactionSource = interactionSource,
         content = {
             Box(
@@ -98,6 +81,22 @@ fun Button(
 object ButtonDefaults {
     val defaultHeight: Dp = 32.dp
     val defaultWidth: Dp = 100.dp
+
+    @Stable
+    fun style(
+        colors: Colors = colors(),
+        borders: Borders = borders(),
+        scale: Scale = scale(),
+        shapes: Shapes = shapes(),
+        alpha: Alpha = alpha(),
+    ): Style =
+        Style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
 
     @Stable
     fun colors(
@@ -120,11 +119,17 @@ object ButtonDefaults {
         border: Border = BorderDefaults.None,
         focusedBorder: Border = border,
         pressedBorder: Border = border,
+        selectedBorder: Border = border,
+        disabledBorder: Border = border,
+        focusedDisabledBorder: Border = disabledBorder,
     ): Borders =
         Borders(
             border = border,
             focusedBorder = focusedBorder,
             pressedBorder = pressedBorder,
+            selectedBorder = selectedBorder,
+            disabledBorder = disabledBorder,
+            focusedDisabledBorder = focusedDisabledBorder,
         )
 
     @Stable
@@ -148,11 +153,17 @@ object ButtonDefaults {
         scale: Float = 1f,
         focusedScale: Float = scale,
         pressedScale: Float = scale,
+        selectedScale: Float = scale,
+        disabledScale: Float = scale,
+        focusedDisabledScale: Float = focusedScale,
     ): Scale =
         Scale(
             scale = scale,
             focusedScale = focusedScale,
             pressedScale = pressedScale,
+            selectedScale = selectedScale,
+            disabledScale = disabledScale,
+            focusedDisabledScale = focusedDisabledScale,
         )
 
     @Stable

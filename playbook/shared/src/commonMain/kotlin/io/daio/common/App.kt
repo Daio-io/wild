@@ -1,17 +1,12 @@
 package io.daio.common
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.daio.wild.foundation.BasicContainer
-import io.daio.wild.foundation.ContainerDefaults
 
 @Composable
 fun App(modifier: Modifier = Modifier) {
@@ -22,20 +17,23 @@ fun App(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(100) {
-            BasicContainer(
-                colors =
-                    ContainerDefaults.colors(
-                        color = Color.Red,
-                        pressedColor = Color.Blue,
-                        focusedColor = Color.Black,
-                    ),
-                modifier =
-                    Modifier.clickable {
-                        println("clicked")
-                    },
-            ) {
-                BasicText("Click Me")
-            }
+//            BasicContainer(
+//                style =
+//                    Style(
+//                        colors =
+//                            StyleDefaults.colors(
+//                                color = Color.Red,
+//                                pressedColor = Color.Blue,
+//                                focusedColor = Color.Black,
+//                            ),
+//                    ),
+//                modifier =
+//                    Modifier.clickable {
+//                        println("clicked")
+//                    },
+//            ) {
+//                BasicText("Click Me")
+//            }
         }
     }
 }
