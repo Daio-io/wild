@@ -1,4 +1,4 @@
-package io.daio.wild.foundation
+package io.daio.wild.style
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

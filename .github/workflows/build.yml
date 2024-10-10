@@ -28,7 +28,7 @@ jobs:
         run: ./gradlew spotlessCheck composeDetekt lint
 
       - name: Build
-        run: ./gradlew :foundations:assemble :tv:layout:container:assemble :tv:components:button:assemble
+        run: ./gradlew :foundations:assemble :style:assemble :tv:layout:container:assemble :tv:components:button:assemble
 
   # Disabled for now
   deploy:

@@ -8,7 +8,8 @@ plugins {
 dependencies {
     implementation(compose.foundation)
     implementation(projects.modifier)
-    api(projects.tv.common)
+    api(projects.style)
+    api(projects.foundations)
 }
 
 android {

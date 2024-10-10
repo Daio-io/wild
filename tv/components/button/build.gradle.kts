@@ -7,7 +7,8 @@ plugins {
 
 dependencies {
     implementation(compose.foundation)
-    api(projects.tv.common)
+    api(projects.foundations)
+    api(projects.style)
     api(projects.tv.layout.container)
 }
 

@@ -2,21 +2,28 @@ package io.daio.wild.tv.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import io.daio.wild.foundation.Alpha
-import io.daio.wild.foundation.BasicContainer
-import io.daio.wild.foundation.Borders
-import io.daio.wild.foundation.Colors
-import io.daio.wild.foundation.ContainerDefaults
-import io.daio.wild.foundation.Scale
-import io.daio.wild.foundation.Shapes
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import io.daio.wild.foundation.clickable
+import io.daio.wild.foundation.selectable
 import io.daio.wild.modifier.thenIf
-import io.daio.wild.tv.common.tvClickable
-import io.daio.wild.tv.common.tvSelectable
+import io.daio.wild.style.Alpha
+import io.daio.wild.style.Border
+import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.Borders
+import io.daio.wild.style.Colors
+import io.daio.wild.style.Scale
+import io.daio.wild.style.Shapes
+import io.daio.wild.style.Style
+import io.daio.wild.style.interactionStyle
 
 /**
  * [Container] is a building block component that can be used for any Tv element or on its own as a
@@ -50,37 +57,31 @@ fun Container(
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ContainerDefaults.colors(),
-    scale: Scale = ContainerDefaults.scale(),
-    borders: Borders = ContainerDefaults.borders(),
-    shapes: Shapes = ContainerDefaults.shapes(),
-    alpha: Alpha = ContainerDefaults.alpha(),
+    style: Style = ContainerDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
-    BasicContainer(
+    Box(
         modifier =
             modifier.thenIf(
                 onClick != null || onLongClick != null,
                 ifTrueModifier =
-                    Modifier.tvClickable(
+                    Modifier.clickable(
                         enabled = enabled,
-                        onClick = onClick,
+                        onClick = onClick ?: {},
                         onLongClick = onLongClick,
                         interactionSource = interactionSource,
                     ),
+            ).interactionStyle(
+                interactionSource = interactionSource,
+                style = style,
+                enabled = enabled,
+                selected = false,
             ),
-        enabled = enabled,
-        selected = false,
-        colors = colors,
-        interactionSource = interactionSource,
-        scale = scale,
-        shapes = shapes,
-        alpha = alpha,
-        borders = borders,
+        propagateMinConstraints = true,
         content = content,
     )
 }
@@ -120,34 +121,129 @@ fun SelectableContainer(
     enabled: Boolean = true,
     selected: Boolean = false,
     onLongClick: (() -> Unit)? = null,
-    colors: Colors = ContainerDefaults.colors(),
-    scale: Scale = ContainerDefaults.scale(),
-    borders: Borders = ContainerDefaults.borders(),
-    shapes: Shapes = ContainerDefaults.shapes(),
-    alpha: Alpha = ContainerDefaults.alpha(),
+    style: Style = ContainerDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
-    BasicContainer(
+    Box(
         modifier =
-            modifier.tvSelectable(
+            modifier.selectable(
+                selected = selected,
+                enabled = enabled,
+                onClick = onClick,
+                interactionSource = interactionSource,
+            ).interactionStyle(
+                interactionSource = interactionSource,
+                style = style,
                 enabled = enabled,
                 selected = selected,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                interactionSource = interactionSource,
             ),
-        enabled = enabled,
-        selected = selected,
-        colors = colors,
-        interactionSource = interactionSource,
-        scale = scale,
-        shapes = shapes,
-        alpha = alpha,
-        borders = borders,
+        propagateMinConstraints = true,
         content = content,
     )
+}
+
+object ContainerDefaults {
+    @Stable
+    fun style(
+        colors: Colors = colors(),
+        borders: Borders = borders(),
+        scale: Scale = scale(),
+        shapes: Shapes = shapes(),
+        alpha: Alpha = alpha(),
+    ): Style =
+        Style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
+
+    @Stable
+    fun colors(
+        color: Color = Color.Black,
+        focusedColor: Color = color,
+        pressedColor: Color = color,
+        disabledColor: Color = color,
+        focusedDisabledColor: Color = disabledColor,
+    ): Colors =
+        Colors(
+            color = color,
+            focusedColor = focusedColor,
+            pressedColor = pressedColor,
+            disabledColor = disabledColor,
+            focusedDisabledColor = focusedDisabledColor,
+        )
+
+    @Stable
+    fun borders(
+        border: Border = BorderDefaults.None,
+        focusedBorder: Border = border,
+        pressedBorder: Border = border,
+        selectedBorder: Border = border,
+        disabledBorder: Border = border,
+        focusedDisabledBorder: Border = disabledBorder,
+    ): Borders =
+        Borders(
+            border = border,
+            focusedBorder = focusedBorder,
+            pressedBorder = pressedBorder,
+            selectedBorder = selectedBorder,
+            disabledBorder = disabledBorder,
+            focusedDisabledBorder = focusedDisabledBorder,
+        )
+
+    @Stable
+    fun shapes(
+        shape: Shape = RectangleShape,
+        focusedShape: Shape = shape,
+        pressedShape: Shape = shape,
+        disabledShape: Shape = shape,
+        focusedDisabledShape: Shape = disabledShape,
+    ): Shapes =
+        Shapes(
+            shape = shape,
+            focusedShape = focusedShape,
+            pressedShape = pressedShape,
+            disabledShape = disabledShape,
+            focusedDisabledShape = focusedDisabledShape,
+        )
+
+    @Stable
+    fun scale(
+        scale: Float = 1f,
+        focusedScale: Float = scale,
+        pressedScale: Float = scale,
+        selectedScale: Float = scale,
+        disabledScale: Float = scale,
+        focusedDisabledScale: Float = focusedScale,
+    ): Scale =
+        Scale(
+            scale = scale,
+            focusedScale = focusedScale,
+            pressedScale = pressedScale,
+            selectedScale = selectedScale,
+            disabledScale = disabledScale,
+            focusedDisabledScale = focusedDisabledScale,
+        )
+
+    @Stable
+    fun alpha(
+        alpha: Float = 1f,
+        focusedAlpha: Float = alpha,
+        pressedAlpha: Float = alpha,
+        disabledAlpha: Float = .6f,
+        focusedDisabledAlpha: Float = disabledAlpha,
+    ): Alpha =
+        Alpha(
+            alpha = alpha,
+            focusedAlpha = focusedAlpha,
+            pressedAlpha = pressedAlpha,
+            disabledAlpha = disabledAlpha,
+            focusedDisabledAlpha = focusedDisabledAlpha,
+        )
 }

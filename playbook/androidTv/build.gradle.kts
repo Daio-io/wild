@@ -9,7 +9,6 @@ dependencies {
     implementation(compose.foundation)
     implementation(projects.tv.layout.container)
     implementation(projects.tv.components.button)
-    implementation(projects.tv.common)
 }
 
 android {

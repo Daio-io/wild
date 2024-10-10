@@ -1,51 +1,84 @@
-package io.daio.wild.tv.common
+package io.daio.wild.foundation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.KeyInputModifierNode
-import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.launch
 
-private val AcceptableKeys =
-    intArrayOf(
-        NativeKeyEvent.KEYCODE_DPAD_CENTER,
-        NativeKeyEvent.KEYCODE_ENTER,
-        NativeKeyEvent.KEYCODE_NUMPAD_ENTER,
-    )
-
-/**
- * Modifier to set up handling Tv remote Dpad Enter.
- */
-fun Modifier.handleDpadEnter(
+@OptIn(ExperimentalFoundationApi::class)
+fun Modifier.clickable(
     enabled: Boolean,
-    interactionSource: MutableInteractionSource,
-    onClick: (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    role: Role? = null,
     onLongClick: (() -> Unit)? = null,
-    selected: Boolean = false,
-): Modifier = this then TvDpadEnterElement(enabled, interactionSource, onClick, onLongClick, selected)
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    if (LocalPlatformInteractions.current.requiresHardwareInput) {
+        Modifier.hardwareClickable(
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onClick = onClick,
+        )
+    } else {
+        Modifier.combinedClickable(
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = enabled,
+            role = role,
+            onLongClick = onLongClick,
+            onClick = onClick,
+        )
+    }
+}
 
 /**
- * Modifier to set up handling of clickable on Tv.
+ * Modifier to set up handling of click events using hardware input such as a Tv remote control.
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClick Callback when the element is clicked.
  */
-fun Modifier.tvClickable(
+fun Modifier.hardwareClickable(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
+    role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)?,
-) = handleDpadEnter(
+) = handleHardwareInputEnter(
     enabled = enabled,
     interactionSource = interactionSource,
     onClick = onClick,
@@ -56,6 +89,9 @@ fun Modifier.tvClickable(
     // should be focusable
     .focusable(interactionSource = interactionSource)
     .semantics(mergeDescendants = true) {
+        if (role != null) {
+            this.role = role
+        }
         onClick {
             onClick?.let { nnOnClick ->
                 nnOnClick()
@@ -75,16 +111,56 @@ fun Modifier.tvClickable(
         }
     }
 
+fun Modifier.selectable(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    role: Role? = null,
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    if (LocalPlatformInteractions.current.requiresHardwareInput) {
+        Modifier.hardwareSelectable(
+            selected = selected,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onClick = onClick,
+        )
+    } else {
+        Modifier.selectable(
+            selected = selected,
+            interactionSource = interactionSource,
+            indication = indication,
+            enabled = enabled,
+            role = role,
+            onClick = onClick,
+        )
+    }
+}
+
 /**
- * Modifier to set up handling of selectables on Tv.
+ * Modifier to set up handling of selecting events using hardware input such as a Tv remote control.
+ *
+ * @param selected Whether the item is currently selected.
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClick Callback when the element is clicked.
  */
-fun Modifier.tvSelectable(
+fun Modifier.hardwareSelectable(
     enabled: Boolean,
     selected: Boolean,
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)?,
     interactionSource: MutableInteractionSource,
-) = handleDpadEnter(
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+) = handleHardwareInputEnter(
     enabled = enabled,
     interactionSource = interactionSource,
     selected = selected,
@@ -96,6 +172,9 @@ fun Modifier.tvSelectable(
     // should be focusable
     .focusable(interactionSource = interactionSource)
     .semantics(mergeDescendants = true) {
+        if (role != null) {
+            this.role = role
+        }
         this.selected = selected
         onClick {
             onClick()
@@ -113,15 +192,27 @@ fun Modifier.tvSelectable(
         }
     }
 
-private data class TvDpadEnterElement(
+/**
+ * Modifier to set up handling of hardware input enter keys, such as Tv remote Dpad enter and
+ * keyboard enter key.
+ */
+internal fun Modifier.handleHardwareInputEnter(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    selected: Boolean = false,
+): Modifier = this then HardwareEnterKeyElement(enabled, interactionSource, onClick, onLongClick, selected)
+
+private data class HardwareEnterKeyElement(
     val enabled: Boolean,
     val interactionSource: MutableInteractionSource,
     val onClick: (() -> Unit)? = null,
     val onLongClick: (() -> Unit)? = null,
     val selected: Boolean = false,
-) : ModifierNodeElement<TvDpadEnterEventNode>() {
-    override fun create(): TvDpadEnterEventNode =
-        TvDpadEnterEventNode(
+) : ModifierNodeElement<HardwareEnterKeyEventNode>() {
+    override fun create(): HardwareEnterKeyEventNode =
+        HardwareEnterKeyEventNode(
             enabled = enabled,
             interactionSource = interactionSource,
             onClick = onClick,
@@ -129,7 +220,7 @@ private data class TvDpadEnterElement(
             selected = selected,
         )
 
-    override fun update(node: TvDpadEnterEventNode) {
+    override fun update(node: HardwareEnterKeyEventNode) {
         node.enabled = enabled
         node.interactionSource = interactionSource
         node.onClick = onClick
@@ -138,7 +229,7 @@ private data class TvDpadEnterElement(
     }
 
     override fun InspectorInfo.inspectableProperties() {
-        name = "TvDpadEnter"
+        name = "HardwareEnterKey"
         properties["enabled"] = enabled
         properties["interactionSource"] = interactionSource
         properties["onClick"] = onClick
@@ -147,7 +238,14 @@ private data class TvDpadEnterElement(
     }
 }
 
-private class TvDpadEnterEventNode(
+private val AcceptableEnterKeys =
+    longArrayOf(
+        Key.DirectionCenter.keyCode,
+        Key.Enter.keyCode,
+        Key.NumPadEnter.keyCode,
+    )
+
+private class HardwareEnterKeyEventNode(
     var enabled: Boolean,
     var interactionSource: MutableInteractionSource,
     var onClick: (() -> Unit)? = null,
@@ -160,10 +258,10 @@ private class TvDpadEnterEventNode(
     private var isLongClick: Boolean = false
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (AcceptableKeys.contains(event.nativeKeyEvent.keyCode)) {
-            when (event.nativeKeyEvent.action) {
-                NativeKeyEvent.ACTION_DOWN -> {
-                    when (event.nativeKeyEvent.repeatCount) {
+        if (AcceptableEnterKeys.contains(event.key.keyCode)) {
+            when (event.type) {
+                KeyEventType.KeyDown -> {
+                    when (event.repeatCount) {
                         0 ->
                             coroutineScope.launch {
                                 interactionSource.emit(pressInteraction)
@@ -184,7 +282,7 @@ private class TvDpadEnterEventNode(
                     }
                 }
 
-                NativeKeyEvent.ACTION_UP -> {
+                KeyEventType.KeyUp -> {
                     if (!isLongClick) {
                         coroutineScope.launch {
                             interactionSource.emit(
@@ -221,3 +319,5 @@ private class TvDpadEnterEventNode(
         }
     }
 }
+
+internal expect val KeyEvent.repeatCount: Int
