@@ -8,7 +8,9 @@ plugins {
 dependencies {
     implementation(compose.foundation)
     implementation(projects.modifier)
+
     api(projects.style)
+    api(projects.contentColor)
     api(projects.foundations)
 }
 

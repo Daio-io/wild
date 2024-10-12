@@ -12,9 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Border
+import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.container.Container
-import io.daio.wild.tv.container.ContainerDefaults
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,15 +30,15 @@ class MainActivity : AppCompatActivity() {
                     item {
                         Container(
                             style =
-                                ContainerDefaults.style(
+                                StyleDefaults.style(
                                     colors =
-                                        ContainerDefaults.colors(
+                                        StyleDefaults.colors(
                                             Color.Black,
-                                            focusedColor = Color.Red,
+                                            focusedBackgroundColor = Color.Red,
                                         ),
-                                    scale = ContainerDefaults.scale(focusedScale = 1.5f),
+                                    scale = StyleDefaults.scale(focusedScale = 1.5f),
                                     borders =
-                                        ContainerDefaults.borders(
+                                        StyleDefaults.borders(
                                             focusedBorder =
                                                 Border(
                                                     color = Color.Blue,
@@ -50,7 +51,8 @@ class MainActivity : AppCompatActivity() {
                                 println("Clicked!")
                             },
                         ) {
-                            BasicText(text = "Click Me", color = { Color.White })
+                            val color = LocalContentColor.current
+                            BasicText(text = "Click Me", color = { color })
                         }
                     }
                 }

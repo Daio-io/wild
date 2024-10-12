@@ -24,9 +24,9 @@ You can customise the `Container` by overriding the default options.
 ```kotlin
 Container(
     modifier = Modifier,
-    colors = ContainerDefaults.colors(),
-    shapes = ContainerDefaults.shapes(),
-    borders = ContainerDefaults.borders(),
+    colors = StyleDefaults.colors(),
+    shapes = StyleDefaults.shapes(),
+    borders = StyleDefaults.borders(),
 ) {
     MyComponents()
 }
@@ -37,10 +37,10 @@ All customisation options support state based values for focus, pressed etc.
 ```kotlin
 ContainerDefaults.colors(
     color = Color.Blue,
-    focusedColor = Color.Red,
-    pressedColor = Color.Green,
-    disabledColor = Color.Gray.copy(alpha = .6f),
-    focusedDisabledColor = Color.Red.copy(alpha = .6f),
+    focusedBackgroundColor = Color.Red,
+    pressedBackgroundColor = Color.Green,
+    disabledBackgroundColor = Color.Gray.copy(alpha = .6f),
+    focusedDisabledBackgroundColor = Color.Red.copy(alpha = .6f),
 )
 ```
 

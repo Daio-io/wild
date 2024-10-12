@@ -23,8 +23,8 @@ fun App(modifier: Modifier = Modifier) {
 //                        colors =
 //                            StyleDefaults.colors(
 //                                color = Color.Red,
-//                                pressedColor = Color.Blue,
-//                                focusedColor = Color.Black,
+//                                pressedBackgroundColor = Color.Blue,
+//                                focusedBackgroundColor = Color.Black,
 //                            ),
 //                    ),
 //                modifier =
