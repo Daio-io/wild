@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.selection.selectable
@@ -46,6 +47,7 @@ fun Modifier.clickable(
         Modifier.hardwareClickable(
             enabled = enabled,
             interactionSource = interactionSource,
+            indication = indication,
             role = role,
             onLongClick = onLongClick,
             onClick = onClick,
@@ -77,6 +79,7 @@ fun Modifier.hardwareClickable(
     interactionSource: MutableInteractionSource,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    indication: Indication? = null,
     onClick: (() -> Unit)?,
 ) = handleHardwareInputEnter(
     enabled = enabled,
@@ -109,7 +112,7 @@ fun Modifier.hardwareClickable(
         if (!enabled) {
             disabled()
         }
-    }
+    }.indication(interactionSource, indication)
 
 fun Modifier.selectable(
     selected: Boolean,

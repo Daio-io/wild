@@ -112,7 +112,7 @@ private class BorderElement(
     }
 
     override fun update(node: BorderNode) {
-        node.reactToUpdates(
+        node.updateBorder(
             newShape = shape,
             newWidth = width,
             newColor = color,
@@ -147,7 +147,7 @@ private class BorderElement(
     }
 }
 
-private class BorderNode(
+open class BorderNode(
     private var shape: Shape,
     private var width: Dp,
     private var color: Color,
@@ -157,7 +157,7 @@ private class BorderNode(
     private var outlineStrokeCache: OutlineStrokeCache? = null
     private var borderStroke = BorderStroke(width, color)
 
-    fun reactToUpdates(
+    fun updateBorder(
         newShape: Shape,
         newWidth: Dp,
         newColor: Color,
@@ -172,7 +172,10 @@ private class BorderNode(
 
     override fun ContentDrawScope.draw() {
         drawContent()
+        drawBorder()
+    }
 
+    fun ContentDrawScope.drawBorder() {
         if (shapeOutlineCache == null) {
             shapeOutlineCache =
                 ShapeOutlineCache(
