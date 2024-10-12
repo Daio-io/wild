@@ -25,6 +25,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 // Lib
 include(
     "foundations",
+    "content-color",
     "style",
     "modifier",
     ":tv:components:button",

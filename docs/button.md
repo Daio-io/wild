@@ -23,9 +23,9 @@ You can customise the `Button` by overriding the default options.
 ```kotlin
 Button(
     modifier = Modifier,
-    colors = ButtonDefaults.colors(),
-    shapes = ButtonDefaults.shapes(),
-    borders = ButtonDefaults.borders(),
+    colors = StyleDefaults.colors(),
+    shapes = StyleDefaults.shapes(),
+    borders = StyleDefaults.borders(),
     onClick = {
         println("Clicked")
     },
@@ -39,9 +39,9 @@ All customisation options support state based values for focus, pressed etc.
 ```kotlin
 ButtonDefaults.colors(
     color = Color.Blue,
-    focusedColor = Color.Red,
-    pressedColor = Color.Green,
-    disabledColor = Color.Gray.copy(alpha = .6f),
-    focusedDisabledColor = Color.Red.copy(alpha = .6f),
+    focusedBackgroundColor = Color.Red,
+    pressedBackgroundColor = Color.Green,
+    disabledBackgroundColor = Color.Gray.copy(alpha = .6f),
+    focusedDisabledBackgroundColor = Color.Red.copy(alpha = .6f),
 )
 ```

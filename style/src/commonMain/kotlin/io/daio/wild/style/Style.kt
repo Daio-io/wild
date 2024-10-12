@@ -85,20 +85,32 @@ object StyleDefaults {
 
     @Stable
     fun colors(
-        color: Color = Color.Black,
-        focusedColor: Color = color,
-        pressedColor: Color = color,
-        disabledColor: Color = color,
-        selectedColor: Color = color,
-        focusedDisabledColor: Color = disabledColor,
+        backgroundColor: Color = Color.Black,
+        focusedBackgroundColor: Color = backgroundColor,
+        pressedBackgroundColor: Color = backgroundColor,
+        disabledBackgroundColor: Color = backgroundColor,
+        selectedBackgroundColor: Color = backgroundColor,
+        focusedDisabledBackgroundColor: Color = disabledBackgroundColor,
+        contentColor: Color = Color.White,
+        focusedContentColor: Color = contentColor,
+        pressedContentColor: Color = contentColor,
+        disabledContentColor: Color = contentColor,
+        selectedContentColor: Color = contentColor,
+        focusedDisabledContentColor: Color = disabledContentColor,
     ): Colors =
         Colors(
-            color = color,
-            focusedColor = focusedColor,
-            pressedColor = pressedColor,
-            disabledColor = disabledColor,
-            selectedColor = selectedColor,
-            focusedDisabledColor = focusedDisabledColor,
+            backgroundColor = backgroundColor,
+            focusedBackgroundColor = focusedBackgroundColor,
+            pressedBackgroundColor = pressedBackgroundColor,
+            disabledBackgroundColor = disabledBackgroundColor,
+            selectedBackgroundColor = selectedBackgroundColor,
+            focusedDisabledBackgroundColor = focusedDisabledBackgroundColor,
+            contentColor = contentColor,
+            focusedContentColor = focusedContentColor,
+            pressedContentColor = pressedContentColor,
+            disabledContentColor = disabledContentColor,
+            selectedContentColor = selectedContentColor,
+            focusedDisabledContentColor = focusedDisabledContentColor,
         )
 
     @Stable
