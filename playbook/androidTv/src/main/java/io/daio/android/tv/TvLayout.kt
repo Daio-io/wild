@@ -11,8 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.button.Button
-import io.daio.wild.tv.button.ButtonDefaults
 
 @Composable
 fun TvLayout(modifier: Modifier = Modifier) {
@@ -25,17 +26,24 @@ fun TvLayout(modifier: Modifier = Modifier) {
             item {
                 Button(
                     style =
-                        ButtonDefaults.style(
-                            colors = ButtonDefaults.colors(Color.Black, focusedColor = Color.Red),
-                            scale = ButtonDefaults.scale(focusedScale = 1.2f),
-                            shapes = ButtonDefaults.shapes(RoundedCornerShape(12.dp)),
+                        StyleDefaults.style(
+                            colors =
+                                StyleDefaults.colors(
+                                    backgroundColor = Color.Black,
+                                    contentColor = Color.White,
+                                    focusedBackgroundColor = Color.Red,
+                                    focusedContentColor = Color.Black,
+                                ),
+                            scale = StyleDefaults.scale(focusedScale = 1.2f),
+                            shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
                         ),
                     modifier = Modifier.width(200.dp),
                     onClick = {
                         println("Clicked!")
                     },
                 ) {
-                    BasicText(text = "Click Me", color = { Color.White })
+                    val color = LocalContentColor.current
+                    BasicText(text = "Click Me", color = { color })
                 }
             }
         }

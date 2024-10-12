@@ -9,25 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.daio.wild.style.Alpha
-import io.daio.wild.style.Border
-import io.daio.wild.style.BorderDefaults
-import io.daio.wild.style.Borders
-import io.daio.wild.style.Colors
-import io.daio.wild.style.Scale
-import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
+import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.container.Container
 
 /**
@@ -49,7 +39,7 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
-    style: Style = ButtonDefaults.style(),
+    style: Style = StyleDefaults.style(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
@@ -81,104 +71,4 @@ fun Button(
 object ButtonDefaults {
     val defaultHeight: Dp = 32.dp
     val defaultWidth: Dp = 100.dp
-
-    @Stable
-    fun style(
-        colors: Colors = colors(),
-        borders: Borders = borders(),
-        scale: Scale = scale(),
-        shapes: Shapes = shapes(),
-        alpha: Alpha = alpha(),
-    ): Style =
-        Style(
-            colors = colors,
-            borders = borders,
-            scale = scale,
-            shapes = shapes,
-            alpha = alpha,
-        )
-
-    @Stable
-    fun colors(
-        color: Color = Color.Black,
-        focusedColor: Color = color,
-        pressedColor: Color = color,
-        disabledColor: Color = color,
-        focusedDisabledColor: Color = disabledColor,
-    ): Colors =
-        Colors(
-            color = color,
-            focusedColor = focusedColor,
-            pressedColor = pressedColor,
-            disabledColor = disabledColor,
-            focusedDisabledColor = focusedDisabledColor,
-        )
-
-    @Stable
-    fun borders(
-        border: Border = BorderDefaults.None,
-        focusedBorder: Border = border,
-        pressedBorder: Border = border,
-        selectedBorder: Border = border,
-        disabledBorder: Border = border,
-        focusedDisabledBorder: Border = disabledBorder,
-    ): Borders =
-        Borders(
-            border = border,
-            focusedBorder = focusedBorder,
-            pressedBorder = pressedBorder,
-            selectedBorder = selectedBorder,
-            disabledBorder = disabledBorder,
-            focusedDisabledBorder = focusedDisabledBorder,
-        )
-
-    @Stable
-    fun shapes(
-        shape: Shape = RectangleShape,
-        focusedShape: Shape = shape,
-        pressedShape: Shape = shape,
-        disabledShape: Shape = shape,
-        focusedDisabledShape: Shape = disabledShape,
-    ): Shapes =
-        Shapes(
-            shape = shape,
-            focusedShape = focusedShape,
-            pressedShape = pressedShape,
-            disabledShape = disabledShape,
-            focusedDisabledShape = focusedDisabledShape,
-        )
-
-    @Stable
-    fun scale(
-        scale: Float = 1f,
-        focusedScale: Float = scale,
-        pressedScale: Float = scale,
-        selectedScale: Float = scale,
-        disabledScale: Float = scale,
-        focusedDisabledScale: Float = focusedScale,
-    ): Scale =
-        Scale(
-            scale = scale,
-            focusedScale = focusedScale,
-            pressedScale = pressedScale,
-            selectedScale = selectedScale,
-            disabledScale = disabledScale,
-            focusedDisabledScale = focusedDisabledScale,
-        )
-
-    @Stable
-    fun alpha(
-        alpha: Float = 1f,
-        focusedAlpha: Float = alpha,
-        pressedAlpha: Float = alpha,
-        disabledAlpha: Float = .6f,
-        focusedDisabledAlpha: Float = disabledAlpha,
-    ): Alpha =
-        Alpha(
-            alpha = alpha,
-            focusedAlpha = focusedAlpha,
-            pressedAlpha = pressedAlpha,
-            disabledAlpha = disabledAlpha,
-            focusedDisabledAlpha = focusedDisabledAlpha,
-        )
 }
