@@ -15,17 +15,13 @@ import io.daio.wild.content.ProvidesContentColor
 import io.daio.wild.foundation.clickable
 import io.daio.wild.foundation.selectable
 import io.daio.wild.modifier.thenIf
-import io.daio.wild.style.Alpha
-import io.daio.wild.style.Colors
-import io.daio.wild.style.Scale
-import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.interactionStyle
 
 /**
- * [Container] is a building block component that can be used for any Tv element or on its own as a
- * static or interactive container.
+ * [Container] is a building block component that can be used for any static element or as a
+ * as an or interactive container.
  *
  * @param modifier Modifier to be applied to the layout corresponding to the container
  * @param enabled Whether or not the container is enabled.
@@ -33,17 +29,7 @@ import io.daio.wild.style.interactionStyle
  * are null the container will not be focusable on TV.
  * @param onLongClick callback to be called when the container is long clicked. If this and
  * [onClick] are null the container will not be focusable on TV.
- * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
- * function.
- * @param scale Defines the container scale based on the current state via it's [Scale.scaleFor]
- * function.
- * @param borders Defines the border based on the current state via it's [Colors.colorFor]
- * function.
- * @param shapes Defines the container shape based on its current state via it's [Shapes.shapeFor]
- * function.
- * @param alpha Defines the container alpha based on its current state via it's [Alpha.alphaFor]
- * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
- * provided by convenience to help state driven Alpha.
+ * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
  * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
  * @param content defines the [Composable] content inside the container.
@@ -109,23 +95,12 @@ fun Container(
  * @param selected Whether or not the container is currently selected.
  * @param onLongClick callback to be called when the container is long clicked. If this and
  * [onClick] are null the container will not be focusable on TV.
- * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
- * function.
- * @param scale Defines the container scale based on the current state via it's [Scale.scaleFor]
- * function.
- * @param borders Defines the border based on the current state via it's [Colors.colorFor]
- * function.
- * @param shapes Defines the container shape based on its current state via it's [Shapes.shapeFor]
- * function.
- * @param alpha Defines the container alpha based on its current state via it's [Alpha.alphaFor]
- * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
- * provided by convenience to help state driven Alpha.
+ * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
  * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
  * @param content defines the [Composable] content inside the container.
  */
 @Composable
-@NonRestartableComposable
 fun SelectableContainer(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
