@@ -4,6 +4,8 @@ site_url: https://daio-io.github.io/wild/
 nav:
   - 'Overview': index.md
   - 'Foundations': foundations.md
+  - 'Content Color': content-color.md
+  - 'Style': style.md
   - 'Container': container.md
   - 'Button': button.md
   - 'Modifier': modifier.md
@@ -19,3 +21,6 @@ theme:
     accent: deep orange
   features:
     - navigation.instant
+    -
+markdown_extensions:
+  - admonition

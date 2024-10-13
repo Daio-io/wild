@@ -7,9 +7,11 @@ plugins {
 
 dependencies {
     implementation(compose.foundation)
+    implementation(projects.tv.layout.container)
+
     api(projects.foundations)
     api(projects.style)
-    api(projects.tv.layout.container)
+    api(projects.contentColor)
 }
 
 android {

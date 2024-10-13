@@ -7,6 +7,7 @@ implementation("io.daio.wild.tv:button:<version>")
 ```
 
 ## Usage
+
 ```kotlin
 Button(onClick = {
     println("Clicked")
@@ -23,9 +24,7 @@ You can customise the `Button` by overriding the default options.
 ```kotlin
 Button(
     modifier = Modifier,
-    colors = StyleDefaults.colors(),
-    shapes = StyleDefaults.shapes(),
-    borders = StyleDefaults.borders(),
+    style = StyleDefaults.style(),
     onClick = {
         println("Clicked")
     },
@@ -37,11 +36,19 @@ Button(
 All customisation options support state based values for focus, pressed etc.
 
 ```kotlin
-ButtonDefaults.colors(
-    color = Color.Blue,
+StyleDefaults.colors(
+    backgroundColor = Color.Blue,
+    contentColor = Color.White,
     focusedBackgroundColor = Color.Red,
     pressedBackgroundColor = Color.Green,
     disabledBackgroundColor = Color.Gray.copy(alpha = .6f),
     focusedDisabledBackgroundColor = Color.Red.copy(alpha = .6f),
 )
 ```
+
+| Platform   | Available |
+|------------|-----------|
+| CMP        | ✅         |
+| Android Tv | ✅         |
+
+You can see the full api [here](https://todo.link)
