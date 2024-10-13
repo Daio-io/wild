@@ -1,7 +1,7 @@
 # Container
 
 Simple building block layer to be used as the base of any static, clickable or selectable 
-component.
+component. Mimics the support of a Material Surface to work on CMP and Tv.
 
 ```kotlin
 implementation("io.daio.wild.tv:container:<version>")
@@ -19,14 +19,14 @@ Container {
 
 ### Customisation
 
-You can customise the `Container` by overriding the default options.
+You can customise the `Container` by overriding the default styling.
 
 ```kotlin
 Container(
     modifier = Modifier,
-    colors = StyleDefaults.colors(),
-    shapes = StyleDefaults.shapes(),
-    borders = StyleDefaults.borders(),
+    style = StyleDefaults.style(
+        colors = StyleDefaults.colors()
+    ),
 ) {
     MyComponents()
 }
@@ -35,8 +35,9 @@ Container(
 All customisation options support state based values for focus, pressed etc.
 
 ```kotlin
-ContainerDefaults.colors(
-    color = Color.Blue,
+StyleDefaults.colors(
+    backgroundColor = Color.Blue,
+    contentColor = Color.White,
     focusedBackgroundColor = Color.Red,
     pressedBackgroundColor = Color.Green,
     disabledBackgroundColor = Color.Gray.copy(alpha = .6f),
@@ -83,3 +84,10 @@ SelectableContainer(
 ```
 
 Use this component to build up your own selectable Composables.
+
+| Platform   | Available |
+|------------|-----------|
+| CMP        | ✅         |
+| Android Tv | ✅         |
+
+You can see the full api [here](https://todo.link)

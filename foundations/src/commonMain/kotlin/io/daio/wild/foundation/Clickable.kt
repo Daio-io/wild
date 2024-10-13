@@ -31,6 +31,19 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.launch
 
+/**
+ * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
+ * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
+ * remote controls.
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param indication Optional indication to apply with the clickable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClick Callback when the element is clicked.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.clickable(
     enabled: Boolean,
@@ -114,6 +127,19 @@ fun Modifier.hardwareClickable(
         }
     }.indication(interactionSource, indication)
 
+/**
+ * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
+ * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
+ * remote controls.
+ *
+ * @param selected Whether the element is currently selected.
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param indication Optional indication to apply with the clickable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onClick Callback when the element is clicked.
+ */
 fun Modifier.selectable(
     selected: Boolean,
     enabled: Boolean,
