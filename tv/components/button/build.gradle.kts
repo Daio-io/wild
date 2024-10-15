@@ -3,6 +3,7 @@ plugins {
     id("io.daio.android.library")
     id("io.daio.kotlin.android")
     id("io.daio.publish")
+    alias(libs.plugins.dokka)
 }
 
 dependencies {

@@ -6,6 +6,7 @@ androidx-appcompat = "1.7.0"
 compose-compiler = "1.5.7.1"
 compose-uitooling = "1.5.4"
 detekt = "1.23.7"
+dokka = "1.9.20"
 ktlint = "1.0.1"
 kotlin = "2.0.21"
 roborazzi = "1.29.0"
@@ -59,3 +60,4 @@ cacheFixPlugin = { id = "org.gradle.android.cache-fix", version = "3.0.1" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
