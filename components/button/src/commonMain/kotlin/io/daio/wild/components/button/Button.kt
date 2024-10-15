@@ -1,13 +1,13 @@
-package io.daio.wild.tv.button
+package io.daio.wild.components.button
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,9 +16,9 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.daio.wild.container.Container
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.tv.container.Container
 
 /**
  * [Button] Simple button component for Tv.
@@ -47,7 +47,7 @@ fun Button(
     Container(
         modifier =
             modifier
-                .size(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
+                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
                 .semantics { role = Role.Button },
         enabled = enabled,
         style = style,

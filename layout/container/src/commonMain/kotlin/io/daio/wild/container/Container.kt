@@ -1,4 +1,4 @@
-package io.daio.wild.tv.container
+package io.daio.wild.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,7 +33,6 @@ import io.daio.wild.style.selectable
  * @param content defines the [Composable] content inside the container.
  */
 @Composable
-@NonRestartableComposable
 fun Container(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -101,7 +99,6 @@ fun SelectableContainer(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     selected: Boolean = false,
-    onLongClick: (() -> Unit)? = null,
     style: Style = StyleDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,

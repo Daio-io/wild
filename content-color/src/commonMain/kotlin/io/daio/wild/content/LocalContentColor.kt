@@ -22,9 +22,7 @@ val LocalContentColor = compositionLocalOf { Color.Black }
 fun ProvidesContentColor(
     color: Color,
     content: @Composable () -> Unit,
-) {
-    CompositionLocalProvider(*getLocals(color), content = content)
-}
+) = CompositionLocalProvider(*getLocals(color), content = content)
 
 private val materialLocals: List<ProvidableCompositionLocal<Color>>
     by lazy(LazyThreadSafetyMode.NONE) {
