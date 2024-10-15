@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.clickable(
-    enabled: Boolean,
+    enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     role: Role? = null,
@@ -88,7 +88,7 @@ fun Modifier.clickable(
  * @param onClick Callback when the element is clicked.
  */
 fun Modifier.hardwareClickable(
-    enabled: Boolean,
+    enabled: Boolean = true,
     interactionSource: MutableInteractionSource,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
@@ -135,14 +135,14 @@ fun Modifier.hardwareClickable(
  * @param selected Whether the element is currently selected.
  * @param enabled Whether the click action handling is enabled.
  * @param interactionSource The interaction source to emit interaction events to.
- * @param indication Optional indication to apply with the clickable.
+ * @param indication Optional indication to apply with the selectable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onClick Callback when the element is clicked.
  */
 fun Modifier.selectable(
     selected: Boolean,
-    enabled: Boolean,
+    enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     role: Role? = null,
@@ -184,7 +184,7 @@ fun Modifier.selectable(
  */
 fun Modifier.hardwareSelectable(
     enabled: Boolean,
-    selected: Boolean,
+    selected: Boolean = true,
     interactionSource: MutableInteractionSource,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,

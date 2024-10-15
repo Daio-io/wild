@@ -9,6 +9,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.foundation)
+                implementation(projects.modifier)
+                api(projects.foundations)
             }
         }
     }

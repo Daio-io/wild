@@ -15,6 +15,10 @@ kotlin {
             dependencies {
                 api(compose.foundation)
                 api(projects.foundations)
+                api(projects.contentColor)
+                api(projects.style)
+                api(compose.material3)
+                api(projects.style)
             }
         }
 
@@ -23,6 +27,8 @@ kotlin {
                 api(libs.activity.compose)
                 api(libs.androidx.appcompat)
                 api(libs.core.ktx)
+                // Should not really expose at this level but its just for samples.
+                api(libs.tv.material)
                 api(projects.tv.layout.container)
             }
         }
