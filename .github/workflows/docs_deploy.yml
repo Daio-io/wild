@@ -47,7 +47,7 @@ jobs:
         run: ./gradlew dokkaHtmlMultiModule
 
       - name: Copy Kdoc Site
-        run: mkdir -p ./site && cp -r ./build/dokka/htmlMultiModule/* ./site/reference
+        run: mkdir -p ./site/reference && cp -r ./build/dokka/htmlMultiModule/* ./site/reference
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
