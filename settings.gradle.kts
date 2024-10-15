@@ -28,8 +28,8 @@ include(
     "content-color",
     "style",
     "modifier",
-    ":tv:components:button",
-    ":tv:layout:container",
+    ":components:button",
+    ":layout:container",
 )
 
 // Playbook
