@@ -4,7 +4,7 @@ Compose:
   CompositionLocalAllowlist:
     active: true
     # List of CompositionLocals that are allowed here
-    allowedCompositionLocals: LocalContentColor
+    allowedCompositionLocals: LocalContentColor, LocalColors, LocalShapes
   CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:

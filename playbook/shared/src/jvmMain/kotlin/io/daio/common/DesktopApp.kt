@@ -6,5 +6,5 @@ import androidx.compose.runtime.Composable
 @Preview
 @Composable
 private fun AppPreview() {
-    App()
+    CustomDesignSystemApp()
 }
