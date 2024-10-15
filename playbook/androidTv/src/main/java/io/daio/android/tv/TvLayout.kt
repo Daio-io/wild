@@ -1,51 +1,102 @@
 package io.daio.android.tv
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.daio.common.CustomDesignSystemApp
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.tv.button.Button
 
+enum class Screen {
+    Main,
+    CustomDs,
+    Material3,
+    MaterialTv,
+}
+
 @Composable
 fun TvLayout(modifier: Modifier = Modifier) {
-    LazyColumn(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.fillMaxSize(),
-    ) {
-        repeat(20) {
-            item {
-                Button(
-                    style =
-                        StyleDefaults.style(
-                            colors =
-                                StyleDefaults.colors(
-                                    backgroundColor = Color.Black,
-                                    contentColor = Color.White,
-                                    focusedBackgroundColor = Color.Red,
-                                    focusedContentColor = Color.Black,
-                                ),
-                            scale = StyleDefaults.scale(focusedScale = 1.2f),
-                            shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
-                        ),
-                    modifier = Modifier.width(200.dp),
+    var currentScreen by remember { mutableStateOf(Screen.Main) }
+
+    BackHandler(currentScreen != Screen.Main) {
+        currentScreen = Screen.Main
+    }
+
+    when (currentScreen) {
+        Screen.Main ->
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        16.dp,
+                        alignment = Alignment.CenterVertically,
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                NavigationButton(
+                    title = "Custom Design System Example",
                     onClick = {
-                        println("Clicked!")
+                        currentScreen = Screen.CustomDs
                     },
-                ) {
-                    val color = LocalContentColor.current
-                    BasicText(text = "Click Me", color = { color })
-                }
+                )
+                NavigationButton(
+                    title = "Material 3 on Tv Example",
+                    onClick = {
+                        currentScreen = Screen.Material3
+                    },
+                )
+                NavigationButton(
+                    title = "Material Tv Example",
+                    onClick = {
+                        currentScreen = Screen.MaterialTv
+                    },
+                )
             }
-        }
+
+        Screen.CustomDs -> CustomDesignSystemApp(modifier)
+        Screen.Material3 -> TODO()
+        Screen.MaterialTv -> TODO()
+    }
+}
+
+@Composable
+private fun NavigationButton(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        style =
+            StyleDefaults.style(
+                colors =
+                    StyleDefaults.colors(
+                        backgroundColor = Color.Black,
+                        contentColor = Color.White,
+                        focusedBackgroundColor = Color.Red,
+                        focusedContentColor = Color.Black,
+                        pressedBackgroundColor = Color.Black.copy(alpha = .6f),
+                    ),
+                scale = StyleDefaults.scale(focusedScale = 1.2f),
+                shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
+            ),
+        modifier = modifier.width(200.dp),
+        onClick = onClick,
+    ) {
+        val color = LocalContentColor.current
+        BasicText(text = title, color = { color })
     }
 }

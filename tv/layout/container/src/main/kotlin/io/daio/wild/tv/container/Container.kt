@@ -12,12 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import io.daio.wild.content.ProvidesContentColor
-import io.daio.wild.foundation.clickable
-import io.daio.wild.foundation.selectable
 import io.daio.wild.modifier.thenIf
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.style.interactionStyle
+import io.daio.wild.style.clickable
+import io.daio.wild.style.selectable
 
 /**
  * [Container] is a building block component that can be used for any static element or as a
@@ -55,15 +54,11 @@ fun Container(
                 ifTrueModifier =
                     Modifier.clickable(
                         enabled = enabled,
+                        style = style,
                         onClick = onClick ?: {},
                         onLongClick = onLongClick,
                         interactionSource = interactionSource,
                     ),
-            ).interactionStyle(
-                interactionSource = interactionSource,
-                style = style,
-                enabled = enabled,
-                selected = false,
             ),
         propagateMinConstraints = true,
         content = {
@@ -119,13 +114,9 @@ fun SelectableContainer(
             modifier.selectable(
                 selected = selected,
                 enabled = enabled,
+                style = style,
                 onClick = onClick,
                 interactionSource = interactionSource,
-            ).interactionStyle(
-                interactionSource = interactionSource,
-                style = style,
-                enabled = enabled,
-                selected = selected,
             ),
         propagateMinConstraints = true,
         content = {
