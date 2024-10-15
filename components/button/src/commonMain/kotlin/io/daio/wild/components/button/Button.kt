@@ -1,4 +1,4 @@
-package io.daio.wild.tv.button
+package io.daio.wild.components.button
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,9 +16,9 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.daio.wild.container.Container
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.tv.container.Container
 
 /**
  * [Button] Simple button component for Tv.

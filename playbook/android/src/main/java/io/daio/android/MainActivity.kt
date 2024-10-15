@@ -12,10 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.daio.wild.container.Container
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.tv.container.Container
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -7,8 +7,8 @@ plugins {
 dependencies {
     implementation(projects.playbook.shared)
     implementation(compose.foundation)
-    implementation(projects.tv.layout.container)
-    implementation(projects.tv.components.button)
+    implementation(projects.layout.container)
+    implementation(projects.components.button)
 }
 
 android {

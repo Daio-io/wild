@@ -29,7 +29,7 @@ kotlin {
                 api(libs.core.ktx)
                 // Should not really expose at this level but its just for samples.
                 api(libs.tv.material)
-                api(projects.tv.layout.container)
+                api(projects.layout.container)
             }
         }
 

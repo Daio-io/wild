@@ -17,9 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.common.CustomDesignSystemApp
+import io.daio.wild.components.button.Button
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.tv.button.Button
 
 enum class Screen {
     Main,

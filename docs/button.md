@@ -1,9 +1,9 @@
 # Button
 
-Primitive unstyled Button component for Tv.
+Primitive unstyled Button component.
 
 ```kotlin
-implementation("io.daio.wild.tv:button:<version>")
+implementation("io.daio.wild:button:<version>")
 ```
 
 ## Usage

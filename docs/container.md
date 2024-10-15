@@ -4,7 +4,7 @@ Simple building block layer to be used as the base of any static, clickable or s
 component. Mimics the support of a Material Surface to work on CMP and Tv.
 
 ```kotlin
-implementation("io.daio.wild.tv:container:<version>")
+implementation("io.daio.wild:container:<version>")
 ```
 
 ## Standard

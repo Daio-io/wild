@@ -1,4 +1,4 @@
-package io.daio.wild.tv.container
+package io.daio.wild.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
