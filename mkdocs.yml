@@ -1,5 +1,7 @@
-site_name: Wild
-site_url: https://daio-io.github.io/wild/
+site_name: 'Wild'
+site_url: 'https://daio-io.github.io/wild/'
+edit_uri: 'tree/main/docs/'
+remote_branch: gh-pages
 
 nav:
   - 'Overview': index.md
@@ -9,6 +11,7 @@ nav:
   - 'Container': container.md
   - 'Button': button.md
   - 'Modifier': modifier.md
+  - 'Api Reference': reference/
 
 theme:
   name: material

@@ -33,6 +33,22 @@ jobs:
       - name: Build the site
         run: mkdocs build
 
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Kdoc
+        run: ./gradlew dokkaHtmlMultiModule
+
+      - name: Copy Kdoc Site
+        run: mkdir -p ./site && cp -r ./build/dokka/htmlMultiModule/* ./site/reference
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
