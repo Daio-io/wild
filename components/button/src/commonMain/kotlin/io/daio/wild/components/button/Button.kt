@@ -21,17 +21,40 @@ import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 
 /**
- * [Button] Simple button component for Tv.
+ * Simple button component for TV.
  *
- * @param onClick callback to be called when the button is clicked.
- * @param modifier Modifier to be applied to the layout corresponding to the surface
- * @param enabled Whether or not the button is enabled.
- * @param onLongClick callback to be called when the button is long clicked.
+ * @param onClick Callback to be invoked when the button is clicked.
+ * @param modifier Modifier to be applied to the layout corresponding to the surface.
+ * @param enabled Whether the button is enabled.
+ * @param onLongClick Callback to be invoked when the button is long clicked.
  * @param style The style of the button.
  * @param contentPadding [PaddingValues] to be set on the inner content.
- * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
- * emitting [Interaction]s for this button.
- * @param content defines the [Composable] content inside the button.
+ * @param interactionSource Optional [MutableInteractionSource] for observing and emitting [Interaction]s.
+ * @param content Defines the [Composable] content inside the button.
+ *
+ * Example:
+ * ```
+ * Button(
+ *     style =
+ *         StyleDefaults.style(
+ *             colors =
+ *                 StyleDefaults.colors(
+ *                     backgroundColor = Color.Black,
+ *                     contentColor = Color.White,
+ *                     focusedBackgroundColor = Color.Red,
+ *                     focusedContentColor = Color.Black,
+ *                     pressedBackgroundColor = Color.Black.copy(alpha = .6f),
+ *                 ),
+ *             scale = StyleDefaults.scale(focusedScale = 1.2f),
+ *             shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
+ *         ),
+ *     modifier = modifier.width(200.dp),
+ *     onClick = onClick,
+ * ) {
+ *     val color = LocalContentColor.current
+ *     BasicText(text = title, color = { color })
+ * }
+ * ```
  */
 @Composable
 fun Button(

@@ -69,4 +69,4 @@ change the style based on the state.
 | CMP        | ✅         |
 | Android Tv | ✅         |
 
-You can see the full api [here](https://todo.link)
+You can see the full api [here](https://daio-io.github.io/wild/reference/style/index.html)

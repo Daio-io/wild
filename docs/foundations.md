@@ -22,4 +22,4 @@ applied.
 | CMP        | ✅         |
 | Android Tv | ✅         |
 
-You can see the full api [here](https://todo.link)
+You can see the full api [here](https://daio-io.github.io/wild/reference/foundations/index.html)

@@ -13,4 +13,4 @@ Modifiers are included with any component dependency but you can use them on you
 | CMP        | ✅         |
 | Android Tv | ✅         |
 
-You can see the full api [here](https://todo.link)
+You can see the full api [here](https://daio-io.github.io/wild/reference/modifier/index.html)
