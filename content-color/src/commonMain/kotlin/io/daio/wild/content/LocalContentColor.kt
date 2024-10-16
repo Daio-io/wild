@@ -32,13 +32,13 @@ fun ProvidesContentColor(
 ) = CompositionLocalProvider(*getLocals(color), content = content)
 
 private val materialLocals: List<ProvidableCompositionLocal<Color>>
-        by lazy(LazyThreadSafetyMode.NONE) {
-            buildList {
-                getMaterialContentColorLocal()?.let(::add)
-                getMaterial3ContentColorLocal()?.let(::add)
-                addAll(getAdditionalContentColorLocals())
-            }
+    by lazy(LazyThreadSafetyMode.NONE) {
+        buildList {
+            getMaterialContentColorLocal()?.let(::add)
+            getMaterial3ContentColorLocal()?.let(::add)
+            addAll(getAdditionalContentColorLocals())
         }
+    }
 
 @Stable
 private fun getLocals(color: Color): Array<ProvidedValue<Color>> {

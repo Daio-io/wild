@@ -71,17 +71,17 @@ fun Container(
 
     Box(
         modifier =
-        modifier.thenIf(
-            onClick != null || onLongClick != null,
-            ifTrueModifier =
-            Modifier.clickable(
-                enabled = enabled,
-                style = style,
-                onClick = onClick ?: {},
-                onLongClick = onLongClick,
-                interactionSource = interactionSource,
+            modifier.thenIf(
+                onClick != null || onLongClick != null,
+                ifTrueModifier =
+                    Modifier.clickable(
+                        enabled = enabled,
+                        style = style,
+                        onClick = onClick ?: {},
+                        onLongClick = onLongClick,
+                        interactionSource = interactionSource,
+                    ),
             ),
-        ),
         propagateMinConstraints = true,
         content = {
             val focused by interactionSource.collectIsFocusedAsState()
@@ -156,13 +156,13 @@ fun SelectableContainer(
 
     Box(
         modifier =
-        modifier.selectable(
-            selected = selected,
-            enabled = enabled,
-            style = style,
-            onClick = onClick,
-            interactionSource = interactionSource,
-        ),
+            modifier.selectable(
+                selected = selected,
+                enabled = enabled,
+                style = style,
+                onClick = onClick,
+                interactionSource = interactionSource,
+            ),
         propagateMinConstraints = true,
         content = {
             val focused by interactionSource.collectIsFocusedAsState()

@@ -69,9 +69,9 @@ fun Button(
 ) {
     Container(
         modifier =
-        modifier
-            .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
-            .semantics { role = Role.Button },
+            modifier
+                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
+                .semantics { role = Role.Button },
         enabled = enabled,
         style = style,
         onClick = onClick,
@@ -80,10 +80,10 @@ fun Button(
         content = {
             Box(
                 modifier =
-                Modifier
-                    .align(Alignment.Center)
-                    .fillMaxSize()
-                    .padding(contentPadding),
+                    Modifier
+                        .align(Alignment.Center)
+                        .fillMaxSize()
+                        .padding(contentPadding),
                 contentAlignment = Alignment.Center,
                 content = content,
             )
