@@ -18,19 +18,43 @@ import io.daio.wild.style.clickable
 import io.daio.wild.style.selectable
 
 /**
- * [Container] is a building block component that can be used for any static element or as a
- * as an or interactive container.
+ * [Container] is a building block component that can be used for any static element or as an
+ * interactive container.
  *
- * @param modifier Modifier to be applied to the layout corresponding to the container
+ * @param modifier Modifier to be applied to the layout corresponding to the container.
  * @param enabled Whether or not the container is enabled.
- * @param onClick callback to be called when the container is clicked. If this and [onLongClick]
- * are null the container will not be focusable on TV.
- * @param onLongClick callback to be called when the container is long clicked. If this and
- * [onClick] are null the container will not be focusable on TV.
+ * @param onClick Callback to be called when the container is clicked. If this and [onLongClick]
+ * are null, the container will not be focusable on TV.
+ * @param onLongClick Callback to be called when the container is long clicked. If this and
+ * [onClick] are null, the container will not be focusable on TV.
  * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
- * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
+ * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
- * @param content defines the [Composable] content inside the container.
+ * @param content Defines the [Composable] content inside the container.
+ *
+ * Example:
+ * ```
+ * Container(
+ *     style =
+ *         StyleDefaults.style(
+ *             colors = StyleDefaults.colors(
+ *                 backgroundColor = Color.Black,
+ *                 contentColor = Color.White,
+ *                 focusedBackgroundColor = Color.Blue,
+ *                 focusedContentColor = Color.Yellow,
+ *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
+ *             ),
+ *             scale = StyleDefaults.scale(focusedScale = 1.1f),
+ *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
+ *         ),
+ *     modifier = Modifier.size(300.dp, 100.dp),
+ *     onClick = { /* Handle click */ },
+ *     onLongClick = { /* Handle long click */ }
+ * ) {
+ *     val color = LocalContentColor.current
+ *     BasicText(text = "Interactive Container", color = { color })
+ * }
+ * ```
  */
 @Composable
 fun Container(
@@ -47,17 +71,17 @@ fun Container(
 
     Box(
         modifier =
-            modifier.thenIf(
-                onClick != null || onLongClick != null,
-                ifTrueModifier =
-                    Modifier.clickable(
-                        enabled = enabled,
-                        style = style,
-                        onClick = onClick ?: {},
-                        onLongClick = onLongClick,
-                        interactionSource = interactionSource,
-                    ),
+        modifier.thenIf(
+            onClick != null || onLongClick != null,
+            ifTrueModifier =
+            Modifier.clickable(
+                enabled = enabled,
+                style = style,
+                onClick = onClick ?: {},
+                onLongClick = onLongClick,
+                interactionSource = interactionSource,
             ),
+        ),
         propagateMinConstraints = true,
         content = {
             val focused by interactionSource.collectIsFocusedAsState()
@@ -77,21 +101,45 @@ fun Container(
 }
 
 /**
- * [SelectableContainer] is a building block component that can be used for any selectable Tv
+ * [SelectableContainer] is a building block component that can be used for any selectable TV
  * element or on its own as a selectable container. The [SelectableContainer] handles an additional
  * state compared to [Container] to indicate whether it is currently selected.
  *
- * @param onClick callback to be called when the container is clicked. If this and [onLongClick]
- * are null the container will not be focusable on TV.
- * @param modifier Modifier to be applied to the layout corresponding to the container
+ * @param onClick Callback to be called when the container is clicked. If this and [onLongClick]
+ * are null, the container will not be focusable on TV.
+ * @param modifier Modifier to be applied to the layout corresponding to the container.
  * @param enabled Whether or not the container is enabled.
  * @param selected Whether or not the container is currently selected.
- * @param onLongClick callback to be called when the container is long clicked. If this and
- * [onClick] are null the container will not be focusable on TV.
  * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
- * @param interactionSource an optional hoisted [MutableInteractionSource] for observing and
+ * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
- * @param content defines the [Composable] content inside the container.
+ * @param content Defines the [Composable] content inside the container.
+ *
+ * Example:
+ * ```
+ * SelectableContainer(
+ *     onClick = { /* Handle click */ },
+ *     selected = true,
+ *     style =
+ *         StyleDefaults.style(
+ *             colors = StyleDefaults.colors(
+ *                 backgroundColor = if (selected) Color.Green else Color.Black,
+ *                 contentColor = Color.White,
+ *                 focusedBackgroundColor = Color.Red,
+ *                 focusedContentColor = Color.Black,
+ *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
+ *             ),
+ *             scale = StyleDefaults.scale(focusedScale = 1.1f),
+ *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
+ *         )
+ * ) {
+ *     val color = LocalContentColor.current
+ *     BasicText(
+ *         text = if (selected) "Selected Container" else "Unselected Container",
+ *         color = { color },
+ *     )
+ * }
+ * ```
  */
 @Composable
 fun SelectableContainer(
@@ -108,13 +156,13 @@ fun SelectableContainer(
 
     Box(
         modifier =
-            modifier.selectable(
-                selected = selected,
-                enabled = enabled,
-                style = style,
-                onClick = onClick,
-                interactionSource = interactionSource,
-            ),
+        modifier.selectable(
+            selected = selected,
+            enabled = enabled,
+            style = style,
+            onClick = onClick,
+            interactionSource = interactionSource,
+        ),
         propagateMinConstraints = true,
         content = {
             val focused by interactionSource.collectIsFocusedAsState()

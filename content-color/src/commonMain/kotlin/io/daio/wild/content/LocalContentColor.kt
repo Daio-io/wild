@@ -8,6 +8,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+/**
+ * CompositionLocal containing the preferred content color for a given position in the hierarchy.
+ *
+ * Defaults to Color. Black if no color has been explicitly set.
+ *
+ * Use with [ProvidesContentColor] to ensure all Material library LocalContentColor match.
+ */
 val LocalContentColor = compositionLocalOf { Color.Black }
 
 /**
@@ -25,13 +32,13 @@ fun ProvidesContentColor(
 ) = CompositionLocalProvider(*getLocals(color), content = content)
 
 private val materialLocals: List<ProvidableCompositionLocal<Color>>
-    by lazy(LazyThreadSafetyMode.NONE) {
-        buildList {
-            getMaterialContentColorLocal()?.let(::add)
-            getMaterial3ContentColorLocal()?.let(::add)
-            addAll(getAdditionalContentColorLocals())
+        by lazy(LazyThreadSafetyMode.NONE) {
+            buildList {
+                getMaterialContentColorLocal()?.let(::add)
+                getMaterial3ContentColorLocal()?.let(::add)
+                addAll(getAdditionalContentColorLocals())
+            }
         }
-    }
 
 @Stable
 private fun getLocals(color: Color): Array<ProvidedValue<Color>> {
