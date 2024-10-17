@@ -64,7 +64,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}
 
       - name: Deploy to Sonatype
-        if: ${{ github.event.inputs.snapshot == 'false' }}
+        if: ${{ github.event.inputs.snapshot == 'false' || github.event_name == 'release' }}
         run: ./gradlew publish --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
