@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
  * @param condition to evaluate which Modifier should be applied.
  * @param ifTrueModifier The Modifier to apply if the [condition] equals true.
  * @param ifFalseModifier The Modifier to apply if the [condition] equals false.
+ *
+ * @since 0.2.0
  */
 fun Modifier.thenIf(
     condition: Boolean,
@@ -21,6 +23,8 @@ fun Modifier.thenIf(
  * @param value the nullable value to supply with the Modifier.
  * @param ifNotNullModifier The Modifier to apply if the [value] is not null.
  * @param ifNullModifier The Modifier to apply if the [value] is null.
+ *
+ * @since 0.2.0
  */
 fun <T> Modifier.thenIfNotNull(
     value: T?,

@@ -22,6 +22,8 @@ import io.daio.wild.modifier.thenIfNotNull
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 fun Modifier.clickable(
     enabled: Boolean = true,
@@ -61,6 +63,8 @@ fun Modifier.clickable(
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 fun Modifier.selectable(
     selected: Boolean,
