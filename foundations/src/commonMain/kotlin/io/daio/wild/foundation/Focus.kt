@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
  * @since 0.3.0
  *
  * Example:
+ * ```
  * LazyColumn {
  *     items(20) {
  *         LazyRow(
