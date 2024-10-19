@@ -32,6 +32,8 @@ import io.daio.wild.style.selectable
  * emitting [Interaction]s for this container.
  * @param content Defines the [Composable] content inside the container.
  *
+ * @since 0.2.0
+ *
  * Example:
  * ```
  * Container(

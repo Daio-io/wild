@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
  * Defaults to Color. Black if no color has been explicitly set.
  *
  * Use with [ProvidesContentColor] to ensure all Material library LocalContentColor match.
+ *
+ * @since 0.2.0
  */
 val LocalContentColor = compositionLocalOf { Color.Black }
 
@@ -24,6 +26,8 @@ val LocalContentColor = compositionLocalOf { Color.Black }
  *
  * @param color The color to set for the [LocalContentColor].
  * @param content Main composable content.
+ *
+ * @since 0.2.0
  */
 @Composable
 fun ProvidesContentColor(

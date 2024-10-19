@@ -14,7 +14,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.KeyInputModifierNode
@@ -43,6 +42,8 @@ import kotlinx.coroutines.launch
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.clickable(
@@ -86,6 +87,8 @@ fun Modifier.clickable(
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 fun Modifier.hardwareClickable(
     enabled: Boolean = true,
@@ -139,6 +142,8 @@ fun Modifier.hardwareClickable(
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 fun Modifier.selectable(
     selected: Boolean,
@@ -181,6 +186,8 @@ fun Modifier.selectable(
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.2.0
  */
 fun Modifier.hardwareSelectable(
     enabled: Boolean,
@@ -267,13 +274,6 @@ private data class HardwareEnterKeyElement(
     }
 }
 
-private val AcceptableEnterKeys =
-    longArrayOf(
-        Key.DirectionCenter.keyCode,
-        Key.Enter.keyCode,
-        Key.NumPadEnter.keyCode,
-    )
-
 private class HardwareEnterKeyEventNode(
     var enabled: Boolean,
     var interactionSource: MutableInteractionSource,
@@ -287,7 +287,7 @@ private class HardwareEnterKeyEventNode(
     private var isLongClick: Boolean = false
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (AcceptableEnterKeys.contains(event.key.keyCode)) {
+        if (HardwareEnterKeys.contains(event.key.keyCode)) {
             when (event.type) {
                 KeyEventType.KeyDown -> {
                     when (event.repeatCount) {
