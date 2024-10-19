@@ -56,6 +56,8 @@ import kotlinx.coroutines.launch
  * @param alpha Defines the button alpha based on its current state via it's [Alpha.alphaFor]
  * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
  * provided by convenience to help state driven Alpha.
+ *
+ * @since 0.2.0
  */
 @Immutable
 data class Style(
@@ -194,6 +196,8 @@ object StyleDefaults {
  * pressed and focus.
  * @param enabled Whether the element is currently enabled.
  * @param selected Whether the element is currently selected.
+ *
+ * @since 0.2.0
  */
 fun Modifier.interactionStyle(
     style: Style,
@@ -266,6 +270,8 @@ fun Modifier.interactionStyle(
  * See also [interactionStyle] Modifier.
  *
  * @param style The [Style] to use as indication.
+ *
+ * @since 0.2.0
  */
 @Stable
 fun hardwareInputStyleIndication(style: Style = StyleDefaults.style()): IndicationNodeFactory = FocusStyleIndication(style)

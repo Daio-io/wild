@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +30,8 @@ import io.daio.wild.style.StyleDefaults
  * @param contentPadding [PaddingValues] to be set on the inner content.
  * @param interactionSource Optional [MutableInteractionSource] for observing and emitting [Interaction]s.
  * @param content Defines the [Composable] content inside the button.
+ *
+ * @since 0.2.0
  *
  * Example:
  * ```
@@ -82,7 +83,6 @@ fun Button(
                 modifier =
                     Modifier
                         .align(Alignment.Center)
-                        .fillMaxSize()
                         .padding(contentPadding),
                 contentAlignment = Alignment.Center,
                 content = content,

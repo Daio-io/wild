@@ -61,6 +61,8 @@ data class Scale(
  * @param label An optional label to differentiate from other animations in Android Studio.
  * @param finishedListener An optional end listener to get notified when the animation is finished.
  * @return A [State] object, the value of which is updated by animation.
+ *
+ * @since 0.2.0
  */
 @Composable
 fun animateInteractionScaleAsState(
