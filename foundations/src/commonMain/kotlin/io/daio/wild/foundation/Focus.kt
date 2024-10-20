@@ -17,88 +17,129 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * Utility [Modifier] to request focus on initial layout. This Modifier calls to [requestFocus] when
- * [onGloballyPositioned] is set, caching the fact it has been positioned to make sure any request
- * to focus is only called once after positioning.
+ * Utility [Modifier] to request focus on initial layout. This Modifier calls to [onRequestFocus]
+ * when [onGloballyPositioned] is set, caching the fact it has been positioned to make sure any
+ * request to [onRequestFocus] is only called once after positioning.
  *
  * This can be used on a [focusGroup] or on any focusable composable.
  *
- * @param enabled Whether or not the request to focus should be enabled. Setting this to false and
- * back to true will allow focus to be re-requested.
- * @param delay Optional delay before [requestFocus] is called. Long delay is safe here as the node
- * will cancel the request to requestFocus if detracted while delayed.
+ * @param enabled Whether or not the request to focus should be enabled. Toggling [enabled] will
+ * treat it like the modifier has only just been applied and cause [onRequestFocus] to be called
+ * again. You can safely use this as a means to re-request focus.
+ * @param onRequestFocus Optional suspending callback to add your own custom handling for requesting
+ * focus. When providing [onRequestFocus], you will need to call
+ * [RequestFocusModifierScope.requestFocus] to make the actual request for focus.
  *
+ * Note: When using lazy layouts you will need to wait for the children of the lazy to be laid out
+ * first otherwise items will not be ready. You can use the [enabled] flag or custom
+ * [onRequestFocus] callback to help delay and wait for the lazy items to be visible. Alternatively
+ * you can just add your own logic to request focus to the specific item you would like to request
+ * focus for as it is laid out in the lazy layout.
  *
  * @since 0.3.0
  *
  * Example:
  * ```
- * LazyColumn {
- *     items(20) {
- *         LazyRow(
- *             modifier = Modifier
- *                 .fillMaxSize()
- *                 .focusGroup()
- *                 .requestInitialFocus()
- *         ) {
- *             items(100) {
- *                 Button(onClick = onClick) {
- *                     BasicText("Clickable")
- *                 }
- *             }
+ * Box(
+ *     modifier = Modifier
+ *         .fillMaxSize()
+ *         .focusGroup()
+ *         .requestInitialFocus(),
+ * ) {
+ *     repeat(20) {
+ *         Button(onClick = onClick) {
+ *             BasicText("Clickable")
  *         }
  *     }
  * }
  * ```
  *
+ * Example custom [onRequestFocus] callback.
+ * ```
+ * Box(
+ *     modifier = Modifier
+ *         .fillMaxSize()
+ *         .focusGroup()
+ *         .requestInitialFocus {
+ *             delay(1000)
+ *             if (something) {
+ *                 requestFocus()
+ *             }
+ *         },
+ * ) {
+ *     repeat(20) {
+ *         Button(onClick = onClick) {
+ *             BasicText("Clickable")
+ *         }
+ *     }
+ * }
+ * ```
  */
+@ExperimentalWildApi
 fun Modifier.requestInitialFocus(
     enabled: Boolean = true,
-    delay: Long = 0L,
+    onRequestFocus: suspend RequestFocusModifierScope.() -> Unit = { requestFocus() },
 ): Modifier {
-    return if (!enabled) Modifier else RequestFocusElement(delay)
+    return if (!enabled) Modifier else RequestFocusElement(onRequestFocus)
 }
 
-private class RequestFocusNode(var focusDelay: Long) :
+@DslMarker
+private annotation class RequestFocusDsl
+
+/**
+ * Receiver scope for [requestInitialFocus].
+ *
+ * @since 0.3.0
+ */
+@RequestFocusDsl
+interface RequestFocusModifierScope {
+    /**
+     * Use this function to request focus. The focus request will visit children to
+     * find the closest focus target.
+     *
+     * @see [FocusRequester.requestFocus]
+     * @since 0.3.0
+     */
+    fun requestFocus()
+}
+
+private class RequestFocusNode(
+    var onRequestFocus: suspend RequestFocusModifierScope.() -> Unit,
+) :
     FocusRequesterModifierNode,
-    GlobalPositionAwareModifierNode,
-    Modifier.Node() {
+        GlobalPositionAwareModifierNode,
+        RequestFocusModifierScope,
+        Modifier.Node() {
     private var positioned: Boolean = false
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
         if (!positioned && isAttached) {
             positioned = true
-            requestInitialFocus(focusDelay)
+            coroutineScope.launch {
+                onRequestFocus.invoke(this@RequestFocusNode)
+            }
         }
     }
 
-    private fun requestInitialFocus(focusDelay: Long) {
-        if (focusDelay <= 0) {
-            requestFocus()
-            return
-        }
-
-        coroutineScope.launch {
-            delay(focusDelay)
-            requestFocus()
-        }
+    override fun requestFocus() {
+        (this as FocusRequesterModifierNode).requestFocus()
     }
 }
 
-private class RequestFocusElement(val delay: Long) : ModifierNodeElement<RequestFocusNode>() {
-    override fun create() = RequestFocusNode(delay)
+private class RequestFocusElement(val onRequestFocus: suspend RequestFocusModifierScope.() -> Unit) :
+    ModifierNodeElement<RequestFocusNode>() {
+    override fun create() = RequestFocusNode(onRequestFocus)
 
     override fun update(node: RequestFocusNode) {
-        node.focusDelay = delay
+        node.onRequestFocus = onRequestFocus
     }
 
     override fun InspectorInfo.inspectableProperties() {
         name = "requestFocus"
-        properties["delay"] = delay
+        properties["onRequestFocus"] = onRequestFocus
     }
 
     override fun equals(other: Any?): Boolean {
@@ -107,10 +148,10 @@ private class RequestFocusElement(val delay: Long) : ModifierNodeElement<Request
 
         other as RequestFocusElement
 
-        return delay == other.delay
+        return onRequestFocus == other.onRequestFocus
     }
 
-    override fun hashCode(): Int = delay.hashCode()
+    override fun hashCode(): Int = onRequestFocus.hashCode()
 }
 
 /**
@@ -141,7 +182,8 @@ private class RequestFocusElement(val delay: Long) : ModifierNodeElement<Request
  * }
  * ```
  */
-@ExperimentalComposeUiApi
+@ExperimentalWildApi
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.restoreChildFocus(onRestoreFailed: (() -> FocusRequester)? = null): Modifier =
     this.focusGroup()
         .focusRestorer(onRestoreFailed) then RestoreChildFocusElement()
