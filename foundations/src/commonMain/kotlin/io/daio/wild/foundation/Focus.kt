@@ -7,11 +7,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusRequesterModifierNode
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.requestFocus
-import androidx.compose.ui.focus.restoreFocusedChild
 import androidx.compose.ui.focus.saveFocusedChild
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
@@ -190,23 +191,7 @@ fun Modifier.restoreChildFocus(onRestoreFailed: (() -> FocusRequester)? = null):
 
 private class RestoreChildNode : FocusRequesterModifierNode,
     KeyInputModifierNode,
-    GlobalPositionAwareModifierNode,
     Modifier.Node() {
-    private var positioned: Boolean = false
-
-    override fun onDetach() {
-        positioned = false
-        super.onDetach()
-    }
-
-    @OptIn(ExperimentalComposeUiApi::class)
-    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
-        if (!positioned && isAttached) {
-            restoreFocusedChild()
-            positioned = true
-        }
-    }
-
     override fun onKeyEvent(event: KeyEvent): Boolean = false
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -215,7 +200,7 @@ private class RestoreChildNode : FocusRequesterModifierNode,
         // action button is pressed on the child of a focus group, which my commonly
         // lead to a navigation event. So saving the child just before navigation
         // allows us to restore.
-        if (HardwareEnterKeys.contains(event.key.keyCode)) {
+        if (event.type == KeyEventType.KeyDown && HardwareEnterKeys.contains(event.key.keyCode)) {
             saveFocusedChild()
         }
         return false
