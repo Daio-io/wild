@@ -182,12 +182,42 @@ private class RequestFocusElement(val onRequestFocus: suspend RequestFocusModifi
  *     }
  * }
  * ```
+ *
+ * Example focusing the first item in a lazy row:
+ *
+ * ```
+ * LazyColumn {
+ *     items(20) {
+ *         val rowFirstItemRequester = remember { FocusRequester() }
+ *
+ *         LazyRow(
+ *             modifier = Modifier
+ *                 .fillMaxSize()
+ *                 // Use restore failed to only request focus to the first item
+ *                 // if restoring previous focused item fails.
+ *                 .restoreChildFocus(onRestoreFailed = { rowFirstItemRequester })
+ *         ) {
+ *             items(100) { index ->
+ *                 // Only add the focus requester if it is the first item in the row.
+ *                 Button(
+ *                     modifier = Modifier.thenIf(
+ *                         index == 0,
+ *                         ifTrueModifier = Modifier.focusRequester(rowFirstItemRequester),
+ *                     ),
+ *                     onClick = onClick,
+ *                 ) {
+ *                     BasicText("Clickable")
+ *                 }
+ *             }
+ *         }
+ *     }
+ * }
+ * ```
  */
-@ExperimentalWildApi
 @OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalWildApi
 fun Modifier.restoreChildFocus(onRestoreFailed: (() -> FocusRequester)? = null): Modifier =
-    this.focusGroup()
-        .focusRestorer(onRestoreFailed) then RestoreChildFocusElement()
+    this then RestoreChildFocusElement().focusRestorer(onRestoreFailed)
 
 private class RestoreChildNode : FocusRequesterModifierNode,
     KeyInputModifierNode,
@@ -207,7 +237,8 @@ private class RestoreChildNode : FocusRequesterModifierNode,
     }
 }
 
-private class RestoreChildFocusElement : ModifierNodeElement<RestoreChildNode>() {
+private class RestoreChildFocusElement :
+    ModifierNodeElement<RestoreChildNode>() {
     override fun create() = RestoreChildNode()
 
     override fun update(node: RestoreChildNode) {}
