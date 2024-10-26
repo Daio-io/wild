@@ -101,6 +101,8 @@ private annotation class RequestFocusDsl
 interface RequestFocusModifierScope {
     /**
      * Return as part of [Modifier.requestInitialFocus] to veto/cancel the call to requestFocus.
+     *
+     * @since 0.3.0
      */
     val Cancel: Any
         get() = CancelFocus
