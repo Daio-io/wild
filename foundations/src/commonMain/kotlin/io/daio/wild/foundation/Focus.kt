@@ -31,11 +31,12 @@ import kotlinx.coroutines.launch
  * treat it like the modifier has only just been applied and cause [onRequestFocus] to be called
  * again. You can safely use this as a means to re-request focus.
  * @param onRequestFocus Optional suspending callback to add your own custom handling for requesting
- * focus. When providing [onRequestFocus], you will need to call
- * [RequestFocusModifierScope.requestFocus] to make the actual request for focus.
+ * focus. When providing [onRequestFocus], the [requestFocus] call will happen after the the
+ * callback completes. to cancel/veto the request to focus you can return
+ * [RequestFocusModifierScope.Cancel] within the [onRequestFocus] block.
  *
  * Note: When using lazy layouts you will need to wait for the children of the lazy to be laid out
- * first otherwise items will not be ready. You can use the [enabled] flag or custom
+ * first otherwise items will not be ready to focus. You can use the [enabled] flag or custom
  * [onRequestFocus] callback to help delay and wait for the lazy items to be visible. Alternatively
  * you can just add your own logic to request focus to the specific item you would like to request
  * focus for as it is laid out in the lazy layout.
@@ -66,8 +67,9 @@ import kotlinx.coroutines.launch
  *         .focusGroup()
  *         .requestInitialFocus {
  *             delay(1000)
- *             if (something) {
- *                 requestFocus()
+ *             if (somethingIsNotRight) {
+ *                 // Return CancelFocusRequest to veto the call to requestFocus().
+ *                 return@requestInitialFocus Cancel
  *             }
  *         },
  * ) {
@@ -82,9 +84,9 @@ import kotlinx.coroutines.launch
 @ExperimentalWildApi
 fun Modifier.requestInitialFocus(
     enabled: Boolean = true,
-    onRequestFocus: suspend RequestFocusModifierScope.() -> Unit = { requestFocus() },
+    onRequestFocus: (suspend RequestFocusModifierScope.() -> Any?)? = null,
 ): Modifier {
-    return if (!enabled) Modifier else RequestFocusElement(onRequestFocus)
+    return this then (if (!enabled) Modifier else RequestFocusElement(onRequestFocus))
 }
 
 @DslMarker
@@ -98,17 +100,18 @@ private annotation class RequestFocusDsl
 @RequestFocusDsl
 interface RequestFocusModifierScope {
     /**
-     * Use this function to request focus. The focus request will visit children to
-     * find the closest focus target.
+     * Return as part of [Modifier.requestInitialFocus] to veto/cancel the call to requestFocus.
      *
-     * @see [FocusRequester.requestFocus]
      * @since 0.3.0
      */
-    fun requestFocus()
+    val Cancel: Any
+        get() = CancelFocus
 }
 
+private object CancelFocus
+
 private class RequestFocusNode(
-    var onRequestFocus: suspend RequestFocusModifierScope.() -> Unit,
+    var onRequestFocus: (suspend RequestFocusModifierScope.() -> Any?)? = null,
 ) :
     FocusRequesterModifierNode,
         GlobalPositionAwareModifierNode,
@@ -119,18 +122,28 @@ private class RequestFocusNode(
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
         if (!positioned && isAttached) {
             positioned = true
-            coroutineScope.launch {
-                onRequestFocus.invoke(this@RequestFocusNode)
-            }
+            requestFocusInternal(onRequestFocus)
         }
     }
 
-    override fun requestFocus() {
-        (this as FocusRequesterModifierNode).requestFocus()
+    private fun RequestFocusNode.requestFocusInternal(onRequestFocus: (suspend RequestFocusModifierScope.() -> Any?)?) {
+        // Skip CoroutineScope if it is not required.
+        if (onRequestFocus == null) {
+            requestFocus()
+            return
+        }
+
+        coroutineScope.launch {
+            val result = onRequestFocus.invoke(this@requestFocusInternal)
+            // Check if the request was cancelled/vetoed.
+            if (result !is CancelFocus) {
+                requestFocus()
+            }
+        }
     }
 }
 
-private class RequestFocusElement(val onRequestFocus: suspend RequestFocusModifierScope.() -> Unit) :
+private class RequestFocusElement(val onRequestFocus: (suspend RequestFocusModifierScope.() -> Any?)? = null) :
     ModifierNodeElement<RequestFocusNode>() {
     override fun create() = RequestFocusNode(onRequestFocus)
 
