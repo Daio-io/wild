@@ -217,13 +217,9 @@ private class RequestFocusElement(val onRequestFocus: suspend RequestFocusModifi
 @OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalWildApi
 fun Modifier.restoreChildFocus(onRestoreFailed: (() -> FocusRequester)? = null): Modifier =
-    this then
-        RestoreChildFocusElement(onRestoreFailed)
-            .focusRestorer(onRestoreFailed)
+    this then RestoreChildFocusElement().focusRestorer(onRestoreFailed)
 
-private class RestoreChildNode(
-    var onRestoreFailed: (() -> FocusRequester)? = null,
-) : FocusRequesterModifierNode,
+private class RestoreChildNode : FocusRequesterModifierNode,
     KeyInputModifierNode,
     Modifier.Node() {
     override fun onKeyEvent(event: KeyEvent): Boolean = false
@@ -241,19 +237,14 @@ private class RestoreChildNode(
     }
 }
 
-private class RestoreChildFocusElement(
-    val onRestoreFailed: (() -> FocusRequester)?,
-) :
+private class RestoreChildFocusElement :
     ModifierNodeElement<RestoreChildNode>() {
-    override fun create() = RestoreChildNode(onRestoreFailed = onRestoreFailed)
+    override fun create() = RestoreChildNode()
 
-    override fun update(node: RestoreChildNode) {
-        node.onRestoreFailed = onRestoreFailed
-    }
+    override fun update(node: RestoreChildNode) {}
 
     override fun InspectorInfo.inspectableProperties() {
         name = "restoreChild"
-        properties["onRestoreFailed"] = onRestoreFailed
     }
 
     override fun equals(other: Any?): Boolean {
