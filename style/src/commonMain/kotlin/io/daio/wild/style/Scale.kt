@@ -5,15 +5,11 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 
@@ -67,35 +63,35 @@ data class Scale(
 @Composable
 fun animateInteractionScaleAsState(
     targetScale: Float,
-    interactionSource: InteractionSource,
+    pressed: Boolean,
+    focused: Boolean,
     label: String = "interaction-scale",
     visibilityThreshold: Float = 0.01f,
     finishedListener: ((Float) -> Unit)? = null,
-    animationSpecProvider: (Interaction) -> AnimationSpec<Float> = { defaultScaleAnimationSpec(it) },
+    animationSpecProvider: (pressed: Boolean, focused: Boolean) -> AnimationSpec<Float> = { press, focus ->
+        defaultScaleAnimationSpec(pressed = press, focused = focus)
+    },
 ): State<Float> {
-    val interaction
-        by interactionSource.interactions.collectAsState(initial = FocusInteraction.Focus())
-
     val provider by rememberUpdatedState(animationSpecProvider)
 
     return animateFloatAsState(
         targetValue = targetScale,
         visibilityThreshold = visibilityThreshold,
         finishedListener = finishedListener,
-        animationSpec = provider(interaction),
+        animationSpec = provider(pressed, focused),
         label = label,
     )
 }
 
-private fun defaultScaleAnimationSpec(interaction: Interaction): TweenSpec<Float> =
+private fun defaultScaleAnimationSpec(
+    pressed: Boolean,
+    focused: Boolean,
+): TweenSpec<Float> =
     tween(
         durationMillis =
-            when (interaction) {
-                is FocusInteraction.Focus -> 300
-                is FocusInteraction.Unfocus -> 500
-                is PressInteraction.Press -> 120
-                is PressInteraction.Release -> 300
-                is PressInteraction.Cancel -> 300
+            when {
+                focused && !pressed -> 300
+                pressed -> 120
                 else -> 300
             },
         easing = CubicBezierEasing(0f, 0f, 0.2f, 1f),

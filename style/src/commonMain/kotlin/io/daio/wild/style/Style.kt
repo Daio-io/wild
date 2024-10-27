@@ -216,6 +216,8 @@ fun Modifier.interactionStyle(
     )
 
     val animatedScale by animateInteractionScaleAsState(
+        pressed = pressed,
+        focused = focused,
         targetScale =
             scale.scaleFor(
                 enabled = enabled,
@@ -223,7 +225,6 @@ fun Modifier.interactionStyle(
                 pressed = pressed,
                 selected = selected,
             ),
-        interactionSource = interactionSource,
     )
     val shape =
         shapes.shapeFor(
