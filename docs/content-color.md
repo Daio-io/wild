@@ -8,8 +8,8 @@ implementation("io.daio.wild.content-color:<version>")
 
 ## Usage
 
-Just like Material, Wild supplies a composition local, `LocalContentColor` as a way to supply the 
-current content color for all child components within your Composables.
+Just like Material, Wild provides a `LocalContentColor` composition local as a way to supply the 
+current content color for all child composables.
 
 This api comes with a convenience `ProvidesContentColor` to wire up the colors within your 
 components and also ensures interop with Material libraries.
@@ -32,10 +32,9 @@ MySurface {
 
 ## Material Interop
 
-If you are using the `ProvidesContentColor`, and you also use any of the Material 
-libs (Tv, Material3 or Material), this function will also set the `LocalContentColor` of those 
-libraries too, ensuring you do not always need set the correct LocalContentColor if you also use
-some Material components.
+If you are using the `ProvidesContentColor`, this function will also set the `LocalContentColor` of 
+all material libraries (Tv, Material3 or Material) too, ensuring you do not always need set the 
+correct LocalContentColor if you still use some Material components.
 
 Taking from the example above
 

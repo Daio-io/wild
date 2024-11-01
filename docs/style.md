@@ -1,6 +1,6 @@
 # Style
 
-Supplies Style classes for to set styles such as colors and borders to your components.
+Supplies Style classes for styles such as colors and borders to your components.
 
 ```kotlin
 implementation("io.daio.wild.style:<version>")
@@ -8,14 +8,11 @@ implementation("io.daio.wild.style:<version>")
 
 ## Usage
 
-The main usage of Wild `Style` classes is to setup color stateful colors. On Tv you will find the
-`Surface` Material component supports passing in colors, shapes, borders etc which change based on
-the `InteractionSource` state (focus, pressed etc). This is a very common pattern on Tv since you
-need some visual cue to know where you are when navigating with the remote e.g. the button color
-will changed when focused.
-
-Wild wraps up similar concept into Style classes that are separated from any Container/Surface and
-can be applied by Modifiers and Indication (experimental).
+The main usage of Wild `Style` classes is to setup stateful styling that can change based on the
+current focused, pressed, enabled states etc. This is particularly useful for platforms with 
+hardware input (like Tv remotes), where focus indication is required. However, the styling is not
+constrained to this, you can decide to not set any styling for the certain aspects if not required
+for that platform.
 
 In order to build Style, you can use the `StyleDefaults` functions
 
