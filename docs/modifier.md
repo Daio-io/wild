@@ -6,8 +6,6 @@ Basic utility Modifiers.
 implementation("io.daio.wild.modifier:<version>")
 ```
 
-Modifiers are included with any component dependency but you can use them on your own if you wish.
-
 | Platform   | Available |
 |------------|-----------|
 | CMP        | ✅         |
