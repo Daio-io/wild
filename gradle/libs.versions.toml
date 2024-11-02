@@ -19,7 +19,7 @@ junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
 lifecycle-runtime-ktx = "2.8.7"
-compose-icons = "1.1.0"
+metalava = "0.4.0-alpha02"
 
 [libraries]
 # TV
@@ -61,3 +61,4 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava" }
