@@ -1,0 +1,25 @@
+// Signature format: 4.0
+package io.daio.wild.foundation {
+
+  public final class ClickableKt {
+    method public static androidx.compose.ui.Modifier clickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method public static androidx.compose.ui.Modifier hardwareClickable(androidx.compose.ui.Modifier, optional boolean enabled, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional androidx.compose.foundation.Indication? indication, kotlin.jvm.functions.Function0<kotlin.Unit>? onClick);
+    method public static androidx.compose.ui.Modifier hardwareSelectable(androidx.compose.ui.Modifier, boolean enabled, optional boolean selected, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+  }
+
+  @kotlin.RequiresOptIn(message="This API is experimental and may change or be removed.") @kotlin.annotation.Retention(kotlin.annotation.AnnotationRetention.BINARY) public @interface ExperimentalWildApi {
+  }
+
+  public final class FocusKt {
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier requestInitialFocus(androidx.compose.ui.Modifier, optional boolean enabled, optional kotlin.jvm.functions.Function2<? super io.daio.wild.foundation.RequestFocusModifierScope,? super kotlin.coroutines.Continuation<? super java.lang.Object?>,? extends java.lang.Object?>? onRequestFocus);
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier restoreChildFocus(androidx.compose.ui.Modifier, optional kotlin.jvm.functions.Function0<androidx.compose.ui.focus.FocusRequester>? onRestoreFailed);
+  }
+
+  public interface RequestFocusModifierScope {
+    method public default Object getCancel();
+    property public default Object Cancel;
+  }
+
+}
+

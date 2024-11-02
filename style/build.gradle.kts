@@ -3,6 +3,7 @@ plugins {
     id("io.daio.kotlin.multiplatform")
     id("io.daio.publish")
     alias(libs.plugins.dokka)
+    alias(libs.plugins.metalava)
 }
 
 kotlin {
@@ -15,4 +16,8 @@ kotlin {
             }
         }
     }
+}
+
+metalava {
+    filename.set("api/api.txt")
 }

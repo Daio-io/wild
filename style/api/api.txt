@@ -1,0 +1,246 @@
+// Signature format: 4.0
+package io.daio.wild.style {
+
+  @androidx.compose.runtime.Immutable public final class Alpha {
+    ctor public Alpha(optional float alpha, optional float focusedAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedDisabledAlpha);
+    method @androidx.compose.runtime.Stable public float alphaFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public float component1();
+    method public float component2();
+    method public float component3();
+    method public float component4();
+    method public float component5();
+    method public float component6();
+    method public io.daio.wild.style.Alpha copy(float alpha, float focusedAlpha, float pressedAlpha, float selectedAlpha, float disabledAlpha, float focusedDisabledAlpha);
+    method public boolean equals(Object? other);
+    method public float getAlpha();
+    method public float getDisabledAlpha();
+    method public float getFocusedAlpha();
+    method public float getFocusedDisabledAlpha();
+    method public float getPressedAlpha();
+    method public float getSelectedAlpha();
+    method public int hashCode();
+    method public String toString();
+    property public final float alpha;
+    property public final float disabledAlpha;
+    property public final float focusedAlpha;
+    property public final float focusedDisabledAlpha;
+    property public final float pressedAlpha;
+    property public final float selectedAlpha;
+  }
+
+  @androidx.compose.runtime.Immutable public final class Border {
+    ctor public Border(optional float width, optional long color, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
+    method public float component1-D9Ej5fM();
+    method public long component2-0d7_KjU();
+    method public float component3-D9Ej5fM();
+    method public androidx.compose.ui.graphics.Shape component4();
+    method public io.daio.wild.style.Border copy-_9Qs8tE(float width, long color, float inset, androidx.compose.ui.graphics.Shape shape);
+    method public boolean equals(Object? other);
+    method public long getColor();
+    method public float getInset();
+    method public androidx.compose.ui.graphics.Shape getShape();
+    method public float getWidth();
+    method public int hashCode();
+    method public String toString();
+    property public final long color;
+    property public final float inset;
+    property public final androidx.compose.ui.graphics.Shape shape;
+    property public final float width;
+  }
+
+  public final class BorderDefaults {
+    method public androidx.compose.foundation.shape.GenericShape getBorderDefaultShape();
+    method public io.daio.wild.style.Border getNone();
+    property public final androidx.compose.foundation.shape.GenericShape BorderDefaultShape;
+    property public final io.daio.wild.style.Border None;
+    field public static final io.daio.wild.style.BorderDefaults INSTANCE;
+  }
+
+  public final class BorderKt {
+    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, optional androidx.compose.ui.graphics.Shape shape, optional float width, optional long color, optional float inset);
+    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, io.daio.wild.style.Border border);
+  }
+
+  public class BorderNode extends androidx.compose.ui.Modifier.Node implements androidx.compose.ui.node.DrawModifierNode {
+    ctor public BorderNode(androidx.compose.ui.graphics.Shape shape, float width, long color, float inset);
+    method public void draw(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
+    method public final void drawBorder(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
+    method public final void updateBorder(androidx.compose.ui.graphics.Shape newShape, float newWidth, long newColor, float newInset);
+  }
+
+  @androidx.compose.runtime.Immutable public final class Borders {
+    ctor public Borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedDisabledBorder);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Border borderFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public io.daio.wild.style.Border component1();
+    method public io.daio.wild.style.Border component2();
+    method public io.daio.wild.style.Border component3();
+    method public io.daio.wild.style.Border component4();
+    method public io.daio.wild.style.Border component5();
+    method public io.daio.wild.style.Border component6();
+    method public io.daio.wild.style.Borders copy(io.daio.wild.style.Border border, io.daio.wild.style.Border focusedBorder, io.daio.wild.style.Border pressedBorder, io.daio.wild.style.Border selectedBorder, io.daio.wild.style.Border disabledBorder, io.daio.wild.style.Border focusedDisabledBorder);
+    method public boolean equals(Object? other);
+    method public io.daio.wild.style.Border getBorder();
+    method public io.daio.wild.style.Border getDisabledBorder();
+    method public io.daio.wild.style.Border getFocusedBorder();
+    method public io.daio.wild.style.Border getFocusedDisabledBorder();
+    method public io.daio.wild.style.Border getPressedBorder();
+    method public io.daio.wild.style.Border getSelectedBorder();
+    method public int hashCode();
+    method public String toString();
+    property public final io.daio.wild.style.Border border;
+    property public final io.daio.wild.style.Border disabledBorder;
+    property public final io.daio.wild.style.Border focusedBorder;
+    property public final io.daio.wild.style.Border focusedDisabledBorder;
+    property public final io.daio.wild.style.Border pressedBorder;
+    property public final io.daio.wild.style.Border selectedBorder;
+  }
+
+  public final class ClickableKt {
+    method public static androidx.compose.ui.Modifier clickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+  }
+
+  @androidx.compose.runtime.Immutable public final class Colors {
+    ctor public Colors(long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long selectedBackgroundColor, optional long disabledBackgroundColor, optional long focusedDisabledBackgroundColor, long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long selectedContentColor, optional long disabledContentColor, optional long focusedDisabledContentColor);
+    method @androidx.compose.runtime.Stable public long colorFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public long component1-0d7_KjU();
+    method public long component10-0d7_KjU();
+    method public long component11-0d7_KjU();
+    method public long component12-0d7_KjU();
+    method public long component2-0d7_KjU();
+    method public long component3-0d7_KjU();
+    method public long component4-0d7_KjU();
+    method public long component5-0d7_KjU();
+    method public long component6-0d7_KjU();
+    method public long component7-0d7_KjU();
+    method public long component8-0d7_KjU();
+    method public long component9-0d7_KjU();
+    method @androidx.compose.runtime.Stable public long contentColorFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public io.daio.wild.style.Colors copy-2qZNXz8(long backgroundColor, long focusedBackgroundColor, long pressedBackgroundColor, long selectedBackgroundColor, long disabledBackgroundColor, long focusedDisabledBackgroundColor, long contentColor, long focusedContentColor, long pressedContentColor, long selectedContentColor, long disabledContentColor, long focusedDisabledContentColor);
+    method public boolean equals(Object? other);
+    method public long getBackgroundColor();
+    method public long getContentColor();
+    method public long getDisabledBackgroundColor();
+    method public long getDisabledContentColor();
+    method public long getFocusedBackgroundColor();
+    method public long getFocusedContentColor();
+    method public long getFocusedDisabledBackgroundColor();
+    method public long getFocusedDisabledContentColor();
+    method public long getPressedBackgroundColor();
+    method public long getPressedContentColor();
+    method public long getSelectedBackgroundColor();
+    method public long getSelectedContentColor();
+    method public int hashCode();
+    method public String toString();
+    property public final long backgroundColor;
+    property public final long contentColor;
+    property public final long disabledBackgroundColor;
+    property public final long disabledContentColor;
+    property public final long focusedBackgroundColor;
+    property public final long focusedContentColor;
+    property public final long focusedDisabledBackgroundColor;
+    property public final long focusedDisabledContentColor;
+    property public final long pressedBackgroundColor;
+    property public final long pressedContentColor;
+    property public final long selectedBackgroundColor;
+    property public final long selectedContentColor;
+  }
+
+  @androidx.compose.runtime.Immutable public final class Scale {
+    ctor public Scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
+    method public float component1();
+    method public float component2();
+    method public float component3();
+    method public float component4();
+    method public float component5();
+    method public float component6();
+    method public io.daio.wild.style.Scale copy(float scale, float focusedScale, float pressedScale, float selectedScale, float disabledScale, float focusedDisabledScale);
+    method public boolean equals(Object? other);
+    method public float getDisabledScale();
+    method public float getFocusedDisabledScale();
+    method public float getFocusedScale();
+    method public float getPressedScale();
+    method public float getScale();
+    method public float getSelectedScale();
+    method public int hashCode();
+    method @androidx.compose.runtime.Stable public float scaleFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public String toString();
+    property public final float disabledScale;
+    property public final float focusedDisabledScale;
+    property public final float focusedScale;
+    property public final float pressedScale;
+    property public final float scale;
+    property public final float selectedScale;
+  }
+
+  public final class ScaleKt {
+    method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<java.lang.Float> animateInteractionScaleAsState(float targetScale, boolean pressed, boolean focused, optional String label, optional float visibilityThreshold, optional kotlin.jvm.functions.Function1<? super java.lang.Float,kotlin.Unit>? finishedListener, optional kotlin.jvm.functions.Function2<? super java.lang.Boolean,? super java.lang.Boolean,? extends androidx.compose.animation.core.AnimationSpec<java.lang.Float>> animationSpecProvider);
+  }
+
+  @androidx.compose.runtime.Immutable public final class Shapes {
+    ctor public Shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
+    method public androidx.compose.ui.graphics.Shape component1();
+    method public androidx.compose.ui.graphics.Shape component2();
+    method public androidx.compose.ui.graphics.Shape component3();
+    method public androidx.compose.ui.graphics.Shape component4();
+    method public androidx.compose.ui.graphics.Shape component5();
+    method public androidx.compose.ui.graphics.Shape component6();
+    method public io.daio.wild.style.Shapes copy(androidx.compose.ui.graphics.Shape shape, androidx.compose.ui.graphics.Shape focusedShape, androidx.compose.ui.graphics.Shape pressedShape, androidx.compose.ui.graphics.Shape selectedShape, androidx.compose.ui.graphics.Shape disabledShape, androidx.compose.ui.graphics.Shape focusedDisabledShape);
+    method public boolean equals(Object? other);
+    method public androidx.compose.ui.graphics.Shape getDisabledShape();
+    method public androidx.compose.ui.graphics.Shape getFocusedDisabledShape();
+    method public androidx.compose.ui.graphics.Shape getFocusedShape();
+    method public androidx.compose.ui.graphics.Shape getPressedShape();
+    method public androidx.compose.ui.graphics.Shape getSelectedShape();
+    method public androidx.compose.ui.graphics.Shape getShape();
+    method public int hashCode();
+    method @androidx.compose.runtime.Stable public androidx.compose.ui.graphics.Shape shapeFor(boolean enabled, boolean focused, boolean pressed, boolean selected);
+    method public String toString();
+    property public final androidx.compose.ui.graphics.Shape disabledShape;
+    property public final androidx.compose.ui.graphics.Shape focusedDisabledShape;
+    property public final androidx.compose.ui.graphics.Shape focusedShape;
+    property public final androidx.compose.ui.graphics.Shape pressedShape;
+    property public final androidx.compose.ui.graphics.Shape selectedShape;
+    property public final androidx.compose.ui.graphics.Shape shape;
+  }
+
+  @androidx.compose.runtime.Immutable public final class Style {
+    ctor public Style(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
+    method public io.daio.wild.style.Colors component1();
+    method public io.daio.wild.style.Borders component2();
+    method public io.daio.wild.style.Scale component3();
+    method public io.daio.wild.style.Shapes component4();
+    method public io.daio.wild.style.Alpha component5();
+    method public io.daio.wild.style.Style copy(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
+    method public boolean equals(Object? other);
+    method public io.daio.wild.style.Alpha getAlpha();
+    method public io.daio.wild.style.Borders getBorders();
+    method public io.daio.wild.style.Colors getColors();
+    method public io.daio.wild.style.Scale getScale();
+    method public io.daio.wild.style.Shapes getShapes();
+    method public int hashCode();
+    method public String toString();
+    property public final io.daio.wild.style.Alpha alpha;
+    property public final io.daio.wild.style.Borders borders;
+    property public final io.daio.wild.style.Colors colors;
+    property public final io.daio.wild.style.Scale scale;
+    property public final io.daio.wild.style.Shapes shapes;
+  }
+
+  public final class StyleDefaults {
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Alpha alpha(optional float alpha, optional float focusedAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedDisabledAlpha);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedDisabledBorder);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedDisabledContentColor);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    field public static final io.daio.wild.style.StyleDefaults INSTANCE;
+  }
+
+  public final class StyleKt {
+    method @androidx.compose.runtime.Stable public static androidx.compose.foundation.IndicationNodeFactory hardwareInputStyleIndication(optional io.daio.wild.style.Style style);
+    method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, io.daio.wild.style.Style style, androidx.compose.foundation.interaction.InteractionSource interactionSource, optional boolean enabled, optional boolean selected);
+  }
+
+}
+
