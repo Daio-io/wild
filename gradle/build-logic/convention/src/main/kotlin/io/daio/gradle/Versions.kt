@@ -9,6 +9,7 @@ object Versions {
     const val COMPILE_SDK = 35
     const val MIN_SDK = 23
     const val TARGET_SDK = 35
+    const val JAVA_VERSION = 21
 }
 
 val Project.libs: VersionCatalog

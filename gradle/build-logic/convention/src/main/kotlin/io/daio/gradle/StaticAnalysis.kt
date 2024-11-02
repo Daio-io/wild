@@ -1,9 +1,11 @@
 package io.daio.gradle
 
 import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 
 fun Project.configureStaticAnalysis() {
 
@@ -11,33 +13,31 @@ fun Project.configureStaticAnalysis() {
         apply("io.gitlab.arturbosch.detekt")
     }
 
-    tasks.register<Detekt>("composeDetekt") {
-        description = "Runs detekt for Compose code."
-
+    detekt {
         parallel = true
 
-        setSource(files(projectDir))
+        source.setFrom(files(projectDir))
 
         config.setFrom(rootDir.resolve("detekt/config-compose.yml"))
 
-        // Disable everything but compose-rules
-        disableDefaultRuleSets = true
+        tasks.withType<Detekt>().configureEach {
+            include("**/*.kt")
+            exclude("**/resources", "**/build", "**/*.kts")
+            reports {
+                html.required.set(true)
+                txt.required.set(true)
+                xml.required.set(true)
 
-        reports {
-            html.required.set(true)
-            txt.required.set(true)
-            xml.required.set(true)
-
-            md.required.set(false)
-            sarif.required.set(false)
+                md.required.set(false)
+                sarif.required.set(false)
+            }
         }
-
-        // No kts for now as we are only using the compose rules.
-        include("**/*.kt")
-        exclude("**/resources", "**/build")
     }
 
     dependencies {
         "detektPlugins"(libs.findLibrary("compose-rules-detekt").get())
     }
 }
+
+private fun Project.detekt(action: DetektExtension.() -> Unit) =
+    extensions.configure<DetektExtension>(action)

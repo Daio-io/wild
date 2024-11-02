@@ -8,8 +8,6 @@ import org.gradle.kotlin.dsl.provideDelegate
 internal fun Project.configureGitHubPublishing() {
     val githubUser: String? by project
     val githubToken: String? by project
-    val gitHubPackageUri: String? by project
-    val gitCommit: String? by project
 
     val user = githubUser ?: project.findProperty("githubUser").toString()
     val pass = githubToken ?: project.findProperty("githubToken").toString()

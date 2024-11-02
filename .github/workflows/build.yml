@@ -23,7 +23,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Lint
-        run: ./gradlew spotlessCheck composeDetekt lint
+        run: ./gradlew check
 
       - name: Build
         run: ./gradlew :foundations:assemble :content-color:assemble :style:assemble :layout:container:assemble :components:button:assemble

@@ -10,7 +10,7 @@ import org.gradle.kotlin.dsl.withType
 fun Project.configureJava() {
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(Versions.JAVA_VERSION))
         }
     }
 
