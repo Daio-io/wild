@@ -281,10 +281,12 @@ internal class ShapeOutlineCache(
         layoutDirection: LayoutDirection,
         density: Density,
     ): Boolean {
-        if (shape != this.shape) return true
-        if (size != this.size) return true
-        if (layoutDirection != this.layoutDirection) return true
-        if (density != this.density) return true
-        return false
+        return when {
+            shape != this.shape -> true
+            size != this.size -> true
+            layoutDirection != this.layoutDirection -> true
+            density != this.density -> true
+            else -> false
+        }
     }
 }

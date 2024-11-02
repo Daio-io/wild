@@ -36,7 +36,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Lint
-        run: ./gradlew spotlessCheck composeDetekt lint
+        run: ./gradlew check
 
       - name: Get current commit
         id: commit-sha
