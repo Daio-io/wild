@@ -17,23 +17,28 @@ import androidx.compose.runtime.rememberUpdatedState
 data class Scale(
     val scale: Float = 1f,
     val focusedScale: Float = scale,
+    val hoveredScale: Float = focusedScale,
     val pressedScale: Float = focusedScale,
     val selectedScale: Float = scale,
     val disabledScale: Float = scale,
     val focusedDisabledScale: Float = focusedScale,
+    val hoveredDisabledScale: Float = hoveredScale,
 ) {
     @Stable
     fun scaleFor(
         enabled: Boolean,
         focused: Boolean,
+        hovered: Boolean,
         pressed: Boolean,
         selected: Boolean,
     ): Float {
         return when {
             pressed && enabled -> pressedScale
             focused && enabled -> focusedScale
+            hovered && enabled -> hoveredScale
             selected && enabled -> selectedScale
             !enabled && focused -> focusedDisabledScale
+            !enabled && hovered -> hoveredDisabledScale
             !enabled -> disabledScale
             else -> scale
         }
@@ -49,7 +54,6 @@ data class Scale(
  * finishes.
  *
  * @param targetScale Target value of the animation.
- * @param interactionSource The interaction source to listen to interactions.
  * @param animationSpecProvider The animation to provide based on the current [Interaction] that
  * will be used to change the value through time.
  * @param visibilityThreshold An optional threshold for deciding when the animation value is
@@ -65,11 +69,12 @@ fun animateInteractionScaleAsState(
     targetScale: Float,
     pressed: Boolean,
     focused: Boolean,
+    hovered: Boolean,
     label: String = "interaction-scale",
     visibilityThreshold: Float = 0.01f,
     finishedListener: ((Float) -> Unit)? = null,
-    animationSpecProvider: (pressed: Boolean, focused: Boolean) -> AnimationSpec<Float> = { press, focus ->
-        defaultScaleAnimationSpec(pressed = press, focused = focus)
+    animationSpecProvider: (pressed: Boolean, focused: Boolean, hovered: Boolean) -> AnimationSpec<Float> = { press, focus, hover ->
+        defaultScaleAnimationSpec(pressed = press, focused = focus, hovered = hover)
     },
 ): State<Float> {
     val provider by rememberUpdatedState(animationSpecProvider)
@@ -78,7 +83,7 @@ fun animateInteractionScaleAsState(
         targetValue = targetScale,
         visibilityThreshold = visibilityThreshold,
         finishedListener = finishedListener,
-        animationSpec = provider(pressed, focused),
+        animationSpec = provider(pressed, focused, hovered),
         label = label,
     )
 }
@@ -86,11 +91,12 @@ fun animateInteractionScaleAsState(
 private fun defaultScaleAnimationSpec(
     pressed: Boolean,
     focused: Boolean,
+    hovered: Boolean,
 ): TweenSpec<Float> =
     tween(
         durationMillis =
             when {
-                focused && !pressed -> 300
+                (focused || hovered) && !pressed -> 300
                 pressed -> 120
                 else -> 300
             },

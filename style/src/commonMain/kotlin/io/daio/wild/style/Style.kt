@@ -6,9 +6,11 @@ import androidx.compose.animation.core.animateTo
 import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
@@ -208,6 +210,7 @@ fun Modifier.interactionStyle(
     val (colors, borders, scale, shapes, alpha) = style
 
     val focused by interactionSource.collectIsFocusedAsState()
+    val hovered by interactionSource.collectIsHoveredAsState()
     val pressed by interactionSource.collectIsPressedAsState()
 
     val zIndex by animateFloatAsState(
@@ -218,10 +221,12 @@ fun Modifier.interactionStyle(
     val animatedScale by animateInteractionScaleAsState(
         pressed = pressed,
         focused = focused,
+        hovered = hovered,
         targetScale =
             scale.scaleFor(
                 enabled = enabled,
                 focused = focused,
+                hovered = hovered,
                 pressed = pressed,
                 selected = selected,
             ),
@@ -230,6 +235,7 @@ fun Modifier.interactionStyle(
         shapes.shapeFor(
             enabled = enabled,
             focused = focused,
+            hovered = hovered,
             pressed = pressed,
             selected = selected,
         )
@@ -237,6 +243,7 @@ fun Modifier.interactionStyle(
         alpha.alphaFor(
             enabled = enabled,
             focused = focused,
+            hovered = hovered,
             pressed = pressed,
             selected = selected,
         )
@@ -244,6 +251,7 @@ fun Modifier.interactionStyle(
         borders.borderFor(
             enabled = enabled,
             focused = focused,
+            hovered = hovered,
             pressed = pressed,
             selected = selected,
         )
@@ -255,7 +263,7 @@ fun Modifier.interactionStyle(
         }
         .zIndex(zIndex)
         .border(border.shape, border.width, border.color, border.inset)
-        .background(colors.colorFor(enabled, focused, pressed, selected), shape)
+        .background(colors.colorFor(enabled, focused, hovered, pressed, selected), shape)
         .graphicsLayer {
             this.alpha = containerAlpha
             this.shape = shape
@@ -345,15 +353,16 @@ private class FocusStyleNode(
         style.borders.border.inset,
     ) {
     var focused = false
+    var hovered = false
     var pressed = false
     var selected = false
     var enabled = true
 
-    private var scale = style.scale.scaleFor(enabled, focused, pressed, selected)
-    private var color = style.colors.colorFor(enabled, focused, pressed, selected)
-    private var alpha = style.alpha.alphaFor(enabled, focused, pressed, selected)
-    private var shapes = style.shapes.shapeFor(enabled, focused, pressed, selected)
-    private var borders = style.borders.borderFor(enabled, focused, pressed, selected)
+    private var scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
+    private var color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
+    private var alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
+    private var shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
+    private var borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
     private val zIndexState = AnimationState(initialValue = if (focused) 0.5f else 0f)
     private val scaleState = AnimationState(initialValue = scale)
 
@@ -367,6 +376,8 @@ private class FocusStyleNode(
                     is PressInteraction.Press -> pressed = true
                     is PressInteraction.Release -> pressed = false
                     is PressInteraction.Cancel -> pressed = false
+                    is HoverInteraction.Enter -> hovered = true
+                    is HoverInteraction.Exit -> hovered = false
                     is FocusInteraction.Focus -> focused = true
                     is FocusInteraction.Unfocus -> focused = false
                 }
@@ -380,11 +391,11 @@ private class FocusStyleNode(
     }
 
     private fun updateStates() {
-        scale = style.scale.scaleFor(enabled, focused, pressed, selected)
-        color = style.colors.colorFor(enabled, focused, pressed, selected)
-        alpha = style.alpha.alphaFor(enabled, focused, pressed, selected)
-        shapes = style.shapes.shapeFor(enabled, focused, pressed, selected)
-        borders = style.borders.borderFor(enabled, focused, pressed, selected)
+        scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
+        color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
+        alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
+        shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
+        borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
 
         updateBorder(borders.shape, borders.width, borders.color, borders.inset)
 
