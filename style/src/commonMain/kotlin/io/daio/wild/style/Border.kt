@@ -42,23 +42,28 @@ object BorderDefaults {
 data class Borders(
     val border: Border = BorderDefaults.None,
     val focusedBorder: Border = border,
+    val hoveredBorder: Border = focusedBorder,
     val pressedBorder: Border = focusedBorder,
     val selectedBorder: Border = border,
     val disabledBorder: Border = border,
     val focusedDisabledBorder: Border = disabledBorder,
+    val hoveredDisabledBorder: Border = disabledBorder,
 ) {
     @Stable
     fun borderFor(
         enabled: Boolean,
         focused: Boolean,
+        hovered: Boolean,
         pressed: Boolean,
         selected: Boolean,
     ): Border {
         return when {
             pressed && enabled -> pressedBorder
             focused && enabled -> focusedBorder
+            hovered && enabled -> hoveredBorder
             selected && enabled -> selectedBorder
             !enabled && focused -> focusedDisabledBorder
+            !enabled && hovered -> hoveredDisabledBorder
             !enabled -> disabledBorder
             else -> border
         }
