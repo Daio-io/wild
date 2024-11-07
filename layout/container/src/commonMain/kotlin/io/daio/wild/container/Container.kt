@@ -3,6 +3,7 @@ package io.daio.wild.container
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -88,10 +89,12 @@ fun Container(
         content = {
             val focused by interactionSource.collectIsFocusedAsState()
             val pressed by interactionSource.collectIsPressedAsState()
+            val hovered by interactionSource.collectIsHoveredAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
                     enabled = enabled,
                     focused = focused,
+                    hovered = hovered,
                     pressed = pressed,
                     selected = false,
                 ),
@@ -169,10 +172,12 @@ fun SelectableContainer(
         content = {
             val focused by interactionSource.collectIsFocusedAsState()
             val pressed by interactionSource.collectIsPressedAsState()
+            val hovered by interactionSource.collectIsHoveredAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
                     enabled = enabled,
                     focused = focused,
+                    hovered = hovered,
                     pressed = pressed,
                     selected = selected,
                 ),
