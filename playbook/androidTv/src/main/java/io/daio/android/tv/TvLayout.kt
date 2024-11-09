@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import io.daio.common.CustomDesignSystemApp
 import io.daio.wild.components.button.Button
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
 
 enum class Screen {
@@ -89,6 +90,16 @@ private fun NavigationButton(
                         focusedBackgroundColor = Color.Red,
                         focusedContentColor = Color.Black,
                         pressedBackgroundColor = Color.Black.copy(alpha = .6f),
+                    ),
+                borders =
+                    StyleDefaults.borders(
+                        border =
+                            Border(
+                                width = 2.dp,
+                                inset = 2.dp,
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.Red,
+                            ),
                     ),
                 scale = StyleDefaults.scale(focusedScale = 1.2f),
                 shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
