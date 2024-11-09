@@ -12,6 +12,7 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -41,6 +42,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 
@@ -255,14 +257,18 @@ fun Modifier.interactionStyle(
             pressed = pressed,
             selected = selected,
         )
-
     this
         .graphicsLayer {
             this.scaleX = animatedScale
             this.scaleY = animatedScale
         }
         .zIndex(zIndex)
-        .border(border.shape, border.width, border.color, border.inset)
+        .border(
+            shape = border.forInnerShape(innerShape = shape),
+            width = border.width,
+            color = border.color,
+            inset = border.inset,
+        )
         .background(colors.colorFor(enabled, focused, hovered, pressed, selected), shape)
         .graphicsLayer {
             this.alpha = containerAlpha
@@ -271,6 +277,16 @@ fun Modifier.interactionStyle(
             this.compositingStrategy = CompositingStrategy.Offscreen
         }
 }
+
+/**
+ * Ensures the border shape takes into account the inner shape when applying an inset.
+ */
+internal fun Border.forInnerShape(innerShape: Shape): Shape =
+    if (inset > 0.dp && innerShape is RoundedCornerShape && shape is RoundedCornerShape) {
+        shape.toExpandedCornerShape(inset)
+    } else {
+        shape
+    }
 
 /**
  * Experimental API to apply [Style] indication to a component based on the current interaction
