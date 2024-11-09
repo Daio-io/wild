@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.requireDensity
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Density
@@ -28,14 +29,14 @@ import androidx.compose.ui.unit.isUnspecified
 @Immutable
 data class Border(
     val width: Dp = 0.dp,
-    val color: Color = Color.Transparent,
+    val color: Color = Color.Unspecified,
     val inset: Dp = 0.dp,
-    val shape: Shape = RectangleShape,
+    val shape: Shape = BorderDefaults.BorderDefaultShape,
 )
 
 object BorderDefaults {
     val BorderDefaultShape = GenericShape { _, _ -> close() }
-    val None = Border(width = 0.dp, color = Color.Transparent)
+    val None = Border(width = 0.dp, color = Color.Unspecified)
 }
 
 @Immutable
@@ -73,9 +74,9 @@ data class Borders(
 fun Modifier.border(border: Border) = then(Modifier.border(border.shape, border.width, border.color, border.inset))
 
 fun Modifier.border(
-    shape: Shape = RectangleShape,
+    shape: Shape = BorderDefaults.BorderDefaultShape,
     width: Dp = Dp.Unspecified,
-    color: Color = Color.Transparent,
+    color: Color = Color.Unspecified,
     inset: Dp = 0.dp,
 ): Modifier {
     return then(
@@ -191,21 +192,23 @@ open class BorderNode(
                 )
         }
 
+        val borderStrokeWidthPX = with(requireDensity()) { borderStroke.width.toPx() }
+
         if (outlineStrokeCache == null) {
-            outlineStrokeCache = OutlineStrokeCache(widthPx = borderStroke.width.toPx())
+            outlineStrokeCache = OutlineStrokeCache(widthPx = borderStrokeWidthPX)
         }
 
-        inset(inset = -inset.toPx()) {
+        inset(inset = with(requireDensity()) { -inset.toPx() }) {
             val shapeOutline =
                 shapeOutlineCache!!.updatedOutline(
                     shape = shape,
                     size = size,
                     layoutDirection = layoutDirection,
-                    density = this,
+                    density = requireDensity(),
                 )
 
             val outlineStroke =
-                outlineStrokeCache!!.updatedOutlineStroke(widthPx = borderStroke.width.toPx())
+                outlineStrokeCache!!.updatedOutlineStroke(widthPx = borderStrokeWidthPX)
 
             drawOutline(
                 outline = shapeOutline,
