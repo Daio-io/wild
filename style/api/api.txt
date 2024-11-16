@@ -35,20 +35,19 @@ package io.daio.wild.style {
   }
 
   @androidx.compose.runtime.Immutable public final class Border {
-    ctor public Border(optional float width, optional long color, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
-    method public float component1-D9Ej5fM();
-    method public long component2-0d7_KjU();
-    method public float component3-D9Ej5fM();
-    method public androidx.compose.ui.graphics.Shape component4();
-    method public io.daio.wild.style.Border copy-_9Qs8tE(float width, long color, float inset, androidx.compose.ui.graphics.Shape shape);
+    ctor public Border(optional androidx.compose.foundation.BorderStroke borderStroke, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
+    method public androidx.compose.foundation.BorderStroke component1();
+    method public float component2-D9Ej5fM();
+    method public androidx.compose.ui.graphics.Shape component3();
+    method public io.daio.wild.style.Border copy-lG28NQ4(androidx.compose.foundation.BorderStroke borderStroke, float inset, androidx.compose.ui.graphics.Shape shape);
     method public boolean equals(Object? other);
-    method public long getColor();
+    method public androidx.compose.foundation.BorderStroke getBorderStroke();
     method public float getInset();
     method public androidx.compose.ui.graphics.Shape getShape();
     method public float getWidth();
     method public int hashCode();
     method public String toString();
-    property public final long color;
+    property public final androidx.compose.foundation.BorderStroke borderStroke;
     property public final float inset;
     property public final androidx.compose.ui.graphics.Shape shape;
     property public final float width;
@@ -63,15 +62,16 @@ package io.daio.wild.style {
   }
 
   public final class BorderKt {
-    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, optional androidx.compose.ui.graphics.Shape shape, optional float width, optional long color, optional float inset);
+    method @androidx.compose.runtime.Stable public static io.daio.wild.style.Border Border(optional float width, optional long color, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
+    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, optional androidx.compose.ui.graphics.Shape shape, optional float width, optional androidx.compose.foundation.BorderStroke borderStroke, optional float inset);
     method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, io.daio.wild.style.Border border);
   }
 
   public class BorderNode extends androidx.compose.ui.Modifier.Node implements androidx.compose.ui.node.DrawModifierNode {
-    ctor public BorderNode(androidx.compose.ui.graphics.Shape shape, float width, long color, float inset);
+    ctor public BorderNode(androidx.compose.ui.graphics.Shape shape, androidx.compose.foundation.BorderStroke borderStroke, float inset);
     method public void draw(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
     method public final void drawBorder(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
-    method public final void updateBorder(androidx.compose.ui.graphics.Shape newShape, float newWidth, long newColor, float newInset);
+    method public final void updateBorder(androidx.compose.ui.graphics.Shape newShape, androidx.compose.foundation.BorderStroke newBorderStroke, float newInset);
   }
 
   @androidx.compose.runtime.Immutable public final class Borders {
