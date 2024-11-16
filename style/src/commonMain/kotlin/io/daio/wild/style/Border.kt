@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
@@ -28,11 +29,26 @@ import androidx.compose.ui.unit.isUnspecified
 
 @Immutable
 data class Border(
-    val width: Dp = 0.dp,
-    val color: Color = Color.Unspecified,
+    val borderStroke: BorderStroke = BorderStroke(0.dp, Color.Unspecified),
     val inset: Dp = 0.dp,
     val shape: Shape = BorderDefaults.BorderDefaultShape,
-)
+) {
+    val width: Dp
+        get() = borderStroke.width
+}
+
+@Stable
+fun Border(
+    width: Dp = 0.dp,
+    color: Color = Color.Unspecified,
+    inset: Dp = 0.dp,
+    shape: Shape = BorderDefaults.BorderDefaultShape,
+): Border =
+    Border(
+        borderStroke = BorderStroke(width = width, SolidColor(color)),
+        inset = inset,
+        shape = shape,
+    )
 
 object BorderDefaults {
     val BorderDefaultShape = GenericShape { _, _ -> close() }
@@ -71,12 +87,12 @@ data class Borders(
     }
 }
 
-fun Modifier.border(border: Border) = then(Modifier.border(border.shape, border.width, border.color, border.inset))
+fun Modifier.border(border: Border) = then(Modifier.border(border.shape, border.width, border.borderStroke, border.inset))
 
 fun Modifier.border(
     shape: Shape = BorderDefaults.BorderDefaultShape,
     width: Dp = Dp.Unspecified,
-    color: Color = Color.Unspecified,
+    borderStroke: BorderStroke = BorderStroke(0.dp, Color.Unspecified),
     inset: Dp = 0.dp,
 ): Modifier {
     return then(
@@ -85,15 +101,13 @@ fun Modifier.border(
         } else {
             BorderElement(
                 shape = shape,
-                width = width,
-                color = color,
+                borderStroke = borderStroke,
                 inset = inset,
                 inspectorInfo =
                     debugInspectorInfo {
                         name = "border"
                         properties["shape"] = shape
-                        properties["width"] = width
-                        properties["color"] = color
+                        properties["borderStroke"] = borderStroke
                         properties["inset"] = inset
                     },
             )
@@ -103,16 +117,14 @@ fun Modifier.border(
 
 private class BorderElement(
     private val shape: Shape = RectangleShape,
-    private val width: Dp = Dp.Unspecified,
-    private val color: Color = Color.Transparent,
+    private val borderStroke: BorderStroke = BorderStroke(0.dp, Color.Unspecified),
     private val inset: Dp = Dp.Unspecified,
     private val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<BorderNode>() {
     override fun create(): BorderNode {
         return BorderNode(
             shape = shape,
-            width = width,
-            color = color,
+            borderStroke = borderStroke,
             inset = inset,
         )
     }
@@ -120,8 +132,7 @@ private class BorderElement(
     override fun update(node: BorderNode) {
         node.updateBorder(
             newShape = shape,
-            newWidth = width,
-            newColor = color,
+            newBorderStroke = borderStroke,
             newInset = inset,
         )
     }
@@ -137,8 +148,7 @@ private class BorderElement(
         other as BorderElement
 
         if (shape != other.shape) return false
-        if (width != other.width) return false
-        if (color != other.color) return false
+        if (borderStroke != other.borderStroke) return false
         if (inset != other.inset) return false
 
         return true
@@ -146,8 +156,7 @@ private class BorderElement(
 
     override fun hashCode(): Int {
         var result = shape.hashCode()
-        result = 31 * result + width.hashCode()
-        result = 31 * result + color.hashCode()
+        result = 31 * result + borderStroke.hashCode()
         result = 31 * result + inset.hashCode()
         return result
     }
@@ -155,25 +164,20 @@ private class BorderElement(
 
 open class BorderNode(
     private var shape: Shape,
-    private var width: Dp,
-    private var color: Color,
+    private var borderStroke: BorderStroke,
     private var inset: Dp,
 ) : DrawModifierNode, Modifier.Node() {
     private var shapeOutlineCache: ShapeOutlineCache? = null
     private var outlineStrokeCache: OutlineStrokeCache? = null
-    private var borderStroke = BorderStroke(width, color)
 
     fun updateBorder(
         newShape: Shape,
-        newWidth: Dp,
-        newColor: Color,
+        newBorderStroke: BorderStroke,
         newInset: Dp,
     ) {
         shape = newShape
-        width = newWidth
-        color = newColor
+        borderStroke = newBorderStroke
         inset = newInset
-        borderStroke = BorderStroke(newWidth, newColor)
     }
 
     override fun ContentDrawScope.draw() {

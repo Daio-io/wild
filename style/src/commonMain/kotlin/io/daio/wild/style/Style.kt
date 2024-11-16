@@ -266,7 +266,7 @@ fun Modifier.interactionStyle(
         .border(
             shape = border.forInnerShape(innerShape = shape),
             width = border.width,
-            color = border.color,
+            borderStroke = border.borderStroke,
             inset = border.inset,
         )
         .background(colors.colorFor(enabled, focused, hovered, pressed, selected), shape)
@@ -364,8 +364,7 @@ private class FocusStyleNode(
 ) : DrawModifierNode, ObserverModifierNode, LayoutModifierNode,
     BorderNode(
         style.borders.border.shape,
-        style.borders.border.width,
-        style.borders.border.color,
+        style.borders.border.borderStroke,
         style.borders.border.inset,
     ) {
     var focused = false
@@ -413,7 +412,7 @@ private class FocusStyleNode(
         shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
         borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
 
-        updateBorder(borders.shape, borders.width, borders.color, borders.inset)
+        updateBorder(borders.shape, borders.borderStroke, borders.inset)
 
         invalidatePlacement()
     }
