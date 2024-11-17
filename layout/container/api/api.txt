@@ -2,8 +2,8 @@
 package io.daio.wild.container {
 
   public final class ContainerKt {
-    method @androidx.compose.runtime.Composable public static void Container(optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
-    method @androidx.compose.runtime.Composable public static void SelectableContainer(kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional boolean selected, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @androidx.compose.runtime.Composable public static void Container(optional androidx.compose.ui.Modifier modifier, optional long color, optional long contentColor, optional androidx.compose.ui.graphics.Shape shape, optional io.daio.wild.style.Border border, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @androidx.compose.runtime.Composable public static void Container(kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional Boolean? selected, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
   }
 
 }
