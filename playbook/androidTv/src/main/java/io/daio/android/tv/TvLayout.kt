@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.common.CustomDesignSystemApp
 import io.daio.wild.components.button.Button
+import io.daio.wild.container.Container
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
@@ -37,40 +38,42 @@ fun TvLayout(modifier: Modifier = Modifier) {
         currentScreen = Screen.Main
     }
 
-    when (currentScreen) {
-        Screen.Main ->
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement =
-                    Arrangement.spacedBy(
-                        16.dp,
-                        alignment = Alignment.CenterVertically,
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                NavigationButton(
-                    title = "Custom Design System Example",
-                    onClick = {
-                        currentScreen = Screen.CustomDs
-                    },
-                )
-                NavigationButton(
-                    title = "Material 3 on Tv Example",
-                    onClick = {
-                        currentScreen = Screen.Material3
-                    },
-                )
-                NavigationButton(
-                    title = "Material Tv Example",
-                    onClick = {
-                        currentScreen = Screen.MaterialTv
-                    },
-                )
-            }
+    Container(color = Color.Black) {
+        when (currentScreen) {
+            Screen.Main ->
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement =
+                        Arrangement.spacedBy(
+                            16.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    NavigationButton(
+                        title = "Custom Design System Example",
+                        onClick = {
+                            currentScreen = Screen.CustomDs
+                        },
+                    )
+                    NavigationButton(
+                        title = "Material 3 on Tv Example",
+                        onClick = {
+                            currentScreen = Screen.Material3
+                        },
+                    )
+                    NavigationButton(
+                        title = "Material Tv Example",
+                        onClick = {
+                            currentScreen = Screen.MaterialTv
+                        },
+                    )
+                }
 
-        Screen.CustomDs -> CustomDesignSystemApp(modifier)
-        Screen.Material3 -> TODO()
-        Screen.MaterialTv -> TODO()
+            Screen.CustomDs -> CustomDesignSystemApp(modifier)
+            Screen.Material3 -> TODO()
+            Screen.MaterialTv -> TODO()
+        }
     }
 }
 
