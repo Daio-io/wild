@@ -268,15 +268,17 @@ package io.daio.wild.style {
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Alpha alpha(optional float alpha, optional float focusedAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedDisabledAlpha);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedDisabledBorder);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedDisabledContentColor);
+    method public io.daio.wild.style.Style getNone();
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    property public final io.daio.wild.style.Style None;
     field public static final io.daio.wild.style.StyleDefaults INSTANCE;
   }
 
   public final class StyleKt {
     method @androidx.compose.runtime.Stable public static androidx.compose.foundation.IndicationNodeFactory hardwareInputStyleIndication(optional io.daio.wild.style.Style style);
-    method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, io.daio.wild.style.Style style, androidx.compose.foundation.interaction.InteractionSource interactionSource, optional boolean enabled, optional boolean selected);
+    method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, io.daio.wild.style.Style style, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected);
   }
 
 }

@@ -73,6 +73,15 @@ data class Style(
 )
 
 object StyleDefaults {
+    val None: Style =
+        Style(
+            colors = colors(),
+            borders = borders(),
+            scale = scale(),
+            shapes = shapes(),
+            alpha = alpha(),
+        )
+
     @Stable
     fun style(
         colors: Colors = colors(),
@@ -205,15 +214,15 @@ object StyleDefaults {
  */
 fun Modifier.interactionStyle(
     style: Style,
-    interactionSource: InteractionSource,
+    interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
 ) = composed {
     val (colors, borders, scale, shapes, alpha) = style
 
-    val focused by interactionSource.collectIsFocusedAsState()
-    val hovered by interactionSource.collectIsHoveredAsState()
-    val pressed by interactionSource.collectIsPressedAsState()
+    val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
+    val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
+    val pressed = interactionSource?.collectIsPressedAsState()?.value ?: false
 
     val zIndex by animateFloatAsState(
         targetValue = if (focused) 0.5f else 0f,
