@@ -7,6 +7,7 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.util.fastMap
 
 /**
  * CompositionLocal containing the preferred content color for a given position in the hierarchy.
@@ -46,7 +47,7 @@ private val materialLocals: List<ProvidableCompositionLocal<Color>>
 
 @Stable
 private fun getLocals(color: Color): Array<ProvidedValue<Color>> {
-    return materialLocals.map { it provides color }
+    return materialLocals.fastMap { it provides color }
         .toMutableList().apply { add(LocalContentColor provides color) }
         .toTypedArray()
 }
