@@ -100,18 +100,36 @@ object StyleDefaults {
 
     @Stable
     fun colors(
+        /**
+         * Background Colors.
+         */
         backgroundColor: Color = Color.Black,
         focusedBackgroundColor: Color = backgroundColor,
         pressedBackgroundColor: Color = backgroundColor,
+        hoveredBackgroundColor: Color = backgroundColor,
         disabledBackgroundColor: Color = backgroundColor,
         selectedBackgroundColor: Color = backgroundColor,
+        focusedSelectedBackgroundColor: Color = focusedBackgroundColor,
+        pressedSelectedBackgroundColor: Color = pressedBackgroundColor,
+        hoveredSelectedBackgroundColor: Color = hoveredBackgroundColor,
         focusedDisabledBackgroundColor: Color = disabledBackgroundColor,
+        pressedDisabledBackgroundColor: Color = disabledBackgroundColor,
+        hoveredDisabledBackgroundColor: Color = disabledBackgroundColor,
+        /**
+         * Content Colors.
+         */
         contentColor: Color = Color.White,
         focusedContentColor: Color = contentColor,
         pressedContentColor: Color = contentColor,
+        hoveredContentColor: Color = contentColor,
         disabledContentColor: Color = contentColor,
         selectedContentColor: Color = contentColor,
+        focusedSelectedContentColor: Color = focusedContentColor,
+        pressedSelectedContentColor: Color = pressedContentColor,
+        hoveredSelectedContentColor: Color = hoveredContentColor,
+        pressedDisabledContentColor: Color = disabledContentColor,
         focusedDisabledContentColor: Color = disabledContentColor,
+        hoveredDisabledContentColor: Color = disabledContentColor,
     ): Colors =
         Colors(
             backgroundColor = backgroundColor,
@@ -120,11 +138,23 @@ object StyleDefaults {
             disabledBackgroundColor = disabledBackgroundColor,
             selectedBackgroundColor = selectedBackgroundColor,
             focusedDisabledBackgroundColor = focusedDisabledBackgroundColor,
+            focusedSelectedBackgroundColor = focusedSelectedBackgroundColor,
+            hoveredBackgroundColor = hoveredBackgroundColor,
+            hoveredDisabledBackgroundColor = hoveredDisabledBackgroundColor,
+            hoveredSelectedBackgroundColor = hoveredSelectedBackgroundColor,
+            pressedDisabledBackgroundColor = pressedDisabledBackgroundColor,
+            pressedSelectedBackgroundColor = pressedSelectedBackgroundColor,
             contentColor = contentColor,
             focusedContentColor = focusedContentColor,
             pressedContentColor = pressedContentColor,
             disabledContentColor = disabledContentColor,
             selectedContentColor = selectedContentColor,
+            hoveredContentColor = hoveredContentColor,
+            focusedSelectedContentColor = focusedSelectedContentColor,
+            hoveredSelectedContentColor = hoveredSelectedContentColor,
+            pressedSelectedContentColor = pressedSelectedContentColor,
+            pressedDisabledContentColor = pressedDisabledContentColor,
+            hoveredDisabledContentColor = hoveredDisabledContentColor,
             focusedDisabledContentColor = focusedDisabledContentColor,
         )
 

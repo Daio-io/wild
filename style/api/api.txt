@@ -114,7 +114,7 @@ package io.daio.wild.style {
   }
 
   @androidx.compose.runtime.Immutable public final class Colors {
-    ctor public Colors(long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long selectedBackgroundColor, optional long disabledBackgroundColor, optional long focusedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, long contentColor, optional long focusedContentColor, optional long hoveredContentColor, optional long pressedContentColor, optional long selectedContentColor, optional long disabledContentColor, optional long focusedDisabledContentColor, optional long hoveredDisabledContentColor);
+    ctor public Colors(long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long selectedBackgroundColor, optional long disabledBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, long contentColor, optional long focusedContentColor, optional long hoveredContentColor, optional long pressedContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long disabledContentColor, optional long focusedDisabledContentColor, optional long pressedDisabledContentColor, optional long hoveredDisabledContentColor);
     method @androidx.compose.runtime.Stable public long colorFor(boolean enabled, boolean focused, boolean hovered, boolean pressed, boolean selected);
     method public long component1-0d7_KjU();
     method public long component10-0d7_KjU();
@@ -124,7 +124,15 @@ package io.daio.wild.style {
     method public long component14-0d7_KjU();
     method public long component15-0d7_KjU();
     method public long component16-0d7_KjU();
+    method public long component17-0d7_KjU();
+    method public long component18-0d7_KjU();
+    method public long component19-0d7_KjU();
     method public long component2-0d7_KjU();
+    method public long component20-0d7_KjU();
+    method public long component21-0d7_KjU();
+    method public long component22-0d7_KjU();
+    method public long component23-0d7_KjU();
+    method public long component24-0d7_KjU();
     method public long component3-0d7_KjU();
     method public long component4-0d7_KjU();
     method public long component5-0d7_KjU();
@@ -133,7 +141,7 @@ package io.daio.wild.style {
     method public long component8-0d7_KjU();
     method public long component9-0d7_KjU();
     method @androidx.compose.runtime.Stable public long contentColorFor(boolean enabled, boolean focused, boolean hovered, boolean pressed, boolean selected);
-    method public io.daio.wild.style.Colors copy-Q_H9qLU(long backgroundColor, long focusedBackgroundColor, long pressedBackgroundColor, long hoveredBackgroundColor, long selectedBackgroundColor, long disabledBackgroundColor, long focusedDisabledBackgroundColor, long hoveredDisabledBackgroundColor, long contentColor, long focusedContentColor, long hoveredContentColor, long pressedContentColor, long selectedContentColor, long disabledContentColor, long focusedDisabledContentColor, long hoveredDisabledContentColor);
+    method public io.daio.wild.style.Colors copy-KKJ9vVU(long backgroundColor, long focusedBackgroundColor, long pressedBackgroundColor, long hoveredBackgroundColor, long selectedBackgroundColor, long disabledBackgroundColor, long focusedSelectedBackgroundColor, long pressedSelectedBackgroundColor, long hoveredSelectedBackgroundColor, long focusedDisabledBackgroundColor, long pressedDisabledBackgroundColor, long hoveredDisabledBackgroundColor, long contentColor, long focusedContentColor, long hoveredContentColor, long pressedContentColor, long selectedContentColor, long focusedSelectedContentColor, long pressedSelectedContentColor, long hoveredSelectedContentColor, long disabledContentColor, long focusedDisabledContentColor, long pressedDisabledContentColor, long hoveredDisabledContentColor);
     method public boolean equals(Object? other);
     method public long getBackgroundColor();
     method public long getContentColor();
@@ -143,12 +151,20 @@ package io.daio.wild.style {
     method public long getFocusedContentColor();
     method public long getFocusedDisabledBackgroundColor();
     method public long getFocusedDisabledContentColor();
+    method public long getFocusedSelectedBackgroundColor();
+    method public long getFocusedSelectedContentColor();
     method public long getHoveredBackgroundColor();
     method public long getHoveredContentColor();
     method public long getHoveredDisabledBackgroundColor();
     method public long getHoveredDisabledContentColor();
+    method public long getHoveredSelectedBackgroundColor();
+    method public long getHoveredSelectedContentColor();
     method public long getPressedBackgroundColor();
     method public long getPressedContentColor();
+    method public long getPressedDisabledBackgroundColor();
+    method public long getPressedDisabledContentColor();
+    method public long getPressedSelectedBackgroundColor();
+    method public long getPressedSelectedContentColor();
     method public long getSelectedBackgroundColor();
     method public long getSelectedContentColor();
     method public int hashCode();
@@ -161,12 +177,20 @@ package io.daio.wild.style {
     property public final long focusedContentColor;
     property public final long focusedDisabledBackgroundColor;
     property public final long focusedDisabledContentColor;
+    property public final long focusedSelectedBackgroundColor;
+    property public final long focusedSelectedContentColor;
     property public final long hoveredBackgroundColor;
     property public final long hoveredContentColor;
     property public final long hoveredDisabledBackgroundColor;
     property public final long hoveredDisabledContentColor;
+    property public final long hoveredSelectedBackgroundColor;
+    property public final long hoveredSelectedContentColor;
     property public final long pressedBackgroundColor;
     property public final long pressedContentColor;
+    property public final long pressedDisabledBackgroundColor;
+    property public final long pressedDisabledContentColor;
+    property public final long pressedSelectedBackgroundColor;
+    property public final long pressedSelectedContentColor;
     property public final long selectedBackgroundColor;
     property public final long selectedContentColor;
   }
@@ -267,7 +291,7 @@ package io.daio.wild.style {
   public final class StyleDefaults {
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Alpha alpha(optional float alpha, optional float focusedAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedDisabledAlpha);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedDisabledBorder);
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedDisabledContentColor);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long hoveredContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long pressedDisabledContentColor, optional long focusedDisabledContentColor, optional long hoveredDisabledContentColor);
     method public io.daio.wild.style.Style getNone();
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
