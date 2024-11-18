@@ -100,12 +100,11 @@ private fun NavigationButton(
                             Border(
                                 width = 2.dp,
                                 inset = 2.dp,
-                                shape = RoundedCornerShape(12.dp),
                                 color = Color.Red,
                             ),
                     ),
                 scale = StyleDefaults.scale(focusedScale = 1.2f),
-                shapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),
+                shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp)),
             ),
         modifier = modifier.width(200.dp),
         onClick = onClick,
