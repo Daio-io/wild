@@ -290,12 +290,15 @@ fun Modifier.interactionStyle(
 /**
  * Ensures the border shape takes into account the inner shape when applying an inset.
  */
-internal fun Border.forInnerShape(innerShape: Shape): Shape =
-    if (inset > 0.dp && innerShape is RoundedCornerShape && shape is RoundedCornerShape) {
-        shape.toExpandedCornerShape(inset)
+internal fun Border.forInnerShape(innerShape: Shape): Shape {
+    // If the Border shapes is using the default we want to follow the innerShape as out outline.
+    val borderShape = if (shape == BorderDefaults.BorderDefaultShape) innerShape else shape
+    return if (inset > 0.dp && innerShape is RoundedCornerShape && borderShape is RoundedCornerShape) {
+        borderShape.toExpandedCornerShape(inset)
     } else {
-        shape
+        borderShape
     }
+}
 
 /**
  * Experimental API to apply [Style] indication to a component based on the current interaction
