@@ -18,14 +18,15 @@ fun Project.configureSpotless() {
 
         kotlin {
             target("src/**/*.kt")
-            // Ignore Design System generated content for now.
             targetExclude("**/generated/**")
             ktlint(ktlintVersion)
+            licenseHeaderFile(rootProject.file("config/copyright.txt"))
         }
 
         kotlinGradle {
             target("*.kts")
             ktlint(ktlintVersion)
+            licenseHeaderFile(rootProject.file("config/copyright.txt"), "(^(?![\\/ ]\\**).*$)")
         }
     }
 }
