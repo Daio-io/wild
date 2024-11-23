@@ -1,11 +1,10 @@
 # Wild
 
-[![Foundations](https://img.shields.io/maven-central/v/io.daio.wild/foundations)](https://central.sonatype.com/artifact/io.daio.wild/foundations)
-[![Color](https://img.shields.io/maven-central/v/io.daio.wild/content-color)](https://central.sonatype.com/artifact/io.daio.wild/content-color)
-[![Style](https://img.shields.io/maven-central/v/io.daio.wild/style)](https://central.sonatype.com/artifact/io.daio.wild/style)
-[![Modifier](https://img.shields.io/maven-central/v/io.daio.wild/modifier)](https://central.sonatype.com/artifact/io.daio.wild/modifier)
-[![Container](https://img.shields.io/maven-central/v/io.daio.wild/container)](https://central.sonatype.com/artifact/io.daio.wild/container)
-[![Button](https://img.shields.io/maven-central/v/io.daio.wild/button)](https://central.sonatype.com/artifact/io.daio.wild/button)
+[![Foundations](https://img.shields.io/maven-central/v/io.daio.wild/foundations?label=Foundations)](https://central.sonatype.com/artifact/io.daio.wild/foundations)
+[![Color](https://img.shields.io/maven-central/v/io.daio.wild/content-color?label=Color)](https://central.sonatype.com/artifact/io.daio.wild/content-color)
+[![Style](https://img.shields.io/maven-central/v/io.daio.wild/style?label=Style)](https://central.sonatype.com/artifact/io.daio.wild/style)
+[![Modifier](https://img.shields.io/maven-central/v/io.daio.wild/modifier?label=Modifier)](https://central.sonatype.com/artifact/io.daio.wild/modifier)
+[![Container](https://img.shields.io/maven-central/v/io.daio.wild/container?label=Container)](https://central.sonatype.com/artifact/io.daio.wild/container)
 ![Build status](https://github.com/daio-io/wild/actions/workflows/build.yml/badge.svg)
 
 Compose Multiplatform Design System primitives for Tv 📺, Mobile 📱, Desktop 🖥️, and Web 🕸️.
