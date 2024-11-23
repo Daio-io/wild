@@ -1,3 +1,5 @@
+// Copyright 2024, Dai Williams
+// SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
 import androidx.compose.animation.core.AnimationState

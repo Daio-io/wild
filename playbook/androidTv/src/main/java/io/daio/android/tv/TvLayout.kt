@@ -1,3 +1,5 @@
+// Copyright 2024, Dai Williams
+// SPDX-License-Identifier: Apache-2.0
 package io.daio.android.tv
 
 import androidx.activity.compose.BackHandler
