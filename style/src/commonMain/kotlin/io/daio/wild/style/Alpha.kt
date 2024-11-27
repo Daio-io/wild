@@ -28,11 +28,11 @@ data class Alpha(
     ): Float {
         return when {
             pressed && enabled -> pressedAlpha
-            focused && enabled -> focusedAlpha
             hovered && enabled -> hoveredAlpha
+            focused && enabled -> focusedAlpha
             selected && enabled -> selectedAlpha
-            !enabled && focused -> focusedDisabledAlpha
             !enabled && hovered -> hoveredDisabledAlpha
+            !enabled && focused -> focusedDisabledAlpha
             !enabled -> disabledAlpha
             else -> alpha
         }

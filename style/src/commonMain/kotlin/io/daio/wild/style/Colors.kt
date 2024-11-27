@@ -49,15 +49,15 @@ data class Colors(
     ): Color {
         return when {
             pressed && enabled -> pressedBackgroundColor
-            focused && enabled -> focusedBackgroundColor
             hovered && enabled -> hoveredBackgroundColor
+            focused && enabled -> focusedBackgroundColor
             selected && enabled -> selectedBackgroundColor
-            selected && focused && enabled -> focusedSelectedBackgroundColor
             selected && pressed && enabled -> pressedSelectedBackgroundColor
             selected && hovered && enabled -> hoveredSelectedBackgroundColor
-            !enabled && focused -> focusedDisabledBackgroundColor
+            selected && focused && enabled -> focusedSelectedBackgroundColor
             !enabled && pressed -> pressedDisabledBackgroundColor
             !enabled && hovered -> hoveredDisabledBackgroundColor
+            !enabled && focused -> focusedDisabledBackgroundColor
             !enabled -> disabledBackgroundColor
             else -> backgroundColor
         }
