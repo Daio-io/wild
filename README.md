@@ -1,4 +1,6 @@
-# Wild
+<div align="center">
+<img src="wild-logo-circle.svg" alt="Wild" />
+<p>
 
 [![Foundations](https://img.shields.io/maven-central/v/io.daio.wild/foundations?label=Foundations)](https://central.sonatype.com/artifact/io.daio.wild/foundations)
 [![Color](https://img.shields.io/maven-central/v/io.daio.wild/content-color?label=Color)](https://central.sonatype.com/artifact/io.daio.wild/content-color)
@@ -11,7 +13,10 @@ Compose Multiplatform Design System primitives for Tv 📺, Mobile 📱, Desktop
 
 More information: https://daio-io.github.io/wild/
 
+</div>
+
 ## License
+
 ```
 Copyright 2024 Dai Williams
  
