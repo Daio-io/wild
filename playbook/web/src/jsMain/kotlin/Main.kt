@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
+import io.daio.common.CustomDesignSystemApp
 import org.jetbrains.skiko.wasm.onWasmReady
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     onWasmReady {
         CanvasBasedWindow("Wild") {
+            CustomDesignSystemApp()
         }
     }
 }

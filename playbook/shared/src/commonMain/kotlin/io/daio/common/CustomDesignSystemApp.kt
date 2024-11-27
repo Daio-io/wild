@@ -14,10 +14,11 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.content.ProvidesContentColor
+import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
 
 @Composable
@@ -33,7 +34,12 @@ fun CustomDesignSystemApp(modifier: Modifier = Modifier) {
             items(100) {
                 CustomContainer(
                     modifier =
-                        Modifier.clickable {
+                        Modifier.clickable(
+                            style =
+                                StyleDefaults.style(
+                                    StyleDefaults.colors(hoveredBackgroundColor = Color.Red),
+                                ),
+                        ) {
                             println("Clicked")
                         },
                 ) {
@@ -57,14 +63,7 @@ fun CustomContainer(
 ) {
     ProvidesContentColor(color = Theme.colors.onContainer) {
         Box(
-            modifier =
-                modifier
-                    .graphicsLayer {
-                        this.shape = shape
-                        clip = true
-                    }
-                    .background(color = Theme.colors.container)
-                    .padding(16.dp),
+            modifier = modifier,
             content = content,
         )
     }

@@ -28,11 +28,11 @@ data class Shapes(
     ): Shape {
         return when {
             pressed && enabled -> pressedShape
-            focused && enabled -> focusedShape
             hovered && enabled -> hoveredShape
+            focused && enabled -> focusedShape
             selected && enabled -> selectedShape
-            !enabled && focused -> focusedDisabledShape
             !enabled && hovered -> hoveredDisabledShape
+            !enabled && focused -> focusedDisabledShape
             !enabled -> disabledShape
             else -> shape
         }
