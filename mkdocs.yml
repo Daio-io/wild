@@ -3,6 +3,12 @@ site_url: 'https://daio-io.github.io/wild/'
 edit_uri: 'tree/main/docs/'
 remote_branch: gh-pages
 
+# Repository
+repo_name: daio-io/wild
+repo_url: https://github.com/daio-io/wild
+
+copyright: Copyright &copy; 2024 Dai Williams
+
 nav:
   - 'Overview': index.md
   - 'Foundations': foundations.md
@@ -16,6 +22,8 @@ nav:
 theme:
   name: material
   language: 'en'
+  logo: wild-icon.svg
+  favicon: wild-favicon.svg
   icon:
     logo: material/nature
   palette:

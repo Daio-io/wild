@@ -1,4 +1,6 @@
-# Wild Primitives
+<div align="center">
+<img src="wild-logo-circle.svg" alt="Wild" />
+</div>
 
 A lightweight Compose primitive component and toolkit library for bootstrapping design systems
 on CMP and Android TV 📺.
