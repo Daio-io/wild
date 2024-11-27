@@ -78,11 +78,11 @@ data class Borders(
     ): Border {
         return when {
             pressed && enabled -> pressedBorder
-            focused && enabled -> focusedBorder
             hovered && enabled -> hoveredBorder
+            focused && enabled -> focusedBorder
             selected && enabled -> selectedBorder
-            !enabled && focused -> focusedDisabledBorder
             !enabled && hovered -> hoveredDisabledBorder
+            !enabled && focused -> focusedDisabledBorder
             !enabled -> disabledBorder
             else -> border
         }

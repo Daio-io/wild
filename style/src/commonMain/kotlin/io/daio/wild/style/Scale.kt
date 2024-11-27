@@ -36,11 +36,11 @@ data class Scale(
     ): Float {
         return when {
             pressed && enabled -> pressedScale
-            focused && enabled -> focusedScale
             hovered && enabled -> hoveredScale
+            focused && enabled -> focusedScale
             selected && enabled -> selectedScale
-            !enabled && focused -> focusedDisabledScale
             !enabled && hovered -> hoveredDisabledScale
+            !enabled && focused -> focusedDisabledScale
             !enabled -> disabledScale
             else -> scale
         }
