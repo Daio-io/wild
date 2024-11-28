@@ -7,15 +7,31 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
 
 @Immutable
-internal data class PlatformInteractions(
+class PlatformInteractions internal constructor(
     /**
      * Indicates the platform requires a hardware input such as a remote control in order to
      * respond to user interactions. Commonly Tv devices.
      */
     val requiresHardwareInput: Boolean,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
 
-internal val LocalPlatformInteractions =
-    compositionLocalWithComputedDefaultOf { getPlatformInteractions() }
+        other as PlatformInteractions
+
+        return requiresHardwareInput == other.requiresHardwareInput
+    }
+
+    override fun hashCode(): Int {
+        return requiresHardwareInput.hashCode()
+    }
+}
+
+/**
+ * Local to expose interaction capabilities of the current platform.
+ */
+@ExperimentalWildApi
+val LocalPlatformInteractions = compositionLocalWithComputedDefaultOf { getPlatformInteractions() }
 
 internal expect fun CompositionLocalAccessorScope.getPlatformInteractions(): PlatformInteractions
