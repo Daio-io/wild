@@ -95,7 +95,7 @@ fun Modifier.interactable(
  *
  * @since 0.2.0
  */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalWildApi::class)
 fun Modifier.clickable(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
@@ -178,6 +178,7 @@ fun Modifier.hardwareClickable(
  *
  * @since 0.2.0
  */
+@OptIn(ExperimentalWildApi::class)
 fun Modifier.selectable(
     selected: Boolean,
     enabled: Boolean = true,
