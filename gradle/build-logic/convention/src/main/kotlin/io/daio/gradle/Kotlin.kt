@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
-fun Project.configureKotlin(setAllWarningsAsErrors: Boolean = true) {
+fun Project.configureKotlin(setAllWarningsAsErrors: Boolean = false) {
     // Configure Java to use our chosen language level. Kotlin will automatically pick this up
     configureJava()
 
