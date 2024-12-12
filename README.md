@@ -9,7 +9,9 @@
 [![Container](https://img.shields.io/maven-central/v/io.daio.wild/container?label=Container)](https://central.sonatype.com/artifact/io.daio.wild/container)
 ![Build status](https://github.com/daio-io/wild/actions/workflows/build.yml/badge.svg)
 
-Compose Multiplatform Design System primitives for Tv 📺, Mobile 📱, Desktop 🖥️, and Web 🕸️.
+Building blocks for your Compose Multiplatform Design System.
+
+Primitive components and utilities for Mobile 📱, Tv 📺, Desktop 🖥️, and Web 🕸️.
 
 More information: https://daio-io.github.io/wild/
 

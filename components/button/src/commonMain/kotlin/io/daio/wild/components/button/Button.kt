@@ -22,7 +22,7 @@ import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 
 /**
- * Simple button component for TV.
+ * Basic button component.
  *
  * @param onClick Callback to be invoked when the button is clicked.
  * @param modifier Modifier to be applied to the layout corresponding to the surface.
