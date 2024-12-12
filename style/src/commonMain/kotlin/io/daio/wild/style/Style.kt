@@ -51,13 +51,13 @@ import kotlinx.coroutines.launch
 /**
  * Style class for components.
  *
- * @param colors Defines the background color based on the current state via it's [Colors.colorFor]
+ * @param backgroundColor Defines the background color based on the current state via it's [Colors.colorFor]
  * function.
  * @param scale Defines the button scale based on the current state via it's [Scale.scaleFor]
  * function.
- * @param borders Defines the border based on the current state via it's [Colors.colorFor]
+ * @param border Defines the border based on the current state via it's [Colors.colorFor]
  * function.
- * @param shapes Defines the button shape based on its current state via it's [Shapes.shapeFor]
+ * @param shape Defines the button shape based on its current state via it's [Shapes.shapeFor]
  * function.
  * @param alpha Defines the button alpha based on its current state via it's [Alpha.alphaFor]
  * function. Note you can still set alpha yourself if needed via a [Modifier]. This parameter is
@@ -67,22 +67,106 @@ import kotlinx.coroutines.launch
  */
 @Immutable
 data class Style(
-    val colors: Colors,
-    val borders: Borders,
-    val scale: Scale,
-    val shapes: Shapes,
-    val alpha: Alpha,
-)
+    val backgroundColor: StyleProducer<Color>,
+    val contentColor: StyleProducer<Color>,
+    val border: StyleProducer<Border>,
+    val scale: StyleProducer<Float>,
+    val shape: StyleProducer<Shape>,
+    val alpha: StyleProducer<Float>,
+) {
+    constructor(
+        colors: Colors,
+        borders: Borders,
+        scale: Scale,
+        shapes: Shapes,
+        alpha: Alpha,
+    ) : this(
+        backgroundColor = { enabled, focused, selected, pressed, hovered ->
+            colors.colorFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+        contentColor = { enabled, focused, selected, pressed, hovered ->
+            colors.contentColorFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+        border = { enabled, focused, selected, pressed, hovered ->
+            borders.borderFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+        scale = { enabled, focused, selected, pressed, hovered ->
+            scale.scaleFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+        shape = { enabled, focused, selected, pressed, hovered ->
+            shapes.shapeFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+        alpha = { enabled, focused, selected, pressed, hovered ->
+            alpha.alphaFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        },
+    )
+}
+
+fun interface StyleProducer<T> {
+    /**
+     * Return the style based on the provided state parameters.
+     *
+     * @param enabled Whether the style is enabled.
+     * @param focused Whether the style is focused.
+     * @param selected Whether the style is selected.
+     * @param pressed Whether the style is pressed.
+     * @param hovered Whether the style is hovered.
+     *
+     * @return The style value.
+     */
+    operator fun get(
+        enabled: Boolean,
+        focused: Boolean,
+        selected: Boolean,
+        pressed: Boolean,
+        hovered: Boolean,
+    ): T
+}
 
 object StyleDefaults {
-    val None: Style =
-        Style(
-            colors = colors(),
-            borders = borders(),
-            scale = scale(),
-            shapes = shapes(),
-            alpha = alpha(),
-        )
+    private val defaultColors = colors()
+    private val defaultBorders = borders()
+    private val defaultScale = scale()
+    private val defaultShapes = shapes()
+    private val defaultAlpha = alpha()
+
+    val None: Style = style()
 
     @Stable
     fun style(
@@ -93,10 +177,131 @@ object StyleDefaults {
         alpha: Alpha = alpha(),
     ): Style =
         Style(
-            colors = colors,
-            borders = borders,
+            backgroundColor = { enabled, focused, selected, pressed, hovered ->
+                colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+            contentColor = { enabled, focused, selected, pressed, hovered ->
+                colors.contentColorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+            border = { enabled, focused, selected, pressed, hovered ->
+                borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+            scale = { enabled, focused, selected, pressed, hovered ->
+                scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+            shape = { enabled, focused, selected, pressed, hovered ->
+                shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+            alpha = { enabled, focused, selected, pressed, hovered ->
+                alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        )
+
+    @Stable
+    fun style(
+        backgroundColor: StyleProducer<Color> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultColors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        contentColor: StyleProducer<Color> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultColors.contentColorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        border: StyleProducer<Border> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultBorders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        scale: StyleProducer<Float> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultScale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        shape: StyleProducer<Shape> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultShapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+        alpha: StyleProducer<Float> =
+            StyleProducer { enabled, focused, selected, pressed, hovered ->
+                defaultAlpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            },
+    ): Style =
+        Style(
+            backgroundColor = backgroundColor,
+            contentColor = contentColor,
+            border = border,
             scale = scale,
-            shapes = shapes,
+            shape = shape,
             alpha = alpha,
         )
 
@@ -250,7 +455,7 @@ fun Modifier.interactionStyle(
     enabled: Boolean = true,
     selected: Boolean = false,
 ) = composed {
-    val (colors, borders, scale, shapes, alpha) = style
+    val (backgroundColor, _, borders, scale, shapes, alpha) = style
 
     val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
     val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
@@ -266,7 +471,7 @@ fun Modifier.interactionStyle(
         focused = focused,
         hovered = hovered,
         targetScale =
-            scale.scaleFor(
+            scale.get(
                 enabled = enabled,
                 focused = focused,
                 hovered = hovered,
@@ -275,7 +480,7 @@ fun Modifier.interactionStyle(
             ),
     )
     val shape =
-        shapes.shapeFor(
+        shapes.get(
             enabled = enabled,
             focused = focused,
             hovered = hovered,
@@ -283,7 +488,7 @@ fun Modifier.interactionStyle(
             selected = selected,
         )
     val containerAlpha =
-        alpha.alphaFor(
+        alpha.get(
             enabled = enabled,
             focused = focused,
             hovered = hovered,
@@ -291,7 +496,7 @@ fun Modifier.interactionStyle(
             selected = selected,
         )
     val border =
-        borders.borderFor(
+        borders.get(
             enabled = enabled,
             focused = focused,
             hovered = hovered,
@@ -310,7 +515,7 @@ fun Modifier.interactionStyle(
             borderStroke = border.borderStroke,
             inset = border.inset,
         )
-        .background(colors.colorFor(enabled, focused, hovered, pressed, selected), shape)
+        .background(backgroundColor[enabled, focused, hovered, pressed, selected], shape)
         .graphicsLayer {
             this.alpha = containerAlpha
             this.shape = shape
@@ -407,9 +612,27 @@ private class FocusStyleNode(
     var style: Style,
 ) : DrawModifierNode, ObserverModifierNode, LayoutModifierNode,
     BorderNode(
-        style.borders.border.shape,
-        style.borders.border.borderStroke,
-        style.borders.border.inset,
+        style.border.get(
+            enabled = true,
+            focused = false,
+            selected = false,
+            pressed = false,
+            hovered = false,
+        ).shape,
+        style.border.get(
+            enabled = true,
+            focused = false,
+            selected = false,
+            pressed = false,
+            hovered = false,
+        ).borderStroke,
+        style.border.get(
+            enabled = true,
+            focused = false,
+            selected = false,
+            pressed = false,
+            hovered = false,
+        ).inset,
     ) {
     var focused = false
     var hovered = false
@@ -417,11 +640,11 @@ private class FocusStyleNode(
     var selected = false
     var enabled = true
 
-    private var scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
-    private var color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
-    private var alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
-    private var shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
-    private var borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
+    private var scale = style.scale.get(enabled, focused, hovered, pressed, selected)
+    private var color = style.backgroundColor.get(enabled, focused, hovered, pressed, selected)
+    private var alpha = style.alpha.get(enabled, focused, hovered, pressed, selected)
+    private var shapes = style.shape.get(enabled, focused, hovered, pressed, selected)
+    private var borders = style.border.get(enabled, focused, hovered, pressed, selected)
     private val zIndexState = AnimationState(initialValue = if (focused) 0.5f else 0f)
     private val scaleState = AnimationState(initialValue = scale)
 
@@ -450,11 +673,11 @@ private class FocusStyleNode(
     }
 
     private fun updateStates() {
-        scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
-        color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
-        alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
-        shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
-        borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
+        scale = style.scale.get(enabled, focused, hovered, pressed, selected)
+        color = style.backgroundColor.get(enabled, focused, hovered, pressed, selected)
+        alpha = style.alpha.get(enabled, focused, hovered, pressed, selected)
+        shapes = style.shape.get(enabled, focused, hovered, pressed, selected)
+        borders = style.border.get(enabled, focused, hovered, pressed, selected)
 
         updateBorder(borders.shape, borders.borderStroke, borders.inset)
 
