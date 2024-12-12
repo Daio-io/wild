@@ -15,8 +15,12 @@ data class Shapes(
     val pressedShape: Shape = focusedShape,
     val selectedShape: Shape = shape,
     val disabledShape: Shape = shape,
-    val focusedDisabledShape: Shape = focusedShape,
-    val hoveredDisabledShape: Shape = hoveredShape,
+    val focusedSelectedShape: Shape = focusedShape,
+    val pressedSelectedShape: Shape = pressedShape,
+    val hoveredSelectedShape: Shape = hoveredShape,
+    val focusedDisabledShape: Shape = disabledShape,
+    val pressedDisabledShape: Shape = disabledShape,
+    val hoveredDisabledShape: Shape = disabledShape,
 ) {
     @Stable
     fun shapeFor(
@@ -27,10 +31,14 @@ data class Shapes(
         selected: Boolean,
     ): Shape {
         return when {
+            pressed && selected && enabled -> pressedSelectedShape
+            hovered && selected && enabled -> hoveredSelectedShape
+            focused && selected && enabled -> focusedSelectedShape
             pressed && enabled -> pressedShape
             hovered && enabled -> hoveredShape
             focused && enabled -> focusedShape
             selected && enabled -> selectedShape
+            !enabled && pressed -> pressedDisabledShape
             !enabled && hovered -> hoveredDisabledShape
             !enabled && focused -> focusedDisabledShape
             !enabled -> disabledShape
