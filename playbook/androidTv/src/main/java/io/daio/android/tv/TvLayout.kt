@@ -88,25 +88,25 @@ private fun NavigationButton(
     Button(
         style =
             StyleDefaults.style(
-                colors =
-                    StyleDefaults.colors(
-                        backgroundColor = Color.Black,
-                        contentColor = Color.White,
-                        focusedBackgroundColor = Color.Red,
-                        focusedContentColor = Color.Black,
-                        pressedBackgroundColor = Color.Black.copy(alpha = .6f),
-                    ),
-                borders =
-                    StyleDefaults.borders(
-                        border =
-                            Border(
-                                width = 2.dp,
-                                inset = 2.dp,
-                                color = Color.Red,
-                            ),
-                    ),
-                scale = StyleDefaults.scale(focusedScale = 1.2f),
-                shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp)),
+                backgroundColor = { _, focused, _, _, _ ->
+                    if (focused) Color.Red else Color.Black
+                },
+                contentColor = { _, focused, _, _, _ ->
+                    if (focused) Color.Black else Color.White
+                },
+                border = { _, _, _, _, _ ->
+                    Border(
+                        width = 2.dp,
+                        inset = 2.dp,
+                        color = Color.Red,
+                    )
+                },
+                scale = { _, focused, _, _, _ ->
+                    if (focused) 1.2f else 1f
+                },
+                shape = { _, _, _, _, _ ->
+                    RoundedCornerShape(8.dp)
+                },
             ),
         modifier = modifier.width(200.dp),
         onClick = onClick,

@@ -315,25 +315,29 @@ package io.daio.wild.style {
 
   @androidx.compose.runtime.Immutable public final class Style {
     ctor public Style(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
-    method public io.daio.wild.style.Colors component1();
-    method public io.daio.wild.style.Borders component2();
-    method public io.daio.wild.style.Scale component3();
-    method public io.daio.wild.style.Shapes component4();
-    method public io.daio.wild.style.Alpha component5();
-    method public io.daio.wild.style.Style copy(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
+    ctor public Style(io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> backgroundColor, io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> contentColor, io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> border, io.daio.wild.style.StyleProducer<java.lang.Float> scale, io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> shape, io.daio.wild.style.StyleProducer<java.lang.Float> alpha);
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> component1();
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> component2();
+    method public io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> component3();
+    method public io.daio.wild.style.StyleProducer<java.lang.Float> component4();
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> component5();
+    method public io.daio.wild.style.StyleProducer<java.lang.Float> component6();
+    method public io.daio.wild.style.Style copy(io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> backgroundColor, io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> contentColor, io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> border, io.daio.wild.style.StyleProducer<java.lang.Float> scale, io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> shape, io.daio.wild.style.StyleProducer<java.lang.Float> alpha);
     method public boolean equals(Object? other);
-    method public io.daio.wild.style.Alpha getAlpha();
-    method public io.daio.wild.style.Borders getBorders();
-    method public io.daio.wild.style.Colors getColors();
-    method public io.daio.wild.style.Scale getScale();
-    method public io.daio.wild.style.Shapes getShapes();
+    method public io.daio.wild.style.StyleProducer<java.lang.Float> getAlpha();
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> getBackgroundColor();
+    method public io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> getBorder();
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> getContentColor();
+    method public io.daio.wild.style.StyleProducer<java.lang.Float> getScale();
+    method public io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> getShape();
     method public int hashCode();
     method public String toString();
-    property public final io.daio.wild.style.Alpha alpha;
-    property public final io.daio.wild.style.Borders borders;
-    property public final io.daio.wild.style.Colors colors;
-    property public final io.daio.wild.style.Scale scale;
-    property public final io.daio.wild.style.Shapes shapes;
+    property public final io.daio.wild.style.StyleProducer<java.lang.Float> alpha;
+    property public final io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> backgroundColor;
+    property public final io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> border;
+    property public final io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> contentColor;
+    property public final io.daio.wild.style.StyleProducer<java.lang.Float> scale;
+    property public final io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> shape;
   }
 
   public final class StyleDefaults {
@@ -344,6 +348,7 @@ package io.daio.wild.style {
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> backgroundColor, optional io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Color> contentColor, optional io.daio.wild.style.StyleProducer<io.daio.wild.style.Border> border, optional io.daio.wild.style.StyleProducer<java.lang.Float> scale, optional io.daio.wild.style.StyleProducer<androidx.compose.ui.graphics.Shape> shape, optional io.daio.wild.style.StyleProducer<java.lang.Float> alpha);
     property public final io.daio.wild.style.Style None;
     field public static final io.daio.wild.style.StyleDefaults INSTANCE;
   }
@@ -351,6 +356,10 @@ package io.daio.wild.style {
   public final class StyleKt {
     method @androidx.compose.runtime.Stable public static androidx.compose.foundation.IndicationNodeFactory hardwareInputStyleIndication(optional io.daio.wild.style.Style style);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, io.daio.wild.style.Style style, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected);
+  }
+
+  public fun interface StyleProducer<T> {
+    method public operator T get(boolean enabled, boolean focused, boolean selected, boolean pressed, boolean hovered);
   }
 
 }

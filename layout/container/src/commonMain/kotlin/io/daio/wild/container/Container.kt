@@ -171,7 +171,7 @@ fun Container(
             val pressed by interactionSource.collectIsPressedAsState()
             val hovered by interactionSource.collectIsHoveredAsState()
             ProvidesContentColor(
-                style.colors.contentColorFor(
+                style.contentColor.get(
                     enabled = enabled,
                     focused = focused,
                     hovered = hovered,
