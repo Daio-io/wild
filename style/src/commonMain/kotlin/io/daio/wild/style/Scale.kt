@@ -23,8 +23,12 @@ data class Scale(
     val pressedScale: Float = focusedScale,
     val selectedScale: Float = scale,
     val disabledScale: Float = scale,
-    val focusedDisabledScale: Float = focusedScale,
-    val hoveredDisabledScale: Float = hoveredScale,
+    val focusedSelectedScale: Float = focusedScale,
+    val pressedSelectedScale: Float = pressedScale,
+    val hoveredSelectedScale: Float = hoveredScale,
+    val focusedDisabledScale: Float = disabledScale,
+    val pressedDisabledScale: Float = disabledScale,
+    val hoveredDisabledScale: Float = disabledScale,
 ) {
     @Stable
     fun scaleFor(
@@ -35,10 +39,14 @@ data class Scale(
         selected: Boolean,
     ): Float {
         return when {
+            pressed && selected && enabled -> pressedSelectedScale
+            hovered && selected && enabled -> hoveredSelectedScale
+            focused && selected && enabled -> focusedSelectedScale
             pressed && enabled -> pressedScale
             hovered && enabled -> hoveredScale
             focused && enabled -> focusedScale
             selected && enabled -> selectedScale
+            !enabled && pressed -> pressedDisabledScale
             !enabled && hovered -> hoveredDisabledScale
             !enabled && focused -> focusedDisabledScale
             !enabled -> disabledScale
