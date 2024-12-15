@@ -65,7 +65,11 @@ data class Borders(
     val pressedBorder: Border = focusedBorder,
     val selectedBorder: Border = border,
     val disabledBorder: Border = border,
+    val focusedSelectedBorder: Border = focusedBorder,
+    val pressedSelectedBorder: Border = pressedBorder,
+    val hoveredSelectedBorder: Border = hoveredBorder,
     val focusedDisabledBorder: Border = disabledBorder,
+    val pressedDisabledBorder: Border = disabledBorder,
     val hoveredDisabledBorder: Border = disabledBorder,
 ) {
     @Stable
@@ -77,10 +81,14 @@ data class Borders(
         selected: Boolean,
     ): Border {
         return when {
+            pressed && selected && enabled -> pressedSelectedBorder
+            hovered && selected && enabled -> hoveredSelectedBorder
+            focused && selected && enabled -> focusedSelectedBorder
             pressed && enabled -> pressedBorder
             hovered && enabled -> hoveredBorder
             focused && enabled -> focusedBorder
             selected && enabled -> selectedBorder
+            !enabled && pressed -> pressedDisabledBorder
             !enabled && hovered -> hoveredDisabledBorder
             !enabled && focused -> focusedDisabledBorder
             !enabled -> disabledBorder

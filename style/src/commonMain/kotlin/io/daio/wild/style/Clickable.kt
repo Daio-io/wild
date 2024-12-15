@@ -96,7 +96,7 @@ fun Modifier.clickable(
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
-            Modifier.interactionStyle(it, interactionSource, enabled)
+            Modifier.interactionStyle(interactionSource, enabled, style = it)
         },
     )
 }

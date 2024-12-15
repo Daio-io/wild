@@ -14,8 +14,12 @@ data class Alpha(
     val hoveredAlpha: Float = alpha,
     val pressedAlpha: Float = alpha,
     val selectedAlpha: Float = alpha,
-    val disabledAlpha: Float = .6f,
+    val disabledAlpha: Float = DEFAULT_DISABLED_ALPHA,
+    val focusedSelectedAlpha: Float = focusedAlpha,
+    val pressedSelectedAlpha: Float = pressedAlpha,
+    val hoveredSelectedAlpha: Float = hoveredAlpha,
     val focusedDisabledAlpha: Float = disabledAlpha,
+    val pressedDisabledAlpha: Float = disabledAlpha,
     val hoveredDisabledAlpha: Float = disabledAlpha,
 ) {
     @Stable
@@ -27,10 +31,14 @@ data class Alpha(
         selected: Boolean,
     ): Float {
         return when {
+            pressed && selected && enabled -> pressedSelectedAlpha
+            hovered && selected && enabled -> hoveredSelectedAlpha
+            focused && selected && enabled -> focusedSelectedAlpha
             pressed && enabled -> pressedAlpha
             hovered && enabled -> hoveredAlpha
             focused && enabled -> focusedAlpha
             selected && enabled -> selectedAlpha
+            !enabled && pressed -> pressedDisabledAlpha
             !enabled && hovered -> hoveredDisabledAlpha
             !enabled && focused -> focusedDisabledAlpha
             !enabled -> disabledAlpha
