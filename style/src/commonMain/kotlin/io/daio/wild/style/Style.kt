@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Size
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import io.daio.wild.foundation.InteractionState
 import kotlinx.coroutines.launch
 
 /**
@@ -75,14 +78,7 @@ data class Style(
 )
 
 object StyleDefaults {
-    val None: Style =
-        Style(
-            colors = colors(),
-            borders = borders(),
-            scale = scale(),
-            shapes = shapes(),
-            alpha = alpha(),
-        )
+    val None: Style = style()
 
     @Stable
     fun style(
@@ -236,88 +232,139 @@ object StyleDefaults {
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
- * @param style The [Style] to apply to the element.
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.
  * @param enabled Whether the element is currently enabled.
  * @param selected Whether the element is currently selected.
- *
+ * @param style The [Style] to apply to the element.
  * @since 0.2.0
  */
 fun Modifier.interactionStyle(
-    style: Style,
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
-) = composed {
-    val (colors, borders, scale, shapes, alpha) = style
-
-    val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
-    val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
-    val pressed = interactionSource?.collectIsPressedAsState()?.value ?: false
-
-    val zIndex by animateFloatAsState(
-        targetValue = if (focused) 0.5f else 0f,
-        label = "zIndex",
+    style: Style,
+): Modifier =
+    this.interactionStyle(
+        interactionSource = interactionSource,
+        enabled = enabled,
+        selected = selected,
+        block = {
+            color =
+                style.colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scale =
+                style.scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            alpha =
+                style.alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            shape =
+                style.shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            border =
+                style.borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+        },
     )
 
-    val animatedScale by animateInteractionScaleAsState(
-        pressed = pressed,
-        focused = focused,
-        hovered = hovered,
-        targetScale =
-            scale.scaleFor(
-                enabled = enabled,
-                focused = focused,
-                hovered = hovered,
-                pressed = pressed,
-                selected = selected,
-            ),
-    )
-    val shape =
-        shapes.shapeFor(
+/**
+ * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
+ *
+ * @param interactionSource The [InteractionSource] used to listen to user interactions such as
+ * pressed and focus.
+ * @param enabled Whether the element is currently enabled.
+ * @param selected Whether the element is currently selected.
+ * @param block Lambda to apply style properties. The block provides access to the elements current
+ * [InteractionState] (focused, pressed, selected, etc) through [StyleScope].
+ *
+ * @since 0.3.4
+ */
+fun Modifier.interactionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    block: StyleScope.() -> Unit,
+): Modifier =
+    composed {
+        // TODO:
+        // This is in the process of being moved to ensure this whole Modifier
+        // uses the Node api and migrates from composed.
+        val style = remember { StyleScopeImpl() }
+
+        val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
+        val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
+        val pressed = interactionSource?.collectIsPressedAsState()?.value ?: false
+
+        style.updateState(
             enabled = enabled,
             focused = focused,
-            hovered = hovered,
-            pressed = pressed,
             selected = selected,
+            pressed = pressed,
+            hovered = hovered,
         )
-    val containerAlpha =
-        alpha.alphaFor(
-            enabled = enabled,
+
+        block.invoke(style)
+
+        val zIndex by animateFloatAsState(
+            targetValue = if (focused) 0.5f else 0f,
+            label = "zIndex",
+        )
+
+        val animatedScale by animateInteractionScaleAsState(
+            pressed = pressed,
             focused = focused,
             hovered = hovered,
-            pressed = pressed,
-            selected = selected,
+            targetScale = style.scale,
         )
-    val border =
-        borders.borderFor(
-            enabled = enabled,
-            focused = focused,
-            hovered = hovered,
-            pressed = pressed,
-            selected = selected,
-        )
-    this
-        .graphicsLayer {
-            this.scaleX = animatedScale
-            this.scaleY = animatedScale
-        }
-        .zIndex(zIndex)
-        .border(
-            shape = border.forInnerShape(innerShape = shape),
-            width = border.width,
-            borderStroke = border.borderStroke,
-            inset = border.inset,
-        )
-        .background(colors.colorFor(enabled, focused, hovered, pressed, selected), shape)
-        .graphicsLayer {
-            this.alpha = containerAlpha
-            this.shape = shape
-            this.clip = true
-            this.compositingStrategy = CompositingStrategy.Offscreen
-        }
-}
+
+        val border = style.border
+
+        this
+            .graphicsLayer {
+                this.scaleX = animatedScale
+                this.scaleY = animatedScale
+            }
+            .zIndex(zIndex)
+            .border(
+                shape = border.forInnerShape(innerShape = style.shape),
+                width = border.width,
+                borderStroke = border.borderStroke,
+                inset = border.inset,
+            )
+            .background(color = style.color, shape = style.shape)
+            .graphicsLayer {
+                this.alpha = style.alpha
+                this.shape = shape
+                this.clip = true
+                this.compositingStrategy = CompositingStrategy.Offscreen
+            }
+    }
 
 /**
  * Ensures the border shape takes into account the inner shape when applying an inset.
@@ -520,12 +567,16 @@ private class FocusStyleNode(
     }
 
     private fun ContentDrawScope.drawRect() {
-        if (color != Color.Unspecified) drawRect(color = color)
+        if (color.isSpecified) {
+            drawRect(color = color)
+        }
     }
 
     private fun ContentDrawScope.drawOutline() {
         val outline = getOutline()
-        if (color != Color.Unspecified) drawOutline(outline, color = color)
+        if (color.isSpecified) {
+            drawOutline(outline, color = color)
+        }
     }
 
     private fun ContentDrawScope.getOutline(): Outline {
