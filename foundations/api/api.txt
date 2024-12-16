@@ -17,6 +17,19 @@ package io.daio.wild.foundation {
     method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier restoreChildFocus(androidx.compose.ui.Modifier, optional kotlin.jvm.functions.Function0<androidx.compose.ui.focus.FocusRequester>? onRestoreFailed);
   }
 
+  public interface InteractionState {
+    method public boolean getEnabled();
+    method public boolean getFocused();
+    method public boolean getHovered();
+    method public boolean getPressed();
+    method public boolean getSelected();
+    property public abstract boolean enabled;
+    property public abstract boolean focused;
+    property public abstract boolean hovered;
+    property public abstract boolean pressed;
+    property public abstract boolean selected;
+  }
+
   @androidx.compose.runtime.Immutable public final class PlatformInteractions {
     method public boolean getRequiresHardwareInput();
     property public final boolean requiresHardwareInput;
