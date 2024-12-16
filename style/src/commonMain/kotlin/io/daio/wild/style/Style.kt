@@ -229,84 +229,6 @@ object StyleDefaults {
         )
 }
 
-@DslMarker
-annotation class StyleScopeDslMarker
-
-/**
- * A scope used to define the style properties of the element.
- */
-@StyleScopeDslMarker
-interface StyleScope : InteractionState {
-    /**
-     * Sets the background color of the element.
-     */
-    var color: Color
-
-    /**
-     * Sets the alpha value of the element.
-     * Range 0.0f to 1.0f.
-     */
-    var alpha: Float
-
-    /**
-     * Sets the animated scale of the element.
-     */
-    var scale: Float
-
-    /**
-     * Sets the shape for the element.
-     */
-    var shape: Shape
-
-    /**
-     * Sets the border of the element.
-     */
-    var border: Border
-}
-
-private class StyleScopeImpl : StyleScope {
-    override var color: Color = Color.Black
-    override var alpha: Float = 1f
-    override var scale: Float = 1f
-    override var shape: Shape = RectangleShape
-    override var border: Border = BorderDefaults.None
-
-    private var _focused: Boolean = false
-    private var _hovered: Boolean = false
-    private var _pressed: Boolean = false
-    private var _selected: Boolean = false
-    private var _enabled: Boolean = true
-
-    fun update(
-        enabled: Boolean,
-        focused: Boolean,
-        selected: Boolean,
-        pressed: Boolean,
-        hovered: Boolean,
-    ) {
-        _focused = focused
-        _hovered = hovered
-        _pressed = pressed
-        _selected = selected
-        _enabled = enabled
-    }
-
-    override val focused: Boolean
-        get() = _focused
-
-    override val hovered: Boolean
-        get() = _hovered
-
-    override val pressed: Boolean
-        get() = _pressed
-
-    override val selected: Boolean
-        get() = _selected
-
-    override val enabled: Boolean
-        get() = _enabled
-}
-
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
@@ -390,12 +312,16 @@ fun Modifier.interactionStyle(
     block: StyleScope.() -> Unit,
 ): Modifier =
     composed {
+        // TODO:
+        // This is in the process of being moved to ensure this whole Modifier
+        // uses the Node api and migrates from composed.
+        val style = remember { StyleScopeImpl() }
+
         val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
         val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
         val pressed = interactionSource?.collectIsPressedAsState()?.value ?: false
 
-        val scope = remember { StyleScopeImpl() }
-        scope.update(
+        style.updateState(
             enabled = enabled,
             focused = focused,
             selected = selected,
@@ -403,7 +329,7 @@ fun Modifier.interactionStyle(
             hovered = hovered,
         )
 
-        block.invoke(scope)
+        block.invoke(style)
 
         val zIndex by animateFloatAsState(
             targetValue = if (focused) 0.5f else 0f,
@@ -414,10 +340,10 @@ fun Modifier.interactionStyle(
             pressed = pressed,
             focused = focused,
             hovered = hovered,
-            targetScale = scope.scale,
+            targetScale = style.scale,
         )
 
-        val border = scope.border
+        val border = style.border
 
         this
             .graphicsLayer {
@@ -426,14 +352,14 @@ fun Modifier.interactionStyle(
             }
             .zIndex(zIndex)
             .border(
-                shape = border.forInnerShape(innerShape = scope.shape),
+                shape = border.forInnerShape(innerShape = style.shape),
                 width = border.width,
                 borderStroke = border.borderStroke,
                 inset = border.inset,
             )
-            .background(color = scope.color, shape = scope.shape)
+            .background(color = style.color, shape = style.shape)
             .graphicsLayer {
-                this.alpha = scope.alpha
+                this.alpha = style.alpha
                 this.shape = shape
                 this.clip = true
                 this.compositingStrategy = CompositingStrategy.Offscreen
