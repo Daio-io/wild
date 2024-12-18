@@ -19,7 +19,6 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.requireDensity
 import androidx.compose.ui.platform.InspectorInfo
-import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -38,27 +37,22 @@ internal class BorderElement(
     private val borderStroke: BorderStroke = BorderStroke(0.dp, Color.Unspecified),
     private val inset: Dp = 0.dp,
 ) : ModifierNodeElement<BorderNode>() {
-    override fun create(): BorderNode {
-        return BorderNode(
+    override fun create(): BorderNode =
+        BorderNode(
             shape = shape,
             borderStroke = borderStroke,
             inset = inset,
         )
-    }
 
     override fun update(node: BorderNode) {
-        node.shape = shape
-        node.borderStroke = borderStroke
-        node.inset = inset
+        node.updateBorder(shape = shape, borderStroke = borderStroke, inset = inset)
     }
 
     override fun InspectorInfo.inspectableProperties() {
-        debugInspectorInfo {
-            name = "BorderElement"
-            properties["shape"] = shape
-            properties["borderStroke"] = borderStroke
-            properties["inset"] = inset
-        }
+        name = "BorderElement"
+        properties["shape"] = shape
+        properties["borderStroke"] = borderStroke
+        properties["inset"] = inset
     }
 
     override fun equals(other: Any?): Boolean {
@@ -82,13 +76,19 @@ internal class BorderElement(
     }
 }
 
-open class BorderNode(
-    var shape: Shape,
-    var borderStroke: BorderStroke,
-    var inset: Dp,
+internal class BorderNode(
+    private var shape: Shape,
+    private var borderStroke: BorderStroke,
+    private var inset: Dp,
 ) : DrawModifierNode, Modifier.Node(), StyleScopeChildNode {
     private var shapeOutlineCache: ShapeOutlineCache? = null
     private var outlineStrokeCache: OutlineStrokeCache? = null
+
+    /**
+     * Invalidation is handled by [updateBorder]
+     */
+    override val shouldAutoInvalidate: Boolean
+        get() = false
 
     fun updateBorder(
         shape: Shape,

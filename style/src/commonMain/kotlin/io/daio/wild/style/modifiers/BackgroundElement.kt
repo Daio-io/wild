@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.ObserverModifierNode
@@ -29,24 +30,23 @@ internal class BackgroundElement(
     private val alpha: Float = 1f,
     private val shape: Shape = RectangleShape,
 ) : ModifierNodeElement<BackgroundNode>() {
-    override fun create(): BackgroundNode {
-        return BackgroundNode(
-            color,
-            brush,
-            alpha,
-            shape,
+    override fun create(): BackgroundNode =
+        BackgroundNode(
+            brush = brush,
+            alpha = alpha,
+            color = color,
+            shape = shape,
         )
-    }
 
     override fun update(node: BackgroundNode) {
-        node.color = color
         node.brush = brush
         node.alpha = alpha
-        node.shape = shape
+        node.updateBackground(color = color, shape = shape)
     }
 
     override fun InspectorInfo.inspectableProperties() {
         name = "BackgroundElement"
+        properties["color"] = color
         properties["alpha"] = alpha
         properties["brush"] = brush
         properties["shape"] = shape
@@ -70,10 +70,10 @@ internal class BackgroundElement(
 }
 
 internal class BackgroundNode(
-    var color: Color,
     var brush: Brush?,
     var alpha: Float,
-    var shape: Shape,
+    private var color: Color,
+    private var shape: Shape,
 ) : DrawModifierNode, Modifier.Node(), ObserverModifierNode, StyleScopeChildNode {
     // Naively cache outline calculation if input parameters are the same, we manually observe
     // reads inside shape#createOutline separately
@@ -81,6 +81,23 @@ internal class BackgroundNode(
     private var lastLayoutDirection: LayoutDirection? = null
     private var lastOutline: Outline? = null
     private var lastShape: Shape? = null
+
+    /**
+     * Invalidation is handled by [updateBackground]
+     */
+    override val shouldAutoInvalidate: Boolean
+        get() = false
+
+    fun updateBackground(
+        color: Color,
+        shape: Shape,
+    ) {
+        if (this.color != color || this.shape != shape) {
+            this.color = color
+            this.shape = shape
+            invalidateDraw()
+        }
+    }
 
     override fun ContentDrawScope.draw() {
         if (shape === RectangleShape) {
@@ -104,13 +121,17 @@ internal class BackgroundNode(
     }
 
     private fun ContentDrawScope.drawRect() {
-        if (color != Color.Unspecified) drawRect(color = color)
+        if (color.isSpecified) {
+            drawRect(color = color)
+        }
         brush?.let { drawRect(brush = it, alpha = alpha) }
     }
 
     private fun ContentDrawScope.drawOutline() {
         val outline = getOutline()
-        if (color != Color.Unspecified) drawOutline(outline, color = color)
+        if (color.isSpecified) {
+            drawOutline(outline, color = color)
+        }
         brush?.let { drawOutline(outline, brush = it, alpha = alpha) }
     }
 
@@ -132,10 +153,9 @@ internal class BackgroundNode(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
-        if (color != styleScope.color || shape != styleScope.shape) {
-            color = styleScope.color
-            shape = styleScope.shape
-            invalidateDraw()
-        }
+        updateBackground(
+            color = styleScope.color,
+            shape = styleScope.shape,
+        )
     }
 }

@@ -62,6 +62,12 @@ internal class ShapeLayoutModifier(
     TraversableNode,
     Modifier.Node(),
     StyleScopeChildNode {
+    /**
+     * Invalidation is handled by [updateShape]
+     */
+    override val shouldAutoInvalidate: Boolean
+        get() = false
+
     fun updateShape(
         shape: Shape,
         alpha: Float,

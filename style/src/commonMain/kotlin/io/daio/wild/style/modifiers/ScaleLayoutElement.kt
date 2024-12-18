@@ -11,6 +11,7 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.TraversableNode
+import androidx.compose.ui.node.findNearestAncestor
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
@@ -28,8 +29,7 @@ internal class ScaleLayoutElement(
     override fun create() = ScaleLayoutModifier(zIndex = zIndex, scale = scale)
 
     override fun update(node: ScaleLayoutModifier) {
-        node.scale = scale
-        node.zIndex = zIndex
+        node.updateScale(scale = scale, zIndex = zIndex)
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -66,6 +66,32 @@ internal class ScaleLayoutModifier(
     StyleScopeChildNode {
     private val zIndexState = AnimationState(initialValue = zIndex)
     private val scaleState = AnimationState(initialValue = scale)
+
+    /**
+     * Invalidation is handled by [updateScale]
+     */
+    override val shouldAutoInvalidate: Boolean
+        get() = false
+
+    fun updateScale(
+        scale: Float,
+        zIndex: Float,
+    ) {
+        if (!isAttached) {
+            return
+        }
+
+        val parent =
+            findNearestAncestor(StyleParentTraversalKey) as? StyleScopeParentNode ?: return
+
+        updateScale(
+            scale = scale,
+            zIndex = zIndex,
+            focused = parent.focused,
+            pressed = parent.pressed,
+            hovered = parent.hovered,
+        )
+    }
 
     fun updateScale(
         scale: Float,
