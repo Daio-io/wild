@@ -9,12 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.foundation.InteractionState
 import io.daio.wild.style.modifiers.BackgroundElement
 import io.daio.wild.style.modifiers.BorderElement
 import io.daio.wild.style.modifiers.ScaleLayoutElement
 import io.daio.wild.style.modifiers.ShapeLayoutElement
+import io.daio.wild.style.modifiers.StyleParentTraversalKey
 import io.daio.wild.style.modifiers.StyleScopeParentElement
+import io.daio.wild.style.modifiers.interactionSourceNode
 
 /**
  * Style class for components.
@@ -268,22 +271,20 @@ fun Modifier.interactionStyle(
  * @param block Lambda to apply style properties. The block provides access to the elements current
  * [InteractionState] (focused, pressed, selected, etc) through [StyleScope].
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
+@OptIn(ExperimentalWildApi::class)
 fun Modifier.interactionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
     block: StyleScope.() -> Unit,
 ): Modifier =
-    this.then(
-        StyleScopeParentElement(
-            interactionSource,
-            enabled,
-            selected,
-            block,
-        ),
-    ) then ScaleLayoutElement() then
+    this.interactionSourceNode(
+        interactionSource = interactionSource,
+        childTraversalKey = StyleParentTraversalKey,
+    ) then StyleScopeParentElement(enabled, selected, block) then
+        ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then
         ShapeLayoutElement()

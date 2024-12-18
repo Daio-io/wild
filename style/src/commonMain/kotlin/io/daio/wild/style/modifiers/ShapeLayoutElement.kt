@@ -11,7 +11,6 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
-import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
@@ -59,7 +58,6 @@ internal class ShapeLayoutModifier(
     var shape: Shape,
     var alpha: Float,
 ) : LayoutModifierNode,
-    TraversableNode,
     Modifier.Node(),
     StyleScopeChildNode {
     /**
@@ -85,16 +83,12 @@ internal class ShapeLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(
-                0,
-                0,
-                layerBlock = {
-                    alpha = this@ShapeLayoutModifier.alpha
-                    shape = this@ShapeLayoutModifier.shape
-                    clip = true
-                    compositingStrategy = CompositingStrategy.Offscreen
-                },
-            )
+            placeable.placeWithLayer(0, 0) {
+                alpha = this@ShapeLayoutModifier.alpha
+                shape = this@ShapeLayoutModifier.shape
+                clip = true
+                compositingStrategy = CompositingStrategy.Offscreen
+            }
         }
     }
 

@@ -78,7 +78,7 @@ fun Modifier.interactable(
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
 fun Modifier.interactable(
     enabled: Boolean = true,
@@ -166,7 +166,7 @@ fun Modifier.clickable(
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
 fun Modifier.clickable(
     enabled: Boolean = true,
@@ -255,7 +255,7 @@ fun Modifier.selectable(
  * services.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
 fun Modifier.selectable(
     selected: Boolean,

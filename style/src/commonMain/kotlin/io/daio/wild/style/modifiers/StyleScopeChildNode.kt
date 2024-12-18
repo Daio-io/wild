@@ -8,7 +8,7 @@ import io.daio.wild.style.StyleScope
 /**
  * Default traversal key for [StyleScopeChildNode] traversable nodes.
  */
-internal object StyleTraverseKey
+internal object StyleChildTraversalKey
 
 /**
  * Default traversal key for [StyleScopeParentNode] traversable nodes.
@@ -31,5 +31,5 @@ internal interface StyleScopeChildNode : TraversableNode {
      * Traverse key used by [StyleScopeParentNode] to locate this node as a child.
      */
     override val traverseKey: Any
-        get() = StyleTraverseKey
+        get() = StyleChildTraversalKey
 }

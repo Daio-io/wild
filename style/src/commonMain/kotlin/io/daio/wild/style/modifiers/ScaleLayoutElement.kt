@@ -10,7 +10,6 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
-import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.node.findNearestAncestor
 import androidx.compose.ui.node.invalidatePlacement
 import androidx.compose.ui.platform.InspectorInfo
@@ -61,7 +60,6 @@ internal class ScaleLayoutModifier(
     var zIndex: Float,
     var scale: Float,
 ) : LayoutModifierNode,
-    TraversableNode,
     Modifier.Node(),
     StyleScopeChildNode {
     private val zIndexState = AnimationState(initialValue = zIndex)
@@ -100,7 +98,7 @@ internal class ScaleLayoutModifier(
         pressed: Boolean,
         hovered: Boolean,
     ) {
-        if (this.scale != scale || this.zIndex != zIndex) {
+        if (scaleState.value != scale || scaleState.value != zIndex) {
             this.scale = scale
             this.zIndex = zIndex
 
@@ -115,8 +113,8 @@ internal class ScaleLayoutModifier(
                         ),
                 )
                 zIndexState.animateTo(zIndex)
+                invalidatePlacement()
             }
-            invalidatePlacement()
         }
     }
 
@@ -126,15 +124,10 @@ internal class ScaleLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(
-                0,
-                0,
-                zIndex = zIndexState.value,
-                layerBlock = {
-                    scaleX = scaleState.value
-                    scaleY = scaleState.value
-                },
-            )
+            placeable.placeWithLayer(0, 0, zIndex = zIndexState.value) {
+                scaleX = scaleState.value
+                scaleY = scaleState.value
+            }
         }
     }
 
