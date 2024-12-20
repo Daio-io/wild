@@ -4,9 +4,9 @@ package io.daio.android.tv
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -43,7 +43,7 @@ fun TvLayout(modifier: Modifier = Modifier) {
     Container(color = Color.Black) {
         when (currentScreen) {
             Screen.Main ->
-                Column(
+                LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement =
                         Arrangement.spacedBy(
@@ -52,24 +52,16 @@ fun TvLayout(modifier: Modifier = Modifier) {
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    NavigationButton(
-                        title = "Custom Design System Example",
-                        onClick = {
-                            currentScreen = Screen.CustomDs
-                        },
-                    )
-                    NavigationButton(
-                        title = "Material 3 on Tv Example",
-                        onClick = {
-                            currentScreen = Screen.Material3
-                        },
-                    )
-                    NavigationButton(
-                        title = "Material Tv Example",
-                        onClick = {
-                            currentScreen = Screen.MaterialTv
-                        },
-                    )
+                    repeat(200) {
+                        item(key = it) {
+                            NavigationButton(
+                                title = "Custom Design System Example",
+                                onClick = {
+                                    currentScreen = Screen.CustomDs
+                                },
+                            )
+                        }
+                    }
                 }
 
             Screen.CustomDs -> CustomDesignSystemApp(modifier)
@@ -95,6 +87,7 @@ private fun NavigationButton(
                         focusedBackgroundColor = Color.Red,
                         focusedContentColor = Color.Black,
                         pressedBackgroundColor = Color.Black.copy(alpha = .6f),
+                        disabledBackgroundColor = Color.Black.copy(alpha = .3f),
                     ),
                 borders =
                     StyleDefaults.borders(
