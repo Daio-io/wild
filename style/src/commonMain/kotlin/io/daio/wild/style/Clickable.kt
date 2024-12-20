@@ -15,7 +15,7 @@ import io.daio.wild.modifier.thenIfNotNull
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
  * the correct modifier based on the requirement for hardware input. For example if a Tv device
  * is detected it adds support for hardware clicks from remote controls. This has the added support
- * for [Style], applying [interactionStyle] to update the component based on the current
+ * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
  * [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -65,7 +65,7 @@ fun Modifier.interactable(
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
  * the correct modifier based on the requirement for hardware input. For example if a Tv device
  * is detected it adds support for hardware clicks from remote controls. This has the added support
- * for [Style], applying [interactionStyle] to update the component based on the current
+ * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
  * [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -114,7 +114,7 @@ fun Modifier.interactable(
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  * the component based on the current [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -155,7 +155,7 @@ fun Modifier.clickable(
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  * the component based on the current [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -188,7 +188,7 @@ fun Modifier.clickable(
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
-            Modifier.interactionStyle(interactionSource, enabled, block = it)
+            Modifier.experimentalInteractionStyle(interactionSource, enabled, block = it)
         },
     )
 }
@@ -196,7 +196,7 @@ fun Modifier.clickable(
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  *  * the component based on the current [InteractionSource] state.
  *
  * @param selected Whether the element is currently selected.
@@ -244,7 +244,7 @@ fun Modifier.selectable(
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  *  * the component based on the current [InteractionSource] state.
  *
  * @param selected Whether the element is currently selected.
@@ -279,7 +279,7 @@ fun Modifier.selectable(
     ).thenIfNotNull(
         value = style,
         ifNotNullModifier = {
-            Modifier.interactionStyle(
+            Modifier.experimentalInteractionStyle(
                 block = it,
                 interactionSource = interactionSource,
                 enabled = enabled,

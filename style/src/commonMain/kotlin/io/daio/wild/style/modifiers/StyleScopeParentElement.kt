@@ -79,10 +79,10 @@ internal class StyleScopeParentNode(
     override val enabled: Boolean
         get() = _enabled
 
+    private var _enabled: Boolean = true
     private var _focused: Boolean = false
     private var _hovered: Boolean = false
     private var _pressed: Boolean = false
-    private var _enabled: Boolean = false
     private var _selected: Boolean = false
 
     fun updateState(
@@ -99,7 +99,6 @@ internal class StyleScopeParentNode(
     }
 
     override fun onAttach() {
-        super.onAttach()
         updateStyle()
     }
 
@@ -111,7 +110,7 @@ internal class StyleScopeParentNode(
         }
     }
 
-    override fun onInteractionsChanged(interactions: Interactions) {
+    override fun onInteractionStateChanged(interactions: Interactions) {
         if (_focused != interactions.focused ||
             _pressed != interactions.pressed ||
             _hovered != interactions.hovered

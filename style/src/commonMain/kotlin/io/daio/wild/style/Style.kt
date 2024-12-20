@@ -2,13 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.foundation.InteractionState
 import io.daio.wild.style.modifiers.BackgroundElement
@@ -17,6 +28,7 @@ import io.daio.wild.style.modifiers.ScaleLayoutElement
 import io.daio.wild.style.modifiers.ShapeLayoutElement
 import io.daio.wild.style.modifiers.StyleParentTraversalKey
 import io.daio.wild.style.modifiers.StyleScopeParentElement
+import io.daio.wild.style.modifiers.border
 import io.daio.wild.style.modifiers.interactionSourceNode
 
 /**
@@ -213,7 +225,7 @@ fun Modifier.interactionStyle(
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.interactionStyle(
+    this.experimentalInteractionStyle(
         interactionSource = interactionSource,
         enabled = enabled,
         selected = selected,
@@ -274,7 +286,7 @@ fun Modifier.interactionStyle(
  * @since 0.4.0
  */
 @OptIn(ExperimentalWildApi::class)
-fun Modifier.interactionStyle(
+fun Modifier.experimentalInteractionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
@@ -288,3 +300,76 @@ fun Modifier.interactionStyle(
         BorderElement() then
         BackgroundElement() then
         ShapeLayoutElement()
+
+/**
+ * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
+ *
+ * @param interactionSource The [InteractionSource] used to listen to user interactions such as
+ * pressed and focus.
+ * @param enabled Whether the element is currently enabled.
+ * @param selected Whether the element is currently selected.
+ * @param block Lambda to apply style properties. The block provides access to the elements current
+ * [InteractionState] (focused, pressed, selected, etc) through [StyleScope].
+ *
+ * @since 0.4.0
+ */
+fun Modifier.interactionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    block: StyleScope.() -> Unit,
+): Modifier =
+    composed {
+        // TODO:
+        // This is in the process of being moved to ensure this whole Modifier
+        // uses the Node api and migrates from composed.
+        val style = remember { DefaultStyleScope() }
+
+        val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
+        val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
+        val pressed = interactionSource?.collectIsPressedAsState()?.value ?: false
+
+        style.updateState(
+            enabled = enabled,
+            focused = focused,
+            selected = selected,
+            pressed = pressed,
+            hovered = hovered,
+        )
+
+        block.invoke(style)
+
+        val zIndex by animateFloatAsState(
+            targetValue = if (focused) 0.5f else 0f,
+            label = "zIndex",
+        )
+
+        val animatedScale by animateInteractionScaleAsState(
+            pressed = pressed,
+            focused = focused,
+            hovered = hovered,
+            targetScale = style.scale,
+        )
+
+        val border = style.border
+
+        this
+            .graphicsLayer {
+                this.scaleX = animatedScale
+                this.scaleY = animatedScale
+            }
+            .zIndex(zIndex)
+            .border(
+                shape = border.forInnerShape(innerShape = style.shape),
+                width = border.width,
+                borderStroke = border.borderStroke,
+                inset = border.inset,
+            )
+            .background(color = style.color, shape = style.shape)
+            .graphicsLayer {
+                this.alpha = style.alpha
+                this.shape = shape
+                this.clip = true
+                this.compositingStrategy = CompositingStrategy.Offscreen
+            }
+    }

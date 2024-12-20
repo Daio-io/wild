@@ -50,7 +50,7 @@ interface InteractionSourceObserverNode : TraversableNode {
      * Called when any interaction such as focused, pressed or hovered changes state on the parent
      * node.
      */
-    fun onInteractionsChanged(interactions: Interactions)
+    fun onInteractionStateChanged(interactions: Interactions)
 }
 
 internal class InteractionSourceElement(
@@ -113,8 +113,6 @@ internal class InteractionSourceNode(
         internal set
 
     override fun onAttach() {
-        super.onAttach()
-
         coroutineScope.launch {
             interactionSource?.interactions?.collect { interaction ->
                 when (interaction) {
@@ -138,9 +136,26 @@ internal class InteractionSourceNode(
         }
     }
 
+    override fun onDetach() {
+        reset()
+    }
+
+    private fun reset() {
+        hovered = false
+        focused = false
+        pressed = false
+        notifyInteractionsChanged(
+            Interactions(
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+            ),
+        )
+    }
+
     private fun notifyInteractionsChanged(interactions: Interactions) {
         traverseDirectDescendants<InteractionSourceObserverNode>(childTraversalKey) {
-            it.onInteractionsChanged(interactions)
+            it.onInteractionStateChanged(interactions)
         }
     }
 
