@@ -2,15 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
-    id("io.daio.android.library")
     id("io.daio.kotlin.multiplatform")
     id("io.daio.publish")
     alias(libs.plugins.dokka)
     alias(libs.plugins.metalava)
-}
-
-android {
-    namespace = "io.daio.wild.components.button"
 }
 
 kotlin {
