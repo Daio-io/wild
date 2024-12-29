@@ -48,13 +48,13 @@ data class Colors(
         selected: Boolean,
     ): Color {
         return when {
+            selected && pressed && enabled -> pressedSelectedBackgroundColor
+            selected && hovered && enabled -> hoveredSelectedBackgroundColor
+            selected && focused && enabled -> focusedSelectedBackgroundColor
             pressed && enabled -> pressedBackgroundColor
             hovered && enabled -> hoveredBackgroundColor
             focused && enabled -> focusedBackgroundColor
             selected && enabled -> selectedBackgroundColor
-            selected && pressed && enabled -> pressedSelectedBackgroundColor
-            selected && hovered && enabled -> hoveredSelectedBackgroundColor
-            selected && focused && enabled -> focusedSelectedBackgroundColor
             !enabled && pressed -> pressedDisabledBackgroundColor
             !enabled && hovered -> hoveredDisabledBackgroundColor
             !enabled && focused -> focusedDisabledBackgroundColor
@@ -72,13 +72,13 @@ data class Colors(
         selected: Boolean,
     ): Color {
         return when {
+            selected && focused && enabled -> focusedSelectedContentColor
+            selected && pressed && enabled -> pressedSelectedContentColor
+            selected && hovered && enabled -> hoveredSelectedContentColor
             pressed && enabled -> pressedContentColor
             focused && enabled -> focusedContentColor
             hovered && enabled -> hoveredContentColor
             selected && enabled -> selectedContentColor
-            selected && focused && enabled -> focusedSelectedContentColor
-            selected && pressed && enabled -> pressedSelectedContentColor
-            selected && hovered && enabled -> hoveredSelectedContentColor
             !enabled && focused -> focusedDisabledContentColor
             !enabled && pressed -> pressedDisabledContentColor
             !enabled && hovered -> hoveredDisabledContentColor

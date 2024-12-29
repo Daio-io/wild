@@ -35,8 +35,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Lint
-        run: ./gradlew check
+      - name: Lint & Test
+        run: ./gradlew spotlessCheck detekt lint jvmTest
 
       - name: Get current commit
         id: commit-sha
