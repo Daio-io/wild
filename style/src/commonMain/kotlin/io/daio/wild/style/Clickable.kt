@@ -152,6 +152,31 @@ fun Modifier.clickable(
     )
 }
 
+fun Modifier.experimentalClickable(
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    style: Style? = null,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    Modifier.clickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+    ).thenIfNotNull(
+        style,
+        ifNotNullModifier = {
+            Modifier.experimentalInteractionStyle(interactionSource, enabled, style = it)
+        },
+    )
+}
+
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from

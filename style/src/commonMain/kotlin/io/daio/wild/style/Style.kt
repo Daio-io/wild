@@ -225,6 +225,60 @@ fun Modifier.interactionStyle(
     selected: Boolean = false,
     style: Style,
 ): Modifier =
+    this.interactionStyle(
+        interactionSource = interactionSource,
+        enabled = enabled,
+        selected = selected,
+        block = {
+            color =
+                style.colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scale =
+                style.scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            alpha =
+                style.alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            shape =
+                style.shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            border =
+                style.borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+        },
+    )
+
+fun Modifier.experimentalInteractionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    style: Style,
+): Modifier =
     this.experimentalInteractionStyle(
         interactionSource = interactionSource,
         enabled = enabled,
