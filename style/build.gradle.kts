@@ -17,6 +17,12 @@ kotlin {
                 api(projects.foundations)
             }
         }
+
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
 
