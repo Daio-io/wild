@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.defaultScaleAnimationSpec
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 /**
@@ -91,28 +92,33 @@ internal class ScaleLayoutModifier(
         )
     }
 
-    fun updateScale(
+    private fun updateScale(
         scale: Float,
         zIndex: Float,
         focused: Boolean,
         pressed: Boolean,
         hovered: Boolean,
     ) {
-        if (scaleState.value != scale || scaleState.value != zIndex) {
+        if (scaleState.value != scale || zIndexState.value != zIndex) {
             this.scale = scale
             this.zIndex = zIndex
 
             coroutineScope.launch {
-                scaleState.animateTo(
-                    scale,
-                    animationSpec =
-                        defaultScaleAnimationSpec(
-                            focused = focused,
-                            pressed = pressed,
-                            hovered = hovered,
-                        ),
+                joinAll(
+                    launch { zIndexState.animateTo(zIndex) },
+                    launch {
+                        scaleState.animateTo(
+                            targetValue = scale,
+                            animationSpec =
+                                defaultScaleAnimationSpec(
+                                    focused = focused,
+                                    pressed = pressed,
+                                    hovered = hovered,
+                                ),
+                        )
+                    },
                 )
-                zIndexState.animateTo(zIndex)
+
                 invalidatePlacement()
             }
         }
