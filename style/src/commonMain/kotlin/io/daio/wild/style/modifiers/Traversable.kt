@@ -18,7 +18,7 @@ inline fun <reified T : TraversableNode> TraversableNode.traverseDirectDescendan
     noinline block: (T) -> Unit,
 ) {
     traverseDescendants(key) { node ->
-        if (node is T && node.findNearestAncestor(traverseKey) === this) {
+        if (node.node.isAttached && node is T && node.findNearestAncestor(traverseKey) === this) {
             block(node)
             return@traverseDescendants TraversableNode.Companion.TraverseDescendantsAction.ContinueTraversal
         }
