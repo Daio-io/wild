@@ -377,7 +377,7 @@ private class HardwareEnterKeyEventNode(
                 }
 
                 KeyEventType.KeyUp -> {
-                    if (!isLongClick) {
+                    if (!isLongClick && pressed) {
                         coroutineScope.launch {
                             interactionSource.emit(
                                 PressInteraction.Release(pressInteraction),
@@ -386,6 +386,7 @@ private class HardwareEnterKeyEventNode(
                         }
                         onClick?.invoke()
                     } else {
+                        pressed = false
                         isLongClick = false
                     }
                 }
