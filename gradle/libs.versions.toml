@@ -1,6 +1,6 @@
 [versions]
 
-agp = "8.9.0"
+agp = "8.9.1"
 activity-compose = "1.10.1"
 androidx-appcompat = "1.7.0"
 compose-compiler = "1.5.7.1"
@@ -9,7 +9,7 @@ detekt = "1.23.8"
 dokka = "2.0.0"
 ktlint = "1.0.1"
 kotlin = "2.1.20"
-roborazzi = "1.43.0"
+roborazzi = "1.43.1"
 spotless = "7.0.2"
 tv-foundation = "1.0.0-alpha11"
 tv-material = "1.0.0"
