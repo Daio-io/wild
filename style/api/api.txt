@@ -75,15 +75,6 @@ package io.daio.wild.style {
 
   public final class BorderKt {
     method @androidx.compose.runtime.Stable public static io.daio.wild.style.Border Border(optional float width, optional long color, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
-    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, optional androidx.compose.ui.graphics.Shape shape, optional float width, optional androidx.compose.foundation.BorderStroke borderStroke, optional float inset);
-    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, io.daio.wild.style.Border border);
-  }
-
-  public class BorderNode extends androidx.compose.ui.Modifier.Node implements androidx.compose.ui.node.DrawModifierNode {
-    ctor public BorderNode(androidx.compose.ui.graphics.Shape shape, androidx.compose.foundation.BorderStroke borderStroke, float inset);
-    method public void draw(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
-    method public final void drawBorder(androidx.compose.ui.graphics.drawscope.ContentDrawScope);
-    method public final void updateBorder(androidx.compose.ui.graphics.Shape newShape, androidx.compose.foundation.BorderStroke newBorderStroke, float newInset);
   }
 
   @androidx.compose.runtime.Immutable public final class Borders {
@@ -352,7 +343,6 @@ package io.daio.wild.style {
   }
 
   public final class StyleKt {
-    method @androidx.compose.runtime.Stable public static androidx.compose.foundation.IndicationNodeFactory hardwareInputStyleIndication(optional io.daio.wild.style.Style style);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
   }
@@ -376,6 +366,15 @@ package io.daio.wild.style {
   }
 
   @kotlin.DslMarker public @interface StyleScopeDslMarker {
+  }
+
+}
+
+package io.daio.wild.style.modifiers {
+
+  public final class BorderElementKt {
+    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, optional androidx.compose.ui.graphics.Shape shape, optional float width, optional androidx.compose.foundation.BorderStroke borderStroke, optional float inset);
+    method public static androidx.compose.ui.Modifier border(androidx.compose.ui.Modifier, io.daio.wild.style.Border border);
   }
 
 }

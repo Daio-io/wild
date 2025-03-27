@@ -15,4 +15,28 @@ dependencies {
 
 android {
     namespace = "io.daio.wild.playbook.tv"
+
+    defaultConfig {
+        versionCode = 1
+        versionName = "1.0.0"
+        applicationId = "io.daio.wild.playbook.tv"
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
+    }
+
+    buildTypes {
+        debug {
+            isDebuggable = false
+        }
+        release {
+            isDebuggable = false
+
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs["debug"]
+            proguardFiles(
+                "proguard-rules.pro",
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+            )
+        }
+    }
 }
