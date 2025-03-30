@@ -415,4 +415,4 @@ private class HardwareEnterKeyEventNode(
     }
 }
 
-internal expect val KeyEvent.repeatCount: Int
+expect val KeyEvent.repeatCount: Int
