@@ -125,7 +125,7 @@ fun Modifier.clickable(
                 role = role,
                 onLongClick = onLongClick,
                 onClick = onClick,
-            )
+            ).focusable(enabled = enabled, interactionSource = interactionSource)
         }
     }
 
@@ -210,7 +210,7 @@ fun Modifier.selectable(
                 enabled = enabled,
                 role = role,
                 onClick = onClick,
-            )
+            ).focusable(enabled = enabled, interactionSource = interactionSource)
         }
     }
 
