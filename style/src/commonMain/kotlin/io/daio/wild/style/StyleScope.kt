@@ -42,7 +42,7 @@ interface StyleScope : InteractionState {
     var border: Border
 }
 
-internal class StyleScopeImpl : StyleScope {
+internal class DefaultStyleScope : StyleScope {
     override var color: Color = Color.Unspecified
     override var alpha: Float = 1f
     override var scale: Float = 1f
@@ -88,7 +88,7 @@ internal class StyleScopeImpl : StyleScope {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as StyleScopeImpl
+        other as DefaultStyleScope
 
         if (alpha != other.alpha) return false
         if (scale != other.scale) return false
