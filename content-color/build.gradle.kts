@@ -31,15 +31,15 @@ kotlin {
         // nativeMain an jsMain require the compileOny libraries be included.
         val nativeMain by getting {
             dependencies {
-                implementation(compose.material)
-                implementation(compose.material3)
+                api(compose.material)
+                api(compose.material3)
             }
         }
 
         val jsMain by getting {
             dependencies {
-                implementation(compose.material)
-                implementation(compose.material3)
+                api(compose.material)
+                api(compose.material3)
             }
         }
     }
