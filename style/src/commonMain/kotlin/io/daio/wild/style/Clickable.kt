@@ -15,7 +15,7 @@ import io.daio.wild.modifier.thenIfNotNull
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
  * the correct modifier based on the requirement for hardware input. For example if a Tv device
  * is detected it adds support for hardware clicks from remote controls. This has the added support
- * for [Style], applying [interactionStyle] to update the component based on the current
+ * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
  * [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -65,7 +65,7 @@ fun Modifier.interactable(
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
  * the correct modifier based on the requirement for hardware input. For example if a Tv device
  * is detected it adds support for hardware clicks from remote controls. This has the added support
- * for [Style], applying [interactionStyle] to update the component based on the current
+ * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
  * [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -78,9 +78,9 @@ fun Modifier.interactable(
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
-fun Modifier.interactable(
+fun Modifier.experimentalInteractable(
     enabled: Boolean = true,
     selected: Boolean? = null,
     style: (StyleScope.() -> Unit)? = null,
@@ -91,7 +91,7 @@ fun Modifier.interactable(
 ): Modifier =
     this then
         if (selected != null) {
-            Modifier.selectable(
+            Modifier.experimentalSelectable(
                 selected = selected,
                 style = style,
                 enabled = enabled,
@@ -101,7 +101,57 @@ fun Modifier.interactable(
                 onClick = onClick,
             )
         } else {
-            Modifier.clickable(
+            Modifier.experimentalClickable(
+                enabled = enabled,
+                style = style,
+                interactionSource = interactionSource,
+                role = role,
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
+        }
+
+/**
+ * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
+ * the correct modifier based on the requirement for hardware input. For example if a Tv device
+ * is detected it adds support for hardware clicks from remote controls. This has the added support
+ * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
+ * [InteractionSource] state.
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param selected Optional property to set the selected state. Setting this to a value will enable
+ * selectable support.
+ * @param style Optional [Style] to apply with the interactable.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.4.0
+ */
+fun Modifier.experimentalInteractable(
+    enabled: Boolean = true,
+    selected: Boolean? = null,
+    style: Style? = null,
+    interactionSource: MutableInteractionSource? = null,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+): Modifier =
+    this then
+        if (selected != null) {
+            Modifier.experimentalSelectable(
+                selected = selected,
+                style = style,
+                enabled = enabled,
+                interactionSource = interactionSource,
+                role = role,
+                onLongClick = onLongClick,
+                onClick = onClick,
+            )
+        } else {
+            Modifier.experimentalClickable(
                 enabled = enabled,
                 style = style,
                 interactionSource = interactionSource,
@@ -155,7 +205,48 @@ fun Modifier.clickable(
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
+ * the component based on the current [InteractionSource] state.
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param style Optional [Style] to apply with the clickable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.4.0
+ */
+fun Modifier.experimentalClickable(
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    style: Style? = null,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    Modifier.clickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+    ).thenIfNotNull(
+        style,
+        ifNotNullModifier = {
+            Modifier.experimentalInteractionStyle(interactionSource, enabled, style = it)
+        },
+    )
+}
+
+/**
+ * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
+ * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  * the component based on the current [InteractionSource] state.
  *
  * @param enabled Whether the click action handling is enabled.
@@ -166,9 +257,9 @@ fun Modifier.clickable(
  * @param onLongClick Optional callback to handle long click events.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
-fun Modifier.clickable(
+fun Modifier.experimentalClickable(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     style: (StyleScope.() -> Unit)? = null,
@@ -188,7 +279,7 @@ fun Modifier.clickable(
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
-            Modifier.interactionStyle(interactionSource, enabled, block = it)
+            Modifier.experimentalInteractionStyle(interactionSource, enabled, block = it)
         },
     )
 }
@@ -196,7 +287,7 @@ fun Modifier.clickable(
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  *  * the component based on the current [InteractionSource] state.
  *
  * @param selected Whether the element is currently selected.
@@ -244,7 +335,55 @@ fun Modifier.selectable(
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
+ *  * the component based on the current [InteractionSource] state.
+ *
+ * @param selected Whether the element is currently selected.
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param style Optional [Style] to apply with the selectable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.4.0
+ */
+fun Modifier.experimentalSelectable(
+    selected: Boolean,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    style: Style? = null,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+) = composed {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    Modifier.selectable(
+        selected = selected,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onLongClick = onLongClick,
+        role = role,
+        onClick = onClick,
+    ).thenIfNotNull(
+        value = style,
+        ifNotNullModifier = {
+            Modifier.experimentalInteractionStyle(
+                style = it,
+                interactionSource = interactionSource,
+                enabled = enabled,
+                selected = selected,
+            )
+        },
+    )
+}
+
+/**
+ * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
+ * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
+ * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
  *  * the component based on the current [InteractionSource] state.
  *
  * @param selected Whether the element is currently selected.
@@ -255,9 +394,9 @@ fun Modifier.selectable(
  * services.
  * @param onClick Callback when the element is clicked.
  *
- * @since 0.3.4
+ * @since 0.4.0
  */
-fun Modifier.selectable(
+fun Modifier.experimentalSelectable(
     selected: Boolean,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
@@ -279,7 +418,7 @@ fun Modifier.selectable(
     ).thenIfNotNull(
         value = style,
         ifNotNullModifier = {
-            Modifier.interactionStyle(
+            Modifier.experimentalInteractionStyle(
                 block = it,
                 interactionSource = interactionSource,
                 enabled = enabled,

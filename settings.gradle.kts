@@ -34,6 +34,11 @@ include(
     ":layout:container",
 )
 
+// Test
+include(
+    ":internal:benchmark",
+)
+
 // Playbook
 include(
     ":playbook:android",
