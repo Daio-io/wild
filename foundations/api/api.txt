@@ -9,6 +9,26 @@ package io.daio.wild.foundation {
     method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
   }
 
+  public final class Clickable_androidKt {
+    method public static int getRepeatCount(android.view.KeyEvent);
+  }
+
+  public final class Clickable_jsKt {
+    method public static int getRepeatCount(android.view.KeyEvent);
+  }
+
+  public final class Clickable_jvmKt {
+    method public static int getRepeatCount(android.view.KeyEvent);
+  }
+
+  public final class Clickable_nativeKt {
+    method public static int getRepeatCount(android.view.KeyEvent);
+  }
+
+  public final class Clickable_wasmJsKt {
+    method public static int getRepeatCount(android.view.KeyEvent);
+  }
+
   @kotlin.RequiresOptIn(message="This API is experimental and may change or be removed.") @kotlin.annotation.Retention(kotlin.annotation.AnnotationRetention.BINARY) public @interface ExperimentalWildApi {
   }
 

@@ -2,54 +2,34 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
-import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateTo
-import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.isSpecified
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.node.DelegatableNode
-import androidx.compose.ui.node.DrawModifierNode
-import androidx.compose.ui.node.LayoutModifierNode
-import androidx.compose.ui.node.ModifierNodeElement
-import androidx.compose.ui.node.ObserverModifierNode
-import androidx.compose.ui.node.invalidateDraw
-import androidx.compose.ui.node.invalidatePlacement
-import androidx.compose.ui.node.observeReads
-import androidx.compose.ui.platform.InspectorInfo
-import androidx.compose.ui.platform.debugInspectorInfo
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.foundation.InteractionState
-import kotlinx.coroutines.launch
+import io.daio.wild.style.modifiers.BackgroundElement
+import io.daio.wild.style.modifiers.BorderElement
+import io.daio.wild.style.modifiers.ScaleLayoutElement
+import io.daio.wild.style.modifiers.ShapeLayoutElement
+import io.daio.wild.style.modifiers.StyleParentTraversalKey
+import io.daio.wild.style.modifiers.StyleScopeParentElement
+import io.daio.wild.style.modifiers.border
+import io.daio.wild.style.modifiers.interactionSourceNode
 
 /**
  * Style class for components.
@@ -293,6 +273,60 @@ fun Modifier.interactionStyle(
         },
     )
 
+fun Modifier.experimentalInteractionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    style: Style,
+): Modifier =
+    this.experimentalInteractionStyle(
+        interactionSource = interactionSource,
+        enabled = enabled,
+        selected = selected,
+        block = {
+            color =
+                style.colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scale =
+                style.scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            alpha =
+                style.alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            shape =
+                style.shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            border =
+                style.borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+        },
+    )
+
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
@@ -303,7 +337,35 @@ fun Modifier.interactionStyle(
  * @param block Lambda to apply style properties. The block provides access to the elements current
  * [InteractionState] (focused, pressed, selected, etc) through [StyleScope].
  *
- * @since 0.3.4
+ * @since 0.4.0
+ */
+@OptIn(ExperimentalWildApi::class)
+fun Modifier.experimentalInteractionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    block: StyleScope.() -> Unit,
+): Modifier =
+    this.interactionSourceNode(
+        interactionSource = interactionSource,
+        childTraversalKey = StyleParentTraversalKey,
+    ) then StyleScopeParentElement(enabled, selected, block) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
+
+/**
+ * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
+ *
+ * @param interactionSource The [InteractionSource] used to listen to user interactions such as
+ * pressed and focus.
+ * @param enabled Whether the element is currently enabled.
+ * @param selected Whether the element is currently selected.
+ * @param block Lambda to apply style properties. The block provides access to the elements current
+ * [InteractionState] (focused, pressed, selected, etc) through [StyleScope].
+ *
+ * @since 0.4.0
  */
 fun Modifier.interactionStyle(
     interactionSource: InteractionSource?,
@@ -315,7 +377,7 @@ fun Modifier.interactionStyle(
         // TODO:
         // This is in the process of being moved to ensure this whole Modifier
         // uses the Node api and migrates from composed.
-        val style = remember { StyleScopeImpl() }
+        val style = remember { DefaultStyleScope() }
 
         val focused = interactionSource?.collectIsFocusedAsState()?.value ?: false
         val hovered = interactionSource?.collectIsHoveredAsState()?.value ?: false
@@ -365,235 +427,3 @@ fun Modifier.interactionStyle(
                 this.compositingStrategy = CompositingStrategy.Offscreen
             }
     }
-
-/**
- * Ensures the border shape takes into account the inner shape when applying an inset.
- */
-internal fun Border.forInnerShape(innerShape: Shape): Shape {
-    // If the Border shapes is using the default we want to follow the innerShape as out outline.
-    val borderShape = if (shape == BorderDefaults.BorderDefaultShape) innerShape else shape
-    return if (inset > 0.dp && innerShape is RoundedCornerShape && borderShape is RoundedCornerShape) {
-        borderShape.toExpandedCornerShape(inset)
-    } else {
-        borderShape
-    }
-}
-
-/**
- * Experimental API to apply [Style] indication to a component based on the current interaction
- * state.
- *
- * See also [interactionStyle] Modifier.
- *
- * @param style The [Style] to use as indication.
- *
- * @since 0.2.0
- */
-@Stable
-fun hardwareInputStyleIndication(style: Style = StyleDefaults.style()): IndicationNodeFactory = FocusStyleIndication(style)
-
-@Stable
-private class FocusStyleIndication(private val style: Style) : IndicationNodeFactory {
-    override fun create(interactionSource: InteractionSource): DelegatableNode = FocusStyleNode(interactionSource, style)
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is FocusStyleIndication) return false
-
-        return style == other.style
-    }
-
-    override fun hashCode(): Int = style.hashCode()
-}
-
-private class FocusStyleElement(
-    private val style: Style,
-    private var interactionSource: InteractionSource,
-) : ModifierNodeElement<FocusStyleNode>() {
-    override fun create(): FocusStyleNode {
-        return FocusStyleNode(
-            interactionSource = interactionSource,
-            style = style,
-        )
-    }
-
-    override fun update(node: FocusStyleNode) {
-        node.style = style
-        node.interactionSource = interactionSource
-    }
-
-    override fun InspectorInfo.inspectableProperties() {
-        debugInspectorInfo {
-            name = "interaction-style"
-            properties["style"] = style
-            properties["interactionSource"] = interactionSource
-        }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as FocusStyleElement
-
-        if (style != other.style) return false
-        if (interactionSource != other.interactionSource) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = style.hashCode()
-        result = 31 * result + interactionSource.hashCode()
-        return result
-    }
-}
-
-private class FocusStyleNode(
-    var interactionSource: InteractionSource,
-    var style: Style,
-) : DrawModifierNode, ObserverModifierNode, LayoutModifierNode,
-    BorderNode(
-        style.borders.border.shape,
-        style.borders.border.borderStroke,
-        style.borders.border.inset,
-    ) {
-    var focused = false
-    var hovered = false
-    var pressed = false
-    var selected = false
-    var enabled = true
-
-    private var scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
-    private var color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
-    private var alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
-    private var shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
-    private var borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
-    private val zIndexState = AnimationState(initialValue = if (focused) 0.5f else 0f)
-    private val scaleState = AnimationState(initialValue = scale)
-
-    override val shouldAutoInvalidate: Boolean
-        get() = false
-
-    override fun onAttach() {
-        coroutineScope.launch {
-            interactionSource.interactions.collect { interaction ->
-                when (interaction) {
-                    is PressInteraction.Press -> pressed = true
-                    is PressInteraction.Release -> pressed = false
-                    is PressInteraction.Cancel -> pressed = false
-                    is HoverInteraction.Enter -> hovered = true
-                    is HoverInteraction.Exit -> hovered = false
-                    is FocusInteraction.Focus -> focused = true
-                    is FocusInteraction.Unfocus -> focused = false
-                }
-                updateStates()
-                launch {
-                    scaleState.animateTo(scale)
-                    zIndexState.animateTo(if (focused) 0.5f else 0f)
-                }
-            }
-        }
-    }
-
-    private fun updateStates() {
-        scale = style.scale.scaleFor(enabled, focused, hovered, pressed, selected)
-        color = style.colors.colorFor(enabled, focused, hovered, pressed, selected)
-        alpha = style.alpha.alphaFor(enabled, focused, hovered, pressed, selected)
-        shapes = style.shapes.shapeFor(enabled, focused, hovered, pressed, selected)
-        borders = style.borders.borderFor(enabled, focused, hovered, pressed, selected)
-
-        updateBorder(borders.shape, borders.borderStroke, borders.inset)
-
-        invalidatePlacement()
-    }
-
-    fun setState(
-        enabled: Boolean,
-        selected: Boolean,
-    ) {
-        this.enabled = enabled
-        this.selected = selected
-        updateStates()
-    }
-
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints,
-    ): MeasureResult {
-        val placeable = measurable.measure(constraints)
-        return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(0, 0, zIndex = zIndexState.value) {
-                scaleX = scaleState.value
-                scaleY = scaleState.value
-                shape = shapes
-                this.alpha = alpha
-                clip = true
-                compositingStrategy = CompositingStrategy.Offscreen
-            }
-        }
-    }
-
-    //region Draw Background
-    private var lastSize: Size = Size.Unspecified
-    private var lastLayoutDirection: LayoutDirection? = null
-    private var lastOutline: Outline? = null
-    private var lastShape: Shape? = null
-
-    override fun ContentDrawScope.draw() {
-        drawBackground()
-        drawContent()
-        drawBorder()
-    }
-
-    override fun onObservedReadsChanged() {
-        // Reset cached properties
-        lastSize = Size.Unspecified
-        lastLayoutDirection = null
-        lastOutline = null
-        lastShape = null
-        // Invalidate draw so we build the cache again - this is needed because observeReads within
-        // the draw scope obscures the state reads from the draw scope's observer
-        invalidateDraw()
-    }
-
-    private fun ContentDrawScope.drawBackground() {
-        if (shapes === RectangleShape) {
-            // shortcut to avoid Outline calculation and allocation
-            drawRect()
-        } else {
-            drawOutline()
-        }
-    }
-
-    private fun ContentDrawScope.drawRect() {
-        if (color.isSpecified) {
-            drawRect(color = color)
-        }
-    }
-
-    private fun ContentDrawScope.drawOutline() {
-        val outline = getOutline()
-        if (color.isSpecified) {
-            drawOutline(outline, color = color)
-        }
-    }
-
-    private fun ContentDrawScope.getOutline(): Outline {
-        var outline: Outline? = null
-        if (size == lastSize && layoutDirection == lastLayoutDirection && lastShape == shapes) {
-            outline = lastOutline!!
-        } else {
-            // Manually observe reads so we can directly invalidate the outline when it changes
-            observeReads {
-                outline = shapes.createOutline(size, layoutDirection, this)
-            }
-        }
-        lastOutline = outline
-        lastSize = size
-        lastLayoutDirection = layoutDirection
-        lastShape = shapes
-        return outline!!
-    }
-    //endregion
-}

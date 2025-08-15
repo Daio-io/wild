@@ -9,8 +9,10 @@ import androidx.activity.compose.setContent
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mode = intent.getStringExtra("MODE") ?: "grid"
+        val items = intent.getStringExtra("ITEMS") ?: "container"
         setContent {
-            TvLayout()
+            TvLayout(itemsType = items, mode = mode)
         }
     }
 }

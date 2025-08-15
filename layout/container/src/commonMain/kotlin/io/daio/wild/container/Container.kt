@@ -21,6 +21,7 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.experimentalInteractable
 import io.daio.wild.style.interactable
 import io.daio.wild.style.interactionStyle
 
@@ -158,6 +159,123 @@ fun Container(
     Box(
         modifier =
             modifier.interactable(
+                selected = selected,
+                enabled = enabled,
+                style = style,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                interactionSource = interactionSource,
+            ),
+        propagateMinConstraints = true,
+        content = {
+            val focused by interactionSource.collectIsFocusedAsState()
+            val pressed by interactionSource.collectIsPressedAsState()
+            val hovered by interactionSource.collectIsHoveredAsState()
+            ProvidesContentColor(
+                style.colors.contentColorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected ?: false,
+                ),
+            ) {
+                content()
+            }
+        },
+    )
+}
+
+/**
+ * [ExperimentalContainer] is a building block component that can be used for any selectable TV
+ * element or on its own as a selectable container. The [Container] handles an additional
+ * state compared to [Container] to indicate whether it is currently selected.
+ *
+ * The experimental version uses the []
+ *
+ * @param onClick Callback to be called when the container is clicked. If this and [onLongClick]
+ * are null, the container will not be focusable on TV.
+ * @param modifier Modifier to be applied to the layout corresponding to the container.
+ * @param enabled Whether or not the container is enabled.
+ * @param selected Whether or not the container is currently selected.
+ * @param onLongClick Callback to be called when the container is long clicked. If this and
+ * [onClick] are null, the container will not be focusable on TV.
+ * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
+ * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
+ * emitting [Interaction]s for this container.
+ * @param content Defines the [Composable] content inside the container.
+ *
+ * Example:
+ * ```
+ * ExperimentalContainer(
+ *     style =
+ *         StyleDefaults.style(
+ *             colors = StyleDefaults.colors(
+ *                 backgroundColor = Color.Black,
+ *                 contentColor = Color.White,
+ *                 focusedBackgroundColor = Color.Blue,
+ *                 focusedContentColor = Color.Yellow,
+ *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
+ *             ),
+ *             scale = StyleDefaults.scale(focusedScale = 1.1f),
+ *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
+ *         ),
+ *     modifier = Modifier.size(300.dp, 100.dp),
+ *     onClick = { /* Handle click */ },
+ *     onLongClick = { /* Handle long click */ }
+ * ) {
+ *     val color = LocalContentColor.current
+ *     BasicText(text = "Interactive Container", color = { color })
+ * }
+ * ```
+ *
+ * Example usage as a selectable container.
+ * ```
+ * var selected by remember { mutableStateOf(false) }
+ * ExperimentalContainer(
+ *     onClick = {
+ *         selected = !selected
+ *     },
+ *     selected = selected,
+ *     style =
+ *         StyleDefaults.style(
+ *             colors = StyleDefaults.colors(
+ *                 backgroundColor = if (selected) Color.Green else Color.Black,
+ *                 contentColor = Color.White,
+ *                 focusedBackgroundColor = Color.Red,
+ *                 focusedContentColor = Color.Black,
+ *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
+ *             ),
+ *             scale = StyleDefaults.scale(focusedScale = 1.1f),
+ *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
+ *         )
+ * ) {
+ *     val color = LocalContentColor.current
+ *     BasicText(
+ *         text = if (selected) "Selected Container" else "Unselected Container",
+ *         color = { color },
+ *     )
+ * }
+ * ```
+ * @since 0.4.0
+ */
+@Composable
+fun ExperimentalContainer(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    style: Style = StyleDefaults.None,
+    interactionSource: MutableInteractionSource? = null,
+    selected: Boolean? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    Box(
+        modifier =
+            modifier.experimentalInteractable(
                 selected = selected,
                 enabled = enabled,
                 style = style,

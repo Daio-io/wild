@@ -98,7 +98,16 @@ fun animateInteractionScaleAsState(
     )
 }
 
-private fun defaultScaleAnimationSpec(
+/**
+ * Creates a [TweenSpec] configured with the default duration, delay and easing curve for the state
+ * [pressed], [focused] && [hovered].
+ *
+ * @param pressed whether the element is currently pressed.
+ * @param focused whether the element is currently focused.
+ * @param hovered whether the element is currently hovered.
+ */
+@Stable
+internal fun defaultScaleAnimationSpec(
     pressed: Boolean,
     focused: Boolean,
     hovered: Boolean,
