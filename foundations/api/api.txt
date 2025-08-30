@@ -34,7 +34,6 @@ package io.daio.wild.foundation {
 
   public final class FocusKt {
     method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier requestInitialFocus(androidx.compose.ui.Modifier, optional boolean enabled, optional kotlin.jvm.functions.Function2<? super io.daio.wild.foundation.RequestFocusModifierScope,? super kotlin.coroutines.Continuation<? super java.lang.Object?>,? extends java.lang.Object?>? onRequestFocus);
-    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier restoreChildFocus(androidx.compose.ui.Modifier, optional kotlin.jvm.functions.Function0<androidx.compose.ui.focus.FocusRequester>? onRestoreFailed);
   }
 
   public interface InteractionState {
