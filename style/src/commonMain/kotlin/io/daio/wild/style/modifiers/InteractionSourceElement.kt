@@ -140,6 +140,10 @@ internal class InteractionSourceNode(
         reset()
     }
 
+    override fun onReset() {
+        reset()
+    }
+
     private fun reset() {
         hovered = false
         focused = false
