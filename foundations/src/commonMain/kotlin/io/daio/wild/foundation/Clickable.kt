@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import io.daio.wild.modifier.thenIf
 import kotlinx.coroutines.launch
 
 /**
@@ -108,25 +109,31 @@ fun Modifier.clickable(
         @Suppress("NAME_SHADOWING")
         val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
-        if (LocalPlatformInteractions.current.requiresHardwareInput) {
-            Modifier.hardwareClickable(
-                enabled = enabled,
+        val focusEnabled =
+            if (LocalPlatformInteractions.current.requiresHardwareInput) true else enabled
+
+        Modifier
+            .thenIf(
+                condition = LocalPlatformInteractions.current.requiresHardwareInput,
+                ifTrueModifier =
+                    Modifier.hardwareSemantics(
+                        enabled = enabled,
+                        role = role,
+                        interactionSource = interactionSource,
+                        indication = indication,
+                        onClick = onClick,
+                        onLongClick = onLongClick,
+                    ),
+            )
+            .focusable(enabled = focusEnabled, interactionSource = interactionSource)
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = indication,
+                enabled = enabled,
                 role = role,
                 onLongClick = onLongClick,
                 onClick = onClick,
             )
-        } else {
-            Modifier.combinedClickable(
-                interactionSource = interactionSource,
-                indication = indication,
-                enabled = enabled,
-                role = role,
-                onLongClick = onLongClick,
-                onClick = onClick,
-            ).focusable(enabled = enabled, interactionSource = interactionSource)
-        }
     }
 
 /**
@@ -141,6 +148,23 @@ fun Modifier.clickable(
  *
  * @since 0.2.0
  */
+@Deprecated(
+    message = "Use Modifier.clickable() instead",
+    replaceWith =
+        ReplaceWith(
+            expression =
+                """
+            clickable(
+                enabled = enabled,
+                interactionSource = interactionSource,
+                indication = indication,
+                role = role,
+                onLongClick = onLongClick,
+                onClick = onClick ?: {}
+            )
+            """,
+        ),
+)
 fun Modifier.hardwareClickable(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource,
@@ -154,7 +178,7 @@ fun Modifier.hardwareClickable(
         interactionSource = interactionSource,
         onClick = onClick,
         onLongClick = onLongClick,
-    ).hardwareInteractable(
+    ).hardwareSemantics(
         enabled = enabled,
         role = role,
         interactionSource = interactionSource,
@@ -191,27 +215,32 @@ fun Modifier.selectable(
     composed {
         @Suppress("NAME_SHADOWING")
         val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+        val focusEnabled =
+            if (LocalPlatformInteractions.current.requiresHardwareInput) true else enabled
 
-        if (LocalPlatformInteractions.current.requiresHardwareInput) {
-            Modifier.hardwareSelectable(
-                selected = selected,
-                enabled = enabled,
-                interactionSource = interactionSource,
-                role = role,
-                onClick = onClick,
-                onLongClick = onLongClick,
+        Modifier
+            .thenIf(
+                condition = LocalPlatformInteractions.current.requiresHardwareInput,
+                ifTrueModifier =
+                    Modifier.hardwareSemantics(
+                        enabled = enabled,
+                        selected = selected,
+                        role = role,
+                        interactionSource = interactionSource,
+                        indication = indication,
+                        onClick = onClick,
+                        onLongClick = onLongClick,
+                    ),
             )
-        } else {
-            // TODO need to support long click.
-            Modifier.selectable(
+            .focusable(enabled = focusEnabled, interactionSource = interactionSource)
+            .selectable(
                 selected = selected,
                 interactionSource = interactionSource,
                 indication = indication,
                 enabled = enabled,
                 role = role,
                 onClick = onClick,
-            ).focusable(enabled = enabled, interactionSource = interactionSource)
-        }
+            )
     }
 
 /**
@@ -227,6 +256,24 @@ fun Modifier.selectable(
  *
  * @since 0.2.0
  */
+@Deprecated(
+    message = "Use Modifier.selectable() instead",
+    replaceWith =
+        ReplaceWith(
+            expression =
+                """
+            selectable(
+                selected = selected,
+                enabled = enabled,
+                interactionSource = interactionSource,
+                indication = indication,
+                role = role,
+                onLongClick = onLongClick,
+                onClick = onClick ?: {}
+            )
+            """,
+        ),
+)
 fun Modifier.hardwareSelectable(
     selected: Boolean,
     enabled: Boolean = true,
@@ -236,23 +283,24 @@ fun Modifier.hardwareSelectable(
     indication: Indication? = null,
     onClick: (() -> Unit)?,
 ): Modifier =
-    handleHardwareInputEnter(
+    this.handleHardwareInputEnter(
         enabled = enabled,
         interactionSource = interactionSource,
         selected = selected,
         onClick = onClick,
         onLongClick = onLongClick,
-    ).hardwareInteractable(
-        enabled = enabled,
-        role = role,
-        interactionSource = interactionSource,
-        indication = indication,
-        selected = selected,
-        onClick = onClick,
-        onLongClick = onLongClick,
-    )
+    ).focusable(interactionSource = interactionSource)
+        .hardwareSemantics(
+            enabled = enabled,
+            role = role,
+            interactionSource = interactionSource,
+            indication = indication,
+            selected = selected,
+            onClick = onClick,
+            onLongClick = onLongClick,
+        )
 
-private fun Modifier.hardwareInteractable(
+private fun Modifier.hardwareSemantics(
     enabled: Boolean,
     role: Role?,
     interactionSource: MutableInteractionSource,
@@ -261,37 +309,32 @@ private fun Modifier.hardwareInteractable(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
 ): Modifier =
+    this.semantics(mergeDescendants = true) {
+        if (selected != null) {
+            this.selected = selected
+        }
 
-// We are not using "clickable" modifier here because if we set "enabled" to false
-// then the Surface won't be focusable as well. But, in TV use case, a disabled surface
-// should be focusable
-    focusable(interactionSource = interactionSource)
-        .semantics(mergeDescendants = true) {
-            if (selected != null) {
-                this.selected = selected
+        if (role != null) {
+            this.role = role
+        }
+        onClick {
+            onClick?.let { nnOnClick ->
+                nnOnClick()
+                return@onClick true
             }
-
-            if (role != null) {
-                this.role = role
+            false
+        }
+        onLongClick {
+            onLongClick?.let { nnOnLongClick ->
+                nnOnLongClick()
+                return@onLongClick true
             }
-            onClick {
-                onClick?.let { nnOnClick ->
-                    nnOnClick()
-                    return@onClick true
-                }
-                false
-            }
-            onLongClick {
-                onLongClick?.let { nnOnLongClick ->
-                    nnOnLongClick()
-                    return@onLongClick true
-                }
-                false
-            }
-            if (!enabled) {
-                disabled()
-            }
-        }.indication(interactionSource, indication)
+            false
+        }
+        if (!enabled) {
+            disabled()
+        }
+    }.indication(interactionSource, indication)
 
 /**
  * Modifier to set up handling of hardware input enter keys, such as Tv remote Dpad enter and
