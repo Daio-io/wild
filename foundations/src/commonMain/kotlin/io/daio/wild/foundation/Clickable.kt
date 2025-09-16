@@ -46,7 +46,9 @@ import kotlinx.coroutines.launch
  * @param indication Optional indication to apply with the clickable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.3.1
@@ -98,7 +100,9 @@ fun Modifier.interactable(
  * @param indication Optional indication to apply with the clickable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.2.0
@@ -189,6 +193,9 @@ fun Modifier.hardwareClickable(
  * @param indication Optional indication to apply with the selectable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.2.0
@@ -207,6 +214,7 @@ fun Modifier.selectable(
 ): Modifier =
     this.handleTvInputIfRequired(
         enabled = enabled,
+        selected = selected,
         interactionSource = interactionSource,
         onClickLabel = onClickLabel,
         onClick = onClick,
@@ -275,6 +283,7 @@ fun Modifier.hardwareSelectable(
 private fun Modifier.handleTvInputIfRequired(
     enabled: Boolean,
     interactionSource: MutableInteractionSource?,
+    selected: Boolean = false,
     role: Role? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
@@ -296,6 +305,7 @@ private fun Modifier.handleTvInputIfRequired(
                     onLongClick = onLongClick,
                 ).hardwareSemantics(
                     enabled = enabled,
+                    selected = selected,
                     role = role,
                     interactionSource = interactionSource,
                     onLongClickLabel = onLongClickLabel,
