@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import io.daio.wild.modifier.thenIf
+import io.daio.wild.modifier.thenIfNotNull
 import kotlinx.coroutines.launch
 
 /**
@@ -56,7 +57,9 @@ fun Modifier.interactable(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     role: Role? = null,
+    onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onClickLabel: String? = null,
     onClick: (() -> Unit),
 ): Modifier =
     this then
@@ -67,7 +70,9 @@ fun Modifier.interactable(
                 interactionSource = interactionSource,
                 indication = indication,
                 role = role,
+                onLongClickLabel = onLongClickLabel,
                 onLongClick = onLongClick,
+                onClickLabel = onClickLabel,
                 onClick = onClick,
             )
         } else {
@@ -76,8 +81,10 @@ fun Modifier.interactable(
                 interactionSource = interactionSource,
                 indication = indication,
                 role = role,
-                onClick = onClick,
+                onLongClickLabel = onLongClickLabel,
                 onLongClick = onLongClick,
+                onClickLabel = onClickLabel,
+                onClick = onClick,
             )
         }
 
@@ -107,16 +114,23 @@ fun Modifier.clickable(
     onClickLabel: String? = null,
     onClick: (() -> Unit),
 ): Modifier =
-    this.combinedClickable(
+    this.handleTvInputIfRequired(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onClickLabel = onClickLabel,
+        onClick = onClick,
+        onLongClickLabel = onLongClickLabel,
+        onLongClick = onLongClick,
+    ).combinedClickable(
         interactionSource = interactionSource,
         indication = indication,
         enabled = enabled,
-        role = role,
-        onLongClickLabel = onLongClickLabel,
         onLongClick = onLongClick,
+        onLongClickLabel = onLongClickLabel,
+        role = role,
         onClickLabel = onClickLabel,
         onClick = onClick,
-    ).hardwareHandling(enabled = enabled, interactionSource = interactionSource)
+    )
 
 /**
  * Modifier to set up handling of click events using hardware input such as a Tv remote control.
@@ -153,20 +167,15 @@ fun Modifier.hardwareClickable(
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     indication: Indication? = null,
-    onClick: (() -> Unit)?,
+    onClick: (() -> Unit),
 ): Modifier =
-    handleHardwareInputEnter(
+    this.clickable(
         enabled = enabled,
         interactionSource = interactionSource,
-        onClick = onClick,
-        onLongClick = onLongClick,
-    ).hardwareSemantics(
-        enabled = enabled,
         role = role,
-        interactionSource = interactionSource,
+        onLongClick = onLongClick,
         indication = indication,
         onClick = onClick,
-        onLongClick = onLongClick,
     )
 
 /**
@@ -191,17 +200,26 @@ fun Modifier.selectable(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     role: Role? = null,
+    onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onClickLabel: String? = null,
     onClick: (() -> Unit),
 ): Modifier =
-    this.selectable(
+    this.handleTvInputIfRequired(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onClickLabel = onClickLabel,
+        onClick = onClick,
+        onLongClickLabel = onLongClickLabel,
+        onLongClick = onLongClick,
+    ).selectable(
         selected = selected,
         interactionSource = interactionSource,
         indication = indication,
         enabled = enabled,
         role = role,
         onClick = onClick,
-    ).hardwareHandling(enabled = enabled, interactionSource = interactionSource)
+    )
 
 /**
  * Modifier to set up handling of selecting events using hardware input such as a Tv remote control.
@@ -241,29 +259,27 @@ fun Modifier.hardwareSelectable(
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     indication: Indication? = null,
-    onClick: (() -> Unit)?,
+    onClick: (() -> Unit),
 ): Modifier =
-    this.handleHardwareInputEnter(
+    this.selectable(
+        selected = selected,
         enabled = enabled,
         interactionSource = interactionSource,
-        selected = selected,
-        onClick = onClick,
+        role = role,
         onLongClick = onLongClick,
-    ).focusable(interactionSource = interactionSource)
-        .hardwareSemantics(
-            enabled = enabled,
-            role = role,
-            interactionSource = interactionSource,
-            indication = indication,
-            selected = selected,
-            onClick = onClick,
-            onLongClick = onLongClick,
-        )
+        indication = indication,
+        onClick = onClick,
+    )
 
 @OptIn(ExperimentalWildApi::class)
-private fun Modifier.hardwareHandling(
+private fun Modifier.handleTvInputIfRequired(
     enabled: Boolean,
     interactionSource: MutableInteractionSource?,
+    role: Role? = null,
+    onLongClickLabel: String? = null,
+    onLongClick: (() -> Unit)? = null,
+    onClickLabel: String? = null,
+    onClick: (() -> Unit),
 ) = this.composed {
     val hardwareInputDevice = LocalPlatformInteractions.current.requiresHardwareInput
     // On Tv we disable click actions but maintain focusable to ensure navigation through UI.
@@ -272,20 +288,34 @@ private fun Modifier.hardwareHandling(
     this.focusable(enabled = focusEnabled, interactionSource = interactionSource)
         .thenIf(
             condition = hardwareInputDevice,
-            ifTrueModifier = Modifier.preventInvalidLongClick(),
+            ifTrueModifier =
+                Modifier.handleHardwareInputEnter(
+                    enabled = enabled,
+                    interactionSource = interactionSource,
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                ).hardwareSemantics(
+                    enabled = enabled,
+                    role = role,
+                    interactionSource = interactionSource,
+                    onLongClickLabel = onLongClickLabel,
+                    onLongClick = onLongClick,
+                    onClickLabel = onClickLabel,
+                    onClick = onClick,
+                ),
         )
 }
 
 private fun Modifier.hardwareSemantics(
     enabled: Boolean,
     role: Role?,
-    interactionSource: MutableInteractionSource,
+    interactionSource: MutableInteractionSource?,
     indication: Indication? = null,
     selected: Boolean? = null,
-    onClickLabel: String? = null,
-    onClick: (() -> Unit)? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onClickLabel: String? = null,
+    onClick: (() -> Unit)? = null,
 ): Modifier =
     this.semantics(mergeDescendants = true) {
         if (selected != null) {
@@ -312,7 +342,12 @@ private fun Modifier.hardwareSemantics(
         if (!enabled) {
             disabled()
         }
-    }.indication(interactionSource, indication)
+    }.thenIfNotNull(
+        value = interactionSource,
+        ifNotNullModifier = { interactionSource ->
+            Modifier.indication(interactionSource, indication)
+        },
+    )
 
 /**
  * Modifier to set up handling of hardware input enter keys, such as Tv remote Dpad enter and
@@ -320,18 +355,23 @@ private fun Modifier.hardwareSemantics(
  */
 internal fun Modifier.handleHardwareInputEnter(
     enabled: Boolean,
-    interactionSource: MutableInteractionSource,
+    interactionSource: MutableInteractionSource?,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
-    selected: Boolean = false,
-): Modifier = this then HardwareEnterKeyElement(enabled, interactionSource, onClick, onLongClick, selected)
+): Modifier =
+    this then
+        HardwareEnterKeyElement(
+            enabled,
+            interactionSource,
+            onClick,
+            onLongClick,
+        )
 
 private data class HardwareEnterKeyElement(
     val enabled: Boolean,
-    val interactionSource: MutableInteractionSource,
+    val interactionSource: MutableInteractionSource?,
     val onClick: (() -> Unit)? = null,
     val onLongClick: (() -> Unit)? = null,
-    val selected: Boolean = false,
 ) : ModifierNodeElement<HardwareEnterKeyEventNode>() {
     override fun create(): HardwareEnterKeyEventNode =
         HardwareEnterKeyEventNode(
@@ -339,7 +379,6 @@ private data class HardwareEnterKeyElement(
             interactionSource = interactionSource,
             onClick = onClick,
             onLongClick = onLongClick,
-            selected = selected,
         )
 
     override fun update(node: HardwareEnterKeyEventNode) {
@@ -347,7 +386,6 @@ private data class HardwareEnterKeyElement(
         node.interactionSource = interactionSource
         node.onClick = onClick
         node.onLongClick = onLongClick
-        node.selected = selected
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -356,30 +394,28 @@ private data class HardwareEnterKeyElement(
         properties["interactionSource"] = interactionSource
         properties["onClick"] = onClick
         properties["onLongClick"] = onLongClick
-        properties["selected"] = selected
     }
 }
 
 private class HardwareEnterKeyEventNode(
     var enabled: Boolean,
-    var interactionSource: MutableInteractionSource,
     var onClick: (() -> Unit)? = null,
     var onLongClick: (() -> Unit)? = null,
-    var selected: Boolean = false,
+    var interactionSource: MutableInteractionSource?,
 ) : KeyInputModifierNode, FocusEventModifierNode, Modifier.Node() {
-    val pressInteraction = PressInteraction.Press(Offset.Zero)
+    private val pressInteraction = PressInteraction.Press(Offset.Zero)
     private var focusState: FocusState? = null
     private var pressed: Boolean = false
     private var isLongClick: Boolean = false
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (HardwareEnterKeys.contains(event.key.keyCode)) {
+        if (HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
             when (event.type) {
                 KeyEventType.KeyDown -> {
                     when (event.repeatCount) {
                         0 ->
                             coroutineScope.launch {
-                                interactionSource.emit(pressInteraction)
+                                interactionSource?.emit(pressInteraction)
                                 pressed = true
                             }
 
@@ -387,7 +423,7 @@ private class HardwareEnterKeyEventNode(
                             onLongClick?.let {
                                 isLongClick = true
                                 coroutineScope.launch {
-                                    interactionSource.emit(
+                                    interactionSource?.emit(
                                         PressInteraction.Release(pressInteraction),
                                     )
                                     pressed = false
@@ -400,7 +436,7 @@ private class HardwareEnterKeyEventNode(
                 KeyEventType.KeyUp -> {
                     if (!isLongClick && pressed) {
                         coroutineScope.launch {
-                            interactionSource.emit(
+                            interactionSource?.emit(
                                 PressInteraction.Release(pressInteraction),
                             )
                             pressed = false
@@ -428,76 +464,12 @@ private class HardwareEnterKeyEventNode(
 
             if (!focusState.isFocused && pressed) {
                 coroutineScope.launch {
-                    interactionSource.emit(PressInteraction.Release(pressInteraction))
+                    interactionSource?.emit(PressInteraction.Release(pressInteraction))
                     pressed = false
                 }
             }
         }
     }
-}
-
-internal fun Modifier.preventInvalidLongClick(): Modifier = this then LongClickKeyHandlerElement()
-
-private class LongClickKeyHandlerElement :
-    ModifierNodeElement<LongClickKeyBlockEventNode>() {
-    override fun create(): LongClickKeyBlockEventNode = LongClickKeyBlockEventNode()
-
-    override fun update(node: LongClickKeyBlockEventNode) {}
-
-    override fun InspectorInfo.inspectableProperties() {
-        name = "LongClickKeyHandlerEventNode"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-        return true
-    }
-
-    override fun hashCode(): Int = this::class.hashCode()
-}
-
-/**
- * Using long press on a remote input device like a Tv remote can cause the [KeyEventType.KeyUp]
- * event to be fired on another node if that node because focused inbetween [KeyEventType.KeyDown]
- * and [KeyEventType.KeyUp] being fired. I common example for this is launching a dialog on long
- * press where the dialog displays and focuses a new node. The delayed [KeyEventType.KeyUp] event
- * can cause an action to be fired on the newly focused node without it every being "pressed down".
- * This modifier node patches this by swallowing a longClick [KeyEventType.KeyUp] where there
- * is no initial [KeyEventType.KeyDown].
- */
-private class LongClickKeyBlockEventNode : KeyInputModifierNode, Modifier.Node() {
-    private var pressed: Boolean = false
-    private var isLongClick: Boolean = false
-
-    override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (HardwareEnterKeys.contains(event.key.keyCode)) {
-            when (event.type) {
-                KeyEventType.KeyDown -> {
-                    when (event.repeatCount) {
-                        0 -> pressed = true
-                        1 -> isLongClick = true
-                    }
-                }
-
-                KeyEventType.KeyUp -> {
-                    if (!isLongClick && pressed) {
-                        pressed = false
-                    } else {
-                        pressed = false
-                        isLongClick = false
-                        // Key up event is not valid, stop event propagation.
-                        return true
-                    }
-                }
-            }
-        }
-
-        // Continue
-        return false
-    }
-
-    override fun onPreKeyEvent(event: KeyEvent): Boolean = false
 
     override fun onDetach() {
         reset()
@@ -510,6 +482,7 @@ private class LongClickKeyBlockEventNode : KeyInputModifierNode, Modifier.Node()
     private fun reset() {
         pressed = false
         isLongClick = false
+        focusState = null
     }
 }
 
