@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.defaultScaleAnimationSpec
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
@@ -72,6 +73,8 @@ internal class ScaleLayoutModifier(
     override val shouldAutoInvalidate: Boolean
         get() = false
 
+    private var updateJob: Job? = null
+
     fun updateScale(
         scale: Float,
         zIndex: Float,
@@ -99,10 +102,11 @@ internal class ScaleLayoutModifier(
         pressed: Boolean,
         hovered: Boolean,
     ) {
-        if (scaleState.value != scale || zIndexState.value != zIndex) {
-            this.scale = scale
-            this.zIndex = zIndex
+        this.scale = scale
+        this.zIndex = zIndex
 
+        updateJob?.cancel()
+        updateJob =
             coroutineScope.launch {
                 joinAll(
                     launch { zIndexState.animateTo(zIndex) },
@@ -121,7 +125,6 @@ internal class ScaleLayoutModifier(
 
                 invalidatePlacement()
             }
-        }
     }
 
     override fun MeasureScope.measure(
@@ -140,7 +143,7 @@ internal class ScaleLayoutModifier(
     override fun updateStyle(styleScope: StyleScope) {
         updateScale(
             scale = styleScope.scale,
-            zIndex = if (styleScope.focused) 0.5f else 0f,
+            zIndex = if (styleScope.focused || styleScope.hovered) 0.5f else 0f,
             focused = styleScope.focused,
             pressed = styleScope.pressed,
             hovered = styleScope.hovered,
