@@ -22,7 +22,6 @@ import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.experimentalInteractable
-import io.daio.wild.style.interactable
 import io.daio.wild.style.interactionStyle
 
 /**
@@ -158,7 +157,7 @@ fun Container(
 
     Box(
         modifier =
-            modifier.interactable(
+            modifier.experimentalInteractable(
                 selected = selected,
                 enabled = enabled,
                 style = style,
