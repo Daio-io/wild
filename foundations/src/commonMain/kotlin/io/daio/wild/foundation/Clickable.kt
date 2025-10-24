@@ -521,6 +521,10 @@ private class HardwareEnterKeyEventNode(
         reset()
     }
 
+    override fun onDetach() {
+        reset()
+    }
+
     private fun emitPressInteraction() {
         coroutineScope.launch {
             interactionSource?.emit(pressInteraction)
