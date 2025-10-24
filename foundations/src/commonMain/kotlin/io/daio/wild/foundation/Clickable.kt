@@ -444,6 +444,7 @@ private class HardwareEnterKeyEventNode(
     var onLongClick: (() -> Unit)? = null,
     var onDoubleClick: (() -> Unit)? = null,
     var interactionSource: MutableInteractionSource?,
+    var timeNow: () -> Instant = { Clock.System.now() },
 ) : KeyInputModifierNode,
     FocusEventModifierNode,
     CompositionLocalConsumerModifierNode,
@@ -467,7 +468,7 @@ private class HardwareEnterKeyEventNode(
                             // If we are handling double clicks we should check if this
                             // key down event is potentially a second click.
                             if (onDoubleClick != null && awaitingSecondClick) {
-                                checkDoubleClick()
+                                checkDoubleClickTimeout()
                             }
 
                             emitPressInteraction()
@@ -488,7 +489,7 @@ private class HardwareEnterKeyEventNode(
                     if (!isLongClick && pressed) {
                         releasePressInteraction()
                         if (onDoubleClick != null) {
-                            handleDoubleClick()
+                            handleAsDoubleClick()
                         } else {
                             onClick?.invoke()
                         }
@@ -540,23 +541,28 @@ private class HardwareEnterKeyEventNode(
     }
 
     /**
-     * If the incoming click is a second click the function will call [onDoubleClick] otherwise a timeout will be setup
-     * to wait based on the [LocalViewConfiguration].doubleTapTimeoutMillis. If no second click event is received within
-     * the timeout the default [onClick] will be called.
+     * Ensures the incoming click is attempts double click handling.
+     *
+     * If the incoming click is a second click the function will call [onDoubleClick] otherwise
+     * a timeout will be setup to wait based on the [LocalViewConfiguration].doubleTapTimeoutMillis.
+     * If no second click event is received within the timeout the default [onClick] will be called.
      */
     @OptIn(ExperimentalTime::class)
-    private fun handleDoubleClick() {
+    private fun handleAsDoubleClick() {
         if (awaitingSecondClick) {
+            // If we detect we were awaiting a second click we know the click is a second click and
+            // onDoubleClick should be called.
             resetDoubleClick()
             onDoubleClick?.invoke()
         } else {
             resetDoubleClick()
-            firstClickTime = Clock.System.now()
+            firstClickTime = timeNow()
             awaitingSecondClick = true
             doubleClickTimeoutJob =
                 coroutineScope.launch {
                     delay(doubleClickTimeoutMillis())
-                    // No second click detected so this is can be confirmed as not a double click so call onClick instead.
+                    // No second click detected before timeout so the click is not a double click
+                    // and should call onClick instead.
                     if (awaitingSecondClick) {
                         awaitingSecondClick = false
                         onClick?.invoke()
@@ -568,14 +574,15 @@ private class HardwareEnterKeyEventNode(
     /**
      * Checks for a potential double click and cancels any timeout delay awaiting for the second click.
      *
-     * The timeout is calculated and can be overridden on the the [LocalViewConfiguration].doubleTapTimeoutMillis.
-     * This typically defaults to 300ms.
+     * The timeout is calculated and can be overridden on the
+     * [LocalViewConfiguration].doubleTapTimeoutMillis. This typically defaults to 300ms.
      */
     @OptIn(ExperimentalTime::class)
-    private fun checkDoubleClick() {
-        val currentTime = Clock.System.now()
+    private fun checkDoubleClickTimeout() {
+        val currentTime = timeNow()
         if (currentTime - firstClickTime <= doubleClickTimeoutMillis()) {
-            // We detected a double click cancel the timeout.
+            // We detected a second click within the double click timeout. We should cancel the
+            // job handling the timeout to ensure the click is handled as a double.
             doubleClickTimeoutJob?.cancel()
         }
     }
