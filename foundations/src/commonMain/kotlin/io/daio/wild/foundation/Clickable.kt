@@ -1,5 +1,7 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
+@file:OptIn(ExperimentalTime::class)
+
 package io.daio.wild.foundation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,8 +23,11 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
@@ -32,7 +37,14 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import io.daio.wild.modifier.thenIf
 import io.daio.wild.modifier.thenIfNotNull
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
@@ -48,6 +60,7 @@ import kotlinx.coroutines.launch
  * services.
  * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
@@ -59,6 +72,7 @@ fun Modifier.interactable(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     role: Role? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
@@ -72,6 +86,7 @@ fun Modifier.interactable(
                 interactionSource = interactionSource,
                 indication = indication,
                 role = role,
+                onDoubleClick = onDoubleClick,
                 onLongClickLabel = onLongClickLabel,
                 onLongClick = onLongClick,
                 onClickLabel = onClickLabel,
@@ -85,6 +100,7 @@ fun Modifier.interactable(
                 role = role,
                 onLongClickLabel = onLongClickLabel,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 onClickLabel = onClickLabel,
                 onClick = onClick,
             )
@@ -102,6 +118,7 @@ fun Modifier.interactable(
  * services.
  * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
@@ -115,6 +132,7 @@ fun Modifier.clickable(
     role: Role? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
 ): Modifier =
@@ -125,11 +143,13 @@ fun Modifier.clickable(
         onClick = onClick,
         onLongClickLabel = onLongClickLabel,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
     ).combinedClickable(
         interactionSource = interactionSource,
         indication = indication,
         enabled = enabled,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
         onLongClickLabel = onLongClickLabel,
         role = role,
         onClickLabel = onClickLabel,
@@ -195,6 +215,7 @@ fun Modifier.hardwareClickable(
  * services.
  * @param onLongClickLabel Optional text label used by accessibility services to describe the long-press action.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClickLabel Optional text label used by accessibility services to describe the click action.
  * @param onClick Callback when the element is clicked.
  *
@@ -209,6 +230,7 @@ fun Modifier.selectable(
     role: Role? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
 ): Modifier =
@@ -220,6 +242,7 @@ fun Modifier.selectable(
         onClick = onClick,
         onLongClickLabel = onLongClickLabel,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
     ).selectable(
         selected = selected,
         interactionSource = interactionSource,
@@ -287,6 +310,7 @@ private fun Modifier.handleTvInputIfRequired(
     role: Role? = null,
     onLongClickLabel: String? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
 ) = this.composed {
@@ -303,6 +327,7 @@ private fun Modifier.handleTvInputIfRequired(
                     interactionSource = interactionSource,
                     onClick = onClick,
                     onLongClick = onLongClick,
+                    onDoubleClick = onDoubleClick,
                 ).hardwareSemantics(
                     enabled = enabled,
                     selected = selected,
@@ -368,6 +393,7 @@ internal fun Modifier.handleHardwareInputEnter(
     interactionSource: MutableInteractionSource?,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
 ): Modifier =
     this then
         HardwareEnterKeyElement(
@@ -375,6 +401,7 @@ internal fun Modifier.handleHardwareInputEnter(
             interactionSource,
             onClick,
             onLongClick,
+            onDoubleClick,
         )
 
 private data class HardwareEnterKeyElement(
@@ -382,6 +409,7 @@ private data class HardwareEnterKeyElement(
     val interactionSource: MutableInteractionSource?,
     val onClick: (() -> Unit)? = null,
     val onLongClick: (() -> Unit)? = null,
+    val onDoubleClick: (() -> Unit)? = null,
 ) : ModifierNodeElement<HardwareEnterKeyEventNode>() {
     override fun create(): HardwareEnterKeyEventNode =
         HardwareEnterKeyEventNode(
@@ -389,6 +417,7 @@ private data class HardwareEnterKeyElement(
             interactionSource = interactionSource,
             onClick = onClick,
             onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
         )
 
     override fun update(node: HardwareEnterKeyEventNode) {
@@ -396,6 +425,7 @@ private data class HardwareEnterKeyElement(
         node.interactionSource = interactionSource
         node.onClick = onClick
         node.onLongClick = onLongClick
+        node.onDoubleClick = onDoubleClick
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -404,6 +434,7 @@ private data class HardwareEnterKeyElement(
         properties["interactionSource"] = interactionSource
         properties["onClick"] = onClick
         properties["onLongClick"] = onLongClick
+        properties["onDoubleClick"] = onDoubleClick
     }
 }
 
@@ -411,33 +442,43 @@ private class HardwareEnterKeyEventNode(
     var enabled: Boolean,
     var onClick: (() -> Unit)? = null,
     var onLongClick: (() -> Unit)? = null,
+    var onDoubleClick: (() -> Unit)? = null,
     var interactionSource: MutableInteractionSource?,
-) : KeyInputModifierNode, FocusEventModifierNode, Modifier.Node() {
+) : KeyInputModifierNode,
+    FocusEventModifierNode,
+    CompositionLocalConsumerModifierNode,
+    Modifier.Node() {
     private val pressInteraction = PressInteraction.Press(Offset.Zero)
     private var focusState: FocusState? = null
     private var pressed: Boolean = false
     private var isLongClick: Boolean = false
+
+    // Double-click state
+    private var firstClickTime: Instant = Instant.DISTANT_PAST
+    private var awaitingSecondClick: Boolean = false
+    private var doubleClickTimeoutJob: Job? = null
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
             when (event.type) {
                 KeyEventType.KeyDown -> {
                     when (event.repeatCount) {
-                        0 ->
-                            coroutineScope.launch {
-                                interactionSource?.emit(pressInteraction)
-                                pressed = true
+                        0 -> {
+                            // If we are handling double clicks we should check if this
+                            // key down event is potentially a second click.
+                            if (onDoubleClick != null && awaitingSecondClick) {
+                                checkDoubleClick()
                             }
+
+                            emitPressInteraction()
+                        }
 
                         1 ->
                             onLongClick?.let {
                                 isLongClick = true
-                                coroutineScope.launch {
-                                    interactionSource?.emit(
-                                        PressInteraction.Release(pressInteraction),
-                                    )
-                                    pressed = false
-                                }
+                                resetDoubleClick()
+
+                                releasePressInteraction()
                                 it.invoke()
                             }
                     }
@@ -445,24 +486,21 @@ private class HardwareEnterKeyEventNode(
 
                 KeyEventType.KeyUp -> {
                     if (!isLongClick && pressed) {
-                        coroutineScope.launch {
-                            interactionSource?.emit(
-                                PressInteraction.Release(pressInteraction),
-                            )
-                            pressed = false
+                        releasePressInteraction()
+                        if (onDoubleClick != null) {
+                            handleDoubleClick()
+                        } else {
+                            onClick?.invoke()
                         }
-                        onClick?.invoke()
                     } else {
                         pressed = false
                         isLongClick = false
                     }
                 }
             }
-            // Stop propagation
             return true
         }
 
-        // Continue
         return false
     }
 
@@ -473,27 +511,84 @@ private class HardwareEnterKeyEventNode(
             this.focusState = focusState
 
             if (!focusState.isFocused && pressed) {
-                coroutineScope.launch {
-                    interactionSource?.emit(PressInteraction.Release(pressInteraction))
-                    pressed = false
-                }
+                resetDoubleClick()
+                releasePressInteraction()
             }
         }
-    }
-
-    override fun onDetach() {
-        reset()
     }
 
     override fun onReset() {
         reset()
     }
 
+    private fun emitPressInteraction() {
+        coroutineScope.launch {
+            interactionSource?.emit(pressInteraction)
+            pressed = true
+        }
+    }
+
+    private fun releasePressInteraction() {
+        coroutineScope.launch {
+            interactionSource?.emit(PressInteraction.Release(pressInteraction))
+            pressed = false
+        }
+    }
+
+    /**
+     * If the incoming click is a second click the function will call [onDoubleClick] otherwise a timeout will be setup
+     * to wait based on the [LocalViewConfiguration].doubleTapTimeoutMillis. If no second click event is received within
+     * the timeout the default [onClick] will be called.
+     */
+    @OptIn(ExperimentalTime::class)
+    private fun handleDoubleClick() {
+        if (awaitingSecondClick) {
+            resetDoubleClick()
+            onDoubleClick?.invoke()
+        } else {
+            resetDoubleClick()
+            firstClickTime = Clock.System.now()
+            awaitingSecondClick = true
+            doubleClickTimeoutJob =
+                coroutineScope.launch {
+                    delay(doubleClickTimeoutMillis())
+                    // No second click detected so this is can be confirmed as not a double click so call onClick instead.
+                    if (awaitingSecondClick) {
+                        awaitingSecondClick = false
+                        onClick?.invoke()
+                    }
+                }
+        }
+    }
+
+    /**
+     * Checks for a potential double click and cancels any timeout delay awaiting for the second click.
+     *
+     * The timeout is calculated and can be overridden on the the [LocalViewConfiguration].doubleTapTimeoutMillis.
+     * This typically defaults to 300ms.
+     */
+    @OptIn(ExperimentalTime::class)
+    private fun checkDoubleClick() {
+        val currentTime = Clock.System.now()
+        if (currentTime - firstClickTime <= doubleClickTimeoutMillis()) {
+            // We detected a double click cancel the timeout.
+            doubleClickTimeoutJob?.cancel()
+        }
+    }
+
     private fun reset() {
+        resetDoubleClick()
         pressed = false
         isLongClick = false
-        focusState = null
     }
+
+    private fun resetDoubleClick() {
+        doubleClickTimeoutJob?.cancel()
+        awaitingSecondClick = false
+        firstClickTime = Instant.DISTANT_PAST
+    }
+
+    private fun doubleClickTimeoutMillis(): Duration = currentValueOf(LocalViewConfiguration).doubleTapTimeoutMillis.milliseconds
 }
 
 expect val KeyEvent.repeatCount: Int
