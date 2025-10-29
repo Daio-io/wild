@@ -458,6 +458,12 @@ private class HardwareEnterKeyEventNode(
     private var firstClickTime: Instant = Instant.DISTANT_PAST
     private var awaitingSecondClick: Boolean = false
     private var doubleClickTimeoutJob: Job? = null
+    private var doubleClickTimeout: Duration = 300.milliseconds
+
+    override fun onAttach() {
+        doubleClickTimeout =
+            currentValueOf(LocalViewConfiguration).doubleTapTimeoutMillis.milliseconds
+    }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
@@ -560,7 +566,7 @@ private class HardwareEnterKeyEventNode(
             awaitingSecondClick = true
             doubleClickTimeoutJob =
                 coroutineScope.launch {
-                    delay(doubleClickTimeoutMillis())
+                    delay(doubleClickTimeout)
                     // No second click detected before timeout so the click is not a double click
                     // and should call onClick instead.
                     if (awaitingSecondClick) {
@@ -580,7 +586,7 @@ private class HardwareEnterKeyEventNode(
     @OptIn(ExperimentalTime::class)
     private fun checkDoubleClickTimeout() {
         val currentTime = timeNow()
-        if (currentTime - firstClickTime <= doubleClickTimeoutMillis()) {
+        if (currentTime - firstClickTime <= doubleClickTimeout) {
             // We detected a second click within the double click timeout. We should cancel the
             // job handling the timeout to ensure the click is handled as a double.
             doubleClickTimeoutJob?.cancel()
@@ -598,8 +604,6 @@ private class HardwareEnterKeyEventNode(
         awaitingSecondClick = false
         firstClickTime = Instant.DISTANT_PAST
     }
-
-    private fun doubleClickTimeoutMillis(): Duration = currentValueOf(LocalViewConfiguration).doubleTapTimeoutMillis.milliseconds
 }
 
 expect val KeyEvent.repeatCount: Int
