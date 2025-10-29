@@ -83,6 +83,7 @@ fun Container(
  * @param selected Whether or not the container is currently selected.
  * @param onLongClick Callback to be called when the container is long clicked. If this and
  * [onClick] are null, the container will not be focusable on TV.
+ * @param onDoubleClick Optional callback to be called when the container is double clicked.
  * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
  * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
@@ -147,6 +148,7 @@ fun Container(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     style: Style = StyleDefaults.None,
     interactionSource: MutableInteractionSource? = null,
     selected: Boolean? = null,
@@ -163,6 +165,7 @@ fun Container(
                 style = style,
                 onClick = onClick,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 interactionSource = interactionSource,
             ),
         propagateMinConstraints = true,
@@ -199,6 +202,7 @@ fun Container(
  * @param selected Whether or not the container is currently selected.
  * @param onLongClick Callback to be called when the container is long clicked. If this and
  * [onClick] are null, the container will not be focusable on TV.
+ * @param onDoubleClick Optional callback to be called when the container is double clicked.
  * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
  * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
  * emitting [Interaction]s for this container.
@@ -264,6 +268,7 @@ fun ExperimentalContainer(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     style: Style = StyleDefaults.None,
     interactionSource: MutableInteractionSource? = null,
     selected: Boolean? = null,
@@ -280,6 +285,7 @@ fun ExperimentalContainer(
                 style = style,
                 onClick = onClick,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 interactionSource = interactionSource,
             ),
         propagateMinConstraints = true,

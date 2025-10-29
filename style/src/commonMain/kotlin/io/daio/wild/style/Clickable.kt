@@ -26,6 +26,7 @@ import io.daio.wild.modifier.thenIfNotNull
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.3.1
@@ -37,6 +38,7 @@ fun Modifier.interactable(
     interactionSource: MutableInteractionSource? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
     this then
@@ -48,6 +50,7 @@ fun Modifier.interactable(
                 interactionSource = interactionSource,
                 role = role,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 onClick = onClick,
             )
         } else {
@@ -56,8 +59,9 @@ fun Modifier.interactable(
                 style = style,
                 interactionSource = interactionSource,
                 role = role,
-                onClick = onClick,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                onClick = onClick,
             )
         }
 
@@ -76,6 +80,7 @@ fun Modifier.interactable(
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.4.0
@@ -87,6 +92,7 @@ fun Modifier.experimentalInteractable(
     interactionSource: MutableInteractionSource? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
     this then
@@ -98,6 +104,7 @@ fun Modifier.experimentalInteractable(
                 interactionSource = interactionSource,
                 role = role,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 onClick = onClick,
             )
         } else {
@@ -108,6 +115,7 @@ fun Modifier.experimentalInteractable(
                 role = role,
                 onClick = onClick,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
             )
         }
 
@@ -137,6 +145,7 @@ fun Modifier.experimentalInteractable(
     interactionSource: MutableInteractionSource? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
     this then
@@ -148,6 +157,7 @@ fun Modifier.experimentalInteractable(
                 interactionSource = interactionSource,
                 role = role,
                 onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
                 onClick = onClick,
             )
         } else {
@@ -157,6 +167,7 @@ fun Modifier.experimentalInteractable(
                 interactionSource = interactionSource,
                 role = role,
                 onClick = onClick,
+                onDoubleClick = onDoubleClick,
                 onLongClick = onLongClick,
             )
         }
@@ -173,6 +184,7 @@ fun Modifier.experimentalInteractable(
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.2.0
@@ -183,6 +195,7 @@ fun Modifier.clickable(
     style: Style? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -194,6 +207,7 @@ fun Modifier.clickable(
         role = role,
         onClick = onClick,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
@@ -214,6 +228,7 @@ fun Modifier.clickable(
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.4.0
@@ -224,6 +239,7 @@ fun Modifier.experimentalClickable(
     style: Style? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -235,6 +251,7 @@ fun Modifier.experimentalClickable(
         role = role,
         onClick = onClick,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
@@ -265,6 +282,7 @@ fun Modifier.experimentalClickable(
     style: (StyleScope.() -> Unit)? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -276,6 +294,7 @@ fun Modifier.experimentalClickable(
         role = role,
         onClick = onClick,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
     ).thenIfNotNull(
         style,
         ifNotNullModifier = {
@@ -296,6 +315,8 @@ fun Modifier.experimentalClickable(
  * @param style Optional [Style] to apply with the selectable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.2.0
@@ -307,6 +328,7 @@ fun Modifier.selectable(
     style: Style? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -317,6 +339,7 @@ fun Modifier.selectable(
         enabled = enabled,
         interactionSource = interactionSource,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
         role = role,
         onClick = onClick,
     ).thenIfNotNull(
@@ -344,6 +367,8 @@ fun Modifier.selectable(
  * @param style Optional [Style] to apply with the selectable.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.4.0
@@ -355,6 +380,7 @@ fun Modifier.experimentalSelectable(
     style: Style? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -365,6 +391,7 @@ fun Modifier.experimentalSelectable(
         enabled = enabled,
         interactionSource = interactionSource,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
         role = role,
         onClick = onClick,
     ).thenIfNotNull(
@@ -403,6 +430,7 @@ fun Modifier.experimentalSelectable(
     style: (StyleScope.() -> Unit)? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ) = composed {
     @Suppress("NAME_SHADOWING")
@@ -413,6 +441,7 @@ fun Modifier.experimentalSelectable(
         enabled = enabled,
         interactionSource = interactionSource,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
         role = role,
         onClick = onClick,
     ).thenIfNotNull(

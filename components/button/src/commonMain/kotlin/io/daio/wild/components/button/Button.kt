@@ -28,6 +28,7 @@ import io.daio.wild.style.StyleDefaults
  * @param modifier Modifier to be applied to the layout corresponding to the surface.
  * @param enabled Whether the button is enabled.
  * @param onLongClick Callback to be invoked when the button is long clicked.
+ * @param onDoubleClick Optional callback to be invoked when the button is double clicked.
  * @param style The style of the button.
  * @param contentPadding [PaddingValues] to be set on the inner content.
  * @param interactionSource Optional [MutableInteractionSource] for observing and emitting [Interaction]s.
@@ -65,6 +66,7 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
     style: Style = StyleDefaults.style(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     interactionSource: MutableInteractionSource? = null,
@@ -79,6 +81,7 @@ fun Button(
         style = style,
         onClick = onClick,
         onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
         interactionSource = interactionSource,
         content = {
             Box(
