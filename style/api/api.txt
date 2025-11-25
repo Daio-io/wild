@@ -310,6 +310,35 @@ package io.daio.wild.style {
     property public final androidx.compose.ui.graphics.Shape shape;
   }
 
+  public final class CornerShapesKt {
+    method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
+    method public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, float cornerExpansion);
+    method public static androidx.compose.ui.graphics.Shape toExpandedCornerShapeOrSelf(androidx.compose.ui.graphics.Shape, float cornerExpansion);
+  }
+
+  @androidx.compose.runtime.Immutable public final class ExpandedRoundedCornerShape extends androidx.compose.ui.graphics.Shape {
+    ctor public ExpandedRoundedCornerShape(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
+    method public androidx.compose.foundation.shape.CornerSize component1();
+    method public androidx.compose.foundation.shape.CornerSize component2();
+    method public androidx.compose.foundation.shape.CornerSize component3();
+    method public androidx.compose.foundation.shape.CornerSize component4();
+    method public float component5-D9Ej5fM();
+    method public io.daio.wild.style.ExpandedRoundedCornerShape copy(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
+    method public boolean equals(Object? other);
+    method public float getCornerExpansion();
+    method public androidx.compose.foundation.shape.CornerSize getBottomEnd();
+    method public androidx.compose.foundation.shape.CornerSize getBottomStart();
+    method public androidx.compose.foundation.shape.CornerSize getTopEnd();
+    method public androidx.compose.foundation.shape.CornerSize getTopStart();
+    method public int hashCode();
+    method public String toString();
+    property public final androidx.compose.foundation.shape.CornerSize bottomEnd;
+    property public final androidx.compose.foundation.shape.CornerSize bottomStart;
+    property public final float cornerExpansion;
+    property public final androidx.compose.foundation.shape.CornerSize topEnd;
+    property public final androidx.compose.foundation.shape.CornerSize topStart;
+  }
+
   @androidx.compose.runtime.Immutable public final class Style {
     ctor public Style(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
     method public io.daio.wild.style.Colors component1();
