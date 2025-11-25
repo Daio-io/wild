@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.LayoutDirection.Ltr
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.contracts.returns
 
 /**
  * A shape describing a rectangle with rounded corners, where each corner radius is expanded by an
