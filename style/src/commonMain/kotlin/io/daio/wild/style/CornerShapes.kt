@@ -17,17 +17,25 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.LayoutDirection.Ltr
 
 /**
- * A shape describing the rectangle with rounded corners with additional radius based on a supplied
- * [cornerExpansion].
+ * A shape describing a rectangle with rounded corners, where each corner radius is expanded by an
+ * additional amount specified by [cornerExpansion].
  *
- * @param topStart a size of the top start corner
- * @param topEnd a size of the top end corner
- * @param bottomEnd a size of the bottom end corner
- * @param bottomStart a size of the bottom start corner
- * @param cornerExpansion an additional length to apply to the radius.
+ * This shape is useful when you need to create rounded corners that account for additional spacing,
+ * such as when applying borders with insets. The [cornerExpansion] value is added to each corner's
+ * radius, ensuring that the rounded corners maintain their visual appearance even when the shape
+ * needs to be adjusted for spacing requirements.
+ *
+ * @param topStart The size of the top start corner radius.
+ * @param topEnd The size of the top end corner radius.
+ * @param bottomEnd The size of the bottom end corner radius.
+ * @param bottomStart The size of the bottom start corner radius.
+ * @param cornerExpansion The additional length to apply to each corner radius. This value is added
+ * to the base corner radius for all four corners.
+ *
+ * @since 0.5.0
  */
 @Immutable
-internal data class ExpandedRoundedCornerShape(
+data class ExpandedRoundedCornerShape(
     val topStart: CornerSize,
     val topEnd: CornerSize,
     val bottomEnd: CornerSize,
@@ -66,7 +74,22 @@ internal data class ExpandedRoundedCornerShape(
     }
 }
 
-internal fun RoundedCornerShape.toExpandedCornerShape(cornerExpansion: Dp): ExpandedRoundedCornerShape =
+/**
+ * Converts a [RoundedCornerShape] to an [ExpandedRoundedCornerShape] by applying the specified
+ * [cornerExpansion] to all corners.
+ *
+ * This extension function provides a convenient way to create an expanded rounded corner shape
+ * from an existing [RoundedCornerShape]. The resulting shape will have the same corner radii as
+ * the original shape, but with the [cornerExpansion] value added to each corner.
+ *
+ * @param cornerExpansion The additional length to apply to each corner radius. This value is added
+ * to the base corner radius for all four corners.
+ * @return An [ExpandedRoundedCornerShape] with the same corner sizes as this [RoundedCornerShape],
+ * but with the [cornerExpansion] applied to each corner.
+ *
+ * @since 0.5.0
+ */
+fun RoundedCornerShape.toExpandedCornerShape(cornerExpansion: Dp): ExpandedRoundedCornerShape =
     ExpandedRoundedCornerShape(
         topStart = topStart,
         topEnd = topEnd,
