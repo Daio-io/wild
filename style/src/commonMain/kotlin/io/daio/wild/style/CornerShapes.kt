@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.LayoutDirection.Ltr
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
+import kotlin.contracts.returns
 
 /**
  * A shape describing a rectangle with rounded corners, where each corner radius is expanded by an
@@ -97,3 +100,43 @@ fun RoundedCornerShape.toExpandedCornerShape(cornerExpansion: Dp): ExpandedRound
         bottomEnd = bottomEnd,
         cornerExpansion = cornerExpansion,
     )
+
+/**
+ * Checks if this [Shape] is a [RoundedCornerShape].
+ *
+ * This function uses Kotlin contracts to enable smart casting, allowing the compiler to
+ * automatically cast the shape to [RoundedCornerShape] when this function returns `true`.
+ *
+ * @return `true` if this shape is a [RoundedCornerShape], `false` otherwise.
+ *
+ * @since 0.5.0
+ */
+@OptIn(ExperimentalContracts::class)
+fun Shape.isRoundedCornerShape(): Boolean {
+    contract {
+        returns(true) implies (this@isRoundedCornerShape is RoundedCornerShape)
+    }
+    return this is RoundedCornerShape
+}
+
+/**
+ * Converts this [Shape] to an [ExpandedRoundedCornerShape] if it is a [RoundedCornerShape],
+ * otherwise returns the shape unchanged.
+ *
+ * This extension function provides a safe way to expand rounded corner shapes when needed,
+ * while preserving other shape types. If the shape is not a [RoundedCornerShape], no conversion
+ * is performed and the original shape is returned.
+ *
+ * @param cornerExpansion The additional length to apply to each corner radius. This value is only
+ * used if this shape is a [RoundedCornerShape].
+ * @return An [ExpandedRoundedCornerShape] if this shape is a [RoundedCornerShape], otherwise
+ * returns this shape unchanged.
+ *
+ * @since 0.5.0
+ */
+fun Shape.toExpandedCornerShapeOrSelf(cornerExpansion: Dp): Shape =
+    if (this is RoundedCornerShape) {
+        this.toExpandedCornerShape(cornerExpansion)
+    } else {
+        this
+    }
