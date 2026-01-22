@@ -1,513 +1,117 @@
 # Agents.md - Wild Codebase Guide
 
-This document provides comprehensive information about the Wild codebase structure, conventions, and workflows to help AI coding assistants work effectively with the project.
-
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Project Structure](#project-structure)
-3. [Code Conventions](#code-conventions)
-4. [Development Workflows](#development-workflows)
-5. [Platform-Specific Considerations](#platform-specific-considerations)
-6. [Key Technologies](#key-technologies)
-
----
+Guide for AI coding assistants working with the Wild Kotlin Multiplatform design system.
 
 ## Project Overview
 
-### Purpose and Goals
+**Wild** is a Kotlin Multiplatform design system library built with Compose Multiplatform. Provides primitive components and utilities for Android, Android TV, Desktop (JVM), and Web (JS/WASM).
 
-Wild is a **Kotlin Multiplatform design system library** built with Compose Multiplatform. It provides primitive components and utilities for building consistent user interfaces across multiple platforms.
+**Tech Stack**: Kotlin Multiplatform, Compose Multiplatform, Gradle (custom plugins), Metalava (API tracking), MkDocs (docs)
 
-**Tagline**: "Building blocks for your Compose Multiplatform Design System"
-
-### Target Platforms
-
-Wild supports the following platforms:
-
-- **Android** (Mobile) 📱
-- **Android TV** 📺
-- **Desktop** (JVM) 🖥️
-- **Web** (JavaScript & WebAssembly) 🕸️
-- **iOS** (Native) - configured but may not be actively maintained
-
-### Technology Stack
-
-- **Kotlin Multiplatform**: Core multiplatform framework
-- **Compose Multiplatform**: UI framework for all platforms
-- **Gradle**: Build system with custom convention plugins
-- **Metalava**: API tracking and versioning
-- **MkDocs**: Documentation generation
-- **Dokka**: API documentation generation
-
-### Published Modules
-
-The following modules are published to Maven Central:
-
-- `io.daio.wild:foundations`
-- `io.daio.wild:content-color`
-- `io.daio.wild:style`
-- `io.daio.wild:modifier`
-- `io.daio.wild:container`
-- `io.daio.wild:button` (under `components` namespace)
-
----
+**Published Modules**:
+- `io.daio.wild:foundations`, `content-color`, `style`, `modifier`, `container`, `button`
 
 ## Project Structure
 
-### Module Organization
-
-The project follows a modular architecture with clear separation of concerns:
-
 ```
 wild/
-├── foundations/              # Core foundation utilities
-├── content-color/            # Content color composition local
-├── style/                    # Style system (colors, shapes, borders, etc.)
-├── modifier/                 # Custom modifier utilities
-├── components/               # Component library
-│   └── button/              # Button component
-├── layout/                   # Layout components
-│   └── container/           # Container layout component
-├── playbook/                 # Sample/demo applications
-│   ├── android/             # Android app
-│   ├── androidTv/          # Android TV app
-│   ├── desktop/            # Desktop app
-│   ├── web/                # Web app (JS & WASM)
-│   └── shared/             # Shared code for playbooks
-├── internal/                # Internal modules
-│   └── benchmark/          # Benchmarking utilities
-├── gradle/                  # Build logic and conventions
-│   ├── build-logic/        # Custom Gradle plugins
-│   └── libs.versions.toml  # Version catalog
-└── docs/                    # MkDocs documentation
+├── foundations/          # Core utilities
+├── content-color/        # Content color composition local
+├── style/                # Style system
+├── modifier/             # Custom modifiers
+├── components/button/    # Button component
+├── layout/container/     # Container layout
+├── playbook/             # Demo apps (android, androidTv, desktop, web, shared)
+├── internal/benchmark/   # Benchmarking
+├── gradle/build-logic/   # Custom Gradle plugins
+└── docs/                 # MkDocs documentation
 ```
 
-### Source Set Structure
+**Source Sets**: `commonMain`, `androidMain`, `jvmMain`, `jsMain`, `wasmJsMain`, `nativeMain`, `commonTest`, `jvmTest`, `androidTest`
 
-Each library module follows Kotlin Multiplatform source set conventions:
+**Build Logic**: Custom plugins in `gradle/build-logic/convention/` handle KMP setup, Compose, Android, publishing, formatting (Spotless), and static analysis (Detekt).
 
-- **commonMain**: Shared code across all platforms
-- **androidMain**: Android-specific implementations
-- **jvmMain**: Desktop/JVM-specific implementations
-- **jsMain**: JavaScript-specific implementations
-- **wasmJsMain**: WebAssembly-specific implementations
-- **nativeMain**: Native platform implementations (iOS, etc.)
-- **commonTest**: Shared test code
-- **androidTest**: Android-specific tests
-- **jvmTest**: JVM-specific tests
-
-### Build Logic and Conventions
-
-Custom Gradle plugins are located in `gradle/build-logic/convention/`:
-
-- **RootConventionPlugin**: Root project configuration
-- **KotlinMultiplatformConventionPlugin**: KMP setup with all targets
-- **ComposeMultiplatformPlugin**: Compose Multiplatform configuration
-- **AndroidLibraryConventionPlugin**: Android library configuration
-- **AndroidApplicationConventionPlugin**: Android app configuration
-- **PublishingConventionPlugin**: Maven publishing setup
-- **RoborazziConventionPlugin**: Screenshot testing configuration
-- **Spotless**: Code formatting
-- **StaticAnalysis**: Detekt configuration
-
-### API Tracking and Versioning
-
-Each published module maintains API tracking files in an `api/` directory:
-
-- `api.txt`: Current API signature (generated by Metalava)
-- `0.3.4.txt`, `0.4.0.txt`, etc.: Historical API snapshots for version tracking
-
-The `prepare-release.sh` script copies `api.txt` to versioned files during releases.
-
-### Documentation Structure
-
-Documentation is managed with **MkDocs** and located in the `docs/` directory:
-
-- Markdown files for each module/feature
-- API reference generated by Dokka
-- Published to GitHub Pages at `https://daio-io.github.io/wild/`
-
----
+**API Tracking**: Each module has `api/` directory with `api.txt` (current) and versioned snapshots (`0.3.4.txt`, etc.) generated by Metalava.
 
 ## Code Conventions
 
-### Package Naming
+**Package Naming**: `io.daio.wild.<module-name>`
 
-All code follows the package naming convention:
+**Standards**:
+- Copyright header: `// Copyright 2024, Dai Williams // SPDX-License-Identifier: Apache-2.0`
+- Formatting: Spotless (ktlint) - `./gradlew spotlessApply`
+- Static analysis: Detekt - `./gradlew detekt`
+- Public APIs: KDoc with `@param`, `@since`, examples
 
+**Platform-Specific Code**:
+```kotlin
+// commonMain
+expect val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color>
+
+// androidMain
+actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 ```
-io.daio.wild.<module-name>
-```
 
-Examples:
-- `io.daio.wild.components.button`
-- `io.daio.wild.style`
-- `io.daio.wild.content`
-- `io.daio.wild.container`
-
-### Kotlin Coding Standards
-
-1. **Copyright Headers**: All files must include:
-   ```kotlin
-   // Copyright 2024, Dai Williams
-   // SPDX-License-Identifier: Apache-2.0
-   ```
-
-2. **Code Formatting**: Enforced by Spotless (ktlint)
-   - Run `./gradlew spotlessCheck` to verify
-   - Run `./gradlew spotlessApply` to auto-format
-
-3. **Static Analysis**: Detekt is configured for code quality
-   - Run `./gradlew detekt` to check
-
-4. **API Documentation**: Public APIs should include KDoc comments with:
-   - Description
-   - `@param` tags for parameters
-   - `@since` tags for version tracking
-   - Example usage when appropriate
-
-### Platform-Specific Source Sets
-
-When implementing platform-specific code:
-
-1. **Common Interface**: Define `expect` declarations in `commonMain`
-2. **Platform Implementations**: Provide `actual` implementations in platform-specific source sets
-3. **Example Pattern**:
-   ```kotlin
-   // commonMain
-   internal expect val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color>
-   
-   // androidMain
-   internal actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
-   ```
-
-### API Stability
-
-- Public APIs are tracked using Metalava
-- Breaking changes should be carefully considered
-- Version numbers follow semantic versioning
-- API snapshots are preserved for each release
-
-### Module Dependencies
-
-Modules follow a clear dependency hierarchy:
-
-- **foundations**: Base utilities (no Wild dependencies)
-- **style**: Depends on `foundations`
-- **content-color**: Depends on `foundations`
-- **modifier**: Depends on `foundations`
-- **container**: Depends on `style`, `foundations`
-- **button**: Depends on `container`, `style`, `content-color`, `foundations`
-
----
+**Module Dependencies**: `foundations` → `style`/`content-color`/`modifier` → `container` → `button`
 
 ## Development Workflows
 
-### Building the Project
+**Build**: `./gradlew build` or `./gradlew :style:build`
 
-**Build all modules:**
-```bash
-./gradlew build
-```
+**Test**: `./gradlew test` / `./gradlew jvmTest` / `./gradlew :style:jvmTest --tests "ClassName"`
 
-**Build specific module:**
-```bash
-./gradlew :style:build
-./gradlew :components:button:build
-```
+**Playbook Apps**:
+- Desktop: `./gradlew :playbook:desktop:run`
+- Web (JS): `./gradlew :playbook:web:jsBrowserRun`
+- Web (WASM): `./gradlew :playbook:web:wasmJsBrowserRun`
+- Android: `./gradlew :playbook:android:installDebug`
+- Android TV: `./gradlew :playbook:androidTv:installDebug`
 
-**Build for CI (lint, test, assemble):**
-```bash
-./gradlew spotlessCheck detekt lint jvmTest
-./gradlew :foundations:assemble :content-color:assemble :style:assemble :layout:container:assemble :components:button:assemble
-```
+**Code Quality**: `./gradlew spotlessCheck detekt lint`
 
-### Running Tests
+**Docs**: `./gradlew dokkaHtmlMultiModule` (API), `mkdocs serve` (local), `mkdocs gh-deploy` (deploy)
 
-**Run all tests:**
-```bash
-./gradlew test
-```
+**Publishing**: `./gradlew publish` (Maven Central), `./gradlew publishAllPublicationsToGitHubPackagesRepository -PuseGitHubPublishing` (GitHub Packages)
 
-**Run JVM tests:**
-```bash
-./gradlew jvmTest
-```
+**Release**: `./scripts/prepare-release.sh <version>` (copies API files)
 
-**Run Android tests:**
-```bash
-./gradlew androidTest
-```
+## Platform-Specific
 
-**Run specific test class:**
-```bash
-./gradlew :style:jvmTest --tests "io.daio.wild.style.ColorsTest"
-```
+**Android**: Min SDK 23, Target/Compile SDK 36, Java 21. Uses AndroidX (Activity Compose, AppCompat, Core KTX). TV support via `androidx.tv.material3`.
 
-### Running Playbook Applications
+**Desktop**: Java 21, Compose Desktop, preview support.
 
-**Android:**
-```bash
-./gradlew :playbook:android:installDebug
-```
+**Web**: JS and WASM targets, both executable.
 
-**Desktop:**
-```bash
-./gradlew :playbook:desktop:run
-```
+**iOS**: Configured (`iosX64`, `iosArm64`, `iosSimulatorArm64`) but may not be actively maintained.
 
-**Web (JavaScript):**
-```bash
-./gradlew :playbook:web:jsBrowserRun
-```
+**Patterns**:
+- Expect/Actual for platform code
+- Try-catch for optional platform libraries
+- Composition Locals for cross-platform theming
 
-**Web (WebAssembly):**
-```bash
-./gradlew :playbook:web:wasmJsBrowserRun
-```
-
-**Android TV:**
-```bash
-./gradlew :playbook:androidTv:installDebug
-```
-
-### Code Quality Checks
-
-**Format code:**
-```bash
-./gradlew spotlessApply
-```
-
-**Check formatting:**
-```bash
-./gradlew spotlessCheck
-```
-
-**Run static analysis:**
-```bash
-./gradlew detekt
-```
-
-**Lint Android code:**
-```bash
-./gradlew lint
-```
-
-### Documentation Generation
-
-**Generate API documentation (Dokka):**
-```bash
-./gradlew dokkaHtmlMultiModule
-```
-
-**Build MkDocs documentation locally:**
-```bash
-# Requires mkdocs installed
-mkdocs serve
-```
-
-**Deploy documentation:**
-```bash
-mkdocs gh-deploy
-```
-
-### Publishing Process
-
-**Publish to Maven Central:**
-```bash
-./gradlew publish
-```
-
-**Publish to GitHub Packages:**
-```bash
-./gradlew publishAllPublicationsToGitHubPackagesRepository -PuseGitHubPublishing
-```
-
-**Prepare release (copy API files):**
-```bash
-./scripts/prepare-release.sh <version>
-# Example: ./scripts/prepare-release.sh 0.4.0
-```
-
-### CI/CD Workflows
-
-The project uses GitHub Actions for CI/CD:
-
-- **Build workflow** (`.github/workflows/build.yml`): Runs on push/PR to main
-  - Lint & test
-  - Build all modules
-
-- **Release workflow** (`.github/workflows/release.yml`): Runs on release creation
-  - Lint & test
-  - Publish to Maven Central or GitHub Packages
-  - Supports snapshot releases
-
-- **Docs deploy workflow** (`.github/workflows/docs_deploy.yml`): Deploys documentation to GitHub Pages
-
----
-
-## Platform-Specific Considerations
-
-### Android
-
-- **Min SDK**: 23
-- **Target SDK**: 36
-- **Compile SDK**: 36
-- Uses AndroidX libraries (Activity Compose, AppCompat, Core KTX)
-- Android-specific implementations in `androidMain` source sets
-- Android TV support with `androidx.tv.material3` integration
-
-### Desktop (JVM)
-
-- **Java Version**: 21
-- Uses Compose Desktop
-- JVM-specific implementations in `jvmMain` source sets
-- Preview support available
-
-### Web
-
-- **JavaScript**: Standard JS target with browser support
-- **WebAssembly**: WASM target for better performance
-- Both targets configured with executable binaries
-- Separate source sets: `jsMain` and `wasmJsMain`
-
-### iOS (Native)
-
-- Configured but may not be actively maintained
-- Targets: `iosX64`, `iosArm64`, `iosSimulatorArm64`
-- Native implementations in `nativeMain` source sets
-
-### Common Patterns
-
-1. **Expect/Actual Pattern**: Use for platform-specific implementations
-   ```kotlin
-   // commonMain
-   expect fun platformSpecificFunction()
-   
-   // androidMain
-   actual fun platformSpecificFunction() { /* Android impl */ }
-   ```
-
-2. **Conditional Dependencies**: Use try-catch for optional platform libraries
-   ```kotlin
-   val material3ContentColorLocal: ProvidableCompositionLocal<Color> =
-       try {
-           androidx.compose.material3.LocalContentColor
-       } catch (_: Throwable) {
-           LocalContentColor
-       }
-   ```
-
-3. **Composition Locals**: Use for cross-platform theming and context
-   - Example: `LocalContentColor` provides content color across platforms
-
-### Testing Across Platforms
-
-- **Common Tests**: Write in `commonTest` for shared logic
-- **Platform Tests**: Use platform-specific test source sets when needed
-- **JVM Tests**: Primary testing target for most unit tests
-- **Android Tests**: Use for Android-specific functionality and UI tests
-
----
+**Testing**: `commonTest` for shared logic, `jvmTest` for most unit tests, `androidTest` for Android-specific.
 
 ## Key Technologies
 
-### Compose Multiplatform
-
-- **Version**: 1.9.3 (from `libs.versions.toml`)
-- **Compiler Version**: 1.5.7.1
-- Provides declarative UI framework across all platforms
-- Uses `@Composable` functions for UI components
-- Foundation, Material3, and UI tooling dependencies
-
-### Gradle with Custom Build Logic
-
-- **Gradle Version**: Managed by wrapper
-- **Kotlin Version**: 2.2.21
-- **Build Logic**: Custom plugins in `gradle/build-logic/`
-- **Version Catalog**: `gradle/libs.versions.toml` for dependency management
-- **Type-safe Project Accessors**: Enabled for better IDE support
-
-### API Tracking and Versioning
-
-- **Metalava**: Generates API signature files (`api.txt`)
-- **Version Snapshots**: Preserved in `api/<version>.txt` files
-- **Breaking Changes**: Tracked through API diffs
-- **Semantic Versioning**: Follows MAJOR.MINOR.PATCH
-
-### MkDocs for Documentation
-
-- **Theme**: Material
-- **Location**: `docs/` directory
-- **Config**: `mkdocs.yml`
-- **Deployment**: GitHub Pages
-- **API Reference**: Generated by Dokka and linked in navigation
-
-### Additional Tools
-
-- **Spotless**: Code formatting (ktlint)
-- **Detekt**: Static code analysis
-- **Roborazzi**: Screenshot testing (configured but may not be actively used)
-- **Dokka**: API documentation generation
-- **Maven Publish**: Publishing to Maven repositories
-
----
+- **Compose Multiplatform**: 1.9.3, compiler 1.5.7.1
+- **Kotlin**: 2.2.21
+- **Gradle**: Custom plugins, version catalog (`gradle/libs.versions.toml`)
+- **Metalava**: API signature tracking
+- **MkDocs**: Material theme, GitHub Pages deployment
+- **Tools**: Spotless, Detekt, Dokka, Maven Publish
 
 ## Quick Reference
 
-### Common Commands
-
 ```bash
-# Build
+# Common commands
 ./gradlew build
-
-# Test
-./gradlew test
 ./gradlew jvmTest
-
-# Format
 ./gradlew spotlessApply
-
-# Check quality
-./gradlew spotlessCheck detekt lint
-
-# Run playbook
 ./gradlew :playbook:desktop:run
-./gradlew :playbook:web:jsBrowserRun
-
-# Generate docs
 ./gradlew dokkaHtmlMultiModule
 ```
 
-### Key Files
+**Key Files**: `build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml`, `mkdocs.yml`
 
-- `build.gradle.kts`: Root build configuration
-- `settings.gradle.kts`: Project structure and repositories
-- `gradle/libs.versions.toml`: Dependency versions
-- `mkdocs.yml`: Documentation configuration
-- `.github/workflows/`: CI/CD workflows
-
-### Important Paths
-
-- Library modules: Root level (`foundations/`, `style/`, etc.)
-- Playbook apps: `playbook/`
-- Build logic: `gradle/build-logic/`
-- Documentation: `docs/`
-- API tracking: `<module>/api/`
-
----
-
-## Additional Notes
-
-- The project uses **Apache 2.0** license
-- All modules are published to **Maven Central**
-- Documentation is hosted at **https://daio-io.github.io/wild/**
-- GitHub repository: **https://github.com/daio-io/wild**
-- The codebase follows Kotlin Multiplatform best practices
-- Platform-specific code is minimized in favor of shared common code
-- API stability is important - breaking changes require careful consideration
-
----
-
-*Last updated: 2024*
+**Links**: [Documentation](https://daio-io.github.io/wild/) | [GitHub](https://github.com/daio-io/wild) | License: Apache 2.0
