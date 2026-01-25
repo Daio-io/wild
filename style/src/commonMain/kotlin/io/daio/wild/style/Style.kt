@@ -140,72 +140,120 @@ object StyleDefaults {
     fun shapes(
         shape: Shape = RectangleShape,
         focusedShape: Shape = shape,
-        pressedShape: Shape = shape,
-        disabledShape: Shape = shape,
+        hoveredShape: Shape = focusedShape,
+        pressedShape: Shape = focusedShape,
         selectedShape: Shape = shape,
+        disabledShape: Shape = shape,
+        focusedSelectedShape: Shape = focusedShape,
+        pressedSelectedShape: Shape = pressedShape,
+        hoveredSelectedShape: Shape = hoveredShape,
         focusedDisabledShape: Shape = disabledShape,
+        pressedDisabledShape: Shape = disabledShape,
+        hoveredDisabledShape: Shape = disabledShape,
     ): Shapes =
         Shapes(
             shape = shape,
             focusedShape = focusedShape,
+            hoveredShape = hoveredShape,
             pressedShape = pressedShape,
-            disabledShape = disabledShape,
             selectedShape = selectedShape,
+            disabledShape = disabledShape,
+            focusedSelectedShape = focusedSelectedShape,
+            pressedSelectedShape = pressedSelectedShape,
+            hoveredSelectedShape = hoveredSelectedShape,
             focusedDisabledShape = focusedDisabledShape,
+            pressedDisabledShape = pressedDisabledShape,
+            hoveredDisabledShape = hoveredDisabledShape,
         )
 
     @Stable
     fun scale(
         scale: Float = 1f,
         focusedScale: Float = scale,
-        pressedScale: Float = scale,
+        hoveredScale: Float = focusedScale,
+        pressedScale: Float = focusedScale,
         selectedScale: Float = scale,
         disabledScale: Float = scale,
-        focusedDisabledScale: Float = focusedScale,
+        focusedSelectedScale: Float = focusedScale,
+        pressedSelectedScale: Float = pressedScale,
+        hoveredSelectedScale: Float = hoveredScale,
+        focusedDisabledScale: Float = disabledScale,
+        pressedDisabledScale: Float = disabledScale,
+        hoveredDisabledScale: Float = disabledScale,
     ): Scale =
         Scale(
             scale = scale,
             focusedScale = focusedScale,
+            hoveredScale = hoveredScale,
             pressedScale = pressedScale,
             selectedScale = selectedScale,
             disabledScale = disabledScale,
+            focusedSelectedScale = focusedSelectedScale,
+            pressedSelectedScale = pressedSelectedScale,
+            hoveredSelectedScale = hoveredSelectedScale,
             focusedDisabledScale = focusedDisabledScale,
+            pressedDisabledScale = pressedDisabledScale,
+            hoveredDisabledScale = hoveredDisabledScale,
         )
 
     @Stable
     fun borders(
         border: Border = BorderDefaults.None,
         focusedBorder: Border = border,
-        pressedBorder: Border = border,
+        hoveredBorder: Border = focusedBorder,
+        pressedBorder: Border = focusedBorder,
         selectedBorder: Border = border,
         disabledBorder: Border = border,
+        focusedSelectedBorder: Border = focusedBorder,
+        pressedSelectedBorder: Border = pressedBorder,
+        hoveredSelectedBorder: Border = hoveredBorder,
         focusedDisabledBorder: Border = disabledBorder,
+        pressedDisabledBorder: Border = disabledBorder,
+        hoveredDisabledBorder: Border = disabledBorder,
     ): Borders =
         Borders(
             border = border,
             focusedBorder = focusedBorder,
+            hoveredBorder = hoveredBorder,
             pressedBorder = pressedBorder,
             selectedBorder = selectedBorder,
             disabledBorder = disabledBorder,
+            focusedSelectedBorder = focusedSelectedBorder,
+            pressedSelectedBorder = pressedSelectedBorder,
+            hoveredSelectedBorder = hoveredSelectedBorder,
             focusedDisabledBorder = focusedDisabledBorder,
+            pressedDisabledBorder = pressedDisabledBorder,
+            hoveredDisabledBorder = hoveredDisabledBorder,
         )
 
     @Stable
     fun alpha(
         alpha: Float = 1f,
         focusedAlpha: Float = alpha,
+        hoveredAlpha: Float = alpha,
         pressedAlpha: Float = alpha,
         selectedAlpha: Float = alpha,
         disabledAlpha: Float = .6f,
+        focusedSelectedAlpha: Float = focusedAlpha,
+        pressedSelectedAlpha: Float = pressedAlpha,
+        hoveredSelectedAlpha: Float = hoveredAlpha,
         focusedDisabledAlpha: Float = disabledAlpha,
+        pressedDisabledAlpha: Float = disabledAlpha,
+        hoveredDisabledAlpha: Float = disabledAlpha,
     ): Alpha =
         Alpha(
             alpha = alpha,
             focusedAlpha = focusedAlpha,
+            hoveredAlpha = hoveredAlpha,
             pressedAlpha = pressedAlpha,
             selectedAlpha = selectedAlpha,
             disabledAlpha = disabledAlpha,
+            focusedSelectedAlpha = focusedSelectedAlpha,
+            pressedSelectedAlpha = pressedSelectedAlpha,
+            hoveredSelectedAlpha = hoveredSelectedAlpha,
             focusedDisabledAlpha = focusedDisabledAlpha,
+            pressedDisabledAlpha = pressedDisabledAlpha,
+            hoveredDisabledAlpha = hoveredDisabledAlpha,
         )
 }
 
