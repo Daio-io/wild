@@ -136,6 +136,22 @@ object StyleDefaults {
             focusedDisabledContentColor = focusedDisabledContentColor,
         )
 
+    /**
+     * Creates a [Shapes] instance with configurable shapes for different interaction states.
+     *
+     * @param shape The default shape.
+     * @param focusedShape The shape when the element is focused.
+     * @param hoveredShape The shape when the element is hovered.
+     * @param pressedShape The shape when the element is pressed.
+     * @param selectedShape The shape when the element is selected.
+     * @param disabledShape The shape when the element is disabled.
+     * @param focusedSelectedShape The shape when the element is both focused and selected.
+     * @param pressedSelectedShape The shape when the element is both pressed and selected.
+     * @param hoveredSelectedShape The shape when the element is both hovered and selected.
+     * @param focusedDisabledShape The shape when the element is both focused and disabled.
+     * @param pressedDisabledShape The shape when the element is both pressed and disabled.
+     * @param hoveredDisabledShape The shape when the element is both hovered and disabled.
+     */
     @Stable
     fun shapes(
         shape: Shape = RectangleShape,
@@ -166,6 +182,22 @@ object StyleDefaults {
             hoveredDisabledShape = hoveredDisabledShape,
         )
 
+    /**
+     * Creates a [Scale] instance with configurable scale values for different interaction states.
+     *
+     * @param scale The default scale value.
+     * @param focusedScale The scale when the element is focused.
+     * @param hoveredScale The scale when the element is hovered.
+     * @param pressedScale The scale when the element is pressed.
+     * @param selectedScale The scale when the element is selected.
+     * @param disabledScale The scale when the element is disabled.
+     * @param focusedSelectedScale The scale when the element is both focused and selected.
+     * @param pressedSelectedScale The scale when the element is both pressed and selected.
+     * @param hoveredSelectedScale The scale when the element is both hovered and selected.
+     * @param focusedDisabledScale The scale when the element is both focused and disabled.
+     * @param pressedDisabledScale The scale when the element is both pressed and disabled.
+     * @param hoveredDisabledScale The scale when the element is both hovered and disabled.
+     */
     @Stable
     fun scale(
         scale: Float = 1f,
@@ -196,6 +228,22 @@ object StyleDefaults {
             hoveredDisabledScale = hoveredDisabledScale,
         )
 
+    /**
+     * Creates a [Borders] instance with configurable borders for different interaction states.
+     *
+     * @param border The default border.
+     * @param focusedBorder The border when the element is focused.
+     * @param hoveredBorder The border when the element is hovered.
+     * @param pressedBorder The border when the element is pressed.
+     * @param selectedBorder The border when the element is selected.
+     * @param disabledBorder The border when the element is disabled.
+     * @param focusedSelectedBorder The border when the element is both focused and selected.
+     * @param pressedSelectedBorder The border when the element is both pressed and selected.
+     * @param hoveredSelectedBorder The border when the element is both hovered and selected.
+     * @param focusedDisabledBorder The border when the element is both focused and disabled.
+     * @param pressedDisabledBorder The border when the element is both pressed and disabled.
+     * @param hoveredDisabledBorder The border when the element is both hovered and disabled.
+     */
     @Stable
     fun borders(
         border: Border = BorderDefaults.None,
@@ -226,6 +274,22 @@ object StyleDefaults {
             hoveredDisabledBorder = hoveredDisabledBorder,
         )
 
+    /**
+     * Creates an [Alpha] instance with configurable alpha values for different interaction states.
+     *
+     * @param alpha The default alpha value.
+     * @param focusedAlpha The alpha when the element is focused.
+     * @param hoveredAlpha The alpha when the element is hovered.
+     * @param pressedAlpha The alpha when the element is pressed.
+     * @param selectedAlpha The alpha when the element is selected.
+     * @param disabledAlpha The alpha when the element is disabled.
+     * @param focusedSelectedAlpha The alpha when the element is both focused and selected.
+     * @param pressedSelectedAlpha The alpha when the element is both pressed and selected.
+     * @param hoveredSelectedAlpha The alpha when the element is both hovered and selected.
+     * @param focusedDisabledAlpha The alpha when the element is both focused and disabled.
+     * @param pressedDisabledAlpha The alpha when the element is both pressed and disabled.
+     * @param hoveredDisabledAlpha The alpha when the element is both hovered and disabled.
+     */
     @Stable
     fun alpha(
         alpha: Float = 1f,
