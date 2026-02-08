@@ -216,6 +216,36 @@ package io.daio.wild.style {
     property public final long selectedContentColor;
   }
 
+  public final class CornerShapesKt {
+    method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
+    method public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, float cornerExpansion);
+    method public static androidx.compose.ui.graphics.Shape toExpandedCornerShapeOrSelf(androidx.compose.ui.graphics.Shape, float cornerExpansion);
+  }
+
+  @androidx.compose.runtime.Immutable public final class ExpandedRoundedCornerShape implements androidx.compose.ui.graphics.Shape {
+    ctor public ExpandedRoundedCornerShape(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
+    method public androidx.compose.foundation.shape.CornerSize component1();
+    method public androidx.compose.foundation.shape.CornerSize component2();
+    method public androidx.compose.foundation.shape.CornerSize component3();
+    method public androidx.compose.foundation.shape.CornerSize component4();
+    method public float component5-D9Ej5fM();
+    method public io.daio.wild.style.ExpandedRoundedCornerShape copy-M2VBTUQ(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
+    method public androidx.compose.ui.graphics.Outline createOutline(long size, androidx.compose.ui.unit.LayoutDirection layoutDirection, androidx.compose.ui.unit.Density density);
+    method public boolean equals(Object? other);
+    method public androidx.compose.foundation.shape.CornerSize getBottomEnd();
+    method public androidx.compose.foundation.shape.CornerSize getBottomStart();
+    method public float getCornerExpansion();
+    method public androidx.compose.foundation.shape.CornerSize getTopEnd();
+    method public androidx.compose.foundation.shape.CornerSize getTopStart();
+    method public int hashCode();
+    method public String toString();
+    property public final androidx.compose.foundation.shape.CornerSize bottomEnd;
+    property public final androidx.compose.foundation.shape.CornerSize bottomStart;
+    property public final float cornerExpansion;
+    property public final androidx.compose.foundation.shape.CornerSize topEnd;
+    property public final androidx.compose.foundation.shape.CornerSize topStart;
+  }
+
   @androidx.compose.runtime.Immutable public final class Scale {
     ctor public Scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale);
     method public float component1();
@@ -310,35 +340,6 @@ package io.daio.wild.style {
     property public final androidx.compose.ui.graphics.Shape shape;
   }
 
-  public final class CornerShapesKt {
-    method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
-    method public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, float cornerExpansion);
-    method public static androidx.compose.ui.graphics.Shape toExpandedCornerShapeOrSelf(androidx.compose.ui.graphics.Shape, float cornerExpansion);
-  }
-
-  @androidx.compose.runtime.Immutable public final class ExpandedRoundedCornerShape extends androidx.compose.ui.graphics.Shape {
-    ctor public ExpandedRoundedCornerShape(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
-    method public androidx.compose.foundation.shape.CornerSize component1();
-    method public androidx.compose.foundation.shape.CornerSize component2();
-    method public androidx.compose.foundation.shape.CornerSize component3();
-    method public androidx.compose.foundation.shape.CornerSize component4();
-    method public float component5-D9Ej5fM();
-    method public io.daio.wild.style.ExpandedRoundedCornerShape copy(androidx.compose.foundation.shape.CornerSize topStart, androidx.compose.foundation.shape.CornerSize topEnd, androidx.compose.foundation.shape.CornerSize bottomEnd, androidx.compose.foundation.shape.CornerSize bottomStart, float cornerExpansion);
-    method public boolean equals(Object? other);
-    method public float getCornerExpansion();
-    method public androidx.compose.foundation.shape.CornerSize getBottomEnd();
-    method public androidx.compose.foundation.shape.CornerSize getBottomStart();
-    method public androidx.compose.foundation.shape.CornerSize getTopEnd();
-    method public androidx.compose.foundation.shape.CornerSize getTopStart();
-    method public int hashCode();
-    method public String toString();
-    property public final androidx.compose.foundation.shape.CornerSize bottomEnd;
-    property public final androidx.compose.foundation.shape.CornerSize bottomStart;
-    property public final float cornerExpansion;
-    property public final androidx.compose.foundation.shape.CornerSize topEnd;
-    property public final androidx.compose.foundation.shape.CornerSize topStart;
-  }
-
   @androidx.compose.runtime.Immutable public final class Style {
     ctor public Style(io.daio.wild.style.Colors colors, io.daio.wild.style.Borders borders, io.daio.wild.style.Scale scale, io.daio.wild.style.Shapes shapes, io.daio.wild.style.Alpha alpha);
     method public io.daio.wild.style.Colors component1();
@@ -363,12 +364,12 @@ package io.daio.wild.style {
   }
 
   public final class StyleDefaults {
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Alpha alpha(optional float alpha, optional float focusedAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedDisabledAlpha);
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedDisabledBorder);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Alpha alpha(optional float alpha, optional float focusedAlpha, optional float hoveredAlpha, optional float pressedAlpha, optional float selectedAlpha, optional float disabledAlpha, optional float focusedSelectedAlpha, optional float pressedSelectedAlpha, optional float hoveredSelectedAlpha, optional float focusedDisabledAlpha, optional float pressedDisabledAlpha, optional float hoveredDisabledAlpha);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border hoveredBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedSelectedBorder, optional io.daio.wild.style.Border pressedSelectedBorder, optional io.daio.wild.style.Border hoveredSelectedBorder, optional io.daio.wild.style.Border focusedDisabledBorder, optional io.daio.wild.style.Border pressedDisabledBorder, optional io.daio.wild.style.Border hoveredDisabledBorder);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long hoveredContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long pressedDisabledContentColor, optional long focusedDisabledContentColor, optional long hoveredDisabledContentColor);
     method public io.daio.wild.style.Style getNone();
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedDisabledScale);
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape hoveredShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape focusedSelectedShape, optional androidx.compose.ui.graphics.Shape pressedSelectedShape, optional androidx.compose.ui.graphics.Shape hoveredSelectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape, optional androidx.compose.ui.graphics.Shape pressedDisabledShape, optional androidx.compose.ui.graphics.Shape hoveredDisabledShape);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
     property public final io.daio.wild.style.Style None;
     field public static final io.daio.wild.style.StyleDefaults INSTANCE;
