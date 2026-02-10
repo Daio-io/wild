@@ -121,3 +121,58 @@ internal fun defaultScaleAnimationSpec(
             },
         easing = CubicBezierEasing(0f, 0f, 0.2f, 1f),
     )
+
+/**
+ * Contains default [Scale] presets for common interaction patterns.
+ *
+ * @since 0.5.0
+ */
+object ScaleDefaults {
+    /**
+     * No scaling effect. All states return scale 1.0.
+     */
+    val None: Scale = Scale()
+
+    /**
+     * Subtle scale effect, suitable for desktop hover interactions.
+     * Focused/hovered scale: 1.02
+     */
+    val Subtle: Scale =
+        Scale(
+            focusedScale = 1.02f,
+            hoveredScale = 1.02f,
+        )
+
+    /**
+     * Standard TV-focused scale effect.
+     * Focused/hovered scale: 1.05
+     * Pressed scale: 1.0 (returns to normal on press)
+     */
+    val Standard: Scale =
+        Scale(
+            focusedScale = 1.05f,
+            hoveredScale = 1.05f,
+            pressedScale = 1.0f,
+        )
+
+    /**
+     * Large scale effect for emphasis, commonly used in TV carousels.
+     * Focused/hovered scale: 1.1
+     * Pressed scale: 1.05
+     */
+    val Large: Scale =
+        Scale(
+            focusedScale = 1.1f,
+            hoveredScale = 1.1f,
+            pressedScale = 1.05f,
+        )
+
+    /**
+     * Press-in effect where the element shrinks slightly when pressed.
+     * Pressed scale: 0.95
+     */
+    val PressIn: Scale =
+        Scale(
+            pressedScale = 0.95f,
+        )
+}
