@@ -18,6 +18,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.container.Container
+import io.daio.wild.style.Alpha
+import io.daio.wild.style.Borders
+import io.daio.wild.style.Colors
+import io.daio.wild.style.Scale
+import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 
@@ -67,8 +72,8 @@ fun Button(
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    style: Style = StyleDefaults.style(),
-    contentPadding: PaddingValues = PaddingValues(8.dp),
+    style: Style = ButtonDefaults.style(),
+    contentPadding: PaddingValues = ButtonDefaults.contentPadding,
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -96,7 +101,52 @@ fun Button(
     )
 }
 
+/**
+ * Contains the default values used by [Button].
+ *
+ * @since 0.2.0
+ */
 object ButtonDefaults {
+    /**
+     * The default minimum height of the button.
+     */
     val defaultHeight: Dp = 32.dp
+
+    /**
+     * The default minimum width of the button.
+     */
     val defaultWidth: Dp = 100.dp
+
+    /**
+     * The default content padding applied inside the button.
+     *
+     * @since 0.5.0
+     */
+    val contentPadding: PaddingValues = PaddingValues(8.dp)
+
+    /**
+     * Creates a default [Style] for the button with customizable style properties.
+     *
+     * @param colors The colors for the button in different states.
+     * @param borders The borders for the button in different states.
+     * @param scale The scale for the button in different states.
+     * @param shapes The shapes for the button in different states.
+     * @param alpha The alpha for the button in different states.
+     *
+     * @since 0.5.0
+     */
+    fun style(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+    ): Style =
+        StyleDefaults.style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
 }
