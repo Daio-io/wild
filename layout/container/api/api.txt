@@ -1,6 +1,19 @@
 // Signature format: 4.0
 package io.daio.wild.container {
 
+  public final class ContainerDefaults {
+    method public io.daio.wild.style.Border getBorder();
+    method public long getColor();
+    method public long getContentColor();
+    method public androidx.compose.ui.graphics.Shape getShape();
+    method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    property public final io.daio.wild.style.Border border;
+    property public final long color;
+    property public final long contentColor;
+    property public final androidx.compose.ui.graphics.Shape shape;
+    field public static final io.daio.wild.container.ContainerDefaults INSTANCE;
+  }
+
   public final class ContainerKt {
     method @androidx.compose.runtime.Composable public static void Container(optional androidx.compose.ui.Modifier modifier, optional long color, optional long contentColor, optional androidx.compose.ui.graphics.Shape shape, optional io.daio.wild.style.Border border, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
     method @androidx.compose.runtime.Composable public static void Container(kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional Boolean? selected, kotlin.jvm.functions.Function1<? super androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);

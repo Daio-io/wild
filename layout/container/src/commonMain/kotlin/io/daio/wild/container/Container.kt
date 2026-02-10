@@ -17,8 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import io.daio.wild.content.ProvidesContentColor
+import io.daio.wild.style.Alpha
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.Borders
+import io.daio.wild.style.Colors
+import io.daio.wild.style.Scale
+import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.experimentalInteractable
@@ -306,4 +311,57 @@ fun ExperimentalContainer(
             }
         },
     )
+}
+
+/**
+ * Contains the default values used by [Container].
+ *
+ * @since 0.5.0
+ */
+object ContainerDefaults {
+    /**
+     * The default background color for static containers.
+     */
+    val color: Color = Color.Unspecified
+
+    /**
+     * The default content color for static containers.
+     */
+    val contentColor: Color = Color.Unspecified
+
+    /**
+     * The default shape for containers.
+     */
+    val shape: Shape = RectangleShape
+
+    /**
+     * The default border for containers.
+     */
+    val border: Border = BorderDefaults.None
+
+    /**
+     * Creates a default [Style] for interactive containers with customizable style properties.
+     *
+     * @param colors The colors for the container in different states.
+     * @param borders The borders for the container in different states.
+     * @param scale The scale for the container in different states.
+     * @param shapes The shapes for the container in different states.
+     * @param alpha The alpha for the container in different states.
+     *
+     * @since 0.5.0
+     */
+    fun style(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+    ): Style =
+        StyleDefaults.style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
 }
