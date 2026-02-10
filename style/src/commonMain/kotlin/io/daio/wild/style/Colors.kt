@@ -87,3 +87,45 @@ data class Colors(
         }
     }
 }
+
+/**
+ * Returns a copy of this [Colors] with the disabled alpha applied to all disabled state colors.
+ *
+ * This is useful for customizing the disabled appearance while preserving all other color states.
+ *
+ * @param alpha The alpha value to apply to disabled colors (0.0 to 1.0).
+ * @return A new [Colors] instance with the specified disabled alpha.
+ *
+ * @since 0.5.0
+ */
+@Stable
+fun Colors.withDisabledAlpha(alpha: Float): Colors =
+    copy(
+        disabledBackgroundColor = backgroundColor.copy(alpha = alpha),
+        focusedDisabledBackgroundColor = backgroundColor.copy(alpha = alpha),
+        pressedDisabledBackgroundColor = backgroundColor.copy(alpha = alpha),
+        hoveredDisabledBackgroundColor = backgroundColor.copy(alpha = alpha),
+        disabledContentColor = contentColor.copy(alpha = alpha),
+        focusedDisabledContentColor = contentColor.copy(alpha = alpha),
+        pressedDisabledContentColor = contentColor.copy(alpha = alpha),
+        hoveredDisabledContentColor = contentColor.copy(alpha = alpha),
+    )
+
+/**
+ * Returns a copy of this [Colors] with the pressed background color having an alpha multiplier
+ * applied to the base background color.
+ *
+ * This is useful for creating a subtle pressed effect.
+ *
+ * @param alpha The alpha value to apply to the pressed background color (0.0 to 1.0).
+ * @return A new [Colors] instance with the specified pressed alpha.
+ *
+ * @since 0.5.0
+ */
+@Stable
+fun Colors.withPressedAlpha(alpha: Float): Colors =
+    copy(
+        pressedBackgroundColor = backgroundColor.copy(alpha = alpha),
+        pressedSelectedBackgroundColor = selectedBackgroundColor.copy(alpha = alpha),
+        pressedDisabledBackgroundColor = disabledBackgroundColor.copy(alpha = alpha),
+    )

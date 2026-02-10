@@ -216,6 +216,11 @@ package io.daio.wild.style {
     property public final long selectedContentColor;
   }
 
+  public final class ColorsKt {
+    method @androidx.compose.runtime.Stable public static io.daio.wild.style.Colors withDisabledAlpha(io.daio.wild.style.Colors, float alpha);
+    method @androidx.compose.runtime.Stable public static io.daio.wild.style.Colors withPressedAlpha(io.daio.wild.style.Colors, float alpha);
+  }
+
   public final class CornerShapesKt {
     method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
     method public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, float cornerExpansion);
