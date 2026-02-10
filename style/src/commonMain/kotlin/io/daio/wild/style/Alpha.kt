@@ -5,7 +5,46 @@ package io.daio.wild.style
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
-internal const val DEFAULT_DISABLED_ALPHA = .6f
+/**
+ * Default alpha value for disabled states.
+ */
+const val DEFAULT_DISABLED_ALPHA = .6f
+
+/**
+ * Contains default [Alpha] presets for common interaction patterns.
+ *
+ * @since 0.5.0
+ */
+object AlphaDefaults {
+    /**
+     * No alpha changes. All states return alpha 1.0.
+     */
+    val None: Alpha = Alpha(disabledAlpha = 1f)
+
+    /**
+     * Standard disabled alpha.
+     * Disabled states use [DEFAULT_DISABLED_ALPHA] (0.6).
+     */
+    val Standard: Alpha = Alpha()
+
+    /**
+     * Subtle disabled alpha for a less prominent disabled appearance.
+     * Disabled states use 0.4 alpha.
+     */
+    val Subtle: Alpha = Alpha(disabledAlpha = 0.4f)
+
+    /**
+     * Strong disabled alpha for a very faded disabled appearance.
+     * Disabled states use 0.3 alpha.
+     */
+    val Strong: Alpha = Alpha(disabledAlpha = 0.3f)
+
+    /**
+     * Pressed alpha effect where the element becomes slightly transparent when pressed.
+     * Pressed states use 0.8 alpha.
+     */
+    val PressedFade: Alpha = Alpha(pressedAlpha = 0.8f)
+}
 
 @Immutable
 data class Alpha(
