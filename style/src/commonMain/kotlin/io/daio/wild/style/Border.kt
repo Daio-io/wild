@@ -37,9 +37,73 @@ fun Border(
         shape = shape,
     )
 
+/**
+ * Contains default values and factory functions for [Border].
+ *
+ * @since 0.2.0
+ */
 object BorderDefaults {
+    /**
+     * The default shape used when no shape is specified for a border.
+     * This shape follows the element's inner shape.
+     */
     val BorderDefaultShape = GenericShape { _, _ -> close() }
+
+    /**
+     * A border with no visual appearance.
+     */
     val None = Border(width = 0.dp, color = Color.Unspecified)
+
+    /**
+     * Creates a focus ring border with an inset, commonly used for TV focus indicators.
+     *
+     * A focus ring is typically rendered outside the element (using [inset]) to create
+     * a visible outline when the element is focused.
+     *
+     * @param color The color of the focus ring.
+     * @param width The width of the focus ring. Defaults to 2.dp.
+     * @param inset The inset (expansion) of the focus ring outside the element. Defaults to 2.dp.
+     * @param shape The shape of the focus ring. Defaults to following the element's shape.
+     * @return A [Border] configured as a focus ring.
+     *
+     * @since 0.5.0
+     */
+    @Stable
+    fun focusRing(
+        color: Color,
+        width: Dp = 2.dp,
+        inset: Dp = 2.dp,
+        shape: Shape = BorderDefaultShape,
+    ): Border =
+        Border(
+            width = width,
+            color = color,
+            inset = inset,
+            shape = shape,
+        )
+
+    /**
+     * Creates a simple outline border with no inset.
+     *
+     * @param color The color of the outline.
+     * @param width The width of the outline. Defaults to 1.dp.
+     * @param shape The shape of the outline. Defaults to following the element's shape.
+     * @return A [Border] configured as an outline.
+     *
+     * @since 0.5.0
+     */
+    @Stable
+    fun outline(
+        color: Color,
+        width: Dp = 1.dp,
+        shape: Shape = BorderDefaultShape,
+    ): Border =
+        Border(
+            width = width,
+            color = color,
+            inset = 0.dp,
+            shape = shape,
+        )
 }
 
 @Immutable
