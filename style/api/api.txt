@@ -66,8 +66,10 @@ package io.daio.wild.style {
   }
 
   public final class BorderDefaults {
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Border focusRing(long color, optional float width, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
     method public androidx.compose.foundation.shape.GenericShape getBorderDefaultShape();
     method public io.daio.wild.style.Border getNone();
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Border outline(long color, optional float width, optional androidx.compose.ui.graphics.Shape shape);
     property public final androidx.compose.foundation.shape.GenericShape BorderDefaultShape;
     property public final io.daio.wild.style.Border None;
     field public static final io.daio.wild.style.BorderDefaults INSTANCE;
