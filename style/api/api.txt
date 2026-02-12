@@ -46,6 +46,20 @@ package io.daio.wild.style {
     property public final float selectedAlpha;
   }
 
+  public final class AlphaDefaults {
+    method public io.daio.wild.style.Alpha getDisabled();
+    method public io.daio.wild.style.Alpha getNone();
+    method public io.daio.wild.style.Alpha getPressed();
+    property public final io.daio.wild.style.Alpha Disabled;
+    property public final io.daio.wild.style.Alpha None;
+    property public final io.daio.wild.style.Alpha Pressed;
+    field public static final io.daio.wild.style.AlphaDefaults INSTANCE;
+  }
+
+  public final class AlphaKt {
+    field public static final float DEFAULT_DISABLED_ALPHA = 0.6f;
+  }
+
   @androidx.compose.runtime.Immutable public final class Border {
     ctor public Border(optional androidx.compose.foundation.BorderStroke borderStroke, optional float inset, optional androidx.compose.ui.graphics.Shape shape);
     method public androidx.compose.foundation.BorderStroke component1();
