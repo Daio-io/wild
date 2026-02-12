@@ -2,8 +2,11 @@
 package io.daio.wild.components.button {
 
   public final class ButtonDefaults {
+    method public androidx.compose.foundation.layout.PaddingValues getContentPadding();
     method public float getDefaultHeight();
     method public float getDefaultWidth();
+    method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    property public final androidx.compose.foundation.layout.PaddingValues contentPadding;
     property public final float defaultHeight;
     property public final float defaultWidth;
     field public static final io.daio.wild.components.button.ButtonDefaults INSTANCE;
