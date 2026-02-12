@@ -22,16 +22,10 @@ object AlphaDefaults {
     val None: Alpha = Alpha(disabledAlpha = 1f)
 
     /**
-     * Standard disabled alpha.
+     * Disabled alpha preset.
      * Disabled states use [DEFAULT_DISABLED_ALPHA] (0.6).
      */
-    val Standard: Alpha = Alpha()
-
-    /**
-     * Disabled alpha preset using Material Design's standard disabled opacity (0.38).
-     * Use for components that need a more pronounced disabled appearance.
-     */
-    val Disabled: Alpha = Alpha(disabledAlpha = 0.38f)
+    val Disabled: Alpha = Alpha(disabledAlpha = DEFAULT_DISABLED_ALPHA)
 
     /**
      * Pressed alpha effect where the element becomes slightly transparent when pressed.

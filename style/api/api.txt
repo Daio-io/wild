@@ -47,16 +47,12 @@ package io.daio.wild.style {
   }
 
   public final class AlphaDefaults {
+    method public io.daio.wild.style.Alpha getDisabled();
     method public io.daio.wild.style.Alpha getNone();
-    method public io.daio.wild.style.Alpha getPressedFade();
-    method public io.daio.wild.style.Alpha getStandard();
-    method public io.daio.wild.style.Alpha getStrong();
-    method public io.daio.wild.style.Alpha getSubtle();
+    method public io.daio.wild.style.Alpha getPressed();
+    property public final io.daio.wild.style.Alpha Disabled;
     property public final io.daio.wild.style.Alpha None;
-    property public final io.daio.wild.style.Alpha PressedFade;
-    property public final io.daio.wild.style.Alpha Standard;
-    property public final io.daio.wild.style.Alpha Strong;
-    property public final io.daio.wild.style.Alpha Subtle;
+    property public final io.daio.wild.style.Alpha Pressed;
     field public static final io.daio.wild.style.AlphaDefaults INSTANCE;
   }
 
