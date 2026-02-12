@@ -131,48 +131,24 @@ object ScaleDefaults {
     /**
      * No scaling effect. All states return scale 1.0.
      */
-    val None: Scale = Scale()
-
-    /**
-     * Subtle scale effect, suitable for desktop hover interactions.
-     * Focused/hovered scale: 1.02
-     */
-    val Subtle: Scale =
-        Scale(
-            focusedScale = 1.02f,
-            hoveredScale = 1.02f,
-        )
-
-    /**
-     * Standard TV-focused scale effect.
-     * Focused/hovered scale: 1.05
-     * Pressed scale: 1.0 (returns to normal on press)
-     */
-    val Standard: Scale =
-        Scale(
-            focusedScale = 1.05f,
-            hoveredScale = 1.05f,
-            pressedScale = 1.0f,
-        )
-
-    /**
-     * Large scale effect for emphasis, commonly used in TV carousels.
-     * Focused/hovered scale: 1.1
-     * Pressed scale: 1.05
-     */
-    val Large: Scale =
-        Scale(
-            focusedScale = 1.1f,
-            hoveredScale = 1.1f,
-            pressedScale = 1.05f,
-        )
+    val None: Scale = Scale(
+        scale = 1f,
+        focusedScale = 1f,
+        hoveredScale = 1f,
+        pressedScale = 1f,
+        selectedScale = 1f,
+        disabledScale = 1f,
+        focusedSelectedScale = 1f,
+        pressedSelectedScale = 1f,
+        hoveredSelectedScale = 1f,
+        focusedDisabledScale = 1f,
+        pressedDisabledScale = 1f,
+        hoveredDisabledScale = 1f,
+    )
 
     /**
      * Press-in effect where the element shrinks slightly when pressed.
      * Pressed scale: 0.95
      */
-    val PressIn: Scale =
-        Scale(
-            pressedScale = 0.95f,
-        )
+    val Pressed: Scale = Scale(pressedScale = 0.95f)
 }
