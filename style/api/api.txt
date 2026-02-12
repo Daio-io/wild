@@ -308,16 +308,10 @@ package io.daio.wild.style {
   }
 
   public final class ScaleDefaults {
-    method public io.daio.wild.style.Scale getLarge();
     method public io.daio.wild.style.Scale getNone();
-    method public io.daio.wild.style.Scale getPressIn();
-    method public io.daio.wild.style.Scale getStandard();
-    method public io.daio.wild.style.Scale getSubtle();
-    property public final io.daio.wild.style.Scale Large;
+    method public io.daio.wild.style.Scale getPressed();
     property public final io.daio.wild.style.Scale None;
-    property public final io.daio.wild.style.Scale PressIn;
-    property public final io.daio.wild.style.Scale Standard;
-    property public final io.daio.wild.style.Scale Subtle;
+    property public final io.daio.wild.style.Scale Pressed;
     field public static final io.daio.wild.style.ScaleDefaults INSTANCE;
   }
 
