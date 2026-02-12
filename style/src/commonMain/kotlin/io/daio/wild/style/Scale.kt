@@ -121,3 +121,35 @@ internal fun defaultScaleAnimationSpec(
             },
         easing = CubicBezierEasing(0f, 0f, 0.2f, 1f),
     )
+
+/**
+ * Contains default [Scale] presets for common interaction patterns.
+ *
+ * @since 0.5.0
+ */
+object ScaleDefaults {
+    /**
+     * No scaling effect. All states return scale 1.0.
+     */
+    val None: Scale =
+        Scale(
+            scale = 1f,
+            focusedScale = 1f,
+            hoveredScale = 1f,
+            pressedScale = 1f,
+            selectedScale = 1f,
+            disabledScale = 1f,
+            focusedSelectedScale = 1f,
+            pressedSelectedScale = 1f,
+            hoveredSelectedScale = 1f,
+            focusedDisabledScale = 1f,
+            pressedDisabledScale = 1f,
+            hoveredDisabledScale = 1f,
+        )
+
+    /**
+     * Press-in effect where the element shrinks slightly when pressed.
+     * Pressed scale: 0.95
+     */
+    val Pressed: Scale = Scale(pressedScale = 0.95f)
+}

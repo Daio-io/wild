@@ -307,6 +307,14 @@ package io.daio.wild.style {
     property public final float selectedScale;
   }
 
+  public final class ScaleDefaults {
+    method public io.daio.wild.style.Scale getNone();
+    method public io.daio.wild.style.Scale getPressed();
+    property public final io.daio.wild.style.Scale None;
+    property public final io.daio.wild.style.Scale Pressed;
+    field public static final io.daio.wild.style.ScaleDefaults INSTANCE;
+  }
+
   public final class ScaleKt {
     method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<java.lang.Float> animateInteractionScaleAsState(float targetScale, boolean pressed, boolean focused, boolean hovered, optional String label, optional float visibilityThreshold, optional kotlin.jvm.functions.Function1<? super java.lang.Float,kotlin.Unit>? finishedListener, optional kotlin.jvm.functions.Function3<? super java.lang.Boolean,? super java.lang.Boolean,? super java.lang.Boolean,? extends androidx.compose.animation.core.AnimationSpec<java.lang.Float>> animationSpecProvider);
   }
