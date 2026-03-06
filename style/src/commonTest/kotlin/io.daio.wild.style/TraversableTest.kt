@@ -1,4 +1,4 @@
-// Copyright 2026, Dai Williams
+// Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
@@ -14,7 +14,6 @@ import kotlin.test.assertEquals
  * system depends on.
  */
 class DefaultStyleScopeTest {
-
     @Test
     fun defaultValuesAreCorrect() {
         val scope = DefaultStyleScope()
@@ -113,90 +112,97 @@ class DefaultStyleScopeTest {
  * traversal updates.
  */
 class StyleResolutionForTraversalTest {
-
     @Test
     fun colorsResolveCorrectlyForFocusedState() {
-        val colors = StyleDefaults.colors(
-            backgroundColor = androidx.compose.ui.graphics.Color.Black,
-            focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
-        )
+        val colors =
+            StyleDefaults.colors(
+                backgroundColor = androidx.compose.ui.graphics.Color.Black,
+                focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
+            )
 
         val scope = DefaultStyleScope()
         scope.updateState(enabled = true, focused = true, selected = false, pressed = false, hovered = false)
 
-        scope.color = colors.colorFor(
-            enabled = scope.enabled,
-            focused = scope.focused,
-            hovered = scope.hovered,
-            pressed = scope.pressed,
-            selected = scope.selected,
-        )
+        scope.color =
+            colors.colorFor(
+                enabled = scope.enabled,
+                focused = scope.focused,
+                hovered = scope.hovered,
+                pressed = scope.pressed,
+                selected = scope.selected,
+            )
 
         assertEquals(androidx.compose.ui.graphics.Color.Blue, scope.color)
     }
 
     @Test
     fun colorsResolveCorrectlyForSelectedState() {
-        val colors = StyleDefaults.colors(
-            backgroundColor = androidx.compose.ui.graphics.Color.Black,
-            selectedBackgroundColor = androidx.compose.ui.graphics.Color.Green,
-        )
+        val colors =
+            StyleDefaults.colors(
+                backgroundColor = androidx.compose.ui.graphics.Color.Black,
+                selectedBackgroundColor = androidx.compose.ui.graphics.Color.Green,
+            )
 
         val scope = DefaultStyleScope()
         scope.updateState(enabled = true, focused = false, selected = true, pressed = false, hovered = false)
 
-        scope.color = colors.colorFor(
-            enabled = scope.enabled,
-            focused = scope.focused,
-            hovered = scope.hovered,
-            pressed = scope.pressed,
-            selected = scope.selected,
-        )
+        scope.color =
+            colors.colorFor(
+                enabled = scope.enabled,
+                focused = scope.focused,
+                hovered = scope.hovered,
+                pressed = scope.pressed,
+                selected = scope.selected,
+            )
 
         assertEquals(androidx.compose.ui.graphics.Color.Green, scope.color)
     }
 
     @Test
     fun colorsResolveCorrectlyForFocusedAndSelectedState() {
-        val colors = StyleDefaults.colors(
-            backgroundColor = androidx.compose.ui.graphics.Color.Black,
-            focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
-            selectedBackgroundColor = androidx.compose.ui.graphics.Color.Green,
-            focusedSelectedBackgroundColor = androidx.compose.ui.graphics.Color.Cyan,
-        )
+        val colors =
+            StyleDefaults.colors(
+                backgroundColor = androidx.compose.ui.graphics.Color.Black,
+                focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
+                selectedBackgroundColor = androidx.compose.ui.graphics.Color.Green,
+                focusedSelectedBackgroundColor = androidx.compose.ui.graphics.Color.Cyan,
+            )
 
         val scope = DefaultStyleScope()
         scope.updateState(enabled = true, focused = true, selected = true, pressed = false, hovered = false)
 
-        scope.color = colors.colorFor(
-            enabled = scope.enabled,
-            focused = scope.focused,
-            hovered = scope.hovered,
-            pressed = scope.pressed,
-            selected = scope.selected,
-        )
+        scope.color =
+            colors.colorFor(
+                enabled = scope.enabled,
+                focused = scope.focused,
+                hovered = scope.hovered,
+                pressed = scope.pressed,
+                selected = scope.selected,
+            )
 
         assertEquals(androidx.compose.ui.graphics.Color.Cyan, scope.color)
     }
 
     @Test
     fun disabledStateOverridesOtherStates() {
-        val colors = StyleDefaults.colors(
-            backgroundColor = androidx.compose.ui.graphics.Color.Black,
-            focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
-            disabledBackgroundColor = androidx.compose.ui.graphics.Color.Gray,
-        )
+        val colors =
+            StyleDefaults.colors(
+                backgroundColor = androidx.compose.ui.graphics.Color.Black,
+                focusedBackgroundColor = androidx.compose.ui.graphics.Color.Blue,
+                disabledBackgroundColor = androidx.compose.ui.graphics.Color.Gray,
+            )
 
         val scope = DefaultStyleScope()
         scope.updateState(enabled = false, focused = true, selected = false, pressed = false, hovered = false)
 
-        scope.color = colors.colorFor(
-            enabled = scope.enabled,
-            focused = scope.focused,
-            hovered = scope.hovered,
-            pressed = scope.pressed,
-            selected = scope.selected,
-        )
+        scope.color =
+            colors.colorFor(
+                enabled = scope.enabled,
+                focused = scope.focused,
+                hovered = scope.hovered,
+                pressed = scope.pressed,
+                selected = scope.selected,
+            )
 
         // When disabled+focused, should use focusedDisabledBackgroundColor which defaults to disabledBackgroundColor
         assertEquals(androidx.compose.ui.graphics.Color.Gray, scope.color)
@@ -204,30 +210,35 @@ class StyleResolutionForTraversalTest {
 
     @Test
     fun fullStyleBlockExecutesAllProperties() {
-        val style = StyleDefaults.style(
-            colors = StyleDefaults.colors(
-                backgroundColor = androidx.compose.ui.graphics.Color.Red,
-            ),
-            scale = StyleDefaults.scale(focusedScale = 1.2f),
-            alpha = StyleDefaults.alpha(disabledAlpha = 0.5f),
-        )
+        val style =
+            StyleDefaults.style(
+                colors =
+                    StyleDefaults.colors(
+                        backgroundColor = androidx.compose.ui.graphics.Color.Red,
+                    ),
+                scale = StyleDefaults.scale(focusedScale = 1.2f),
+                alpha = StyleDefaults.alpha(disabledAlpha = 0.5f),
+            )
 
         val scope = DefaultStyleScope()
         scope.updateState(enabled = true, focused = true, selected = false, pressed = false, hovered = false)
 
         // Simulate what the style block does during traversal
-        scope.color = style.colors.colorFor(
-            enabled = scope.enabled, focused = scope.focused,
-            hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
-        )
-        scope.scale = style.scale.scaleFor(
-            enabled = scope.enabled, focused = scope.focused,
-            hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
-        )
-        scope.alpha = style.alpha.alphaFor(
-            enabled = scope.enabled, focused = scope.focused,
-            hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
-        )
+        scope.color =
+            style.colors.colorFor(
+                enabled = scope.enabled, focused = scope.focused,
+                hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
+            )
+        scope.scale =
+            style.scale.scaleFor(
+                enabled = scope.enabled, focused = scope.focused,
+                hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
+            )
+        scope.alpha =
+            style.alpha.alphaFor(
+                enabled = scope.enabled, focused = scope.focused,
+                hovered = scope.hovered, pressed = scope.pressed, selected = scope.selected,
+            )
 
         assertEquals(androidx.compose.ui.graphics.Color.Red, scope.color)
         assertEquals(1.2f, scope.scale)
