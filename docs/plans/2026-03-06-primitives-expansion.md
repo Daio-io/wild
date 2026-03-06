@@ -45,7 +45,7 @@ Every new primitive follows this exact structure. Refer back here instead of rep
 
 **build.gradle.kts template:**
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -87,7 +87,7 @@ POM_NAME=<DisplayName>
 
 **Copyright header:** Every `.kt` file starts with:
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 ```
 
@@ -119,7 +119,7 @@ POM_NAME=Icon
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -169,7 +169,7 @@ Expected: BUILD SUCCESSFUL (empty module, no sources yet)
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.icon
 
@@ -218,7 +218,7 @@ Expected: FAIL - `Unresolved reference: IconDefaults`
 **Step 1: Write the Icon composable**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.icon
 
@@ -350,7 +350,7 @@ POM_NAME=Text
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -400,7 +400,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.text
 
@@ -460,7 +460,7 @@ Expected: FAIL - `Unresolved reference: TextDefaults`
 **Step 1: Write the Text composable**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.text
 
@@ -577,7 +577,7 @@ POM_NAME=Toggleable
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -631,7 +631,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.toggleable
 
@@ -676,7 +676,7 @@ Expected: FAIL - `Unresolved reference: ToggleableDefaults`
 **Step 1: Write the Toggleable composable**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.toggleable
 
@@ -903,7 +903,7 @@ POM_NAME=ListItem
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -957,7 +957,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.listitem
 
@@ -992,7 +992,7 @@ Expected: FAIL - `Unresolved reference: ListItemDefaults`
 **Step 1: Write the ListItem composable**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.listitem
 
@@ -1236,7 +1236,7 @@ POM_NAME=Divider
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -1286,7 +1286,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.layout.divider
 
@@ -1316,7 +1316,7 @@ Expected: FAIL - `Unresolved reference: DividerDefaults`
 **Step 1: Write the Divider composables**
 
 ```kotlin
-// Copyright 2024-2026, Dai Williams
+// Copyright 2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.layout.divider
 
