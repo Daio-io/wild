@@ -29,6 +29,12 @@ data class Scale(
     val focusedDisabledScale: Float = disabledScale,
     val pressedDisabledScale: Float = disabledScale,
     val hoveredDisabledScale: Float = disabledScale,
+    /**
+     * Custom animation spec for scale transitions. When null, the default animation is used.
+     *
+     * @since 0.6.0
+     */
+    val animationSpec: AnimationSpec<Float>? = null,
 ) {
     @Stable
     fun scaleFor(
