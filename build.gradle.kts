@@ -17,3 +17,12 @@ plugins {
     // Applied to use ./gradlew dokkaGenerate
     alias(libs.plugins.dokka)
 }
+
+dependencies {
+    dokka(projects.foundations)
+    dokka(projects.contentColor)
+    dokka(projects.style)
+    dokka(projects.modifier)
+    dokka(projects.components.button)
+    dokka(projects.layout.container)
+}
