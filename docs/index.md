@@ -1,5 +1,7 @@
 <div align="center">
 <img src="wild-logo-circle.svg" alt="Wild" />
+<br/>
+<script src="https://api.nice.sbs/embed.js" data-button="n_MnNezGB3MUjd" data-theme="dark" data-size="md" async></script>
 </div>
 
 Building blocks for your Compose Multiplatform Design System.
