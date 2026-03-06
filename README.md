@@ -8,6 +8,7 @@
 [![Modifier](https://img.shields.io/maven-central/v/io.daio.wild/modifier?label=Modifier)](https://central.sonatype.com/artifact/io.daio.wild/modifier)
 [![Container](https://img.shields.io/maven-central/v/io.daio.wild/container?label=Container)](https://central.sonatype.com/artifact/io.daio.wild/container)
 ![Build status](https://github.com/daio-io/wild/actions/workflows/build.yml/badge.svg)
+[![Nice](https://api.nice.sbs/badge/n_MnNezGB3MUjd.svg?theme=rich)](https://nice.sbs/button?id=n_MnNezGB3MUjd)
 
 Building blocks for your Compose Multiplatform Design System.
 
