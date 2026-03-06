@@ -1,5 +1,7 @@
 # Wild Primitives Expansion Plan
 
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+
 **Goal:** Add the next set of missing primitive components to Wild: Icon, Text, Toggleable (base for selection controls), ListItem, and Divider.
 
 **Architecture:** Each primitive is a standalone Gradle module following the existing pattern: convention plugins for KMP + Compose + publishing, the Wild `Style` system for interaction-state-driven visuals, `Container` as the interactive base, content color propagation via `ProvidesContentColor`, and Metalava API tracking. Components are unstyled by default - consumers supply their own `Style`. `Toggleable` is a new base component (like `Container` is for `Button`) that handles checked/selected state semantics - future Toggle, Checkbox, and RadioButton will be thin wrappers over it.
