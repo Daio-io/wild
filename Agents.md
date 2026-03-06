@@ -69,7 +69,7 @@ actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 
 **Code Quality**: `./gradlew spotlessCheck detekt lint`
 
-**Docs**: `./gradlew dokkaHtmlMultiModule` (API), `mkdocs serve` (local), `mkdocs gh-deploy` (deploy)
+**Docs**: `./gradlew dokkaGenerate` (API), `mkdocs serve` (local), `mkdocs gh-deploy` (deploy)
 
 **Publishing**: `./gradlew publish` (Maven Central), `./gradlew publishAllPublicationsToGitHubPackagesRepository -PuseGitHubPublishing` (GitHub Packages)
 
@@ -109,7 +109,7 @@ actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 ./gradlew jvmTest
 ./gradlew spotlessApply
 ./gradlew :playbook:desktop:run
-./gradlew dokkaHtmlMultiModule
+./gradlew dokkaGenerate
 ```
 
 **Key Files**: `build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml`, `mkdocs.yml`
