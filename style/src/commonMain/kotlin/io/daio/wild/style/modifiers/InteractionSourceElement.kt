@@ -12,6 +12,7 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.foundation.ExperimentalWildApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -64,7 +65,7 @@ internal class InteractionSourceElement(
         )
 
     override fun update(node: InteractionSourceNode) {
-        node.interactionSource = interactionSource
+        node.updateInteractionSource(interactionSource)
         node.childTraversalKey = childTraversalKey
     }
 
@@ -98,23 +99,38 @@ internal class InteractionSourceNode(
     var childTraversalKey: Any,
 ) : Modifier.Node(), TraversableNode {
     var focused: Boolean = false
-        internal set
+        private set
 
     var hovered: Boolean = false
-        internal set
+        private set
 
     var pressed: Boolean = false
-        internal set
+        private set
 
-    var enabled: Boolean = false
-        internal set
+    private var collectionJob: Job? = null
 
-    var selected: Boolean = false
-        internal set
+    /**
+     * Updates the [InteractionSource] and restarts the collection coroutine.
+     * If the source hasn't changed, this is a no-op.
+     */
+    fun updateInteractionSource(newSource: InteractionSource?) {
+        if (interactionSource === newSource) return
+        interactionSource = newSource
+        restartCollection()
+    }
 
     override fun onAttach() {
-        coroutineScope.launch {
-            interactionSource?.interactions?.collect { interaction ->
+        restartCollection()
+    }
+
+    private fun restartCollection() {
+        collectionJob?.cancel()
+        reset()
+
+        val source = interactionSource ?: return
+
+        collectionJob = coroutineScope.launch {
+            source.interactions.collect { interaction ->
                 when (interaction) {
                     is PressInteraction.Press -> pressed = true
                     is PressInteraction.Release -> pressed = false
@@ -137,10 +153,14 @@ internal class InteractionSourceNode(
     }
 
     override fun onDetach() {
+        collectionJob?.cancel()
+        collectionJob = null
         reset()
     }
 
     override fun onReset() {
+        collectionJob?.cancel()
+        collectionJob = null
         reset()
     }
 
