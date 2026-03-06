@@ -44,10 +44,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Kdoc
-        run: ./gradlew dokkaHtmlMultiModule
+        run: ./gradlew dokkaGenerate
 
       - name: Copy Kdoc Site
-        run: mkdir -p ./site/reference && cp -r ./build/dokka/htmlMultiModule/* ./site/reference
+        run: mkdir -p ./site/reference && cp -r ./build/dokka/html/* ./site/reference
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
