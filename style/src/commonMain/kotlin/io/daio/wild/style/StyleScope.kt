@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -40,6 +41,14 @@ interface StyleScope : InteractionState {
      * Sets the border of the element.
      */
     var border: Border
+
+    /**
+     * Sets a custom animation spec for scale transitions.
+     * When null, the default scale animation is used.
+     *
+     * @since 0.6.0
+     */
+    var scaleAnimationSpec: AnimationSpec<Float>?
 }
 
 internal class DefaultStyleScope : StyleScope {
@@ -48,6 +57,7 @@ internal class DefaultStyleScope : StyleScope {
     override var scale: Float = 1f
     override var shape: Shape = RectangleShape
     override var border: Border = BorderDefaults.None
+    override var scaleAnimationSpec: AnimationSpec<Float>? = null
 
     override val focused: Boolean
         get() = _focused
@@ -100,6 +110,7 @@ internal class DefaultStyleScope : StyleScope {
         if (color != other.color) return false
         if (shape != other.shape) return false
         if (border != other.border) return false
+        if (scaleAnimationSpec != other.scaleAnimationSpec) return false
 
         return true
     }
@@ -115,6 +126,7 @@ internal class DefaultStyleScope : StyleScope {
         result = 31 * result + color.hashCode()
         result = 31 * result + shape.hashCode()
         result = 31 * result + border.hashCode()
+        result = 31 * result + (scaleAnimationSpec?.hashCode() ?: 0)
         return result
     }
 }

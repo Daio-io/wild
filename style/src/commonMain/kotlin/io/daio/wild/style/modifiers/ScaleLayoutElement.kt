@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
 import androidx.compose.ui.Modifier
@@ -95,12 +96,15 @@ internal class ScaleLayoutModifier(
         )
     }
 
+    private var customAnimationSpec: AnimationSpec<Float>? = null
+
     private fun updateScale(
         scale: Float,
         zIndex: Float,
         focused: Boolean,
         pressed: Boolean,
         hovered: Boolean,
+        animationSpec: AnimationSpec<Float>? = customAnimationSpec,
     ) {
         this.scale = scale
         this.zIndex = zIndex
@@ -114,11 +118,12 @@ internal class ScaleLayoutModifier(
                         scaleState.animateTo(
                             targetValue = scale,
                             animationSpec =
-                                defaultScaleAnimationSpec(
-                                    focused = focused,
-                                    pressed = pressed,
-                                    hovered = hovered,
-                                ),
+                                animationSpec
+                                    ?: defaultScaleAnimationSpec(
+                                        focused = focused,
+                                        pressed = pressed,
+                                        hovered = hovered,
+                                    ),
                         )
                     },
                 )
@@ -141,12 +146,14 @@ internal class ScaleLayoutModifier(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
+        customAnimationSpec = styleScope.scaleAnimationSpec
         updateScale(
             scale = styleScope.scale,
             zIndex = if (styleScope.focused || styleScope.hovered) 0.5f else 0f,
             focused = styleScope.focused,
             pressed = styleScope.pressed,
             hovered = styleScope.hovered,
+            animationSpec = styleScope.scaleAnimationSpec,
         )
     }
 }
