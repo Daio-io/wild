@@ -4,6 +4,7 @@ package io.daio.wild.style
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  * Tests for the DefaultStyleScope state management that drives traversal updates.
@@ -81,7 +82,7 @@ class DefaultStyleScopeTest {
             hovered = false,
         )
 
-        assert(scope1 != scope2)
+        assertNotEquals(scope1, scope2)
     }
 
     @Test
