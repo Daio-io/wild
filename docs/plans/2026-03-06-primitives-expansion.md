@@ -1,7 +1,5 @@
 # Wild Primitives Expansion Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-
 **Goal:** Add the next set of missing primitive components to Wild: Icon, Text, Toggleable (base for selection controls), ListItem, and Divider.
 
 **Architecture:** Each primitive is a standalone Gradle module following the existing pattern: convention plugins for KMP + Compose + publishing, the Wild `Style` system for interaction-state-driven visuals, `Container` as the interactive base, content color propagation via `ProvidesContentColor`, and Metalava API tracking. Components are unstyled by default - consumers supply their own `Style`. `Toggleable` is a new base component (like `Container` is for `Button`) that handles checked/selected state semantics - future Toggle, Checkbox, and RadioButton will be thin wrappers over it.
@@ -45,7 +43,7 @@ Every new primitive follows this exact structure. Refer back here instead of rep
 
 **build.gradle.kts template:**
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -87,7 +85,7 @@ POM_NAME=<DisplayName>
 
 **Copyright header:** Every `.kt` file starts with:
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 ```
 
@@ -119,7 +117,7 @@ POM_NAME=Icon
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -169,17 +167,36 @@ Expected: BUILD SUCCESSFUL (empty module, no sources yet)
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.icon
 
+import androidx.compose.ui.graphics.Color
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class IconDefaultsTest {
     @Test
     fun defaultSizeIs24dp() {
         assertEquals(24.0, IconDefaults.defaultSize.value.toDouble())
+    }
+}
+
+class IconColorFilterTest {
+    @Test
+    fun tintUnspecifiedProducesNullColorFilter() {
+        val filter = if (Color.Unspecified == Color.Unspecified) null
+            else androidx.compose.ui.graphics.ColorFilter.tint(Color.Unspecified)
+        assertNull(filter)
+    }
+
+    @Test
+    fun tintWithColorProducesColorFilter() {
+        val filter = if (Color.Red == Color.Unspecified) null
+            else androidx.compose.ui.graphics.ColorFilter.tint(Color.Red)
+        assertNotNull(filter)
     }
 }
 ```
@@ -199,7 +216,7 @@ Expected: FAIL - `Unresolved reference: IconDefaults`
 **Step 1: Write the Icon composable**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.icon
 
@@ -331,7 +348,7 @@ POM_NAME=Text
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -381,10 +398,13 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.text
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -392,6 +412,33 @@ class TextDefaultsTest {
     @Test
     fun defaultMaxLinesIsIntMax() {
         assertEquals(Int.MAX_VALUE, TextDefaults.maxLines)
+    }
+
+    @Test
+    fun defaultMinLinesIsOne() {
+        assertEquals(1, TextDefaults.minLines)
+    }
+
+    @Test
+    fun defaultOverflowIsClip() {
+        assertEquals(TextOverflow.Clip, TextDefaults.overflow)
+    }
+}
+
+class TextColorResolutionTest {
+    @Test
+    fun explicitColorTakesPrecedenceOverUnspecified() {
+        val explicit = Color.Red
+        val resolved = if (explicit == Color.Unspecified) Color.White else explicit
+        assertEquals(Color.Red, resolved)
+    }
+
+    @Test
+    fun unspecifiedColorFallsBackToContentColor() {
+        val explicit = Color.Unspecified
+        val contentColor = Color.Green
+        val resolved = if (explicit == Color.Unspecified) contentColor else explicit
+        assertEquals(Color.Green, resolved)
     }
 }
 ```
@@ -411,7 +458,7 @@ Expected: FAIL - `Unresolved reference: TextDefaults`
 **Step 1: Write the Text composable**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.text
 
@@ -528,7 +575,7 @@ POM_NAME=Toggleable
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -582,11 +629,13 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.toggleable
 
+import androidx.compose.ui.state.ToggleableState
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class ToggleableDefaultsTest {
@@ -594,6 +643,18 @@ class ToggleableDefaultsTest {
     fun defaultStyleIsNotNull() {
         val style = ToggleableDefaults.style()
         assertNotNull(style)
+    }
+}
+
+class ToggleableStateTest {
+    @Test
+    fun checkedMapsToToggleableStateOn() {
+        assertEquals(ToggleableState.On, ToggleableState(true))
+    }
+
+    @Test
+    fun uncheckedMapsToToggleableStateOff() {
+        assertEquals(ToggleableState.Off, ToggleableState(false))
     }
 }
 ```
@@ -613,7 +674,7 @@ Expected: FAIL - `Unresolved reference: ToggleableDefaults`
 **Step 1: Write the Toggleable composable**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.toggleable
 
@@ -840,7 +901,7 @@ POM_NAME=ListItem
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -894,7 +955,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.listitem
 
@@ -929,7 +990,7 @@ Expected: FAIL - `Unresolved reference: ListItemDefaults`
 **Step 1: Write the ListItem composable**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.listitem
 
@@ -1173,7 +1234,7 @@ POM_NAME=Divider
 **Step 2: Create build.gradle.kts**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
@@ -1188,6 +1249,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.foundation)
+                api(projects.contentColor)
             }
         }
         commonTest {
@@ -1222,7 +1284,7 @@ Expected: BUILD SUCCESSFUL
 **Step 1: Write the failing test**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.layout.divider
 
@@ -1252,7 +1314,7 @@ Expected: FAIL - `Unresolved reference: DividerDefaults`
 **Step 1: Write the Divider composables**
 
 ```kotlin
-// Copyright 2024, Dai Williams
+// Copyright 2024-2026, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.layout.divider
 
@@ -1267,12 +1329,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
 
 /**
  * A horizontal divider line for separating content.
  *
+ * By default uses [LocalContentColor] for the divider color, allowing it to
+ * adapt when placed inside styled containers.
+ *
  * @param modifier Modifier to apply to the divider.
- * @param color Color of the divider line.
+ * @param color Color of the divider line. Defaults to [LocalContentColor].
  * @param thickness Thickness of the divider line.
  *
  * @since 0.6.0
@@ -1280,7 +1346,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HorizontalDivider(
     modifier: Modifier = Modifier,
-    color: Color = DividerDefaults.color,
+    color: Color = LocalContentColor.current,
     thickness: Dp = DividerDefaults.thickness,
 ) {
     Box(
@@ -1295,8 +1361,11 @@ fun HorizontalDivider(
 /**
  * A vertical divider line for separating content.
  *
+ * By default uses [LocalContentColor] for the divider color, allowing it to
+ * adapt when placed inside styled containers.
+ *
  * @param modifier Modifier to apply to the divider.
- * @param color Color of the divider line.
+ * @param color Color of the divider line. Defaults to [LocalContentColor].
  * @param thickness Thickness of the divider line.
  *
  * @since 0.6.0
@@ -1304,7 +1373,7 @@ fun HorizontalDivider(
 @Composable
 fun VerticalDivider(
     modifier: Modifier = Modifier,
-    color: Color = DividerDefaults.color,
+    color: Color = LocalContentColor.current,
     thickness: Dp = DividerDefaults.thickness,
 ) {
     Box(
@@ -1326,11 +1395,6 @@ object DividerDefaults {
      * The default thickness of the divider.
      */
     val thickness: Dp = 1.dp
-
-    /**
-     * The default color of the divider.
-     */
-    val color: Color = Color.Unspecified
 }
 ```
 
@@ -1341,7 +1405,28 @@ Expected: PASS
 
 ---
 
-### Task 16: Final verification
+### Task 16: Register new modules for Dokka aggregation
+
+**Files:**
+- Modify: `build.gradle.kts` (root)
+
+**Step 1: Add dokka dependencies for new modules**
+
+Add the following to the `dependencies {}` block in the root `build.gradle.kts`:
+
+```kotlin
+dokka(projects.components.icon)
+dokka(projects.components.text)
+dokka(projects.components.toggleable)
+dokka(projects.components.listItem)
+dokka(projects.layout.divider)
+```
+
+These are required for Dokka V2 multi-module aggregation to include the new modules in generated API docs.
+
+---
+
+### Task 17: Final verification
 
 **Step 1: Full build**
 
@@ -1362,6 +1447,11 @@ Expected: No violations
 
 Run: `./gradlew metalavaGenerateSignature`
 Expected: `api/api.txt` generated for each new module
+
+**Step 5: Verify Dokka generates docs for new modules**
+
+Run: `./gradlew dokkaGenerate`
+Expected: BUILD SUCCESSFUL, output in `build/dokka/html/` includes new modules
 
 ---
 
@@ -1384,6 +1474,7 @@ Expected: `api/api.txt` generated for each new module
 | 13 | Divider scaffold | `layout/divider` |
 | 14 | Divider test (failing) | `layout/divider` |
 | 15 | Divider implementation | `layout/divider` |
-| 16 | Final verification | all |
+| 16 | Register Dokka aggregation | root `build.gradle.kts` |
+| 17 | Final verification | all |
 
 **New modules: 5** (icon, text, toggleable, list-item, divider)
