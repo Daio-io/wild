@@ -129,27 +129,28 @@ internal class InteractionSourceNode(
 
         val source = interactionSource ?: return
 
-        collectionJob = coroutineScope.launch {
-            source.interactions.collect { interaction ->
-                when (interaction) {
-                    is PressInteraction.Press -> pressed = true
-                    is PressInteraction.Release -> pressed = false
-                    is PressInteraction.Cancel -> pressed = false
-                    is HoverInteraction.Enter -> hovered = true
-                    is HoverInteraction.Exit -> hovered = false
-                    is FocusInteraction.Focus -> focused = true
-                    is FocusInteraction.Unfocus -> focused = false
-                }
+        collectionJob =
+            coroutineScope.launch {
+                source.interactions.collect { interaction ->
+                    when (interaction) {
+                        is PressInteraction.Press -> pressed = true
+                        is PressInteraction.Release -> pressed = false
+                        is PressInteraction.Cancel -> pressed = false
+                        is HoverInteraction.Enter -> hovered = true
+                        is HoverInteraction.Exit -> hovered = false
+                        is FocusInteraction.Focus -> focused = true
+                        is FocusInteraction.Unfocus -> focused = false
+                    }
 
-                notifyInteractionsChanged(
-                    Interactions(
-                        focused = focused,
-                        hovered = hovered,
-                        pressed = pressed,
-                    ),
-                )
+                    notifyInteractionsChanged(
+                        Interactions(
+                            focused = focused,
+                            hovered = hovered,
+                            pressed = pressed,
+                        ),
+                    )
+                }
             }
-        }
     }
 
     override fun onDetach() {
