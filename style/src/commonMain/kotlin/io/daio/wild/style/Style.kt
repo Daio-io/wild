@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
@@ -212,6 +213,7 @@ object StyleDefaults {
         focusedDisabledScale: Float = disabledScale,
         pressedDisabledScale: Float = disabledScale,
         hoveredDisabledScale: Float = disabledScale,
+        animationSpec: AnimationSpec<Float>? = null,
     ): Scale =
         Scale(
             scale = scale,
@@ -226,6 +228,7 @@ object StyleDefaults {
             focusedDisabledScale = focusedDisabledScale,
             pressedDisabledScale = pressedDisabledScale,
             hoveredDisabledScale = hoveredDisabledScale,
+            animationSpec = animationSpec,
         )
 
     /**
@@ -382,6 +385,7 @@ fun Modifier.interactionStyle(
                     pressed = pressed,
                     selected = selected,
                 )
+            scaleAnimationSpec = style.scale.animationSpec
         },
     )
 
@@ -436,6 +440,7 @@ fun Modifier.experimentalInteractionStyle(
                     pressed = pressed,
                     selected = selected,
                 )
+            scaleAnimationSpec = style.scale.animationSpec
         },
     )
 
@@ -510,11 +515,20 @@ fun Modifier.interactionStyle(
             label = "zIndex",
         )
 
+        val customSpec = style.scaleAnimationSpec
         val animatedScale by animateInteractionScaleAsState(
             pressed = pressed,
             focused = focused,
             hovered = hovered,
             targetScale = style.scale,
+            animationSpecProvider =
+                if (customSpec != null) {
+                    { _, _, _ -> customSpec }
+                } else {
+                    { press, focus, hover ->
+                        defaultScaleAnimationSpec(pressed = press, focused = focus, hovered = hover)
+                    }
+                },
         )
 
         val border = style.border

@@ -29,6 +29,12 @@ data class Scale(
     val focusedDisabledScale: Float = disabledScale,
     val pressedDisabledScale: Float = disabledScale,
     val hoveredDisabledScale: Float = disabledScale,
+    /**
+     * Custom animation spec for scale transitions. When null, the default animation is used.
+     *
+     * @since 0.6.0
+     */
+    val animationSpec: AnimationSpec<Float>? = null,
 ) {
     @Stable
     fun scaleFor(
@@ -102,12 +108,16 @@ fun animateInteractionScaleAsState(
  * Creates a [TweenSpec] configured with the default duration, delay and easing curve for the state
  * [pressed], [focused] && [hovered].
  *
+ * Can be used as a base when building custom scale animation specs.
+ *
  * @param pressed whether the element is currently pressed.
  * @param focused whether the element is currently focused.
  * @param hovered whether the element is currently hovered.
+ *
+ * @since 0.6.0
  */
 @Stable
-internal fun defaultScaleAnimationSpec(
+fun defaultScaleAnimationSpec(
     pressed: Boolean,
     focused: Boolean,
     hovered: Boolean,

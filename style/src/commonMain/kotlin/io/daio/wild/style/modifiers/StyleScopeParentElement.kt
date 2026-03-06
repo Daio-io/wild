@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -63,6 +64,7 @@ internal class StyleScopeParentNode(
     override var scale: Float = 1f
     override var shape: Shape = RectangleShape
     override var border: Border = BorderDefaults.None
+    override var scaleAnimationSpec: AnimationSpec<Float>? = null
 
     override val focused: Boolean
         get() = _focused
