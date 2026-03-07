@@ -90,6 +90,10 @@ internal class BorderNode(
     override val shouldAutoInvalidate: Boolean
         get() = false
 
+    override fun onAttach() {
+        requestInitialStyleFromParent()
+    }
+
     fun updateBorder(
         shape: Shape,
         borderStroke: BorderStroke,
@@ -110,6 +114,9 @@ internal class BorderNode(
     }
 
     private fun ContentDrawScope.drawBorder() {
+        val borderStrokeWidthPX = with(requireDensity()) { borderStroke.width.toPx() }
+        if (borderStrokeWidthPX <= 0f) return
+
         if (shapeOutlineCache == null) {
             shapeOutlineCache =
                 ShapeOutlineCache(
@@ -119,8 +126,6 @@ internal class BorderNode(
                     density = this,
                 )
         }
-
-        val borderStrokeWidthPX = with(requireDensity()) { borderStroke.width.toPx() }
 
         if (outlineStrokeCache == null) {
             outlineStrokeCache = OutlineStrokeCache(widthPx = borderStrokeWidthPX)

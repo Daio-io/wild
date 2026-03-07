@@ -39,8 +39,7 @@ internal class BackgroundElement(
         )
 
     override fun update(node: BackgroundNode) {
-        node.brush = brush
-        node.alpha = alpha
+        node.updateBrushAndAlpha(brush = brush, alpha = alpha)
         node.updateBackground(color = color, shape = shape)
     }
 
@@ -87,6 +86,21 @@ internal class BackgroundNode(
      */
     override val shouldAutoInvalidate: Boolean
         get() = false
+
+    override fun onAttach() {
+        requestInitialStyleFromParent()
+    }
+
+    fun updateBrushAndAlpha(
+        brush: Brush?,
+        alpha: Float,
+    ) {
+        if (this.brush != brush || this.alpha != alpha) {
+            this.brush = brush
+            this.alpha = alpha
+            invalidateDraw()
+        }
+    }
 
     fun updateBackground(
         color: Color,
@@ -137,7 +151,7 @@ internal class BackgroundNode(
 
     private fun ContentDrawScope.getOutline(): Outline {
         var outline: Outline? = null
-        if (size == lastSize && layoutDirection == lastLayoutDirection && lastShape == shape) {
+        if (size == lastSize && layoutDirection == lastLayoutDirection && lastShape == shape && lastOutline != null) {
             outline = lastOutline!!
         } else {
             // Manually observe reads so we can directly invalidate the outline when it changes
