@@ -26,7 +26,6 @@ import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
-import io.daio.wild.style.experimentalClickable
 
 @Composable
 fun TvLayout(
@@ -281,7 +280,7 @@ private fun ExperimentalModifierItem(
         modifier =
             modifier
                 .size(100.dp)
-                .experimentalClickable(
+                .clickable(
                     onClick = onClick,
                     interactionSource = interactionSource,
                     style =

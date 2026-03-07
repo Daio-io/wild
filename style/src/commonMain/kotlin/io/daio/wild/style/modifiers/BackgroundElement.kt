@@ -91,6 +91,17 @@ internal class BackgroundNode(
         requestInitialStyleFromParent()
     }
 
+    override fun onReset() {
+        color = Color.Unspecified
+        shape = RectangleShape
+        brush = null
+        alpha = 1f
+        lastSize = Size.Unspecified
+        lastLayoutDirection = null
+        lastOutline = null
+        lastShape = null
+    }
+
     fun updateBrushAndAlpha(
         brush: Brush?,
         alpha: Float,
@@ -167,6 +178,7 @@ internal class BackgroundNode(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
+        if (!isAttached) return
         updateBackground(
             color = styleScope.color,
             shape = styleScope.shape,

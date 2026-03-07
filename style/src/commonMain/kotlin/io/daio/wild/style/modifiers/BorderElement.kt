@@ -94,6 +94,14 @@ internal class BorderNode(
         requestInitialStyleFromParent()
     }
 
+    override fun onReset() {
+        shape = RectangleShape
+        borderStroke = BorderStroke(0.dp, Color.Unspecified)
+        inset = 0.dp
+        shapeOutlineCache = null
+        outlineStrokeCache = null
+    }
+
     fun updateBorder(
         shape: Shape,
         borderStroke: BorderStroke,
@@ -153,6 +161,7 @@ internal class BorderNode(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
+        if (!isAttached) return
         updateBorder(
             shape = styleScope.border.forInnerShape(styleScope.shape),
             borderStroke = styleScope.border.borderStroke,

@@ -26,7 +26,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.style.experimentalInteractable
+import io.daio.wild.style.interactable
 import io.daio.wild.style.interactionStyle
 
 /**
@@ -164,7 +164,7 @@ fun Container(
 
     Box(
         modifier =
-            modifier.experimentalInteractable(
+            modifier.interactable(
                 selected = selected,
                 enabled = enabled,
                 style = style,
@@ -267,6 +267,14 @@ fun Container(
  * ```
  * @since 0.4.0
  */
+@Deprecated(
+    message = "ExperimentalContainer is no longer needed. Container now uses the node-based style system internally.",
+    replaceWith =
+        ReplaceWith(
+            "Container(onClick, modifier, enabled, onLongClick, onDoubleClick, style, interactionSource, selected, content)",
+        ),
+    level = DeprecationLevel.WARNING,
+)
 @Composable
 fun ExperimentalContainer(
     onClick: () -> Unit,
@@ -284,7 +292,7 @@ fun ExperimentalContainer(
 
     Box(
         modifier =
-            modifier.experimentalInteractable(
+            modifier.interactable(
                 selected = selected,
                 enabled = enabled,
                 style = style,

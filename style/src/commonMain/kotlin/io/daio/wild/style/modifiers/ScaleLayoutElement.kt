@@ -80,6 +80,14 @@ internal class ScaleLayoutModifier(
         requestInitialStyleFromParent()
     }
 
+    override fun onReset() {
+        updateJob?.cancel()
+        updateJob = null
+        scale = 1f
+        zIndex = 0f
+        customAnimationSpec = null
+    }
+
     fun updateScale(
         scale: Float,
         zIndex: Float,
@@ -152,6 +160,7 @@ internal class ScaleLayoutModifier(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
+        if (!isAttached) return
         customAnimationSpec = styleScope.scaleAnimationSpec
         updateScale(
             scale = styleScope.scale,
