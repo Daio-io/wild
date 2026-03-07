@@ -85,6 +85,11 @@ fun Modifier.interactable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use interactable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("interactable(enabled, selected, style, interactionSource, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalInteractable(
     enabled: Boolean = true,
     selected: Boolean? = null,
@@ -138,6 +143,11 @@ fun Modifier.experimentalInteractable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use interactable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("interactable(enabled, selected, style, interactionSource, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalInteractable(
     enabled: Boolean = true,
     selected: Boolean? = null,
@@ -233,6 +243,11 @@ fun Modifier.clickable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use clickable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("clickable(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalClickable(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
@@ -276,6 +291,11 @@ fun Modifier.experimentalClickable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use clickable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("clickable(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalClickable(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
@@ -373,6 +393,11 @@ fun Modifier.selectable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use selectable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("selectable(selected, enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalSelectable(
     selected: Boolean,
     enabled: Boolean = true,
@@ -423,6 +448,11 @@ fun Modifier.experimentalSelectable(
  *
  * @since 0.4.0
  */
+@Deprecated(
+    message = "Use selectable instead. The node-based style system is now the default.",
+    replaceWith = ReplaceWith("selectable(selected, enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)"),
+    level = DeprecationLevel.WARNING,
+)
 fun Modifier.experimentalSelectable(
     selected: Boolean,
     enabled: Boolean = true,

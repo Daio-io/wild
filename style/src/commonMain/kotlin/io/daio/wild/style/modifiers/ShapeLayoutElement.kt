@@ -70,6 +70,11 @@ internal class ShapeLayoutModifier(
         requestInitialStyleFromParent()
     }
 
+    override fun onReset() {
+        shape = RectangleShape
+        alpha = 1f
+    }
+
     fun updateShape(
         shape: Shape,
         alpha: Float,
@@ -97,6 +102,7 @@ internal class ShapeLayoutModifier(
     }
 
     override fun updateStyle(styleScope: StyleScope) {
+        if (!isAttached) return
         updateShape(
             shape = styleScope.shape,
             alpha = styleScope.alpha,

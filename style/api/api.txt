@@ -140,12 +140,12 @@ package io.daio.wild.style {
 
   public final class ClickableKt {
     method public static androidx.compose.ui.Modifier clickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalClickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalClickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalInteractable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional io.daio.wild.style.Style? style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalInteractable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier experimentalSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalClickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalClickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalInteractable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional io.daio.wild.style.Style? style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalInteractable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit>? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
     method public static androidx.compose.ui.Modifier interactable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional io.daio.wild.style.Style? style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
     method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
   }
@@ -263,11 +263,12 @@ package io.daio.wild.style {
   }
 
   @androidx.compose.runtime.Immutable public final class Scale {
-    ctor public Scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale);
+    ctor public Scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale, optional androidx.compose.animation.core.AnimationSpec<java.lang.Float>? animationSpec);
     method public float component1();
     method public float component10();
     method public float component11();
     method public float component12();
+    method public androidx.compose.animation.core.AnimationSpec<java.lang.Float>? component13();
     method public float component2();
     method public float component3();
     method public float component4();
@@ -276,8 +277,9 @@ package io.daio.wild.style {
     method public float component7();
     method public float component8();
     method public float component9();
-    method public io.daio.wild.style.Scale copy(float scale, float focusedScale, float hoveredScale, float pressedScale, float selectedScale, float disabledScale, float focusedSelectedScale, float pressedSelectedScale, float hoveredSelectedScale, float focusedDisabledScale, float pressedDisabledScale, float hoveredDisabledScale);
+    method public io.daio.wild.style.Scale copy(float scale, float focusedScale, float hoveredScale, float pressedScale, float selectedScale, float disabledScale, float focusedSelectedScale, float pressedSelectedScale, float hoveredSelectedScale, float focusedDisabledScale, float pressedDisabledScale, float hoveredDisabledScale, androidx.compose.animation.core.AnimationSpec<java.lang.Float>? animationSpec);
     method public boolean equals(Object? other);
+    method public androidx.compose.animation.core.AnimationSpec<java.lang.Float>? getAnimationSpec();
     method public float getDisabledScale();
     method public float getFocusedDisabledScale();
     method public float getFocusedScale();
@@ -293,6 +295,7 @@ package io.daio.wild.style {
     method public int hashCode();
     method @androidx.compose.runtime.Stable public float scaleFor(boolean enabled, boolean focused, boolean hovered, boolean pressed, boolean selected);
     method public String toString();
+    property public final androidx.compose.animation.core.AnimationSpec<java.lang.Float>? animationSpec;
     property public final float disabledScale;
     property public final float focusedDisabledScale;
     property public final float focusedScale;
@@ -317,6 +320,7 @@ package io.daio.wild.style {
 
   public final class ScaleKt {
     method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<java.lang.Float> animateInteractionScaleAsState(float targetScale, boolean pressed, boolean focused, boolean hovered, optional String label, optional float visibilityThreshold, optional kotlin.jvm.functions.Function1<? super java.lang.Float,kotlin.Unit>? finishedListener, optional kotlin.jvm.functions.Function3<? super java.lang.Boolean,? super java.lang.Boolean,? super java.lang.Boolean,? extends androidx.compose.animation.core.AnimationSpec<java.lang.Float>> animationSpecProvider);
+    method @androidx.compose.runtime.Stable public static androidx.compose.animation.core.TweenSpec<java.lang.Float> defaultScaleAnimationSpec(boolean pressed, boolean focused, boolean hovered);
   }
 
   @androidx.compose.runtime.Immutable public final class Shapes {
@@ -392,7 +396,7 @@ package io.daio.wild.style {
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Borders borders(optional io.daio.wild.style.Border border, optional io.daio.wild.style.Border focusedBorder, optional io.daio.wild.style.Border hoveredBorder, optional io.daio.wild.style.Border pressedBorder, optional io.daio.wild.style.Border selectedBorder, optional io.daio.wild.style.Border disabledBorder, optional io.daio.wild.style.Border focusedSelectedBorder, optional io.daio.wild.style.Border pressedSelectedBorder, optional io.daio.wild.style.Border hoveredSelectedBorder, optional io.daio.wild.style.Border focusedDisabledBorder, optional io.daio.wild.style.Border pressedDisabledBorder, optional io.daio.wild.style.Border hoveredDisabledBorder);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Colors colors(optional long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long disabledBackgroundColor, optional long selectedBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, optional long contentColor, optional long focusedContentColor, optional long pressedContentColor, optional long hoveredContentColor, optional long disabledContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long pressedDisabledContentColor, optional long focusedDisabledContentColor, optional long hoveredDisabledContentColor);
     method public io.daio.wild.style.Style getNone();
-    method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale);
+    method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale, optional androidx.compose.animation.core.AnimationSpec<java.lang.Float>? animationSpec);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape hoveredShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape focusedSelectedShape, optional androidx.compose.ui.graphics.Shape pressedSelectedShape, optional androidx.compose.ui.graphics.Shape hoveredSelectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape, optional androidx.compose.ui.graphics.Shape pressedDisabledShape, optional androidx.compose.ui.graphics.Shape hoveredDisabledShape);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
     property public final io.daio.wild.style.Style None;
@@ -400,8 +404,8 @@ package io.daio.wild.style {
   }
 
   public final class StyleKt {
-    method public static androidx.compose.ui.Modifier experimentalInteractionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
-    method public static androidx.compose.ui.Modifier experimentalInteractionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalInteractionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
+    method @Deprecated public static androidx.compose.ui.Modifier experimentalInteractionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
   }
@@ -411,16 +415,19 @@ package io.daio.wild.style {
     method public io.daio.wild.style.Border getBorder();
     method public long getColor();
     method public float getScale();
+    method public androidx.compose.animation.core.AnimationSpec<java.lang.Float>? getScaleAnimationSpec();
     method public androidx.compose.ui.graphics.Shape getShape();
     method public void setAlpha(float);
     method public void setBorder(io.daio.wild.style.Border);
     method public void setColor(long);
     method public void setScale(float);
+    method public void setScaleAnimationSpec(androidx.compose.animation.core.AnimationSpec<java.lang.Float>?);
     method public void setShape(androidx.compose.ui.graphics.Shape);
     property public abstract float alpha;
     property public abstract io.daio.wild.style.Border border;
     property public abstract long color;
     property public abstract float scale;
+    property public abstract androidx.compose.animation.core.AnimationSpec<java.lang.Float>? scaleAnimationSpec;
     property public abstract androidx.compose.ui.graphics.Shape shape;
   }
 
