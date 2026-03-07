@@ -66,6 +66,10 @@ internal class ShapeLayoutModifier(
     override val shouldAutoInvalidate: Boolean
         get() = false
 
+    override fun onAttach() {
+        requestInitialStyleFromParent()
+    }
+
     fun updateShape(
         shape: Shape,
         alpha: Float,

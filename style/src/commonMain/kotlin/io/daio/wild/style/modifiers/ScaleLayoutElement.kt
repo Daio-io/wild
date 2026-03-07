@@ -76,6 +76,10 @@ internal class ScaleLayoutModifier(
 
     private var updateJob: Job? = null
 
+    override fun onAttach() {
+        requestInitialStyleFromParent()
+    }
+
     fun updateScale(
         scale: Float,
         zIndex: Float,
@@ -112,23 +116,25 @@ internal class ScaleLayoutModifier(
         updateJob?.cancel()
         updateJob =
             coroutineScope.launch {
-                joinAll(
-                    launch { zIndexState.animateTo(zIndex) },
-                    launch {
-                        scaleState.animateTo(
-                            targetValue = scale,
-                            animationSpec =
-                                animationSpec
-                                    ?: defaultScaleAnimationSpec(
-                                        focused = focused,
-                                        pressed = pressed,
-                                        hovered = hovered,
-                                    ),
-                        )
-                    },
-                )
-
-                invalidatePlacement()
+                try {
+                    joinAll(
+                        launch { zIndexState.animateTo(zIndex) },
+                        launch {
+                            scaleState.animateTo(
+                                targetValue = scale,
+                                animationSpec =
+                                    animationSpec
+                                        ?: defaultScaleAnimationSpec(
+                                            focused = focused,
+                                            pressed = pressed,
+                                            hovered = hovered,
+                                        ),
+                            )
+                        },
+                    )
+                } finally {
+                    invalidatePlacement()
+                }
             }
     }
 

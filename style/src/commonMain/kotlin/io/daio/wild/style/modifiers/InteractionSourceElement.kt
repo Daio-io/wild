@@ -125,7 +125,7 @@ internal class InteractionSourceNode(
 
     private fun restartCollection() {
         collectionJob?.cancel()
-        reset()
+        resetStateAndNotify()
 
         val source = interactionSource ?: return
 
@@ -156,16 +156,30 @@ internal class InteractionSourceNode(
     override fun onDetach() {
         collectionJob?.cancel()
         collectionJob = null
-        reset()
+        resetState()
     }
 
     override fun onReset() {
         collectionJob?.cancel()
         collectionJob = null
-        reset()
+        resetStateAndNotify()
     }
 
-    private fun reset() {
+    /**
+     * Resets interaction state without notifying children.
+     * Used during detach when children may already be partially detached.
+     */
+    private fun resetState() {
+        hovered = false
+        focused = false
+        pressed = false
+    }
+
+    /**
+     * Resets interaction state and notifies children.
+     * Used during reset (node reuse) when children are still attached.
+     */
+    private fun resetStateAndNotify() {
         hovered = false
         focused = false
         pressed = false
