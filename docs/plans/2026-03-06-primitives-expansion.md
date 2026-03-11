@@ -1459,24 +1459,24 @@ Expected: BUILD SUCCESSFUL, output in `build/dokka/html/` includes new modules
 
 ## Summary
 
-| # | Task | Module |
-|---|------|--------|
-| 1 | Icon scaffold | `components/icon` |
-| 2 | Icon test (failing) | `components/icon` |
-| 3 | Icon implementation | `components/icon` |
-| 4 | Text scaffold | `components/text` |
-| 5 | Text test (failing) | `components/text` |
-| 6 | Text implementation | `components/text` |
-| 7 | Toggleable scaffold | `components/toggleable` |
-| 8 | Toggleable test (failing) | `components/toggleable` |
-| 9 | Toggleable implementation | `components/toggleable` |
-| 10 | ListItem scaffold | `components/list-item` |
-| 11 | ListItem test (failing) | `components/list-item` |
-| 12 | ListItem implementation | `components/list-item` |
-| 13 | Divider scaffold | `layout/divider` |
-| 14 | Divider test (failing) | `layout/divider` |
-| 15 | Divider implementation | `layout/divider` |
-| 16 | Register Dokka aggregation | root `build.gradle.kts` |
-| 17 | Final verification | all |
+| # | Task | Module | Status |
+|---|------|--------|--------|
+| 1 | Icon scaffold | `components/icon` | ✅ Done |
+| 2 | Icon test (failing) | `components/icon` | ✅ Done |
+| 3 | Icon implementation | `components/icon` | ✅ Done |
+| 4 | Text scaffold | `components/text` | ✅ Done |
+| 5 | Text test (failing) | `components/text` | ✅ Done |
+| 6 | Text implementation | `components/text` | ✅ Done |
+| 7 | Toggleable scaffold | `components/toggleable` | |
+| 8 | Toggleable test (failing) | `components/toggleable` | |
+| 9 | Toggleable implementation | `components/toggleable` | |
+| 10 | ListItem scaffold | `components/list-item` | |
+| 11 | ListItem test (failing) | `components/list-item` | |
+| 12 | ListItem implementation | `components/list-item` | |
+| 13 | Divider scaffold | `layout/divider` | |
+| 14 | Divider test (failing) | `layout/divider` | |
+| 15 | Divider implementation | `layout/divider` | |
+| 16 | Register Dokka aggregation | root `build.gradle.kts` | |
+| 17 | Final verification | all | |
 
 **New modules: 5** (icon, text, toggleable, list-item, divider)
