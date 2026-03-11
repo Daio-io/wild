@@ -24,5 +24,7 @@ dependencies {
     dokka(projects.style)
     dokka(projects.modifier)
     dokka(projects.components.button)
+    dokka(projects.components.icon)
+    dokka(projects.components.text)
     dokka(projects.layout.container)
 }
