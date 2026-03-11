@@ -31,6 +31,8 @@ include(
     "style",
     "modifier",
     ":components:button",
+    ":components:icon",
+    ":components:text",
     ":layout:container",
 )
 
