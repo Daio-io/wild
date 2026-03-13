@@ -33,6 +33,7 @@ include(
     ":components:button",
     ":components:icon",
     ":components:text",
+    ":components:toggleable",
     ":layout:container",
 )
 
