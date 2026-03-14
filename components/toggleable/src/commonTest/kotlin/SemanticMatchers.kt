@@ -10,17 +10,14 @@ import androidx.compose.ui.test.SemanticsMatcher
 /**
  * Matches nodes with the given [ToggleableState].
  */
-fun hasToggleableState(state: ToggleableState): SemanticsMatcher =
-    SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, state)
+fun hasToggleableState(state: ToggleableState): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, state)
 
 /**
  * Matches nodes with the given selected state.
  */
-fun hasSelectedState(selected: Boolean): SemanticsMatcher =
-    SemanticsMatcher.expectValue(SemanticsProperties.Selected, selected)
+fun hasSelectedState(selected: Boolean): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Selected, selected)
 
 /**
  * Matches nodes with the given [Role].
  */
-fun hasRole(role: Role): SemanticsMatcher =
-    SemanticsMatcher.expectValue(SemanticsProperties.Role, role)
+fun hasRole(role: Role): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, role)

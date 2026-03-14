@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -26,221 +25,235 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class ToggleableTest {
     @Test
-    fun toggleableTogglesStateOnClick() = runComposeUiTest {
-        var checked by mutableStateOf(false)
+    fun toggleableTogglesStateOnClick() =
+        runComposeUiTest {
+            var checked by mutableStateOf(false)
 
-        setContent {
-            Toggleable(
-                checked = checked,
-                onCheckedChange = { checked = it },
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
+            setContent {
+                Toggleable(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).performClick()
+            assertTrue(checked, "Expected checked to be true after click")
         }
-
-        onNode(hasTestTag("toggle")).performClick()
-        assertTrue(checked, "Expected checked to be true after click")
-    }
 
     @Test
-    fun toggleableTogglesOffOnSecondClick() = runComposeUiTest {
-        var checked by mutableStateOf(true)
+    fun toggleableTogglesOffOnSecondClick() =
+        runComposeUiTest {
+            var checked by mutableStateOf(true)
 
-        setContent {
-            Toggleable(
-                checked = checked,
-                onCheckedChange = { checked = it },
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
+            setContent {
+                Toggleable(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).performClick()
+            assertEquals(false, checked, "Expected checked to be false after toggling off")
         }
-
-        onNode(hasTestTag("toggle")).performClick()
-        assertEquals(false, checked, "Expected checked to be false after toggling off")
-    }
 
     @Test
-    fun toggleableRespectsDisabledState() = runComposeUiTest {
-        var checked by mutableStateOf(false)
+    fun toggleableRespectsDisabledState() =
+        runComposeUiTest {
+            var checked by mutableStateOf(false)
 
-        setContent {
-            Toggleable(
-                checked = checked,
-                onCheckedChange = { checked = it },
-                enabled = false,
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
+            setContent {
+                Toggleable(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    enabled = false,
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).assertIsNotEnabled()
         }
-
-        onNode(hasTestTag("toggle")).assertIsNotEnabled()
-    }
 
     @Test
-    fun toggleableIsEnabledByDefault() = runComposeUiTest {
-        setContent {
-            Toggleable(
-                checked = false,
-                onCheckedChange = {},
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
-        }
+    fun toggleableIsEnabledByDefault() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    checked = false,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("toggle")).assertIsEnabled()
-    }
+            onNode(hasTestTag("toggle")).assertIsEnabled()
+        }
 
     @Test
-    fun toggleableAppliesToggleableStateSemantics() = runComposeUiTest {
-        setContent {
-            Toggleable(
-                checked = true,
-                onCheckedChange = {},
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
-        }
+    fun toggleableAppliesToggleableStateSemantics() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    checked = true,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("toggle")).assert(
-            hasToggleableState(ToggleableState.On),
-        )
-    }
+            onNode(hasTestTag("toggle")).assert(
+                hasToggleableState(ToggleableState.On),
+            )
+        }
 
     @Test
-    fun toggleableUncheckedHasOffState() = runComposeUiTest {
-        setContent {
-            Toggleable(
-                checked = false,
-                onCheckedChange = {},
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
-        }
+    fun toggleableUncheckedHasOffState() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    checked = false,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("toggle")).assert(
-            hasToggleableState(ToggleableState.Off),
-        )
-    }
+            onNode(hasTestTag("toggle")).assert(
+                hasToggleableState(ToggleableState.Off),
+            )
+        }
 
     @Test
-    fun toggleableAppliesSemanticRole() = runComposeUiTest {
-        setContent {
-            Toggleable(
-                checked = false,
-                onCheckedChange = {},
-                semanticRole = Role.Switch,
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
-        }
+    fun toggleableAppliesSemanticRole() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    checked = false,
+                    onCheckedChange = {},
+                    semanticRole = Role.Switch,
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("toggle")).assert(
-            hasRole(Role.Switch),
-        )
-    }
+            onNode(hasTestTag("toggle")).assert(
+                hasRole(Role.Switch),
+            )
+        }
 
     @Test
-    fun toggleableAppliesCheckboxRole() = runComposeUiTest {
-        setContent {
-            Toggleable(
-                checked = false,
-                onCheckedChange = {},
-                semanticRole = Role.Checkbox,
-                modifier = Modifier.testTag("toggle").size(48.dp),
-            ) {}
-        }
+    fun toggleableAppliesCheckboxRole() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    checked = false,
+                    onCheckedChange = {},
+                    semanticRole = Role.Checkbox,
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("toggle")).assert(
-            hasRole(Role.Checkbox),
-        )
-    }
+            onNode(hasTestTag("toggle")).assert(
+                hasRole(Role.Checkbox),
+            )
+        }
 }
 
 @OptIn(ExperimentalTestApi::class)
 class SelectableTest {
     @Test
-    fun selectableCallsOnClickWhenClicked() = runComposeUiTest {
-        var clicked = false
+    fun selectableCallsOnClickWhenClicked() =
+        runComposeUiTest {
+            var clicked = false
 
-        setContent {
-            Selectable(
-                selected = false,
-                onClick = { clicked = true },
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = { clicked = true },
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("select")).performClick()
+            assertTrue(clicked, "Expected onClick to be called")
         }
-
-        onNode(hasTestTag("select")).performClick()
-        assertTrue(clicked, "Expected onClick to be called")
-    }
 
     @Test
-    fun selectableDoesNotToggle() = runComposeUiTest {
-        // Selectable should call onClick, not toggle - parent manages selection
-        var clickCount = 0
+    fun selectableDoesNotToggle() =
+        runComposeUiTest {
+            // Selectable should call onClick, not toggle - parent manages selection
+            var clickCount = 0
 
-        setContent {
-            Selectable(
-                selected = true,
-                onClick = { clickCount++ },
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
+            setContent {
+                Selectable(
+                    selected = true,
+                    onClick = { clickCount++ },
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("select")).performClick()
+            assertEquals(1, clickCount, "Expected onClick to be called once")
         }
-
-        onNode(hasTestTag("select")).performClick()
-        assertEquals(1, clickCount, "Expected onClick to be called once")
-    }
 
     @Test
-    fun selectableAppliesSelectedSemantics() = runComposeUiTest {
-        setContent {
-            Selectable(
-                selected = true,
-                onClick = {},
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
-        }
+    fun selectableAppliesSelectedSemantics() =
+        runComposeUiTest {
+            setContent {
+                Selectable(
+                    selected = true,
+                    onClick = {},
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("select")).assert(
-            hasSelectedState(true),
-        )
-    }
+            onNode(hasTestTag("select")).assert(
+                hasSelectedState(true),
+            )
+        }
 
     @Test
-    fun selectableUnselectedHasCorrectSemantics() = runComposeUiTest {
-        setContent {
-            Selectable(
-                selected = false,
-                onClick = {},
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
-        }
+    fun selectableUnselectedHasCorrectSemantics() =
+        runComposeUiTest {
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = {},
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("select")).assert(
-            hasSelectedState(false),
-        )
-    }
+            onNode(hasTestTag("select")).assert(
+                hasSelectedState(false),
+            )
+        }
 
     @Test
-    fun selectableAppliesRadioButtonRole() = runComposeUiTest {
-        setContent {
-            Selectable(
-                selected = false,
-                onClick = {},
-                semanticRole = Role.RadioButton,
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
-        }
+    fun selectableAppliesRadioButtonRole() =
+        runComposeUiTest {
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = {},
+                    semanticRole = Role.RadioButton,
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("select")).assert(
-            hasRole(Role.RadioButton),
-        )
-    }
+            onNode(hasTestTag("select")).assert(
+                hasRole(Role.RadioButton),
+            )
+        }
 
     @Test
-    fun selectableRespectsDisabledState() = runComposeUiTest {
-        setContent {
-            Selectable(
-                selected = false,
-                onClick = {},
-                enabled = false,
-                modifier = Modifier.testTag("select").size(48.dp),
-            ) {}
-        }
+    fun selectableRespectsDisabledState() =
+        runComposeUiTest {
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = {},
+                    enabled = false,
+                    modifier = Modifier.testTag("select").size(48.dp),
+                ) {}
+            }
 
-        onNode(hasTestTag("select")).assertIsNotEnabled()
-    }
+            onNode(hasTestTag("select")).assertIsNotEnabled()
+        }
 }

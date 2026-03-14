@@ -56,10 +56,11 @@ class ToggleableDefaultsTest {
 
     @Test
     fun selectedColorsApplyForCheckedState() {
-        val colors = StyleDefaults.colors(
-            backgroundColor = Color.Gray,
-            selectedBackgroundColor = Color.Green,
-        )
+        val colors =
+            StyleDefaults.colors(
+                backgroundColor = Color.Gray,
+                selectedBackgroundColor = Color.Green,
+            )
         val style = ToggleableDefaults.style(colors = colors)
         assertEquals(Color.Gray, style.colors.backgroundColor)
         assertEquals(Color.Green, style.colors.selectedBackgroundColor)
@@ -75,13 +76,14 @@ class ToggleableDefaultsTest {
         val shapes = StyleDefaults.shapes(shape = RectangleShape)
         val alpha = StyleDefaults.alpha(disabledAlpha = 0.3f)
 
-        val style = ToggleableDefaults.style(
-            colors = colors,
-            borders = borders,
-            scale = scale,
-            shapes = shapes,
-            alpha = alpha,
-        )
+        val style =
+            ToggleableDefaults.style(
+                colors = colors,
+                borders = borders,
+                scale = scale,
+                shapes = shapes,
+                alpha = alpha,
+            )
 
         assertEquals(Color.Red, style.colors.backgroundColor)
         assertEquals(border, style.borders.border)
