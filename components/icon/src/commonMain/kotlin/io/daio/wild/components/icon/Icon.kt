@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.modifier.thenIfNotNull
 
 /**
  * Icon component that draws a [Painter] with tinting support.
@@ -54,21 +55,19 @@ fun Icon(
         remember(tint) {
             if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
         }
-    val semanticsModifier =
-        if (contentDescription != null) {
-            Modifier.semantics {
-                this.contentDescription = contentDescription
-                this.role = Role.Image
-            }
-        } else {
-            Modifier
-        }
-
     Box(
         modifier
             .defaultSizeFor(painter)
             .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
-            .then(semanticsModifier),
+            .thenIfNotNull(
+                value = contentDescription,
+                ifNotNullModifier = {
+                    Modifier.semantics {
+                        this.contentDescription = it
+                        this.role = Role.Image
+                    }
+                },
+            ),
     )
 }
 

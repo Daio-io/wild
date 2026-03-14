@@ -13,13 +13,23 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.foundation)
-                implementation(projects.modifier)
+                implementation(projects.layout.container)
+
+                api(projects.foundations)
+                api(projects.style)
                 api(projects.contentColor)
             }
         }
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }
