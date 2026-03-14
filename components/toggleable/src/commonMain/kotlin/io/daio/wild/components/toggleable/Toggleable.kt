@@ -92,17 +92,15 @@ fun Toggleable(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val semanticsModifier =
-        Modifier.semantics {
-            toggleableState = ToggleableState(checked)
-            if (semanticRole != null) {
-                role = semanticRole
-            }
-        }
-
     Container(
         onClick = { onCheckedChange(!checked) },
-        modifier = modifier.then(semanticsModifier),
+        modifier =
+            modifier.semantics {
+                toggleableState = ToggleableState(checked)
+                if (semanticRole != null) {
+                    role = semanticRole
+                }
+            },
         enabled = enabled,
         selected = checked,
         style = style,
@@ -152,17 +150,15 @@ fun Selectable(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val semanticsModifier =
-        Modifier.semantics {
-            this.selected = selected
-            if (semanticRole != null) {
-                role = semanticRole
-            }
-        }
-
     Container(
         onClick = onClick,
-        modifier = modifier.then(semanticsModifier),
+        modifier =
+            modifier.semantics {
+                this.selected = selected
+                if (semanticRole != null) {
+                    role = semanticRole
+                }
+            },
         enabled = enabled,
         selected = selected,
         style = style,

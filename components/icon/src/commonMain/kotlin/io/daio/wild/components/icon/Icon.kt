@@ -54,21 +54,20 @@ fun Icon(
         remember(tint) {
             if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
         }
-    val semanticsModifier =
-        if (contentDescription != null) {
-            Modifier.semantics {
-                this.contentDescription = contentDescription
-                this.role = Role.Image
-            }
-        } else {
-            Modifier
-        }
-
     Box(
         modifier
             .defaultSizeFor(painter)
             .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
-            .then(semanticsModifier),
+            .then(
+                if (contentDescription != null) {
+                    Modifier.semantics {
+                        this.contentDescription = contentDescription
+                        this.role = Role.Image
+                    }
+                } else {
+                    Modifier
+                },
+            ),
     )
 }
 
