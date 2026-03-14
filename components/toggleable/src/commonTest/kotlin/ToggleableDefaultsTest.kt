@@ -91,6 +91,26 @@ class ToggleableDefaultsTest {
     }
 }
 
+class SelectableDefaultsTest {
+    @Test
+    fun defaultStyleMatchesStyleDefaultsNone() {
+        assertEquals(StyleDefaults.None, SelectableDefaults.style())
+    }
+
+    @Test
+    fun customColorsAreForwarded() {
+        val colors = StyleDefaults.colors(backgroundColor = Color.Cyan)
+        val style = SelectableDefaults.style(colors = colors)
+        assertEquals(Color.Cyan, style.colors.backgroundColor)
+    }
+
+    @Test
+    fun selectableDefaultsAreIndependentFromToggleableDefaults() {
+        // They currently produce the same result, but are separate objects
+        assertEquals(ToggleableDefaults.style(), SelectableDefaults.style())
+    }
+}
+
 class ToggleableStateTest {
     @Test
     fun checkedMapsToToggleableStateOn() {

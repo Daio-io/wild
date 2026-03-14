@@ -146,7 +146,7 @@ fun Selectable(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     semanticRole: Role? = null,
-    style: Style = ToggleableDefaults.style(),
+    style: Style = SelectableDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -168,13 +168,41 @@ fun Selectable(
 }
 
 /**
- * Contains the default values used by [Toggleable] and [Selectable].
+ * Contains the default values used by [Toggleable].
  *
  * @since 0.6.0
  */
 object ToggleableDefaults {
     /**
-     * Creates a default [Style] for toggleable/selectable controls.
+     * Creates a default [Style] for toggleable controls.
+     */
+    fun style(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+    ): Style =
+        StyleDefaults.style(
+            colors = colors,
+            borders = borders,
+            scale = scale,
+            shapes = shapes,
+            alpha = alpha,
+        )
+}
+
+/**
+ * Contains the default values used by [Selectable].
+ *
+ * Separate from [ToggleableDefaults] to allow independent evolution of defaults
+ * for single-selection controls (radio buttons, tabs) vs toggle controls (switches, checkboxes).
+ *
+ * @since 0.6.0
+ */
+object SelectableDefaults {
+    /**
+     * Creates a default [Style] for selectable controls.
      */
     fun style(
         colors: Colors = StyleDefaults.colors(),
