@@ -9,6 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -128,8 +130,11 @@ class ToggleableTest {
                 Toggleable(
                     checked = false,
                     onCheckedChange = {},
-                    semanticRole = Role.Switch,
-                    modifier = Modifier.testTag("toggle").size(48.dp),
+                    modifier =
+                        Modifier
+                            .testTag("toggle")
+                            .size(48.dp)
+                            .semantics { role = Role.Switch },
                 ) {}
             }
 
@@ -145,8 +150,11 @@ class ToggleableTest {
                 Toggleable(
                     checked = false,
                     onCheckedChange = {},
-                    semanticRole = Role.Checkbox,
-                    modifier = Modifier.testTag("toggle").size(48.dp),
+                    modifier =
+                        Modifier
+                            .testTag("toggle")
+                            .size(48.dp)
+                            .semantics { role = Role.Checkbox },
                 ) {}
             }
 
@@ -232,8 +240,11 @@ class SelectableTest {
                 Selectable(
                     selected = false,
                     onClick = {},
-                    semanticRole = Role.RadioButton,
-                    modifier = Modifier.testTag("select").size(48.dp),
+                    modifier =
+                        Modifier
+                            .testTag("select")
+                            .size(48.dp)
+                            .semantics { role = Role.RadioButton },
                 ) {}
             }
 

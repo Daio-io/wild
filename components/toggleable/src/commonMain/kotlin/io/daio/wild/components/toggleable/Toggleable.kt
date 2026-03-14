@@ -7,8 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
@@ -33,7 +31,7 @@ import io.daio.wild.style.StyleDefaults
  * for checked vs unchecked via [Style.colors], [Style.borders], etc.
  *
  * Consumers build specific controls by wrapping this with:
- * - A semantic [Role] (e.g. [Role.Switch], [Role.Checkbox], [Role.RadioButton])
+ * - A semantic role via `Modifier.semantics { role = Role.Switch }` etc.
  * - Default dimensions appropriate to the control type
  * - Visual content (thumb, check mark, dot, etc.)
  *
@@ -41,7 +39,6 @@ import io.daio.wild.style.StyleDefaults
  * @param onCheckedChange Callback invoked when the checked state should change.
  * @param modifier Modifier to apply to the toggleable.
  * @param enabled Whether the control is enabled.
- * @param semanticRole The accessibility [Role] for this control (e.g. [Role.Switch], [Role.Checkbox]).
  * @param style The [Style] for interaction states. Use `selected` variants for the checked state.
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param content Visual content of the control.
@@ -53,8 +50,9 @@ import io.daio.wild.style.StyleDefaults
  * Toggleable(
  *     checked = isOn,
  *     onCheckedChange = { isOn = it },
- *     semanticRole = Role.Switch,
- *     modifier = Modifier.size(width = 48.dp, height = 24.dp),
+ *     modifier = Modifier
+ *         .size(width = 48.dp, height = 24.dp)
+ *         .semantics { role = Role.Switch },
  *     style = StyleDefaults.style(
  *         colors = StyleDefaults.colors(
  *             backgroundColor = Color.Gray,
@@ -71,8 +69,9 @@ import io.daio.wild.style.StyleDefaults
  * Toggleable(
  *     checked = isChecked,
  *     onCheckedChange = { isChecked = it },
- *     semanticRole = Role.Checkbox,
- *     modifier = Modifier.size(20.dp),
+ *     modifier = Modifier
+ *         .size(20.dp)
+ *         .semantics { role = Role.Checkbox },
  *     style = myCheckboxStyle,
  * ) {
  *     if (isChecked) {
@@ -87,7 +86,6 @@ fun Toggleable(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    semanticRole: Role? = null,
     style: Style = ToggleableDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
@@ -97,9 +95,6 @@ fun Toggleable(
         modifier =
             modifier.semantics {
                 toggleableState = ToggleableState(checked)
-                if (semanticRole != null) {
-                    role = semanticRole
-                }
             },
         enabled = enabled,
         selected = checked,
@@ -119,7 +114,6 @@ fun Toggleable(
  * @param onClick Callback invoked when the item is clicked.
  * @param modifier Modifier to apply to the selectable.
  * @param enabled Whether the control is enabled.
- * @param semanticRole The accessibility [Role] for this control (e.g. [Role.RadioButton]).
  * @param style The [Style] for interaction states.
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param content Visual content of the control.
@@ -131,8 +125,9 @@ fun Toggleable(
  * Selectable(
  *     selected = isSelected,
  *     onClick = onSelect,
- *     semanticRole = Role.RadioButton,
- *     modifier = Modifier.size(20.dp),
+ *     modifier = Modifier
+ *         .size(20.dp)
+ *         .semantics { role = Role.RadioButton },
  *     style = myRadioStyle,
  * ) {
  *     // Draw your selection indicator here
@@ -145,7 +140,6 @@ fun Selectable(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    semanticRole: Role? = null,
     style: Style = SelectableDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
@@ -155,9 +149,6 @@ fun Selectable(
         modifier =
             modifier.semantics {
                 this.selected = selected
-                if (semanticRole != null) {
-                    role = semanticRole
-                }
             },
         enabled = enabled,
         selected = selected,
