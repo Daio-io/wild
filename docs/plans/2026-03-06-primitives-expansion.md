@@ -1470,13 +1470,13 @@ Expected: BUILD SUCCESSFUL, output in `build/dokka/html/` includes new modules
 | 7 | Toggleable scaffold | `components/toggleable` | ✅ Done |
 | 8 | Toggleable test (failing) | `components/toggleable` | ✅ Done |
 | 9 | Toggleable implementation | `components/toggleable` | ✅ Done |
-| 10 | ListItem scaffold | `components/list-item` | |
-| 11 | ListItem test (failing) | `components/list-item` | |
-| 12 | ListItem implementation | `components/list-item` | |
-| 13 | Divider scaffold | `layout/divider` | |
-| 14 | Divider test (failing) | `layout/divider` | |
-| 15 | Divider implementation | `layout/divider` | |
-| 16 | Register Dokka aggregation | root `build.gradle.kts` | |
-| 17 | Final verification | all | |
+| 10 | ListItem scaffold | `components/list-item` | ✅ Done |
+| 11 | ListItem test (failing) | `components/list-item` | ✅ Done |
+| 12 | ListItem implementation | `components/list-item` | ✅ Done |
+| 13 | Divider scaffold | `layout/divider` | ✅ Done |
+| 14 | Divider test (failing) | `layout/divider` | ✅ Done |
+| 15 | Divider implementation | `layout/divider` | ✅ Done |
+| 16 | Register Dokka aggregation | root `build.gradle.kts` | ✅ Done |
+| 17 | Final verification | all | ✅ Done |
 
 **New modules: 5** (icon, text, toggleable, list-item, divider)
