@@ -31,7 +31,7 @@ import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 
 /**
- * A static list item with leading, content, and trailing slots.
+ * A static list item with content only — no leading or trailing slots.
  *
  * @param modifier Modifier to apply to the list item.
  * @param color Background color.
@@ -39,8 +39,8 @@ import io.daio.wild.style.StyleDefaults
  * @param shape Shape of the list item.
  * @param border Border around the list item.
  * @param contentPadding Padding applied inside the list item.
- * @param leadingContent Optional content displayed at the start.
- * @param trailingContent Optional content displayed at the end.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
  * @param content Main content of the list item.
  *
  * @since 0.6.0
@@ -53,8 +53,9 @@ fun ListItem(
     shape: Shape = ListItemDefaults.shape,
     border: Border = BorderDefaults.None,
     contentPadding: PaddingValues = ListItemDefaults.contentPadding,
-    leadingContent: (@Composable () -> Unit)? = null,
-    trailingContent: (@Composable () -> Unit)? = null,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
     content: @Composable () -> Unit,
 ) {
     Container(
@@ -72,8 +73,63 @@ fun ListItem(
                 Modifier
                     .fillMaxWidth()
                     .padding(contentPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
+        ) {
+            content()
+        }
+    }
+}
+
+/**
+ * A static list item with leading, content, and trailing slots.
+ *
+ * @param modifier Modifier to apply to the list item.
+ * @param color Background color.
+ * @param contentColor Content color.
+ * @param shape Shape of the list item.
+ * @param border Border around the list item.
+ * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
+ * @param leadingContent Content displayed at the start.
+ * @param trailingContent Content displayed at the end.
+ * @param content Main content of the list item.
+ *
+ * @since 0.6.0
+ */
+@Composable
+fun ListItem(
+    leadingContent: (@Composable () -> Unit)?,
+    trailingContent: (@Composable () -> Unit)?,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    contentColor: Color = Color.Unspecified,
+    shape: Shape = ListItemDefaults.shape,
+    border: Border = BorderDefaults.None,
+    contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+    content: @Composable () -> Unit,
+) {
+    Container(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = ListItemDefaults.defaultMinHeight),
+        color = color,
+        contentColor = contentColor,
+        shape = shape,
+        border = border,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
         ) {
             if (leadingContent != null) {
                 leadingContent()
@@ -99,33 +155,14 @@ fun ListItem(
  * @param selected Whether the list item is currently selected.
  * @param style The [Style] for interaction states.
  * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param leadingContent Optional content displayed at the start.
  * @param trailingContent Optional content displayed at the end.
  * @param content Main content of the list item.
  *
  * @since 0.6.0
- *
- * Example:
- * ```
- * ListItem(
- *     onClick = { /* handle click */ },
- *     style = StyleDefaults.style(
- *         colors = StyleDefaults.colors(
- *             backgroundColor = Color.White,
- *             focusedBackgroundColor = Color.LightGray,
- *         ),
- *     ),
- *     leadingContent = {
- *         Icon(imageVector = Icons.Default.Person, contentDescription = null)
- *     },
- *     trailingContent = {
- *         Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
- *     },
- * ) {
- *     Text("List item title")
- * }
- * ```
  */
 @Composable
 fun ListItem(
@@ -135,6 +172,9 @@ fun ListItem(
     selected: Boolean = false,
     style: Style = ListItemDefaults.style(),
     contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
     interactionSource: MutableInteractionSource? = null,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -156,8 +196,8 @@ fun ListItem(
                 Modifier
                     .fillMaxWidth()
                     .padding(contentPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
         ) {
             if (leadingContent != null) {
                 leadingContent()
