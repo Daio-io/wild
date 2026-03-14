@@ -1467,9 +1467,9 @@ Expected: BUILD SUCCESSFUL, output in `build/dokka/html/` includes new modules
 | 4 | Text scaffold | `components/text` | ✅ Done |
 | 5 | Text test (failing) | `components/text` | ✅ Done |
 | 6 | Text implementation | `components/text` | ✅ Done |
-| 7 | Toggleable scaffold | `components/toggleable` | |
-| 8 | Toggleable test (failing) | `components/toggleable` | |
-| 9 | Toggleable implementation | `components/toggleable` | |
+| 7 | Toggleable scaffold | `components/toggleable` | ✅ Done |
+| 8 | Toggleable test (failing) | `components/toggleable` | ✅ Done |
+| 9 | Toggleable implementation | `components/toggleable` | ✅ Done |
 | 10 | ListItem scaffold | `components/list-item` | |
 | 11 | ListItem test (failing) | `components/list-item` | |
 | 12 | ListItem implementation | `components/list-item` | |
