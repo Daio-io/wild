@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -337,7 +338,13 @@ private fun Modifier.handleTvInputIfRequired(
                     onLongClick = onLongClick,
                     onClickLabel = onClickLabel,
                     onClick = onClick,
-                ),
+                ).focusProperties {
+                    // Since we already configure the node to be focusable we want to ensure any
+                    // modifiers applied after that create new focusable Nodes can not be focused.
+                    // This ensures the Composable can not be focused if the component itself has
+                    // canFocus disabled.
+                    canFocus = false
+                },
         )
 }
 
