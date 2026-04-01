@@ -1,0 +1,10 @@
+// Signature format: 4.0
+package io.daio.wild.modifier {
+
+  public final class ThenIfKt {
+    method public static androidx.compose.ui.Modifier thenIf(androidx.compose.ui.Modifier, boolean condition, androidx.compose.ui.Modifier ifTrueModifier, optional androidx.compose.ui.Modifier ifFalseModifier);
+    method public static <T> androidx.compose.ui.Modifier thenIfNotNull(androidx.compose.ui.Modifier, T? value, kotlin.jvm.functions.Function1<? super T,? extends androidx.compose.ui.Modifier> ifNotNullModifier, optional androidx.compose.ui.Modifier ifNullModifier);
+  }
+
+}
+
