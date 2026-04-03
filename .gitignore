@@ -60,4 +60,4 @@ local.properties
 *.hprof
 
 ### MkDocs ###
-site/
+/site/

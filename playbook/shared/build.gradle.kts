@@ -20,7 +20,12 @@ kotlin {
                 api(projects.contentColor)
                 api(projects.style)
                 api(compose.material3)
-                api(projects.style)
+                api(projects.layout.container)
+                api(projects.layout.divider)
+                api(projects.components.text)
+                api(projects.components.button)
+                api(projects.components.listItem)
+                api(projects.components.toggleable)
             }
         }
 
@@ -31,7 +36,6 @@ kotlin {
                 api(libs.core.ktx)
                 // Should not really expose at this level but its just for samples.
                 api(libs.tv.material)
-                api(projects.layout.container)
             }
         }
 
