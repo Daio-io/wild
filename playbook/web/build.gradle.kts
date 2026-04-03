@@ -26,6 +26,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.playbook.shared)
             implementation(compose.components.resources)
+            implementation(libs.androidx.navigation.compose)
         }
     }
 }
