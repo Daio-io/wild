@@ -25,6 +25,7 @@ import io.daio.wild.site.navigation.routeFromPath
 import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.PlaceholderPage
+import io.daio.wild.site.pages.components.ButtonPage
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
@@ -78,10 +79,7 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                         )
                     }
                     composable(Route.Component.Button.path) {
-                        PlaceholderPage(
-                            title = "Button",
-                            subtitle = "An interactive button primitive with style support.",
-                        )
+                        ButtonPage()
                     }
                     composable(Route.Component.Container.path) {
                         PlaceholderPage(
