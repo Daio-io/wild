@@ -26,6 +26,8 @@ import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.PlaceholderPage
 import io.daio.wild.site.pages.components.ButtonPage
+import io.daio.wild.site.pages.components.ContainerPage
+import io.daio.wild.site.pages.components.TextPage
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
@@ -82,16 +84,10 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                         ButtonPage()
                     }
                     composable(Route.Component.Container.path) {
-                        PlaceholderPage(
-                            title = "Container",
-                            subtitle = "A foundational layout component with optional interactivity.",
-                        )
+                        ContainerPage()
                     }
                     composable(Route.Component.Text.path) {
-                        PlaceholderPage(
-                            title = "Text",
-                            subtitle = "A text component that integrates with content color and text style locals.",
-                        )
+                        TextPage()
                     }
                     composable(Route.Component.Icon.path) {
                         PlaceholderPage(
