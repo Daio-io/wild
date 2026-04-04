@@ -21,63 +21,70 @@ import io.daio.wild.site.components.Prop
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
-fun DividerPage(modifier: Modifier = Modifier) {
+fun DividerPage(
+    modifier: Modifier = Modifier,
+    data: ComponentPageData = DividerPageDefaults.data,
+) {
     ComponentPage(
         modifier = modifier,
-        data =
-            ComponentPageData(
-                name = "Divider",
-                description = "Horizontal and vertical dividers for visually separating content. Uses LocalContentColor by default.",
-                module = "io.daio.wild:divider",
-                demos =
-                    listOf(
-                        Demo("Horizontal", "Horizontal dividers between text.") {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                            ) {
-                                Text("Section One", color = SiteTheme.colors.textPrimary)
-                                HorizontalDivider(color = SiteTheme.colors.border)
-                                Text("Section Two", color = SiteTheme.colors.textPrimary)
-                                HorizontalDivider(color = SiteTheme.colors.accent, thickness = 2.dp)
-                                Text("Section Three", color = SiteTheme.colors.textPrimary)
-                            }
-                        },
-                        Demo("Vertical", "Vertical divider between inline elements.") {
-                            Row(
-                                modifier = Modifier.height(40.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                            ) {
-                                Text("Left", color = SiteTheme.colors.textPrimary)
-                                VerticalDivider(color = SiteTheme.colors.border)
-                                Text("Center", color = SiteTheme.colors.textPrimary)
-                                VerticalDivider(color = SiteTheme.colors.accent, thickness = 2.dp)
-                                Text("Right", color = SiteTheme.colors.textPrimary)
-                            }
-                        },
-                    ),
-                usage =
-                    """
-                    // Horizontal divider
-                    HorizontalDivider(
-                        color = MyTheme.colors.border,
-                        thickness = 1.dp,
-                    )
-
-                    // Vertical divider
-                    VerticalDivider(
-                        color = MyTheme.colors.border,
-                        thickness = 1.dp,
-                    )
-                    """.trimIndent(),
-                props =
-                    listOf(
-                        Prop("modifier", "Modifier", default = "Modifier"),
-                        Prop("color", "Color", default = "LocalContentColor.current"),
-                        Prop("thickness", "Dp", default = "1.dp"),
-                    ),
-                platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
-            ),
+        data = data,
     )
+}
+
+object DividerPageDefaults {
+    val data =
+        ComponentPageData(
+            name = "Divider",
+            description = "Horizontal and vertical dividers for visually separating content. Uses LocalContentColor by default.",
+            module = "io.daio.wild:divider",
+            demos =
+                listOf(
+                    Demo("Horizontal", "Horizontal dividers between text.") {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Text("Section One", color = SiteTheme.colors.textPrimary)
+                            HorizontalDivider(color = SiteTheme.colors.border)
+                            Text("Section Two", color = SiteTheme.colors.textPrimary)
+                            HorizontalDivider(color = SiteTheme.colors.accent, thickness = 2.dp)
+                            Text("Section Three", color = SiteTheme.colors.textPrimary)
+                        }
+                    },
+                    Demo("Vertical", "Vertical divider between inline elements.") {
+                        Row(
+                            modifier = Modifier.height(40.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        ) {
+                            Text("Left", color = SiteTheme.colors.textPrimary)
+                            VerticalDivider(color = SiteTheme.colors.border)
+                            Text("Center", color = SiteTheme.colors.textPrimary)
+                            VerticalDivider(color = SiteTheme.colors.accent, thickness = 2.dp)
+                            Text("Right", color = SiteTheme.colors.textPrimary)
+                        }
+                    },
+                ),
+            usage =
+                """
+                // Horizontal divider
+                HorizontalDivider(
+                    color = MyTheme.colors.border,
+                    thickness = 1.dp,
+                )
+
+                // Vertical divider
+                VerticalDivider(
+                    color = MyTheme.colors.border,
+                    thickness = 1.dp,
+                )
+                """.trimIndent(),
+            props =
+                listOf(
+                    Prop("modifier", "Modifier", default = "Modifier"),
+                    Prop("color", "Color", default = "LocalContentColor.current"),
+                    Prop("thickness", "Dp", default = "1.dp"),
+                ),
+            platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
+        )
 }
