@@ -16,6 +16,7 @@ data class SiteColors(
     val textSecondary: Color,
     val border: Color,
     val codeBackground: Color,
+    val demoBackground: Color,
 )
 
 val DarkSiteColors =
@@ -28,6 +29,7 @@ val DarkSiteColors =
         textSecondary = Color(0xFF8B949E),
         border = Color(0xFF2D333B),
         codeBackground = Color(0xFF0D1117),
+        demoBackground = Color(0xFF3B5A41),
     )
 
 val LocalSiteColors = staticCompositionLocalOf { DarkSiteColors }

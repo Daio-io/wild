@@ -4,6 +4,8 @@ package io.daio.wild.site.pages
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.daio.wild.components.text.Text
@@ -15,7 +17,7 @@ fun PlaceholderPage(
     subtitle: String,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.padding(SiteTheme.spacing.xl)) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(SiteTheme.spacing.xl)) {
         Text(
             text = title,
             style = SiteTheme.typography.h1,

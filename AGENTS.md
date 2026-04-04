@@ -42,6 +42,7 @@ wild/
 - Formatting: Spotless (ktlint) - `./gradlew spotlessApply`
 - Static analysis: Detekt - `./gradlew detekt`
 - Public APIs: KDoc with `@param`, `@since`, examples
+- Git: Always commit as the git config `user.name`/`user.email` — do not add `Co-Authored-By` lines or attribute commits to AI
 
 **Platform-Specific Code**:
 ```kotlin
