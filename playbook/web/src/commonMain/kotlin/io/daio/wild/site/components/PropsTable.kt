@@ -44,7 +44,7 @@ fun PropsTable(
             PropsRow(
                 name = prop.name,
                 type = prop.type,
-                default = prop.default ?: if (prop.required) "required" else "—",
+                default = prop.default ?: if (prop.required) "required" else "-",
                 isRequired = prop.required,
             )
             if (index < sorted.lastIndex) {

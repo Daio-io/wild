@@ -27,7 +27,10 @@ import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.PlaceholderPage
 import io.daio.wild.site.pages.components.ButtonPage
 import io.daio.wild.site.pages.components.ContainerPage
+import io.daio.wild.site.pages.components.DividerPage
+import io.daio.wild.site.pages.components.ListItemPage
 import io.daio.wild.site.pages.components.TextPage
+import io.daio.wild.site.pages.components.ToggleablePage
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
@@ -92,26 +95,19 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     composable(Route.Component.Icon.path) {
                         PlaceholderPage(
                             title = "Icon",
-                            subtitle = "An icon component supporting Painter, ImageVector, and ImageBitmap.",
+                            subtitle =
+                                "An icon component supporting Painter, ImageVector, and ImageBitmap. " +
+                                    "Tints with LocalContentColor by default. Live demos coming soon.",
                         )
                     }
                     composable(Route.Component.ListItem.path) {
-                        PlaceholderPage(
-                            title = "ListItem",
-                            subtitle = "A list item with optional leading and trailing content slots.",
-                        )
+                        ListItemPage()
                     }
                     composable(Route.Component.Toggleable.path) {
-                        PlaceholderPage(
-                            title = "Toggleable",
-                            subtitle = "A toggleable primitive for building checkboxes, switches, and selectable items.",
-                        )
+                        ToggleablePage()
                     }
                     composable(Route.Component.Divider.path) {
-                        PlaceholderPage(
-                            title = "Divider",
-                            subtitle = "Horizontal and vertical dividers for separating content.",
-                        )
+                        DividerPage()
                     }
                     composable(Route.Foundation.Style.path) {
                         PlaceholderPage(

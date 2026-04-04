@@ -47,7 +47,7 @@ fun TextPage(modifier: Modifier = Modifier) {
                                     color = SiteTheme.colors.textPrimary,
                                 )
                                 Text(
-                                    text = "Body text — the quick brown fox jumps over the lazy dog.",
+                                    text = "Body text - the quick brown fox jumps over the lazy dog.",
                                     fontSize = 14.sp,
                                     color = SiteTheme.colors.textPrimary,
                                 )
@@ -72,7 +72,7 @@ fun TextPage(modifier: Modifier = Modifier) {
                     ),
                 usage =
                     """
-                    // Basic usage — inherits color from LocalContentColor
+                    // Basic usage - inherits color from LocalContentColor
                     Text("Hello, Wild!")
 
                     // With explicit styling
