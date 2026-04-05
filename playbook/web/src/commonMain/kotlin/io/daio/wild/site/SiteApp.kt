@@ -24,6 +24,7 @@ import io.daio.wild.site.navigation.TopNav
 import io.daio.wild.site.navigation.routeFromPath
 import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
+import io.daio.wild.site.pages.GettingStartedPage
 import io.daio.wild.site.pages.PlaceholderPage
 import io.daio.wild.site.pages.components.ButtonPage
 import io.daio.wild.site.pages.components.ContainerPage
@@ -31,6 +32,10 @@ import io.daio.wild.site.pages.components.DividerPage
 import io.daio.wild.site.pages.components.ListItemPage
 import io.daio.wild.site.pages.components.TextPage
 import io.daio.wild.site.pages.components.ToggleablePage
+import io.daio.wild.site.pages.foundations.ContentColorPage
+import io.daio.wild.site.pages.foundations.InteractionStatePage
+import io.daio.wild.site.pages.foundations.ModifierPage
+import io.daio.wild.site.pages.foundations.StylePage
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
@@ -78,9 +83,19 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 ) {
                     composable(Route.GettingStarted.path) {
-                        PlaceholderPage(
-                            title = "Getting Started",
-                            subtitle = "Learn how to install and use Wild primitives in your Compose Multiplatform project.",
+                        GettingStartedPage(
+                            onNavigateToComponents = {
+                                navController.navigate(Route.Component.Button.path) {
+                                    popUpTo(0) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onNavigateToFoundations = {
+                                navController.navigate(Route.Foundation.Style.path) {
+                                    popUpTo(0) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
                         )
                     }
                     composable(Route.Component.Button.path) {
@@ -110,28 +125,16 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                         DividerPage()
                     }
                     composable(Route.Foundation.Style.path) {
-                        PlaceholderPage(
-                            title = "Style",
-                            subtitle = "The style system for state-based visual properties.",
-                        )
+                        StylePage()
                     }
                     composable(Route.Foundation.ContentColor.path) {
-                        PlaceholderPage(
-                            title = "Content Color",
-                            subtitle = "Composition local for propagating content color through the tree.",
-                        )
+                        ContentColorPage()
                     }
                     composable(Route.Foundation.Modifier.path) {
-                        PlaceholderPage(
-                            title = "Modifier",
-                            subtitle = "Utility modifiers like thenIf and thenIfNotNull.",
-                        )
+                        ModifierPage()
                     }
                     composable(Route.Foundation.InteractionState.path) {
-                        PlaceholderPage(
-                            title = "Interaction State",
-                            subtitle = "Track focused, hovered, pressed, and selected states.",
-                        )
+                        InteractionStatePage()
                     }
                 }
             }

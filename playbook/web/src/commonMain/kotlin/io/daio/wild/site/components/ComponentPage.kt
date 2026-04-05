@@ -20,7 +20,11 @@ fun ComponentPage(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(SiteTheme.spacing.xl),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(SiteTheme.spacing.xl),
         verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.xl),
     ) {
         // Section 1: Header
@@ -49,12 +53,15 @@ fun ComponentPage(
         SectionHeader("Installation")
         CodeBlock(
             code = "implementation(\"${data.module}:<version>\")",
-            label = "build.gradle.kts",
+            tabs = listOf("build.gradle.kts"),
         )
 
         // Section 4: Usage
         SectionHeader("Usage")
-        CodeBlock(code = data.usage)
+        CodeBlock(
+            code = data.usage,
+            tabs = listOf("Kotlin"),
+        )
 
         // Section 5: API Reference
         if (data.props.isNotEmpty()) {
