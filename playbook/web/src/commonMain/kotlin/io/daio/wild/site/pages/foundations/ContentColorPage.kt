@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
 import io.daio.wild.layout.divider.HorizontalDivider
@@ -29,11 +28,11 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
             modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(32.dp),
-        verticalArrangement = Arrangement.spacedBy(32.dp),
+                .padding(SiteTheme.spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.xl),
     ) {
         // Header
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s)) {
             Text(
                 text = "Content Color",
                 style = SiteTheme.typography.h1,
@@ -59,7 +58,7 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
         )
 
         // Demo Card 1: Color Inheritance
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s)) {
             Text(
                 text = "Color Inheritance",
                 style = SiteTheme.typography.h3,
@@ -76,22 +75,22 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
             Container(
                 modifier = Modifier.fillMaxWidth(),
                 color = SiteTheme.colors.demoBackground,
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(SiteTheme.spacing.s),
             ) {
                 Row(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(SiteTheme.spacing.l),
                     horizontalArrangement =
-                        Arrangement.spacedBy(16.dp),
+                        Arrangement.spacedBy(SiteTheme.spacing.m),
                 ) {
                     Container(
                         color = Color.White,
                         contentColor = Color.Red,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(SiteTheme.spacing.s),
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(SiteTheme.spacing.m),
                             verticalArrangement =
-                                Arrangement.spacedBy(4.dp),
+                                Arrangement.spacedBy(SiteTheme.spacing.xs),
                         ) {
                             Text(
                                 text = "Content Color: Red",
@@ -106,12 +105,12 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
                     Container(
                         color = Color.White,
                         contentColor = Color.Red,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(SiteTheme.spacing.s),
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(SiteTheme.spacing.m),
                             verticalArrangement =
-                                Arrangement.spacedBy(4.dp),
+                                Arrangement.spacedBy(SiteTheme.spacing.xs),
                         ) {
                             Text(
                                 text = "Content Color: Red",
@@ -128,7 +127,7 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
         }
 
         // Demo Card 2: Override
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s)) {
             Text(
                 text = "Nested Override",
                 style = SiteTheme.typography.h3,
@@ -144,18 +143,18 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
             Container(
                 modifier = Modifier.fillMaxWidth(),
                 color = SiteTheme.colors.demoBackground,
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(SiteTheme.spacing.s),
             ) {
-                Column(modifier = Modifier.padding(24.dp)) {
+                Column(modifier = Modifier.padding(SiteTheme.spacing.l)) {
                     Container(
                         color = Color.White,
                         contentColor = Color.Red,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(SiteTheme.spacing.s),
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(SiteTheme.spacing.m),
                             verticalArrangement =
-                                Arrangement.spacedBy(8.dp),
+                                Arrangement.spacedBy(SiteTheme.spacing.s),
                         ) {
                             Text(
                                 text = "Parent Content Color: Red",
@@ -168,12 +167,12 @@ fun ContentColorPage(modifier: Modifier = Modifier) {
                             Container(
                                 color = Color(0xFFF0F0F0),
                                 contentColor = Color.Blue,
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(SiteTheme.spacing.s),
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(12.dp),
+                                    modifier = Modifier.padding(SiteTheme.spacing.s),
                                     verticalArrangement =
-                                        Arrangement.spacedBy(4.dp),
+                                        Arrangement.spacedBy(SiteTheme.spacing.xs),
                                 ) {
                                     Text(
                                         text =

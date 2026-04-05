@@ -34,20 +34,20 @@ fun GettingStartedPage(
     onNavigateToFoundations: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cardShape = RoundedCornerShape(8.dp)
+    val cardShape = RoundedCornerShape(SiteTheme.spacing.s)
     val cardBorder = Border(width = 1.dp, color = SiteTheme.colors.border, shape = cardShape)
     Column(
         modifier =
             modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 48.dp, vertical = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp),
+                .padding(horizontal = SiteTheme.spacing.xxl, vertical = SiteTheme.spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.xl),
     ) {
         // Hero Section
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
             Text(
                 text = "Getting Started",
@@ -67,7 +67,7 @@ fun GettingStartedPage(
         // What is Wild? Section
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
             Text(
                 text = "What is Wild?",
@@ -92,7 +92,7 @@ fun GettingStartedPage(
         // Installation Section
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
             Text(
                 text = "Installation",
@@ -120,7 +120,7 @@ fun GettingStartedPage(
         // Quick Example Section
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
             Text(
                 text = "Quick Example",
@@ -129,7 +129,7 @@ fun GettingStartedPage(
             )
             Row(
                 modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 CodeBlock(
                     modifier = Modifier.weight(1f),
@@ -156,10 +156,10 @@ fun GettingStartedPage(
                     border = cardBorder,
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        modifier = Modifier.padding(SiteTheme.spacing.m).fillMaxWidth(),
                         verticalArrangement =
                             Arrangement.spacedBy(
-                                16.dp,
+                                SiteTheme.spacing.m,
                                 Alignment.CenterVertically,
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -184,7 +184,7 @@ fun GettingStartedPage(
                                         ),
                                     shapes =
                                         StyleDefaults.shapes(
-                                            shape = RoundedCornerShape(8.dp),
+                                            shape = RoundedCornerShape(SiteTheme.spacing.s),
                                         ),
                                     scale =
                                         StyleDefaults.scale(
@@ -196,8 +196,8 @@ fun GettingStartedPage(
                                 text = "Click me",
                                 modifier =
                                     Modifier.padding(
-                                        horizontal = 24.dp,
-                                        vertical = 10.dp,
+                                        horizontal = SiteTheme.spacing.l,
+                                        vertical = SiteTheme.spacing.s,
                                     ),
                             )
                         }
@@ -209,7 +209,7 @@ fun GettingStartedPage(
         // Platform Availability Section
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
             Text(
                 text = "Platform Availability",
@@ -232,7 +232,7 @@ fun GettingStartedPage(
         // Navigation Link Cards
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
         ) {
             Container(
                 onClick = onNavigateToComponents,
@@ -262,8 +262,8 @@ fun GettingStartedPage(
                     ),
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(SiteTheme.spacing.m).fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
                 ) {
                     Text(
                         text = "Components",
@@ -308,8 +308,8 @@ fun GettingStartedPage(
                     ),
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(SiteTheme.spacing.m).fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
                 ) {
                     Text(
                         text = "Foundations",

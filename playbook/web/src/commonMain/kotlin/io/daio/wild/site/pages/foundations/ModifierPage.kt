@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.layout.divider.HorizontalDivider
 import io.daio.wild.site.components.CodeBlock
@@ -25,8 +24,8 @@ fun ModifierPage(modifier: Modifier = Modifier) {
             modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(32.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(SiteTheme.spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.l),
     ) {
         Text(
             text = "Modifier",

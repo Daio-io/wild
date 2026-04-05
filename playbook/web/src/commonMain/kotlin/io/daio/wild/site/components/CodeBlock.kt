@@ -4,7 +4,6 @@ package io.daio.wild.site.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
+import io.daio.wild.container.Container
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
@@ -61,45 +61,11 @@ fun CodeBlock(
                         .padding(horizontal = SiteTheme.spacing.m),
             ) {
                 tabs.forEachIndexed { index, tab ->
-                    val isActive = index == selectedTab
-                    Column(
-                        modifier =
-                            Modifier
-                                .width(IntrinsicSize.Min)
-                                .clickable { selectedTab = index }
-                                .padding(top = 10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = tab,
-                            style =
-                                SiteTheme.typography.label.copy(
-                                    fontSize = SiteTheme.typography.bodySmall.fontSize,
-                                ),
-                            color =
-                                if (isActive) {
-                                    SiteTheme.colors.accentText
-                                } else {
-                                    SiteTheme.colors.textSecondary
-                                },
-                            modifier =
-                                Modifier.padding(
-                                    horizontal = 12.dp,
-                                    vertical = 6.dp,
-                                ),
-                        )
-                        if (isActive) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(2.dp)
-                                        .background(SiteTheme.colors.accent),
-                            )
-                        } else {
-                            Box(modifier = Modifier.height(2.dp))
-                        }
-                    }
+                    Tab(
+                        text = tab,
+                        isActive = index == selectedTab,
+                        onClick = { selectedTab = index },
+                    )
                 }
             }
             Box(
@@ -121,6 +87,51 @@ fun CodeBlock(
                         .horizontalScroll(rememberScrollState())
                         .padding(SiteTheme.spacing.m),
             )
+        }
+    }
+}
+
+@Composable
+private fun Tab(
+    text: String,
+    isActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.width(IntrinsicSize.Min),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Container(
+            onClick = onClick,
+            modifier = Modifier.padding(top = SiteTheme.spacing.s),
+        ) {
+            Text(
+                text = text,
+                style = SiteTheme.typography.bodySmall,
+                color =
+                    if (isActive) {
+                        SiteTheme.colors.accentText
+                    } else {
+                        SiteTheme.colors.textSecondary
+                    },
+                modifier =
+                    Modifier.padding(
+                        horizontal = SiteTheme.spacing.s,
+                        vertical = SiteTheme.spacing.xs,
+                    ),
+            )
+        }
+        if (isActive) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .background(SiteTheme.colors.accent),
+            )
+        } else {
+            Box(modifier = Modifier.height(2.dp))
         }
     }
 }

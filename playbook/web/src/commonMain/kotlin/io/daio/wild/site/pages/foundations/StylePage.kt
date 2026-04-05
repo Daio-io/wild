@@ -42,8 +42,8 @@ fun StylePage(modifier: Modifier = Modifier) {
             modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(32.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(SiteTheme.spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.l),
     ) {
         Text(
             text = "Style",
@@ -70,8 +70,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Hover Color",
@@ -160,8 +160,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Hover Grow",
@@ -230,8 +230,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Hover Border",
@@ -323,8 +323,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Square",
@@ -442,8 +442,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Hover Fade",
@@ -507,8 +507,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 SelectableDemoBox(
                     label = "Selected Color",
@@ -663,8 +663,8 @@ fun StylePage(modifier: Modifier = Modifier) {
         )
         DemoContainer {
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
             ) {
                 DemoBox(
                     label = "Full Style",
@@ -870,9 +870,9 @@ private fun DemoContainer(content: @Composable () -> Unit) {
     Container(
         modifier = Modifier.fillMaxWidth(),
         color = SiteTheme.colors.surface,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(SiteTheme.spacing.s),
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(SiteTheme.spacing.l)) {
             content()
         }
     }
