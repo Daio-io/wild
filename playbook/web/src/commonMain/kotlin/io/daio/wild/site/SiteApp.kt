@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,10 +28,10 @@ import io.daio.wild.site.navigation.routeFromPath
 import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.GettingStartedPage
-import io.daio.wild.site.pages.PlaceholderPage
 import io.daio.wild.site.pages.components.ButtonPage
 import io.daio.wild.site.pages.components.ContainerPage
 import io.daio.wild.site.pages.components.DividerPage
+import io.daio.wild.site.pages.components.IconPage
 import io.daio.wild.site.pages.components.ListItemPage
 import io.daio.wild.site.pages.components.TextPage
 import io.daio.wild.site.pages.components.ToggleablePage
@@ -36,11 +39,16 @@ import io.daio.wild.site.pages.foundations.ContentColorPage
 import io.daio.wild.site.pages.foundations.InteractionStatePage
 import io.daio.wild.site.pages.foundations.ModifierPage
 import io.daio.wild.site.pages.foundations.StylePage
+import io.daio.wild.site.theme.DarkSiteColors
+import io.daio.wild.site.theme.LightSiteColors
 import io.daio.wild.site.theme.SiteTheme
 
 @Composable
 fun SiteApp(navController: NavHostController = rememberNavController()) {
-    SiteTheme {
+    var isDarkTheme by remember { mutableStateOf(true) }
+    val colors = if (isDarkTheme) DarkSiteColors else LightSiteColors
+
+    SiteTheme(colors = colors) {
         // Derive currentRoute from the nav back stack so browser back/forward
         // automatically updates the selected tab and sidebar item.
         val currentEntry by navController.currentBackStackEntryAsState()
@@ -56,6 +64,14 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                 currentSection = currentSection,
                 onSectionSelected = { section ->
                     navController.navigate(defaultRouteForSection(section).path) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = { isDarkTheme = !isDarkTheme },
+                onRouteSelected = { route ->
+                    navController.navigate(route.path) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -108,12 +124,7 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                         TextPage()
                     }
                     composable(Route.Component.Icon.path) {
-                        PlaceholderPage(
-                            title = "Icon",
-                            subtitle =
-                                "An icon component supporting Painter, ImageVector, and ImageBitmap. " +
-                                    "Tints with LocalContentColor by default. Live demos coming soon.",
-                        )
+                        IconPage()
                     }
                     composable(Route.Component.ListItem.path) {
                         ListItemPage()

@@ -3,7 +3,7 @@
 package io.daio.wild.site.theme
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 @Immutable
@@ -34,4 +34,18 @@ val DarkSiteColors =
         demoBackground = Color(0xFF3B5A41),
     )
 
-val LocalSiteColors = staticCompositionLocalOf { DarkSiteColors }
+val LightSiteColors =
+    SiteColors(
+        background = Color(0xFFFFFFFF),
+        surface = Color(0xFFF6F8FA),
+        accent = Color(0xFF5A7D5E),
+        accentSubtle = Color(0x1A5A7D5E),
+        accentText = Color(0xFF3D5940),
+        textPrimary = Color(0xFF1F2328),
+        textSecondary = Color(0xFF656D76),
+        border = Color(0xFFD0D7DE),
+        codeBackground = Color(0xFFF6F8FA),
+        demoBackground = Color(0xFFD4E5D6),
+    )
+
+val LocalSiteColors = compositionLocalOf { DarkSiteColors }

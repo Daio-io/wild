@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
+import io.daio.wild.site.components.Chevron
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.StyleDefaults
 
@@ -96,9 +97,9 @@ private fun SidebarGroupSection(
                     text = group.title.uppercase(),
                     style = SiteTheme.typography.label,
                 )
-                Text(
-                    text = if (expanded) "\u25BE" else "\u25B8",
-                    style = SiteTheme.typography.label,
+                Chevron(
+                    expanded = expanded,
+                    color = SiteTheme.colors.textSecondary,
                 )
             }
         }
