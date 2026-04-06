@@ -18,13 +18,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
+import io.daio.wild.site.WildLogo
+import io.daio.wild.site.components.SearchBar
+import io.daio.wild.site.components.SearchResult
+import io.daio.wild.site.components.ThemeToggle
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.StyleDefaults
 
 @Composable
 fun TopNav(
     currentSection: Section,
+    isDarkTheme: Boolean,
     onSectionSelected: (Section) -> Unit,
+    onToggleTheme: () -> Unit,
+    onRouteSelected: (Route) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Container(
@@ -37,6 +44,8 @@ fun TopNav(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s),
         ) {
+            WildLogo()
+
             Text(
                 text = "Wild",
                 style =
@@ -48,7 +57,7 @@ fun TopNav(
             )
 
             Row(
-                modifier = Modifier.padding(start = SiteTheme.spacing.xl),
+                modifier = Modifier.padding(start = SiteTheme.spacing.xl).weight(1f),
                 horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -60,6 +69,22 @@ fun TopNav(
                     )
                 }
             }
+
+            SearchBar(
+                onResultSelected = { result ->
+                    routeFromPath(result.id)?.let { onRouteSelected(it) }
+                },
+                results = { query ->
+                    searchPages(query).map { entry ->
+                        SearchResult(label = entry.label, id = entry.route.path)
+                    }
+                },
+            )
+
+            ThemeToggle(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+            )
         }
     }
 }
