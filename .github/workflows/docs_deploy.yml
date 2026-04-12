@@ -49,6 +49,12 @@ jobs:
       - name: Copy Kdoc Site
         run: mkdir -p ./site/reference && cp -r ./build/dokka/html/* ./site/reference
 
+      - name: Build Storybook
+        run: ./gradlew :playbook:web:wasmJsBrowserDistribution
+
+      - name: Copy Storybook Site
+        run: mkdir -p ./site/storybook && cp -r ./playbook/web/build/dist/wasmJs/productionExecutable/* ./site/storybook
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

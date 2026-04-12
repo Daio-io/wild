@@ -18,6 +18,7 @@ nav:
   - 'Container': container.md
   - 'Button': button.md
   - 'Modifier': modifier.md
+  - 'Usage Docs': storybook/
   - 'Api Reference': reference/
 
 theme:
