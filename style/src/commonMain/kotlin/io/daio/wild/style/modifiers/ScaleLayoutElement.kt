@@ -18,11 +18,8 @@ import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.defaultScaleAnimationSpec
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 
 /**
  * Applies the scale to the element as part of the [StyleScopeParentNode].
@@ -78,8 +75,7 @@ internal class ScaleLayoutModifier(
         get() = false
 
     private var updateJob: Job? = null
-    private var animationJob: Job? = null
-    private var pendingUpdate: ScaleAnimationUpdate? = null
+    private var lastAnimationRequest: ScaleAnimationRequest? = null
 
     override fun onAttach() {
         requestInitialStyleFromParent()
@@ -88,9 +84,7 @@ internal class ScaleLayoutModifier(
     override fun onReset() {
         updateJob?.cancel()
         updateJob = null
-        animationJob?.cancel()
-        animationJob = null
-        pendingUpdate = null
+        lastAnimationRequest = null
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
@@ -126,62 +120,43 @@ internal class ScaleLayoutModifier(
         hovered: Boolean,
         animationSpec: AnimationSpec<Float>? = customAnimationSpec,
     ) {
+        val animationRequest =
+            scaleAnimationRequest(
+                scale = scale,
+                zIndex = zIndex,
+                animationSpec = animationSpec,
+                pressed = pressed,
+            )
+
         this.scale = scale
         this.zIndex = zIndex
 
-        pendingUpdate =
-            ScaleAnimationUpdate(
-                zIndex = zIndex,
-                scale = scale,
-                focused = focused,
-                pressed = pressed,
-                hovered = hovered,
-                animationSpec = animationSpec,
-            )
+        if (animationRequest == lastAnimationRequest) return
+        lastAnimationRequest = animationRequest
 
-        if (updateJob?.isActive == true) return
-
+        updateJob?.cancel()
         updateJob =
             coroutineScope.launch {
-                yield()
-
-                while (true) {
-                    val update = pendingUpdate ?: return@launch
-                    pendingUpdate = null
-
-                    animationJob?.cancelAndJoin()
-                    animationJob =
+                try {
+                    joinAll(
+                        launch { zIndexState.animateTo(zIndex) },
                         launch {
-                            animateToUpdate(update)
-                        }
-
-                    yield()
+                            scaleState.animateTo(
+                                targetValue = scale,
+                                animationSpec =
+                                    animationSpec
+                                        ?: defaultScaleAnimationSpec(
+                                            focused = focused,
+                                            pressed = pressed,
+                                            hovered = hovered,
+                                        ),
+                            )
+                        },
+                    )
+                } finally {
+                    invalidatePlacement()
                 }
             }
-    }
-
-    private suspend fun animateToUpdate(update: ScaleAnimationUpdate) {
-        try {
-            coroutineScope {
-                joinAll(
-                    launch { zIndexState.animateTo(update.zIndex) },
-                    launch {
-                        scaleState.animateTo(
-                            targetValue = update.scale,
-                            animationSpec =
-                                update.animationSpec
-                                    ?: defaultScaleAnimationSpec(
-                                        focused = update.focused,
-                                        pressed = update.pressed,
-                                        hovered = update.hovered,
-                                    ),
-                        )
-                    },
-                )
-            }
-        } finally {
-            invalidatePlacement()
-        }
     }
 
     override fun MeasureScope.measure(
@@ -211,11 +186,38 @@ internal class ScaleLayoutModifier(
     }
 }
 
-private data class ScaleAnimationUpdate(
-    val zIndex: Float,
+internal data class ScaleAnimationRequest(
     val scale: Float,
-    val focused: Boolean,
-    val pressed: Boolean,
-    val hovered: Boolean,
-    val animationSpec: AnimationSpec<Float>?,
+    val zIndex: Float,
+    val animationSpecKey: ScaleAnimationSpecKey,
 )
+
+internal sealed interface ScaleAnimationSpecKey {
+    data class Default(val durationMillis: Int) : ScaleAnimationSpecKey
+
+    data class Custom(val animationSpec: AnimationSpec<Float>) : ScaleAnimationSpecKey
+}
+
+internal fun scaleAnimationRequest(
+    scale: Float,
+    zIndex: Float,
+    animationSpec: AnimationSpec<Float>?,
+    pressed: Boolean,
+): ScaleAnimationRequest =
+    ScaleAnimationRequest(
+        scale = scale,
+        zIndex = zIndex,
+        animationSpecKey = scaleAnimationSpecKey(animationSpec = animationSpec, pressed = pressed),
+    )
+
+internal fun scaleAnimationSpecKey(
+    animationSpec: AnimationSpec<Float>?,
+    pressed: Boolean,
+): ScaleAnimationSpecKey =
+    animationSpec?.let(ScaleAnimationSpecKey::Custom)
+        ?: ScaleAnimationSpecKey.Default(
+            durationMillis = if (pressed) DEFAULT_PRESSED_SCALE_ANIMATION_DURATION_MILLIS else DEFAULT_SCALE_ANIMATION_DURATION_MILLIS,
+        )
+
+private const val DEFAULT_SCALE_ANIMATION_DURATION_MILLIS = 300
+private const val DEFAULT_PRESSED_SCALE_ANIMATION_DURATION_MILLIS = 120
