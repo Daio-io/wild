@@ -75,7 +75,7 @@ internal class ScaleLayoutModifier(
         get() = false
 
     private var updateJob: Job? = null
-    private var lastAnimationRequest: ScaleAnimationRequest? = null
+    private val animationRequestCoalescer = ScaleAnimationRequestCoalescer()
 
     override fun onAttach() {
         requestInitialStyleFromParent()
@@ -84,7 +84,7 @@ internal class ScaleLayoutModifier(
     override fun onReset() {
         updateJob?.cancel()
         updateJob = null
-        lastAnimationRequest = null
+        animationRequestCoalescer.reset()
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
@@ -125,14 +125,15 @@ internal class ScaleLayoutModifier(
                 scale = scale,
                 zIndex = zIndex,
                 animationSpec = animationSpec,
+                focused = focused,
                 pressed = pressed,
+                hovered = hovered,
             )
 
         this.scale = scale
         this.zIndex = zIndex
 
-        if (animationRequest == lastAnimationRequest) return
-        lastAnimationRequest = animationRequest
+        if (!animationRequestCoalescer.shouldAnimate(animationRequest)) return
 
         updateJob?.cancel()
         updateJob =
@@ -192,32 +193,57 @@ internal data class ScaleAnimationRequest(
     val animationSpecKey: ScaleAnimationSpecKey,
 )
 
-internal sealed interface ScaleAnimationSpecKey {
-    data class Default(val durationMillis: Int) : ScaleAnimationSpecKey
+internal data class ScaleAnimationSpecKey(
+    val animationSpec: AnimationSpec<Float>,
+)
 
-    data class Custom(val animationSpec: AnimationSpec<Float>) : ScaleAnimationSpecKey
+internal class ScaleAnimationRequestCoalescer {
+    private var lastAnimationRequest: ScaleAnimationRequest? = null
+
+    fun shouldAnimate(animationRequest: ScaleAnimationRequest): Boolean {
+        if (animationRequest == lastAnimationRequest) return false
+
+        lastAnimationRequest = animationRequest
+        return true
+    }
+
+    fun reset() {
+        lastAnimationRequest = null
+    }
 }
 
 internal fun scaleAnimationRequest(
     scale: Float,
     zIndex: Float,
     animationSpec: AnimationSpec<Float>?,
+    focused: Boolean,
     pressed: Boolean,
+    hovered: Boolean,
 ): ScaleAnimationRequest =
     ScaleAnimationRequest(
         scale = scale,
         zIndex = zIndex,
-        animationSpecKey = scaleAnimationSpecKey(animationSpec = animationSpec, pressed = pressed),
+        animationSpecKey =
+            scaleAnimationSpecKey(
+                animationSpec = animationSpec,
+                focused = focused,
+                pressed = pressed,
+                hovered = hovered,
+            ),
     )
 
 internal fun scaleAnimationSpecKey(
     animationSpec: AnimationSpec<Float>?,
+    focused: Boolean,
     pressed: Boolean,
+    hovered: Boolean,
 ): ScaleAnimationSpecKey =
-    animationSpec?.let(ScaleAnimationSpecKey::Custom)
-        ?: ScaleAnimationSpecKey.Default(
-            durationMillis = if (pressed) DEFAULT_PRESSED_SCALE_ANIMATION_DURATION_MILLIS else DEFAULT_SCALE_ANIMATION_DURATION_MILLIS,
-        )
-
-private const val DEFAULT_SCALE_ANIMATION_DURATION_MILLIS = 300
-private const val DEFAULT_PRESSED_SCALE_ANIMATION_DURATION_MILLIS = 120
+    ScaleAnimationSpecKey(
+        animationSpec =
+            animationSpec
+                ?: defaultScaleAnimationSpec(
+                    focused = focused,
+                    pressed = pressed,
+                    hovered = hovered,
+                ),
+    )
