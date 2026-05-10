@@ -17,9 +17,12 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.defaultScaleAnimationSpec
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 /**
  * Applies the scale to the element as part of the [StyleScopeParentNode].
@@ -75,6 +78,8 @@ internal class ScaleLayoutModifier(
         get() = false
 
     private var updateJob: Job? = null
+    private var animationJob: Job? = null
+    private var pendingUpdate: ScaleAnimationUpdate? = null
 
     override fun onAttach() {
         requestInitialStyleFromParent()
@@ -83,6 +88,9 @@ internal class ScaleLayoutModifier(
     override fun onReset() {
         updateJob?.cancel()
         updateJob = null
+        animationJob?.cancel()
+        animationJob = null
+        pendingUpdate = null
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
@@ -121,29 +129,59 @@ internal class ScaleLayoutModifier(
         this.scale = scale
         this.zIndex = zIndex
 
-        updateJob?.cancel()
+        pendingUpdate =
+            ScaleAnimationUpdate(
+                zIndex = zIndex,
+                scale = scale,
+                focused = focused,
+                pressed = pressed,
+                hovered = hovered,
+                animationSpec = animationSpec,
+            )
+
+        if (updateJob?.isActive == true) return
+
         updateJob =
             coroutineScope.launch {
-                try {
-                    joinAll(
-                        launch { zIndexState.animateTo(zIndex) },
+                yield()
+
+                while (true) {
+                    val update = pendingUpdate ?: return@launch
+                    pendingUpdate = null
+
+                    animationJob?.cancelAndJoin()
+                    animationJob =
                         launch {
-                            scaleState.animateTo(
-                                targetValue = scale,
-                                animationSpec =
-                                    animationSpec
-                                        ?: defaultScaleAnimationSpec(
-                                            focused = focused,
-                                            pressed = pressed,
-                                            hovered = hovered,
-                                        ),
-                            )
-                        },
-                    )
-                } finally {
-                    invalidatePlacement()
+                            animateToUpdate(update)
+                        }
+
+                    yield()
                 }
             }
+    }
+
+    private suspend fun animateToUpdate(update: ScaleAnimationUpdate) {
+        try {
+            coroutineScope {
+                joinAll(
+                    launch { zIndexState.animateTo(update.zIndex) },
+                    launch {
+                        scaleState.animateTo(
+                            targetValue = update.scale,
+                            animationSpec =
+                                update.animationSpec
+                                    ?: defaultScaleAnimationSpec(
+                                        focused = update.focused,
+                                        pressed = update.pressed,
+                                        hovered = update.hovered,
+                                    ),
+                        )
+                    },
+                )
+            }
+        } finally {
+            invalidatePlacement()
+        }
     }
 
     override fun MeasureScope.measure(
@@ -172,3 +210,12 @@ internal class ScaleLayoutModifier(
         )
     }
 }
+
+private data class ScaleAnimationUpdate(
+    val zIndex: Float,
+    val scale: Float,
+    val focused: Boolean,
+    val pressed: Boolean,
+    val hovered: Boolean,
+    val animationSpec: AnimationSpec<Float>?,
+)
