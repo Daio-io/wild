@@ -1,6 +1,6 @@
 package io.daio.gradle
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -16,7 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             configureAndroid()
 
-            extensions.configure<BaseExtension> {
+            extensions.configure<ApplicationExtension> {
                 compileOptions {
                     // https://developer.android.com/studio/write/java8-support
                     isCoreLibraryDesugaringEnabled = true
