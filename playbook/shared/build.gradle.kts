@@ -8,7 +8,6 @@ plugins {
 
 android {
     namespace = "io.daio.wild.playbook.shared"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 }
 
 kotlin {
