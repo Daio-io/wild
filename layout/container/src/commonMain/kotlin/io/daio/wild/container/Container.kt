@@ -4,9 +4,6 @@ package io.daio.wild.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
@@ -26,6 +23,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.collectInteractionStateAsState
 import io.daio.wild.style.interactable
 import io.daio.wild.style.interactionStyle
 
@@ -175,15 +173,13 @@ fun Container(
             ),
         propagateMinConstraints = true,
         content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
+            val interactionState by interactionSource.collectInteractionStateAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
                     enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
+                    focused = interactionState.focused,
+                    hovered = interactionState.hovered,
+                    pressed = interactionState.pressed,
                     selected = selected ?: false,
                 ),
             ) {
@@ -303,15 +299,13 @@ fun ExperimentalContainer(
             ),
         propagateMinConstraints = true,
         content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
+            val interactionState by interactionSource.collectInteractionStateAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
                     enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
+                    focused = interactionState.focused,
+                    hovered = interactionState.hovered,
+                    pressed = interactionState.pressed,
                     selected = selected ?: false,
                 ),
             ) {

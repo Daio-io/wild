@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
@@ -131,24 +128,13 @@ internal class InteractionSourceNode(
 
         collectionJob =
             coroutineScope.launch {
+                var bits = InteractionBits.Empty
                 source.interactions.collect { interaction ->
-                    when (interaction) {
-                        is PressInteraction.Press -> pressed = true
-                        is PressInteraction.Release -> pressed = false
-                        is PressInteraction.Cancel -> pressed = false
-                        is HoverInteraction.Enter -> hovered = true
-                        is HoverInteraction.Exit -> hovered = false
-                        is FocusInteraction.Focus -> focused = true
-                        is FocusInteraction.Unfocus -> focused = false
-                    }
-
-                    notifyInteractionsChanged(
-                        Interactions(
-                            focused = focused,
-                            hovered = hovered,
-                            pressed = pressed,
-                        ),
-                    )
+                    bits = bits.applyInteraction(interaction)
+                    focused = bits.focused
+                    hovered = bits.hovered
+                    pressed = bits.pressed
+                    notifyInteractionsChanged(bits.toInteractions())
                 }
             }
     }

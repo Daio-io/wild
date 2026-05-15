@@ -150,6 +150,10 @@ package io.daio.wild.style {
     method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
   }
 
+  public final class CollectInteractionStateKt {
+    method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<io.daio.wild.style.modifiers.Interactions> collectInteractionStateAsState(androidx.compose.foundation.interaction.InteractionSource);
+  }
+
   @androidx.compose.runtime.Immutable public final class Colors {
     ctor public Colors(long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long selectedBackgroundColor, optional long disabledBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, long contentColor, optional long focusedContentColor, optional long hoveredContentColor, optional long pressedContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long disabledContentColor, optional long focusedDisabledContentColor, optional long pressedDisabledContentColor, optional long hoveredDisabledContentColor);
     method @androidx.compose.runtime.Stable public long colorFor(boolean enabled, boolean focused, boolean hovered, boolean pressed, boolean selected);
