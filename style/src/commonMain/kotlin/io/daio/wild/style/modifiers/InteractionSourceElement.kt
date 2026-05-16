@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.style.Interactions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -34,13 +31,6 @@ fun Modifier.interactionSourceNode(
 ): Modifier = this then InteractionSourceElement(interactionSource, childTraversalKey)
 
 object DefaultInteractionSourceChildTraversalKey
-
-@Immutable
-data class Interactions(
-    val focused: Boolean,
-    val hovered: Boolean,
-    val pressed: Boolean,
-)
 
 /**
  * Observe [InteractionSource] updated for a node within a direct child of
@@ -98,14 +88,7 @@ internal class InteractionSourceNode(
     var interactionSource: InteractionSource?,
     var childTraversalKey: Any,
 ) : Modifier.Node(), TraversableNode {
-    var focused: Boolean = false
-        private set
-
-    var hovered: Boolean = false
-        private set
-
-    var pressed: Boolean = false
-        private set
+    private var interactions: Interactions = Interactions.None
 
     private var collectionJob: Job? = null
 
@@ -131,24 +114,14 @@ internal class InteractionSourceNode(
 
         collectionJob =
             coroutineScope.launch {
+                var collected = Interactions.None
                 source.interactions.collect { interaction ->
-                    when (interaction) {
-                        is PressInteraction.Press -> pressed = true
-                        is PressInteraction.Release -> pressed = false
-                        is PressInteraction.Cancel -> pressed = false
-                        is HoverInteraction.Enter -> hovered = true
-                        is HoverInteraction.Exit -> hovered = false
-                        is FocusInteraction.Focus -> focused = true
-                        is FocusInteraction.Unfocus -> focused = false
+                    val updated = collected.applyInteraction(interaction)
+                    if (updated !== collected) {
+                        collected = updated
+                        interactions = updated
+                        notifyInteractionsChanged(interactions)
                     }
-
-                    notifyInteractionsChanged(
-                        Interactions(
-                            focused = focused,
-                            hovered = hovered,
-                            pressed = pressed,
-                        ),
-                    )
                 }
             }
     }
@@ -170,9 +143,7 @@ internal class InteractionSourceNode(
      * Used during detach when children may already be partially detached.
      */
     private fun resetState() {
-        hovered = false
-        focused = false
-        pressed = false
+        interactions = Interactions.None
     }
 
     /**
@@ -180,21 +151,13 @@ internal class InteractionSourceNode(
      * Used during reset (node reuse) when children are still attached.
      */
     private fun resetStateAndNotify() {
-        hovered = false
-        focused = false
-        pressed = false
-        notifyInteractionsChanged(
-            Interactions(
-                focused = focused,
-                hovered = hovered,
-                pressed = pressed,
-            ),
-        )
+        interactions = Interactions.None
+        notifyInteractionsChanged(interactions)
     }
 
-    private fun notifyInteractionsChanged(interactions: Interactions) {
+    private fun notifyInteractionsChanged(snapshot: Interactions) {
         traverseDirectDescendants<InteractionSourceObserverNode>(childTraversalKey) {
-            it.onInteractionStateChanged(interactions)
+            it.onInteractionStateChanged(snapshot)
         }
     }
 
