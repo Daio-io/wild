@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class CollectInteractionStateTest {
     @Test
-    fun collectInteractionState_tracksFocus_fromFocusable() =
+    fun collectInteractionStateTracksFocusChanges() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val focusRequester = FocusRequester()
@@ -52,7 +52,7 @@ class CollectInteractionStateTest {
         }
 
     @Test
-    fun collectInteractionState_tracksPressAndHover() =
+    fun collectInteractionStateTracksPressAndHoverChanges() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             lateinit var scope: CoroutineScope

@@ -88,7 +88,7 @@ internal class InteractionSourceNode(
     var interactionSource: InteractionSource?,
     var childTraversalKey: Any,
 ) : Modifier.Node(), TraversableNode {
-    private var bits: InteractionBits = InteractionBits.Empty
+    private var interactions: Interactions = Interactions.None
 
     private var collectionJob: Job? = null
 
@@ -114,13 +114,13 @@ internal class InteractionSourceNode(
 
         collectionJob =
             coroutineScope.launch {
-                var collected = InteractionBits.Empty
+                var collected = Interactions.None
                 source.interactions.collect { interaction ->
                     val updated = collected.applyInteraction(interaction)
                     if (updated !== collected) {
                         collected = updated
-                        bits = updated
-                        notifyInteractionsChanged(bits.toInteractions())
+                        interactions = updated
+                        notifyInteractionsChanged(interactions)
                     }
                 }
             }
@@ -143,7 +143,7 @@ internal class InteractionSourceNode(
      * Used during detach when children may already be partially detached.
      */
     private fun resetState() {
-        bits = InteractionBits.Empty
+        interactions = Interactions.None
     }
 
     /**
@@ -151,13 +151,13 @@ internal class InteractionSourceNode(
      * Used during reset (node reuse) when children are still attached.
      */
     private fun resetStateAndNotify() {
-        bits = InteractionBits.Empty
-        notifyInteractionsChanged(bits.toInteractions())
+        interactions = Interactions.None
+        notifyInteractionsChanged(interactions)
     }
 
-    private fun notifyInteractionsChanged(interactions: Interactions) {
+    private fun notifyInteractionsChanged(snapshot: Interactions) {
         traverseDirectDescendants<InteractionSourceObserverNode>(childTraversalKey) {
-            it.onInteractionStateChanged(interactions)
+            it.onInteractionStateChanged(snapshot)
         }
     }
 

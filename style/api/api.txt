@@ -281,6 +281,12 @@ package io.daio.wild.style {
     property public final boolean focused;
     property public final boolean hovered;
     property public final boolean pressed;
+    field public static final io.daio.wild.style.Interactions.Companion Companion;
+  }
+
+  public static final class Interactions.Companion {
+    method public io.daio.wild.style.Interactions getNone();
+    property public final io.daio.wild.style.Interactions None;
   }
 
   @androidx.compose.runtime.Immutable public final class Scale {

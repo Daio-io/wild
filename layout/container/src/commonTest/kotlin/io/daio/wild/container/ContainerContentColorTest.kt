@@ -29,7 +29,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalTestApi::class)
 class ContainerContentColorTest {
     @Test
-    fun interactiveContainer_usesSelectedContentColorFromParameter() =
+    fun interactiveContainerUsesSelectedContentColorFromParameter() =
         runComposeUiTest {
             var contentColor by mutableStateOf(Color.Unspecified)
 
@@ -56,7 +56,7 @@ class ContainerContentColorTest {
         }
 
     @Test
-    fun interactiveContainer_usesDisabledContentColorFromParameter() =
+    fun interactiveContainerUsesDisabledContentColorFromParameter() =
         runComposeUiTest {
             var contentColor by mutableStateOf(Color.Unspecified)
 
@@ -83,7 +83,7 @@ class ContainerContentColorTest {
         }
 
     @Test
-    fun interactiveContainer_updatesContentColorWhenFocused() =
+    fun interactiveContainerUpdatesContentColorWhenFocused() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val focusRequester = FocusRequester()
@@ -120,7 +120,7 @@ class ContainerContentColorTest {
         }
 
     @Test
-    fun interactiveContainer_updatesContentColorWhenPressed() =
+    fun interactiveContainerUpdatesContentColorWhenPressed() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             lateinit var scope: CoroutineScope
@@ -167,7 +167,7 @@ class ContainerContentColorTest {
         }
 
     @Test
-    fun interactiveContainer_updatesContentColorWhenHovered() =
+    fun interactiveContainerUpdatesContentColorWhenHovered() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             lateinit var scope: CoroutineScope
