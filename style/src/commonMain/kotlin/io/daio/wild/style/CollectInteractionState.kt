@@ -9,15 +9,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import io.daio.wild.style.modifiers.InteractionBits
-import io.daio.wild.style.modifiers.Interactions
-import io.daio.wild.style.modifiers.applyInteraction
 
 /**
  * Collects focused, hovered, and pressed state from [this] in a single [InteractionSource.interactions]
  * subscription, using the same rules as the style system's interaction observer (see
  * [io.daio.wild.style.modifiers.interactionSourceNode]).
  *
- * [enabled] and [selected] are not derived from the interaction source; supply them separately when
+ * Note: `enabled` and `selected` are not part of [InteractionSource]; pass them separately when
  * resolving colors or other styled properties (for example via [Colors.contentColorFor]).
  *
  * @since 0.6.0
@@ -28,8 +26,11 @@ fun InteractionSource.collectInteractionStateAsState(): State<Interactions> {
     LaunchedEffect(this) {
         var bits = InteractionBits.Empty
         interactions.collect { interaction ->
-            bits = bits.applyInteraction(interaction)
-            state.value = bits.toInteractions()
+            val updated = bits.applyInteraction(interaction)
+            if (updated !== bits) {
+                bits = updated
+                state.value = bits.toInteractions()
+            }
         }
     }
     return state

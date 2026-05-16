@@ -173,6 +173,9 @@ fun Container(
             ),
         propagateMinConstraints = true,
         content = {
+            // Content color: one composable collector here; surface style uses a second collector on
+            // the modifier path (interactable → interactionSourceNode). Two collectors per container,
+            // down from four when content color used three separate collectIs*AsState calls.
             val interactionState by interactionSource.collectInteractionStateAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
@@ -299,6 +302,8 @@ fun ExperimentalContainer(
             ),
         propagateMinConstraints = true,
         content = {
+            // See interactive [Container] content block: composable collector for content color;
+            // modifier-path collector for surface style.
             val interactionState by interactionSource.collectInteractionStateAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(

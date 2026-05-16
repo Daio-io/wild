@@ -6,10 +6,11 @@ import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.PressInteraction
+import io.daio.wild.style.Interactions
 
 /**
- * Snapshot of interaction flags derived from an [Interaction] stream, matching [InteractionSourceNode]
- * semantics.
+ * Mutable snapshot of interaction flags derived from an [Interaction] stream, matching
+ * [InteractionSourceNode] semantics.
  */
 internal data class InteractionBits(
     val focused: Boolean,
@@ -23,19 +24,23 @@ internal data class InteractionBits(
             pressed = pressed,
         )
 
+    fun applyInteraction(interaction: Interaction): InteractionBits =
+        when (interaction) {
+            is PressInteraction.Press -> if (pressed) this else copy(pressed = true)
+            is PressInteraction.Release,
+            is PressInteraction.Cancel,
+            -> if (!pressed) this else copy(pressed = false)
+
+            is HoverInteraction.Enter -> if (hovered) this else copy(hovered = true)
+            is HoverInteraction.Exit -> if (!hovered) this else copy(hovered = false)
+
+            is FocusInteraction.Focus -> if (focused) this else copy(focused = true)
+            is FocusInteraction.Unfocus -> if (!focused) this else copy(focused = false)
+
+            else -> this
+        }
+
     companion object {
         val Empty = InteractionBits(focused = false, hovered = false, pressed = false)
     }
 }
-
-internal fun InteractionBits.applyInteraction(interaction: Interaction): InteractionBits =
-    when (interaction) {
-        is PressInteraction.Press -> copy(pressed = true)
-        is PressInteraction.Release -> copy(pressed = false)
-        is PressInteraction.Cancel -> copy(pressed = false)
-        is HoverInteraction.Enter -> copy(hovered = true)
-        is HoverInteraction.Exit -> copy(hovered = false)
-        is FocusInteraction.Focus -> copy(focused = true)
-        is FocusInteraction.Unfocus -> copy(focused = false)
-        else -> this
-    }

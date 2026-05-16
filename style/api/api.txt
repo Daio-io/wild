@@ -151,7 +151,7 @@ package io.daio.wild.style {
   }
 
   public final class CollectInteractionStateKt {
-    method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<io.daio.wild.style.modifiers.Interactions> collectInteractionStateAsState(androidx.compose.foundation.interaction.InteractionSource);
+    method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<io.daio.wild.style.Interactions> collectInteractionStateAsState(androidx.compose.foundation.interaction.InteractionSource);
   }
 
   @androidx.compose.runtime.Immutable public final class Colors {
@@ -264,6 +264,23 @@ package io.daio.wild.style {
     property public final float cornerExpansion;
     property public final androidx.compose.foundation.shape.CornerSize topEnd;
     property public final androidx.compose.foundation.shape.CornerSize topStart;
+  }
+
+  @androidx.compose.runtime.Immutable public final class Interactions {
+    ctor public Interactions(boolean focused, boolean hovered, boolean pressed);
+    method public boolean component1();
+    method public boolean component2();
+    method public boolean component3();
+    method public io.daio.wild.style.Interactions copy(boolean focused, boolean hovered, boolean pressed);
+    method public boolean equals(Object? other);
+    method public boolean getFocused();
+    method public boolean getHovered();
+    method public boolean getPressed();
+    method public int hashCode();
+    method public String toString();
+    property public final boolean focused;
+    property public final boolean hovered;
+    property public final boolean pressed;
   }
 
   @androidx.compose.runtime.Immutable public final class Scale {
@@ -456,24 +473,7 @@ package io.daio.wild.style.modifiers {
   }
 
   public interface InteractionSourceObserverNode extends androidx.compose.ui.node.TraversableNode {
-    method public void onInteractionStateChanged(io.daio.wild.style.modifiers.Interactions interactions);
-  }
-
-  @androidx.compose.runtime.Immutable public final class Interactions {
-    ctor public Interactions(boolean focused, boolean hovered, boolean pressed);
-    method public boolean component1();
-    method public boolean component2();
-    method public boolean component3();
-    method public io.daio.wild.style.modifiers.Interactions copy(boolean focused, boolean hovered, boolean pressed);
-    method public boolean equals(Object? other);
-    method public boolean getFocused();
-    method public boolean getHovered();
-    method public boolean getPressed();
-    method public int hashCode();
-    method public String toString();
-    property public final boolean focused;
-    property public final boolean hovered;
-    property public final boolean pressed;
+    method public void onInteractionStateChanged(io.daio.wild.style.Interactions interactions);
   }
 
   public final class TraversableKt {

@@ -9,9 +9,7 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -32,11 +30,11 @@ class CollectInteractionStateTest {
         runComposeUiTest {
             val source = MutableInteractionSource()
             val focusRequester = FocusRequester()
-            var captured by mutableStateOf(false)
+            var capturedFocused = false
 
             setContent {
                 val state by source.collectInteractionStateAsState()
-                captured = state.focused
+                capturedFocused = state.focused
                 Box(
                     Modifier
                         .focusRequester(focusRequester)
@@ -46,11 +44,11 @@ class CollectInteractionStateTest {
             }
 
             waitForIdle()
-            assertFalse(captured)
+            assertFalse(capturedFocused)
 
             runOnIdle { focusRequester.requestFocus() }
             waitForIdle()
-            assertTrue(captured)
+            assertTrue(capturedFocused)
         }
 
     @Test
@@ -58,8 +56,8 @@ class CollectInteractionStateTest {
         runComposeUiTest {
             val source = MutableInteractionSource()
             lateinit var scope: CoroutineScope
-            var capturedPressed by mutableStateOf(false)
-            var capturedHovered by mutableStateOf(false)
+            var capturedPressed = false
+            var capturedHovered = false
 
             setContent {
                 val state by source.collectInteractionStateAsState()

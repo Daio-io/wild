@@ -3,12 +3,12 @@
 package io.daio.wild.style.modifiers
 
 import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.style.Interactions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -31,13 +31,6 @@ fun Modifier.interactionSourceNode(
 ): Modifier = this then InteractionSourceElement(interactionSource, childTraversalKey)
 
 object DefaultInteractionSourceChildTraversalKey
-
-@Immutable
-data class Interactions(
-    val focused: Boolean,
-    val hovered: Boolean,
-    val pressed: Boolean,
-)
 
 /**
  * Observe [InteractionSource] updated for a node within a direct child of
@@ -95,14 +88,7 @@ internal class InteractionSourceNode(
     var interactionSource: InteractionSource?,
     var childTraversalKey: Any,
 ) : Modifier.Node(), TraversableNode {
-    var focused: Boolean = false
-        private set
-
-    var hovered: Boolean = false
-        private set
-
-    var pressed: Boolean = false
-        private set
+    private var bits: InteractionBits = InteractionBits.Empty
 
     private var collectionJob: Job? = null
 
@@ -128,13 +114,14 @@ internal class InteractionSourceNode(
 
         collectionJob =
             coroutineScope.launch {
-                var bits = InteractionBits.Empty
+                var collected = InteractionBits.Empty
                 source.interactions.collect { interaction ->
-                    bits = bits.applyInteraction(interaction)
-                    focused = bits.focused
-                    hovered = bits.hovered
-                    pressed = bits.pressed
-                    notifyInteractionsChanged(bits.toInteractions())
+                    val updated = collected.applyInteraction(interaction)
+                    if (updated !== collected) {
+                        collected = updated
+                        bits = updated
+                        notifyInteractionsChanged(bits.toInteractions())
+                    }
                 }
             }
     }
@@ -156,9 +143,7 @@ internal class InteractionSourceNode(
      * Used during detach when children may already be partially detached.
      */
     private fun resetState() {
-        hovered = false
-        focused = false
-        pressed = false
+        bits = InteractionBits.Empty
     }
 
     /**
@@ -166,16 +151,8 @@ internal class InteractionSourceNode(
      * Used during reset (node reuse) when children are still attached.
      */
     private fun resetStateAndNotify() {
-        hovered = false
-        focused = false
-        pressed = false
-        notifyInteractionsChanged(
-            Interactions(
-                focused = focused,
-                hovered = hovered,
-                pressed = pressed,
-            ),
-        )
+        bits = InteractionBits.Empty
+        notifyInteractionsChanged(bits.toInteractions())
     }
 
     private fun notifyInteractionsChanged(interactions: Interactions) {

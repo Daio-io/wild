@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,12 +46,40 @@ class ContainerContentColorTest {
                                 ),
                         ),
                 ) {
-                    contentColor = LocalContentColor.current
+                    val color = LocalContentColor.current
+                    LaunchedEffect(color) { contentColor = color }
                 }
             }
 
             waitForIdle()
             assertEquals(Color.Green, contentColor)
+        }
+
+    @Test
+    fun interactiveContainer_usesDisabledContentColorFromParameter() =
+        runComposeUiTest {
+            var contentColor by mutableStateOf(Color.Unspecified)
+
+            setContent {
+                Container(
+                    onClick = {},
+                    enabled = false,
+                    style =
+                        StyleDefaults.style(
+                            colors =
+                                StyleDefaults.colors(
+                                    contentColor = Color.Black,
+                                    disabledContentColor = Color.Gray,
+                                ),
+                        ),
+                ) {
+                    val color = LocalContentColor.current
+                    LaunchedEffect(color) { contentColor = color }
+                }
+            }
+
+            waitForIdle()
+            assertEquals(Color.Gray, contentColor)
         }
 
     @Test
@@ -77,7 +106,8 @@ class ContainerContentColorTest {
                                 ),
                         ),
                 ) {
-                    contentColor = LocalContentColor.current
+                    val color = LocalContentColor.current
+                    LaunchedEffect(color) { contentColor = color }
                 }
             }
 
@@ -112,7 +142,8 @@ class ContainerContentColorTest {
                                 ),
                         ),
                 ) {
-                    contentColor = LocalContentColor.current
+                    val color = LocalContentColor.current
+                    LaunchedEffect(color) { contentColor = color }
                 }
             }
 
@@ -158,7 +189,8 @@ class ContainerContentColorTest {
                                 ),
                         ),
                 ) {
-                    contentColor = LocalContentColor.current
+                    val color = LocalContentColor.current
+                    LaunchedEffect(color) { contentColor = color }
                 }
             }
 
