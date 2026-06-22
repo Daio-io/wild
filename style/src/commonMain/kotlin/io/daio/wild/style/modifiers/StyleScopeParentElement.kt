@@ -12,6 +12,7 @@ import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.Interactions
 import io.daio.wild.style.StyleScope
 
 internal class StyleScopeParentElement(
