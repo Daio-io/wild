@@ -21,6 +21,14 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }

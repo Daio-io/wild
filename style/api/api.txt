@@ -150,6 +150,10 @@ package io.daio.wild.style {
     method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional io.daio.wild.style.Style? style, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
   }
 
+  public final class CollectInteractionStateKt {
+    method @androidx.compose.runtime.Composable public static androidx.compose.runtime.State<io.daio.wild.style.Interactions> collectInteractionStateAsState(androidx.compose.foundation.interaction.InteractionSource);
+  }
+
   @androidx.compose.runtime.Immutable public final class Colors {
     ctor public Colors(long backgroundColor, optional long focusedBackgroundColor, optional long pressedBackgroundColor, optional long hoveredBackgroundColor, optional long selectedBackgroundColor, optional long disabledBackgroundColor, optional long focusedSelectedBackgroundColor, optional long pressedSelectedBackgroundColor, optional long hoveredSelectedBackgroundColor, optional long focusedDisabledBackgroundColor, optional long pressedDisabledBackgroundColor, optional long hoveredDisabledBackgroundColor, long contentColor, optional long focusedContentColor, optional long hoveredContentColor, optional long pressedContentColor, optional long selectedContentColor, optional long focusedSelectedContentColor, optional long pressedSelectedContentColor, optional long hoveredSelectedContentColor, optional long disabledContentColor, optional long focusedDisabledContentColor, optional long pressedDisabledContentColor, optional long hoveredDisabledContentColor);
     method @androidx.compose.runtime.Stable public long colorFor(boolean enabled, boolean focused, boolean hovered, boolean pressed, boolean selected);
@@ -260,6 +264,29 @@ package io.daio.wild.style {
     property public final float cornerExpansion;
     property public final androidx.compose.foundation.shape.CornerSize topEnd;
     property public final androidx.compose.foundation.shape.CornerSize topStart;
+  }
+
+  @androidx.compose.runtime.Immutable public final class Interactions {
+    ctor public Interactions(boolean focused, boolean hovered, boolean pressed);
+    method public boolean component1();
+    method public boolean component2();
+    method public boolean component3();
+    method public io.daio.wild.style.Interactions copy(boolean focused, boolean hovered, boolean pressed);
+    method public boolean equals(Object? other);
+    method public boolean getFocused();
+    method public boolean getHovered();
+    method public boolean getPressed();
+    method public int hashCode();
+    method public String toString();
+    property public final boolean focused;
+    property public final boolean hovered;
+    property public final boolean pressed;
+    field public static final io.daio.wild.style.Interactions.Companion Companion;
+  }
+
+  public static final class Interactions.Companion {
+    method public io.daio.wild.style.Interactions getNone();
+    property public final io.daio.wild.style.Interactions None;
   }
 
   @androidx.compose.runtime.Immutable public final class Scale {
@@ -452,24 +479,7 @@ package io.daio.wild.style.modifiers {
   }
 
   public interface InteractionSourceObserverNode extends androidx.compose.ui.node.TraversableNode {
-    method public void onInteractionStateChanged(io.daio.wild.style.modifiers.Interactions interactions);
-  }
-
-  @androidx.compose.runtime.Immutable public final class Interactions {
-    ctor public Interactions(boolean focused, boolean hovered, boolean pressed);
-    method public boolean component1();
-    method public boolean component2();
-    method public boolean component3();
-    method public io.daio.wild.style.modifiers.Interactions copy(boolean focused, boolean hovered, boolean pressed);
-    method public boolean equals(Object? other);
-    method public boolean getFocused();
-    method public boolean getHovered();
-    method public boolean getPressed();
-    method public int hashCode();
-    method public String toString();
-    property public final boolean focused;
-    property public final boolean hovered;
-    property public final boolean pressed;
+    method public void onInteractionStateChanged(io.daio.wild.style.Interactions interactions);
   }
 
   public final class TraversableKt {
