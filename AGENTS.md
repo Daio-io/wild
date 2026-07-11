@@ -42,7 +42,7 @@ wild/
 - Formatting: Spotless (ktlint) - `./gradlew spotlessApply`
 - Static analysis: Detekt - `./gradlew detekt`
 - Public APIs: KDoc with `@param`, `@since`, examples
-- Git: Always commit as the git config `user.name`/`user.email` — do not add `Co-Authored-By` lines or attribute commits to AI
+- Git: See [Git and Pull Requests](#git-and-pull-requests) below
 
 **Platform-Specific Code**:
 ```kotlin
@@ -54,6 +54,18 @@ actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 ```
 
 **Module Dependencies**: `foundations` → `style`/`content-color`/`modifier` → `container` → `button`
+
+## Git and Pull Requests
+
+- Use focused branches and PRs; keep unrelated local changes out of commits.
+- Use conventional commit messages such as `feat:`, `fix:`, `docs:`, `ci:`, `test:`, and `chore:`.
+- Prefer small commits that explain the intent of the change.
+- Always commit as the git config `user.name`/`user.email`.
+- No AI or tool attribution anywhere in git history. Commits and PR titles must read as human-authored work only.
+- Do not add `Co-authored-by`, `Signed-off-by`, or any other trailer that credits an AI assistant, agent, or coding tool (Codex, Cursor, Claude, Copilot, etc.).
+- Do not prefix commit messages or PR titles with tool markers such as `[codex]`, `[cursor]`, `[claude]`, or similar tags.
+- Do not mention which tool drafted, reviewed, or generated the change in commit bodies, PR descriptions, or squash-merge messages unless a maintainer explicitly asks for that context outside git metadata.
+- If a tool auto-inserts attribution, remove it before committing or opening a PR. Squash merges must not reintroduce attribution from branch commits.
 
 ## Development Workflows
 
