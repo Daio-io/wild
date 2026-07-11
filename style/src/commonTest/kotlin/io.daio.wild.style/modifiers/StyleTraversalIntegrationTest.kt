@@ -80,29 +80,29 @@ class StyleTraversalIntegrationTest {
     @Test
     fun initiallyDisabledAndSelectedSurfacesResolveOnFirstAttachedFrame() =
         runComposeUiTest {
-            val disabled = StyleRecorder()
-            val selected = StyleRecorder()
+            val disabledRecorder = StyleRecorder()
+            val selectedRecorder = StyleRecorder()
 
             setContent {
                 Box(
                     Modifier
                         .interactionStyle(null, enabled = false) {
                             color = if (!enabled) Color.Gray else Color.Red
-                        }.recordStyle(disabled),
+                        }.recordStyle(disabledRecorder),
                 )
                 Box(
                     Modifier
                         .interactionStyle(null, selected = true) {
                             color = if (selected) Color.Blue else Color.Red
-                        }.recordStyle(selected),
+                        }.recordStyle(selectedRecorder),
                 )
             }
 
             waitForIdle()
-            assertEquals(Color.Gray, disabled.last.color)
-            assertFalse(disabled.last.enabled)
-            assertEquals(Color.Blue, selected.last.color)
-            assertTrue(selected.last.selected)
+            assertEquals(Color.Gray, disabledRecorder.last.color)
+            assertFalse(disabledRecorder.last.enabled)
+            assertEquals(Color.Blue, selectedRecorder.last.color)
+            assertTrue(selectedRecorder.last.selected)
         }
 
     @Test
@@ -118,12 +118,13 @@ class StyleTraversalIntegrationTest {
                 Box(
                     Modifier
                         .interactionStyle(source) {
-                            color = when {
-                                pressed -> Color.Red
-                                focused -> Color.Blue
-                                hovered -> Color.Green
-                                else -> Color.Black
-                            }
+                            color =
+                                when {
+                                    pressed -> Color.Red
+                                    focused -> Color.Blue
+                                    hovered -> Color.Green
+                                    else -> Color.Black
+                                }
                         }.recordStyle(recorder),
                 )
             }
@@ -377,8 +378,7 @@ private class StyleRecorder {
         get() = snapshots.last()
 }
 
-private fun Modifier.recordStyle(recorder: StyleRecorder): Modifier =
-    this then RecordingStyleChildElement(recorder)
+private fun Modifier.recordStyle(recorder: StyleRecorder): Modifier = this then RecordingStyleChildElement(recorder)
 
 private data class RecordingStyleChildElement(
     val recorder: StyleRecorder,
@@ -431,8 +431,7 @@ private class InteractionRecorder(
     fun modifier(): Modifier = RecordingInteractionObserverElement(this, key)
 }
 
-private fun Modifier.recordInteractions(recorder: InteractionRecorder): Modifier =
-    this then recorder.modifier()
+private fun Modifier.recordInteractions(recorder: InteractionRecorder): Modifier = this then recorder.modifier()
 
 private data class RecordingInteractionObserverElement(
     val recorder: InteractionRecorder,
