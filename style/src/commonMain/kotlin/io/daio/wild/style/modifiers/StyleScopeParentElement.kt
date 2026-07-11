@@ -19,7 +19,12 @@ internal class StyleScopeParentElement(
     val selected: Boolean = false,
     val block: StyleScope.() -> Unit,
 ) : ModifierNodeElement<StyleScopeParentNode>() {
-    override fun create() = StyleScopeParentNode(block = block)
+    override fun create() =
+        StyleScopeParentNode(
+            block = block,
+            enabled = enabled,
+            selected = selected,
+        )
 
     override fun update(node: StyleScopeParentNode) {
         node.updateState(selected = selected, enabled = enabled, block = block)
@@ -55,6 +60,8 @@ internal class StyleScopeParentElement(
 
 internal class StyleScopeParentNode(
     var block: StyleScope.() -> Unit,
+    enabled: Boolean = true,
+    selected: Boolean = false,
 ) : StyleScope,
     TraversableNode,
     InteractionSourceObserverNode,
@@ -81,11 +88,11 @@ internal class StyleScopeParentNode(
     override val enabled: Boolean
         get() = _enabled
 
-    private var _enabled: Boolean = true
+    private var _enabled: Boolean = enabled
     private var _focused: Boolean = false
     private var _hovered: Boolean = false
     private var _pressed: Boolean = false
-    private var _selected: Boolean = false
+    private var _selected: Boolean = selected
 
     fun updateState(
         selected: Boolean,

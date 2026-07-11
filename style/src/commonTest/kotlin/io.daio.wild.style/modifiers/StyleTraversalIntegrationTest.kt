@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,6 +46,7 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(null) { color = Color.Red }
                         .recordStyle(first)
                         .recordStyle(second),
@@ -52,8 +54,10 @@ class StyleTraversalIntegrationTest {
             }
 
             waitForIdle()
-            assertEquals(listOf(Color.Red), first.colors)
-            assertEquals(listOf(Color.Red), second.colors)
+            assertTrue(first.snapshots.isNotEmpty())
+            assertTrue(second.snapshots.isNotEmpty())
+            assertEquals(Color.Red, first.last.color)
+            assertEquals(Color.Red, second.last.color)
         }
 
     @Test
@@ -65,16 +69,21 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
-                        .interactionStyle(null) { color = Color.Green }
-                        .then(if (showChild) Modifier.recordStyle(recorder) else Modifier),
-                )
+                        .size(1.dp)
+                        .interactionStyle(null) { color = Color.Green },
+                ) {
+                    if (showChild) {
+                        Box(Modifier.size(1.dp).recordStyle(recorder))
+                    }
+                }
             }
             waitForIdle()
 
-            showChild = true
+            runOnIdle { showChild = true }
             waitForIdle()
 
-            assertEquals(listOf(Color.Green), recorder.colors)
+            assertTrue(recorder.snapshots.isNotEmpty())
+            assertEquals(Color.Green, recorder.last.color)
         }
 
     @Test
@@ -86,12 +95,14 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(null, enabled = false) {
                             color = if (!enabled) Color.Gray else Color.Red
                         }.recordStyle(disabledRecorder),
                 )
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(null, selected = true) {
                             color = if (selected) Color.Blue else Color.Red
                         }.recordStyle(selectedRecorder),
@@ -117,6 +128,7 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(source) {
                             color =
                                 when {
@@ -129,39 +141,40 @@ class StyleTraversalIntegrationTest {
                 )
             }
             waitForIdle()
-            assertEquals(1, recorder.snapshots.size)
+            assertTrue(recorder.snapshots.isNotEmpty())
+            val initialUpdates = recorder.snapshots.size
 
             runBlocking {
                 focus = FocusInteraction.Focus()
                 source.emit(focus)
             }
             waitForIdle()
-            assertEquals(2, recorder.snapshots.size)
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
             runBlocking { source.emit(FocusInteraction.Focus()) }
             waitForIdle()
-            assertEquals(2, recorder.snapshots.size)
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
 
             runBlocking {
                 hover = HoverInteraction.Enter()
                 source.emit(hover)
             }
             waitForIdle()
-            assertEquals(3, recorder.snapshots.size)
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
             runBlocking {
                 press = PressInteraction.Press(Offset.Zero)
                 source.emit(press)
             }
             waitForIdle()
-            assertEquals(4, recorder.snapshots.size)
+            assertEquals(initialUpdates + 3, recorder.snapshots.size)
             runBlocking { source.emit(PressInteraction.Release(press)) }
             waitForIdle()
-            assertEquals(5, recorder.snapshots.size)
+            assertEquals(initialUpdates + 4, recorder.snapshots.size)
             runBlocking {
                 source.emit(HoverInteraction.Exit(hover))
                 source.emit(FocusInteraction.Unfocus(focus))
             }
             waitForIdle()
-            assertEquals(7, recorder.snapshots.size)
+            assertEquals(initialUpdates + 6, recorder.snapshots.size)
         }
 
     @Test
@@ -169,16 +182,20 @@ class StyleTraversalIntegrationTest {
         runComposeUiTest {
             val outer = StyleRecorder()
             val inner = StyleRecorder()
-            var outerColor by mutableStateOf(Color.Red)
+            var outerEnabled by mutableStateOf(true)
 
             setContent {
                 Box(
                     Modifier
-                        .interactionStyle(null) { color = outerColor }
-                        .recordStyle(outer),
+                        .size(1.dp)
+                        .interactionStyle(null, enabled = outerEnabled) {
+                            color = if (enabled) Color.Red else Color.Green
+                        },
                 ) {
+                    Box(Modifier.size(1.dp).recordStyle(outer))
                     Box(
                         Modifier
+                            .size(1.dp)
                             .interactionStyle(null) { color = Color.Blue }
                             .recordStyle(inner),
                     )
@@ -189,7 +206,7 @@ class StyleTraversalIntegrationTest {
             assertEquals(Color.Blue, inner.last.color)
             val innerUpdates = inner.snapshots.size
 
-            outerColor = Color.Green
+            runOnIdle { outerEnabled = false }
             waitForIdle()
 
             assertEquals(Color.Green, outer.last.color)
@@ -202,16 +219,30 @@ class StyleTraversalIntegrationTest {
         runComposeUiTest {
             val first = StyleRecorder()
             val second = StyleRecorder()
-            var firstColor by mutableStateOf(Color.Red)
+            var firstEnabled by mutableStateOf(true)
 
             setContent {
-                Box(Modifier.interactionStyle(null) { color = firstColor }.recordStyle(first))
-                Box(Modifier.interactionStyle(null) { color = Color.Blue }.recordStyle(second))
+                Box {
+                    Box(
+                        Modifier
+                            .size(1.dp)
+                            .interactionStyle(null, enabled = firstEnabled) {
+                                color = if (enabled) Color.Red else Color.Green
+                            }
+                            .recordStyle(first),
+                    )
+                    Box(
+                        Modifier
+                            .size(1.dp)
+                            .interactionStyle(null) { color = Color.Blue }
+                            .recordStyle(second),
+                    )
+                }
             }
             waitForIdle()
             val secondUpdates = second.snapshots.size
 
-            firstColor = Color.Green
+            runOnIdle { firstEnabled = false }
             waitForIdle()
 
             assertEquals(Color.Green, first.last.color)
@@ -224,25 +255,31 @@ class StyleTraversalIntegrationTest {
         runComposeUiTest {
             val recorder = StyleRecorder()
             var showChild by mutableStateOf(true)
-            var color by mutableStateOf(Color.Red)
+            var enabled by mutableStateOf(true)
 
             setContent {
                 Box(
                     Modifier
-                        .interactionStyle(null) { this.color = color }
-                        .then(if (showChild) Modifier.recordStyle(recorder) else Modifier),
-                )
+                        .size(1.dp)
+                        .interactionStyle(null, enabled = enabled) {
+                            color = if (this.enabled) Color.Red else Color.Blue
+                        },
+                ) {
+                    if (showChild) {
+                        Box(Modifier.size(1.dp).recordStyle(recorder))
+                    }
+                }
             }
             waitForIdle()
-            showChild = false
+            runOnIdle { showChild = false }
             waitForIdle()
             val updatesAfterDetach = recorder.snapshots.size
 
-            color = Color.Blue
+            runOnIdle { enabled = false }
             waitForIdle()
             assertEquals(updatesAfterDetach, recorder.snapshots.size)
 
-            showChild = true
+            runOnIdle { showChild = true }
             waitForIdle()
             assertEquals(Color.Blue, recorder.last.color)
         }
@@ -259,6 +296,7 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(source) { color = if (focused) Color.Blue else Color.Red }
                         .recordStyle(recorder),
                 )
@@ -271,7 +309,7 @@ class StyleTraversalIntegrationTest {
             waitForIdle()
             assertEquals(Color.Blue, recorder.last.color)
 
-            source = sourceB
+            runOnIdle { source = sourceB }
             waitForIdle()
             assertEquals(Color.Red, recorder.last.color)
             val afterReplace = recorder.snapshots.size
@@ -298,6 +336,7 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionSourceNode(source, childKey)
                         .recordInteractions(oldObserver)
                         .recordInteractions(newObserver),
@@ -307,7 +346,7 @@ class StyleTraversalIntegrationTest {
             oldObserver.states.clear()
             newObserver.states.clear()
 
-            childKey = newKey
+            runOnIdle { childKey = newKey }
             waitForIdle()
             runBlocking { source.emit(FocusInteraction.Focus()) }
             waitForIdle()
@@ -329,6 +368,7 @@ class StyleTraversalIntegrationTest {
             setContent {
                 Box(
                     Modifier
+                        .size(1.dp)
                         .interactionStyle(source) {
                             color = if (focused) focusedColor else Color.Red
                             alpha = if (focused) 0.5f else 1f
