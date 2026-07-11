@@ -2,9 +2,9 @@
 package io.daio.wild.content {
 
   public final class LocalContentColorKt {
-    method @androidx.compose.runtime.Composable public static void ProvidesContentColor(long color, kotlin.jvm.functions.Function0<kotlin.Unit> content);
-    method public static androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.graphics.Color> getLocalContentColor();
-    property public static final androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.graphics.Color> LocalContentColor;
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void ProvidesContentColor(androidx.compose.ui.graphics.Color color, kotlin.jvm.functions.Function0<kotlin.Unit> content);
+    method @InaccessibleFromKotlin public static androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.graphics.Color> getLocalContentColor();
+    property public static androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.graphics.Color> LocalContentColor;
   }
 
 }

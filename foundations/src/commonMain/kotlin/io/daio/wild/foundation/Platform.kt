@@ -4,6 +4,7 @@ package io.daio.wild.foundation
 
 import androidx.compose.runtime.CompositionLocalAccessorScope
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
 
 @Immutable
@@ -32,6 +33,7 @@ class PlatformInteractions internal constructor(
  * Local to expose interaction capabilities of the current platform.
  */
 @ExperimentalWildApi
-val LocalPlatformInteractions = compositionLocalWithComputedDefaultOf { getPlatformInteractions() }
+val LocalPlatformInteractions: ProvidableCompositionLocal<PlatformInteractions> =
+    compositionLocalWithComputedDefaultOf { getPlatformInteractions() }
 
 internal expect fun CompositionLocalAccessorScope.getPlatformInteractions(): PlatformInteractions

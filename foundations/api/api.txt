@@ -2,31 +2,11 @@
 package io.daio.wild.foundation {
 
   public final class ClickableKt {
-    method public static androidx.compose.ui.Modifier clickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method @Deprecated public static androidx.compose.ui.Modifier hardwareClickable(androidx.compose.ui.Modifier, optional boolean enabled, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional androidx.compose.foundation.Indication? indication, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method @Deprecated public static androidx.compose.ui.Modifier hardwareSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional androidx.compose.foundation.Indication? indication, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier interactable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-    method public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
-  }
-
-  public final class Clickable_androidKt {
-    method public static int getRepeatCount(android.view.KeyEvent);
-  }
-
-  public final class Clickable_jsKt {
-    method public static int getRepeatCount(android.view.KeyEvent);
-  }
-
-  public final class Clickable_jvmKt {
-    method public static int getRepeatCount(android.view.KeyEvent);
-  }
-
-  public final class Clickable_nativeKt {
-    method public static int getRepeatCount(android.view.KeyEvent);
-  }
-
-  public final class Clickable_wasmJsKt {
-    method public static int getRepeatCount(android.view.KeyEvent);
+    method @KotlinOnly public static androidx.compose.ui.Modifier clickable(androidx.compose.ui.Modifier, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @KotlinOnly @Deprecated public static androidx.compose.ui.Modifier hardwareClickable(androidx.compose.ui.Modifier, optional boolean enabled, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional androidx.compose.foundation.Indication? indication, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @KotlinOnly @Deprecated public static androidx.compose.ui.Modifier hardwareSelectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, androidx.compose.foundation.interaction.MutableInteractionSource interactionSource, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional androidx.compose.foundation.Indication? indication, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @KotlinOnly public static androidx.compose.ui.Modifier interactable(androidx.compose.ui.Modifier, optional boolean enabled, optional Boolean? selected, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
+    method @KotlinOnly public static androidx.compose.ui.Modifier selectable(androidx.compose.ui.Modifier, boolean selected, optional boolean enabled, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, optional androidx.compose.foundation.Indication? indication, optional androidx.compose.ui.semantics.Role? role, optional String? onLongClickLabel, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional String? onClickLabel, kotlin.jvm.functions.Function0<kotlin.Unit> onClick);
   }
 
   @kotlin.RequiresOptIn(message="This API is experimental and may change or be removed.") @kotlin.annotation.Retention(kotlin.annotation.AnnotationRetention.BINARY) public @interface ExperimentalWildApi {
@@ -37,11 +17,11 @@ package io.daio.wild.foundation {
   }
 
   public interface InteractionState {
-    method public boolean getEnabled();
-    method public boolean getFocused();
-    method public boolean getHovered();
-    method public boolean getPressed();
-    method public boolean getSelected();
+    method @InaccessibleFromKotlin public boolean getEnabled();
+    method @InaccessibleFromKotlin public boolean getFocused();
+    method @InaccessibleFromKotlin public boolean getHovered();
+    method @InaccessibleFromKotlin public boolean getPressed();
+    method @InaccessibleFromKotlin public boolean getSelected();
     property public abstract boolean enabled;
     property public abstract boolean focused;
     property public abstract boolean hovered;
@@ -50,17 +30,17 @@ package io.daio.wild.foundation {
   }
 
   @androidx.compose.runtime.Immutable public final class PlatformInteractions {
-    method public boolean getRequiresHardwareInput();
-    property public final boolean requiresHardwareInput;
+    method @InaccessibleFromKotlin public boolean getRequiresHardwareInput();
+    property public boolean requiresHardwareInput;
   }
 
   public final class PlatformKt {
-    method public static androidx.compose.runtime.ProvidableCompositionLocal<kotlin.Unit> getLocalPlatformInteractions();
-    property public static final androidx.compose.runtime.ProvidableCompositionLocal<kotlin.Unit> LocalPlatformInteractions;
+    method @InaccessibleFromKotlin public static androidx.compose.runtime.ProvidableCompositionLocal<io.daio.wild.foundation.PlatformInteractions> getLocalPlatformInteractions();
+    property @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.runtime.ProvidableCompositionLocal<io.daio.wild.foundation.PlatformInteractions> LocalPlatformInteractions;
   }
 
   public interface RequestFocusModifierScope {
-    method public default Object getCancel();
+    method @InaccessibleFromKotlin public default Object getCancel();
     property public default Object Cancel;
   }
 
