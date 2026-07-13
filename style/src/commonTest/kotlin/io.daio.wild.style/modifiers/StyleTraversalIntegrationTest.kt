@@ -6,6 +6,7 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
@@ -150,7 +151,7 @@ class StyleTraversalIntegrationTest {
             }
             waitForIdle()
             assertEquals(initialUpdates + 1, recorder.snapshots.size)
-            runBlocking { source.emit(FocusInteraction.Focus()) }
+            runBlocking { source.emit(object : Interaction {}) }
             waitForIdle()
             assertEquals(initialUpdates + 1, recorder.snapshots.size)
 
