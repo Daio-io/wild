@@ -65,8 +65,10 @@ internal class InteractionSourceElement(
         )
 
     override fun update(node: InteractionSourceNode) {
-        node.updateInteractionSource(interactionSource)
-        node.childTraversalKey = childTraversalKey
+        node.update(
+            interactionSource = interactionSource,
+            childTraversalKey = childTraversalKey,
+        )
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -81,14 +83,14 @@ internal class InteractionSourceElement(
 
         other as InteractionSourceElement
 
-        if (interactionSource != other.interactionSource) return false
+        if (interactionSource !== other.interactionSource) return false
         if (childTraversalKey != other.childTraversalKey) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = interactionSource.hashCode()
+        var result = System.identityHashCode(interactionSource)
         result = 31 * result + childTraversalKey.hashCode()
         return result
     }
@@ -98,25 +100,33 @@ internal class InteractionSourceNode(
     var interactionSource: InteractionSource?,
     var childTraversalKey: Any,
 ) : Modifier.Node(), TraversableNode {
-    var focused: Boolean = false
-        private set
-
-    var hovered: Boolean = false
-        private set
-
-    var pressed: Boolean = false
-        private set
-
     private var collectionJob: Job? = null
+    private val activePresses = mutableSetOf<PressInteraction.Press>()
+    private val activeHovers = mutableSetOf<HoverInteraction.Enter>()
+    private val activeFocuses = mutableSetOf<FocusInteraction.Focus>()
+    private var lastDispatchedStateBits: Int = STATE_NONE
 
     /**
-     * Updates the [InteractionSource] and restarts the collection coroutine.
-     * If the source hasn't changed, this is a no-op.
+     * Updates the [InteractionSource] and child traversal key atomically.
+     * If only the key changes, the current state is dispatched once to the new subtree.
      */
-    fun updateInteractionSource(newSource: InteractionSource?) {
-        if (interactionSource === newSource) return
-        interactionSource = newSource
-        restartCollection()
+    fun update(
+        interactionSource: InteractionSource?,
+        childTraversalKey: Any,
+    ) {
+        val sourceChanged = this.interactionSource !== interactionSource
+        val keyChanged = this.childTraversalKey != childTraversalKey
+
+        if (!sourceChanged && !keyChanged) return
+
+        this.childTraversalKey = childTraversalKey
+
+        if (sourceChanged) {
+            this.interactionSource = interactionSource
+            restartCollection()
+        } else if (keyChanged) {
+            dispatchCurrentState()
+        }
     }
 
     override fun onAttach() {
@@ -125,7 +135,8 @@ internal class InteractionSourceNode(
 
     private fun restartCollection() {
         collectionJob?.cancel()
-        resetStateAndNotify()
+        collectionJob = null
+        resetState(notify = isAttached)
 
         val source = interactionSource ?: return
 
@@ -133,22 +144,16 @@ internal class InteractionSourceNode(
             coroutineScope.launch {
                 source.interactions.collect { interaction ->
                     when (interaction) {
-                        is PressInteraction.Press -> pressed = true
-                        is PressInteraction.Release -> pressed = false
-                        is PressInteraction.Cancel -> pressed = false
-                        is HoverInteraction.Enter -> hovered = true
-                        is HoverInteraction.Exit -> hovered = false
-                        is FocusInteraction.Focus -> focused = true
-                        is FocusInteraction.Unfocus -> focused = false
+                        is PressInteraction.Press -> activePresses += interaction
+                        is PressInteraction.Release -> activePresses -= interaction.press
+                        is PressInteraction.Cancel -> activePresses -= interaction.press
+                        is HoverInteraction.Enter -> activeHovers += interaction
+                        is HoverInteraction.Exit -> activeHovers -= interaction.enter
+                        is FocusInteraction.Focus -> activeFocuses += interaction
+                        is FocusInteraction.Unfocus -> activeFocuses -= interaction.focus
                     }
 
-                    notifyInteractionsChanged(
-                        Interactions(
-                            focused = focused,
-                            hovered = hovered,
-                            pressed = pressed,
-                        ),
-                    )
+                    dispatchIfChanged()
                 }
             }
     }
@@ -156,40 +161,45 @@ internal class InteractionSourceNode(
     override fun onDetach() {
         collectionJob?.cancel()
         collectionJob = null
-        resetState()
+        resetState(notify = false)
     }
 
     override fun onReset() {
         collectionJob?.cancel()
         collectionJob = null
-        resetStateAndNotify()
+        resetState(notify = isAttached)
     }
 
-    /**
-     * Resets interaction state without notifying children.
-     * Used during detach when children may already be partially detached.
-     */
-    private fun resetState() {
-        hovered = false
-        focused = false
-        pressed = false
+    private fun resetState(notify: Boolean) {
+        activePresses.clear()
+        activeHovers.clear()
+        activeFocuses.clear()
+
+        if (notify && lastDispatchedStateBits != STATE_NONE) {
+            lastDispatchedStateBits = STATE_NONE
+            notifyInteractionsChanged(interactionsFor(STATE_NONE))
+        } else {
+            lastDispatchedStateBits = STATE_NONE
+        }
     }
 
-    /**
-     * Resets interaction state and notifies children.
-     * Used during reset (node reuse) when children are still attached.
-     */
-    private fun resetStateAndNotify() {
-        hovered = false
-        focused = false
-        pressed = false
-        notifyInteractionsChanged(
-            Interactions(
-                focused = focused,
-                hovered = hovered,
-                pressed = pressed,
-            ),
-        )
+    private fun dispatchCurrentState() {
+        notifyInteractionsChanged(interactionsFor(currentStateBits()))
+    }
+
+    private fun dispatchIfChanged() {
+        val newStateBits = currentStateBits()
+        if (newStateBits == lastDispatchedStateBits) return
+        lastDispatchedStateBits = newStateBits
+        notifyInteractionsChanged(interactionsFor(newStateBits))
+    }
+
+    private fun currentStateBits(): Int {
+        var bits = STATE_NONE
+        if (activePresses.isNotEmpty()) bits = bits or STATE_PRESSED
+        if (activeHovers.isNotEmpty()) bits = bits or STATE_HOVERED
+        if (activeFocuses.isNotEmpty()) bits = bits or STATE_FOCUSED
+        return bits
     }
 
     private fun notifyInteractionsChanged(interactions: Interactions) {
@@ -198,7 +208,25 @@ internal class InteractionSourceNode(
         }
     }
 
-    private companion object InteractionSourceParentKey
+    private companion object {
+        object InteractionSourceParentKey
+
+        const val STATE_NONE = 0
+        const val STATE_PRESSED = 1 shl 0
+        const val STATE_HOVERED = 1 shl 1
+        const val STATE_FOCUSED = 1 shl 2
+
+        val interactionStates =
+            Array(8) { bits ->
+                Interactions(
+                    focused = bits and STATE_FOCUSED != 0,
+                    hovered = bits and STATE_HOVERED != 0,
+                    pressed = bits and STATE_PRESSED != 0,
+                )
+            }
+
+        fun interactionsFor(bits: Int): Interactions = interactionStates[bits]
+    }
 
     override val traverseKey: Any
         get() = InteractionSourceParentKey
