@@ -66,7 +66,9 @@ change the style based on the state.
     Interaction flags (`focused`, `hovered`, `pressed`, `selected`, `enabled`) are inputs available
     inside the block, not style outputs that get reset. Child nodes are updated when the resolved
     visual output or interaction inputs change; duplicate evaluations with identical resolved state
-    are skipped.
+    are skipped. Snapshot state (e.g. `State` / `mutableStateOf`) read inside the block is
+    observed, so when those values change the block is re-evaluated without requiring
+    recomposition or an interaction event.
 
 !!! note
     Having to ensure you share the same `InteractionSource` is is an awkward part of the library
