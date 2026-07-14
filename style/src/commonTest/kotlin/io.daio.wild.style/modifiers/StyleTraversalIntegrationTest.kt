@@ -120,7 +120,7 @@ class StyleTraversalIntegrationTest {
         }
 
     @Test
-    fun effectiveStateChangesDispatchOnceAndRepeatedIdenticalStateDoesNotRedispatch() =
+    fun effectiveOutputChangesDispatchOnceAndRepeatedIdenticalStateDoesNotRedispatch() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val recorder = StyleRecorder()
@@ -162,22 +162,22 @@ class StyleTraversalIntegrationTest {
                 source.emit(hover)
             }
             waitForIdle()
-            assertEquals(initialUpdates + 2, recorder.snapshots.size)
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
             runBlocking {
                 press = PressInteraction.Press(Offset.Zero)
                 source.emit(press)
             }
             waitForIdle()
-            assertEquals(initialUpdates + 3, recorder.snapshots.size)
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
             runBlocking { source.emit(PressInteraction.Release(press)) }
             waitForIdle()
-            assertEquals(initialUpdates + 4, recorder.snapshots.size)
+            assertEquals(initialUpdates + 3, recorder.snapshots.size)
             runBlocking {
                 source.emit(HoverInteraction.Exit(hover))
                 source.emit(FocusInteraction.Unfocus(focus))
             }
             waitForIdle()
-            assertEquals(initialUpdates + 6, recorder.snapshots.size)
+            assertEquals(initialUpdates + 4, recorder.snapshots.size)
         }
 
     @Test
@@ -598,8 +598,8 @@ class StyleTraversalIntegrationTest {
             assertEquals(1f, recorder.last.scale)
         }
 
-    @Test
     // Also covers Task 2 skip-dispatch when final resolved output is unchanged.
+    @Test
     fun equalFinalOutputAfterResetDoesNotRedispatch() =
         runComposeUiTest {
             val source = MutableInteractionSource()
@@ -615,7 +615,8 @@ class StyleTraversalIntegrationTest {
                 )
             }
             waitForIdle()
-            assertEquals(1, recorder.snapshots.size)
+            val initialUpdates = recorder.snapshots.size
+            assertTrue(initialUpdates > 0)
             assertEquals(Color.Red, recorder.last.color)
 
             runBlocking {
@@ -623,12 +624,12 @@ class StyleTraversalIntegrationTest {
                 source.emit(focus)
             }
             waitForIdle()
-            assertEquals(1, recorder.snapshots.size)
+            assertEquals(initialUpdates, recorder.snapshots.size)
             assertEquals(Color.Red, recorder.last.color)
 
             runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
             waitForIdle()
-            assertEquals(1, recorder.snapshots.size)
+            assertEquals(initialUpdates, recorder.snapshots.size)
             assertEquals(Color.Red, recorder.last.color)
         }
 

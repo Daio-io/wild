@@ -93,6 +93,7 @@ internal class StyleScopeParentNode(
     private var _hovered: Boolean = false
     private var _pressed: Boolean = false
     private var _selected: Boolean = selected
+    private var hasDispatchedStyle = false
 
     fun updateState(
         selected: Boolean,
@@ -112,11 +113,40 @@ internal class StyleScopeParentNode(
     }
 
     private fun updateStyle() {
+        val previousColor = color
+        val previousAlpha = alpha
+        val previousScale = scale
+        val previousShape = shape
+        val previousBorder = border
+        val previousScaleAnimationSpec = scaleAnimationSpec
+
+        resetResolvedStyle()
         block.invoke(this)
+
+        val changed =
+            !hasDispatchedStyle ||
+                color != previousColor ||
+                alpha != previousAlpha ||
+                scale != previousScale ||
+                shape != previousShape ||
+                border != previousBorder ||
+                scaleAnimationSpec != previousScaleAnimationSpec
+
+        if (!changed) return
+        hasDispatchedStyle = true
 
         traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
             it.updateStyle(this)
         }
+    }
+
+    private fun resetResolvedStyle() {
+        color = Color.Unspecified
+        alpha = 1f
+        scale = 1f
+        shape = RectangleShape
+        border = BorderDefaults.None
+        scaleAnimationSpec = null
     }
 
     override fun onInteractionStateChanged(interactions: Interactions) {
@@ -129,6 +159,11 @@ internal class StyleScopeParentNode(
             _hovered = interactions.hovered
             updateStyle()
         }
+    }
+
+    override fun onReset() {
+        resetResolvedStyle()
+        hasDispatchedStyle = false
     }
 
     override val traverseKey: Any = StyleParentTraversalKey
