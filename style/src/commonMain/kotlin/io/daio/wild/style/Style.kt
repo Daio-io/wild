@@ -17,6 +17,7 @@ import io.daio.wild.style.modifiers.BorderElement
 import io.daio.wild.style.modifiers.ScaleLayoutElement
 import io.daio.wild.style.modifiers.ShapeLayoutElement
 import io.daio.wild.style.modifiers.StyleParentTraversalKey
+import io.daio.wild.style.modifiers.StyleResolver
 import io.daio.wild.style.modifiers.StyleScopeParentElement
 import io.daio.wild.style.modifiers.border
 import io.daio.wild.style.modifiers.interactionSourceNode
@@ -484,7 +485,7 @@ fun Modifier.experimentalInteractionStyle(
     this.interactionSourceNode(
         interactionSource = interactionSource,
         childTraversalKey = StyleParentTraversalKey,
-    ) then StyleScopeParentElement(enabled, selected, block) then
+    ) then StyleScopeParentElement(enabled, selected, StyleResolver.Block(block)) then
         ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then
@@ -531,7 +532,7 @@ fun Modifier.interactionStyle(
     this.interactionSourceNode(
         interactionSource = interactionSource,
         childTraversalKey = StyleParentTraversalKey,
-    ) then StyleScopeParentElement(enabled, selected, block) then
+    ) then StyleScopeParentElement(enabled, selected, StyleResolver.Block(block)) then
         ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then
