@@ -90,7 +90,7 @@ internal class InteractionSourceElement(
     }
 
     override fun hashCode(): Int {
-        var result = System.identityHashCode(interactionSource)
+        var result = interactionSource?.hashCode() ?: 0
         result = 31 * result + childTraversalKey.hashCode()
         return result
     }
