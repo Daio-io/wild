@@ -352,8 +352,13 @@ class StyleTraversalIntegrationTest {
             runBlocking { source.emit(FocusInteraction.Focus()) }
             waitForIdle()
 
-            assertEquals(1, newObserver.states.size)
-            assertTrue(newObserver.states.single().focused)
+            assertEquals(
+                listOf(
+                    Interactions(focused = false, hovered = false, pressed = false),
+                    Interactions(focused = true, hovered = false, pressed = false),
+                ),
+                newObserver.states,
+            )
             assertEquals(0, oldObserver.states.size)
         }
 
