@@ -456,6 +456,10 @@ fun Modifier.experimentalInteractionStyle(
  * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
  * evaluations with identical resolved state are skipped.
  *
+ * Snapshot state (e.g. [androidx.compose.runtime.State] / [androidx.compose.runtime.mutableStateOf])
+ * read inside the block is observed; when those values change, the block is re-evaluated without
+ * requiring recomposition or an interaction event.
+ *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.
  * @param enabled Whether the element is currently enabled.
@@ -503,6 +507,10 @@ fun Modifier.experimentalInteractionStyle(
  *
  * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
  * evaluations with identical resolved state are skipped.
+ *
+ * Snapshot state (e.g. [androidx.compose.runtime.State] / [androidx.compose.runtime.mutableStateOf])
+ * read inside the block is observed; when those values change, the block is re-evaluated without
+ * requiring recomposition or an interaction event.
  *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.
