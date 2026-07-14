@@ -453,8 +453,8 @@ fun Modifier.experimentalInteractionStyle(
  * [StyleScope.pressed], [StyleScope.selected], [StyleScope.enabled]) are inputs read by the block;
  * they are not reset as style outputs.
  *
- * Child nodes are notified only when the resolved visual output changes, not on every interaction
- * tick.
+ * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
+ * evaluations with identical resolved state are skipped.
  *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.
@@ -501,8 +501,8 @@ fun Modifier.experimentalInteractionStyle(
  * [StyleScope.pressed], [StyleScope.selected], [StyleScope.enabled]) are inputs read by the block;
  * they are not reset as style outputs.
  *
- * Child nodes are notified only when the resolved visual output changes, not on every interaction
- * tick.
+ * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
+ * evaluations with identical resolved state are skipped.
  *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.

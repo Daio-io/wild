@@ -120,7 +120,7 @@ class StyleTraversalIntegrationTest {
         }
 
     @Test
-    fun effectiveOutputChangesDispatchOnceAndRepeatedIdenticalStateDoesNotRedispatch() =
+    fun effectiveStateChangesDispatchOnceAndRepeatedIdenticalStateDoesNotRedispatch() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val recorder = StyleRecorder()
@@ -162,22 +162,22 @@ class StyleTraversalIntegrationTest {
                 source.emit(hover)
             }
             waitForIdle()
-            assertEquals(initialUpdates + 1, recorder.snapshots.size)
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
             runBlocking {
                 press = PressInteraction.Press(Offset.Zero)
                 source.emit(press)
             }
             waitForIdle()
-            assertEquals(initialUpdates + 2, recorder.snapshots.size)
+            assertEquals(initialUpdates + 3, recorder.snapshots.size)
             runBlocking { source.emit(PressInteraction.Release(press)) }
             waitForIdle()
-            assertEquals(initialUpdates + 3, recorder.snapshots.size)
+            assertEquals(initialUpdates + 4, recorder.snapshots.size)
             runBlocking {
                 source.emit(HoverInteraction.Exit(hover))
                 source.emit(FocusInteraction.Unfocus(focus))
             }
             waitForIdle()
-            assertEquals(initialUpdates + 4, recorder.snapshots.size)
+            assertEquals(initialUpdates + 6, recorder.snapshots.size)
         }
 
     @Test
@@ -598,13 +598,38 @@ class StyleTraversalIntegrationTest {
             assertEquals(1f, recorder.last.scale)
         }
 
-    // Also covers Task 2 skip-dispatch when final resolved output is unchanged.
     @Test
-    fun equalFinalOutputAfterResetDoesNotRedispatch() =
+    fun equalFinalOutputAfterBlockUpdateDoesNotRedispatch() =
+        runComposeUiTest {
+            val recorder = StyleRecorder()
+            var styleRevision by mutableStateOf(0)
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(null) {
+                            if (styleRevision >= 0) color = Color.Red
+                        }
+                        .recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            val initialUpdates = recorder.snapshots.size
+            assertTrue(initialUpdates > 0)
+            assertEquals(Color.Red, recorder.last.color)
+
+            runOnIdle { styleRevision++ }
+            waitForIdle()
+            assertEquals(initialUpdates, recorder.snapshots.size)
+            assertEquals(Color.Red, recorder.last.color)
+        }
+
+    @Test
+    fun interactionInputsDispatchWhenFinalOutputIsUnchanged() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val recorder = StyleRecorder()
-            lateinit var focus: FocusInteraction.Focus
 
             setContent {
                 Box(
@@ -616,20 +641,22 @@ class StyleTraversalIntegrationTest {
             }
             waitForIdle()
             val initialUpdates = recorder.snapshots.size
-            assertTrue(initialUpdates > 0)
-            assertEquals(Color.Red, recorder.last.color)
+            assertFalse(recorder.last.focused)
 
+            lateinit var focus: FocusInteraction.Focus
             runBlocking {
                 focus = FocusInteraction.Focus()
                 source.emit(focus)
             }
             waitForIdle()
-            assertEquals(initialUpdates, recorder.snapshots.size)
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
+            assertTrue(recorder.last.focused)
             assertEquals(Color.Red, recorder.last.color)
 
             runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
             waitForIdle()
-            assertEquals(initialUpdates, recorder.snapshots.size)
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
+            assertFalse(recorder.last.focused)
             assertEquals(Color.Red, recorder.last.color)
         }
 

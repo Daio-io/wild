@@ -65,7 +65,8 @@ change the style based on the state.
     resolve to these defaults for that invocation—they do not persist from a previous state.
     Interaction flags (`focused`, `hovered`, `pressed`, `selected`, `enabled`) are inputs available
     inside the block, not style outputs that get reset. Child nodes are updated when the resolved
-    visual output changes, not on every interaction tick.
+    visual output or interaction inputs change; duplicate evaluations with identical resolved state
+    are skipped.
 
 !!! note
     Having to ensure you share the same `InteractionSource` is is an awkward part of the library
