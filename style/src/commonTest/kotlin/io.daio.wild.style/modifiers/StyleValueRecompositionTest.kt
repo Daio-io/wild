@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,7 +60,7 @@ class StyleValueRecompositionTest {
     fun equalStyleReplacementDoesNotReresolve() =
         runComposeUiTest {
             val styleA = StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))
-            var style by mutableStateOf(styleA)
+            var style by mutableStateOf(styleA, policy = referentialEqualityPolicy())
             val recorder = StyleRecorder()
 
             setContent {
