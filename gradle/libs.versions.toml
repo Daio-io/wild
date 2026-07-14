@@ -1,6 +1,6 @@
 [versions]
 
-agp = "9.2.1"
+agp = "9.3.0"
 activity-compose = "1.13.0"
 androidx-appcompat = "1.7.1"
 benchmark = "1.4.1"
