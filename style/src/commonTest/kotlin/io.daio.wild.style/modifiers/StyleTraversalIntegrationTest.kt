@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +27,7 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
+import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.interactionStyle
 import kotlinx.coroutines.runBlocking
@@ -399,6 +401,268 @@ class StyleTraversalIntegrationTest {
             assertEquals(0.5f, recorder.last.alpha)
             assertEquals(1.2f, recorder.last.scale)
             assertNotEquals(recorder.snapshots.first(), recorder.last)
+        }
+
+    @Test
+    fun conditionalFocusedScaleResetsWhenFocusLost() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) {
+                            if (focused) scale = 1.1f
+                        }.recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertEquals(1f, recorder.last.scale)
+
+            lateinit var focus: FocusInteraction.Focus
+            runBlocking {
+                focus = FocusInteraction.Focus()
+                source.emit(focus)
+            }
+            waitForIdle()
+            assertEquals(1.1f, recorder.last.scale)
+
+            runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
+            waitForIdle()
+            assertEquals(1f, recorder.last.scale)
+        }
+
+    @Test
+    fun conditionalPressedColorResetsToUnspecified() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) {
+                            if (pressed) color = Color.Red
+                        }.recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertEquals(Color.Unspecified, recorder.last.color)
+
+            lateinit var press: PressInteraction.Press
+            runBlocking {
+                press = PressInteraction.Press(Offset.Zero)
+                source.emit(press)
+            }
+            waitForIdle()
+            assertEquals(Color.Red, recorder.last.color)
+
+            runBlocking { source.emit(PressInteraction.Release(press)) }
+            waitForIdle()
+            assertEquals(Color.Unspecified, recorder.last.color)
+        }
+
+    @Test
+    fun conditionalAlphaShapeBorderAndAnimationSpecReset() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+            val border = Border(width = 2.dp, color = Color.Green)
+            val spec = spring<Float>()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) {
+                            if (focused) {
+                                alpha = 0.5f
+                                shape = CircleShape
+                                this.border = border
+                                scaleAnimationSpec = spec
+                            }
+                        }.recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertEquals(1f, recorder.last.alpha)
+            assertSame(RectangleShape, recorder.last.shape)
+            assertEquals(BorderDefaults.None, recorder.last.border)
+            assertEquals(null, recorder.last.scaleAnimationSpec)
+
+            lateinit var focus: FocusInteraction.Focus
+            runBlocking {
+                focus = FocusInteraction.Focus()
+                source.emit(focus)
+            }
+            waitForIdle()
+            assertEquals(0.5f, recorder.last.alpha)
+            assertSame(CircleShape, recorder.last.shape)
+            assertEquals(border, recorder.last.border)
+            assertSame(spec, recorder.last.scaleAnimationSpec)
+
+            runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
+            waitForIdle()
+            assertEquals(1f, recorder.last.alpha)
+            assertSame(RectangleShape, recorder.last.shape)
+            assertEquals(BorderDefaults.None, recorder.last.border)
+            assertEquals(null, recorder.last.scaleAnimationSpec)
+        }
+
+    @Test
+    fun multiBranchBlockResolvesExpectedFinalBranch() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) {
+                            color =
+                                when {
+                                    focused -> Color.Blue
+                                    pressed -> Color.Green
+                                    else -> Color.Red
+                                }
+                        }.recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertEquals(Color.Red, recorder.last.color)
+
+            lateinit var focus: FocusInteraction.Focus
+            runBlocking {
+                focus = FocusInteraction.Focus()
+                source.emit(focus)
+            }
+            waitForIdle()
+            assertEquals(Color.Blue, recorder.last.color)
+
+            runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
+            waitForIdle()
+            assertEquals(Color.Red, recorder.last.color)
+
+            lateinit var press: PressInteraction.Press
+            runBlocking {
+                press = PressInteraction.Press(Offset.Zero)
+                source.emit(press)
+            }
+            waitForIdle()
+            assertEquals(Color.Green, recorder.last.color)
+
+            runBlocking { source.emit(PressInteraction.Release(press)) }
+            waitForIdle()
+            assertEquals(Color.Red, recorder.last.color)
+        }
+
+    @Test
+    fun interactionFlagsRemainCurrentWhileOutputsReset() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source, enabled = false, selected = true) {
+                            if (focused) scale = 1.2f
+                        }.recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertFalse(recorder.last.enabled)
+            assertTrue(recorder.last.selected)
+            assertFalse(recorder.last.focused)
+            assertEquals(1f, recorder.last.scale)
+
+            lateinit var focus: FocusInteraction.Focus
+            runBlocking {
+                focus = FocusInteraction.Focus()
+                source.emit(focus)
+            }
+            waitForIdle()
+            assertFalse(recorder.last.enabled)
+            assertTrue(recorder.last.selected)
+            assertTrue(recorder.last.focused)
+            assertEquals(1.2f, recorder.last.scale)
+
+            runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
+            waitForIdle()
+            assertFalse(recorder.last.enabled)
+            assertTrue(recorder.last.selected)
+            assertFalse(recorder.last.focused)
+            assertEquals(1f, recorder.last.scale)
+        }
+
+    @Test
+    fun equalFinalOutputAfterResetDoesNotRedispatch() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val recorder = StyleRecorder()
+            lateinit var focus: FocusInteraction.Focus
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) { color = Color.Red }
+                        .recordStyle(recorder),
+                )
+            }
+            waitForIdle()
+            assertEquals(1, recorder.snapshots.size)
+            assertEquals(Color.Red, recorder.last.color)
+
+            runBlocking {
+                focus = FocusInteraction.Focus()
+                source.emit(focus)
+            }
+            waitForIdle()
+            assertEquals(1, recorder.snapshots.size)
+            assertEquals(Color.Red, recorder.last.color)
+
+            runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
+            waitForIdle()
+            assertEquals(1, recorder.snapshots.size)
+            assertEquals(Color.Red, recorder.last.color)
+        }
+
+    @Test
+    fun nestedScopesMaintainIndependentDefaults() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val inner = StyleRecorder()
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(source) {
+                            if (focused) scale = 1.2f
+                        },
+                ) {
+                    Box(
+                        Modifier
+                            .size(1.dp)
+                            .interactionStyle(source) { color = Color.Blue }
+                            .recordStyle(inner),
+                    )
+                }
+            }
+            waitForIdle()
+            assertEquals(1f, inner.last.scale)
+            assertEquals(Color.Blue, inner.last.color)
+
+            runBlocking { source.emit(FocusInteraction.Focus()) }
+            waitForIdle()
+            assertEquals(1f, inner.last.scale)
+            assertEquals(Color.Blue, inner.last.color)
         }
 }
 
