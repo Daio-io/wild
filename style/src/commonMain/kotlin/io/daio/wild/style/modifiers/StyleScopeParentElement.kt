@@ -8,7 +8,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.TraversableNode
+import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
@@ -65,6 +67,7 @@ internal class StyleScopeParentNode(
 ) : StyleScope,
     TraversableNode,
     InteractionSourceObserverNode,
+    ObserverModifierNode,
     Modifier.Node() {
     override var color: Color = Color.Unspecified
     override var alpha: Float = 1f
@@ -94,6 +97,8 @@ internal class StyleScopeParentNode(
     private var _pressed: Boolean = false
     private var _selected: Boolean = selected
     private var lastDispatchedStyle: StyleScopeSnapshot? = null
+    private var isUpdating: Boolean = false
+    private var needsUpdate: Boolean = false
 
     fun updateState(
         selected: Boolean,
@@ -113,9 +118,31 @@ internal class StyleScopeParentNode(
     }
 
     private fun updateStyle() {
-        resetResolvedStyle()
-        block(this)
+        if (isUpdating) {
+            needsUpdate = true
+            return
+        }
 
+        isUpdating = true
+        try {
+            do {
+                needsUpdate = false
+                resolveStyle()
+                dispatchResolvedStyle()
+            } while (needsUpdate)
+        } finally {
+            isUpdating = false
+        }
+    }
+
+    private fun resolveStyle() {
+        observeReads {
+            resetResolvedStyle()
+            block(this)
+        }
+    }
+
+    private fun dispatchResolvedStyle() {
         val resolvedStyle = styleScopeSnapshot()
         if (resolvedStyle == lastDispatchedStyle) return
         lastDispatchedStyle = resolvedStyle
@@ -123,6 +150,10 @@ internal class StyleScopeParentNode(
         traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
             it.updateStyle(this)
         }
+    }
+
+    override fun onObservedReadsChanged() {
+        if (isAttached) updateStyle()
     }
 
     private fun resetResolvedStyle() {
@@ -164,6 +195,8 @@ internal class StyleScopeParentNode(
     override fun onReset() {
         resetResolvedStyle()
         lastDispatchedStyle = null
+        isUpdating = false
+        needsUpdate = false
     }
 
     override val traverseKey: Any = StyleParentTraversalKey

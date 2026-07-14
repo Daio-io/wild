@@ -64,6 +64,10 @@ private class RecordingStyleChildNode(
         requestInitialStyleFromParent()
     }
 
+    override fun onDetach() {
+        recorder.snapshots.clear()
+    }
+
     override fun onReset() {
         recorder.snapshots.clear()
     }
