@@ -523,17 +523,15 @@ class StyleTraversalIntegrationTest {
                     Modifier
                         .size(1.dp)
                         .interactionStyle(source) {
-                            color =
-                                when {
-                                    focused -> Color.Blue
-                                    pressed -> Color.Green
-                                    else -> Color.Red
-                                }
+                            when {
+                                focused -> color = Color.Blue
+                                pressed -> color = Color.Green
+                            }
                         }.recordStyle(recorder),
                 )
             }
             waitForIdle()
-            assertEquals(Color.Red, recorder.last.color)
+            assertEquals(Color.Unspecified, recorder.last.color)
 
             lateinit var focus: FocusInteraction.Focus
             runBlocking {
@@ -545,7 +543,7 @@ class StyleTraversalIntegrationTest {
 
             runBlocking { source.emit(FocusInteraction.Unfocus(focus)) }
             waitForIdle()
-            assertEquals(Color.Red, recorder.last.color)
+            assertEquals(Color.Unspecified, recorder.last.color)
 
             lateinit var press: PressInteraction.Press
             runBlocking {
@@ -557,7 +555,7 @@ class StyleTraversalIntegrationTest {
 
             runBlocking { source.emit(PressInteraction.Release(press)) }
             waitForIdle()
-            assertEquals(Color.Red, recorder.last.color)
+            assertEquals(Color.Unspecified, recorder.last.color)
         }
 
     @Test
@@ -601,6 +599,7 @@ class StyleTraversalIntegrationTest {
         }
 
     @Test
+    // Also covers Task 2 skip-dispatch when final resolved output is unchanged.
     fun equalFinalOutputAfterResetDoesNotRedispatch() =
         runComposeUiTest {
             val source = MutableInteractionSource()
@@ -636,22 +635,27 @@ class StyleTraversalIntegrationTest {
     @Test
     fun nestedScopesMaintainIndependentDefaults() =
         runComposeUiTest {
-            val source = MutableInteractionSource()
+            val outerSource = MutableInteractionSource()
+            val innerSource = MutableInteractionSource()
             val inner = StyleRecorder()
+            lateinit var outerFocus: FocusInteraction.Focus
+            lateinit var innerFocus: FocusInteraction.Focus
 
             setContent {
                 Box(
                     Modifier
                         .size(1.dp)
-                        .interactionStyle(source) {
+                        .interactionStyle(outerSource) {
                             if (focused) scale = 1.2f
                         },
                 ) {
                     Box(
                         Modifier
                             .size(1.dp)
-                            .interactionStyle(source) { color = Color.Blue }
-                            .recordStyle(inner),
+                            .interactionStyle(innerSource) {
+                                color = Color.Blue
+                                if (focused) scale = 1.5f
+                            }.recordStyle(inner),
                     )
                 }
             }
@@ -659,7 +663,23 @@ class StyleTraversalIntegrationTest {
             assertEquals(1f, inner.last.scale)
             assertEquals(Color.Blue, inner.last.color)
 
-            runBlocking { source.emit(FocusInteraction.Focus()) }
+            runBlocking {
+                outerFocus = FocusInteraction.Focus()
+                outerSource.emit(outerFocus)
+            }
+            waitForIdle()
+            assertEquals(1f, inner.last.scale)
+            assertEquals(Color.Blue, inner.last.color)
+
+            runBlocking {
+                innerFocus = FocusInteraction.Focus()
+                innerSource.emit(innerFocus)
+            }
+            waitForIdle()
+            assertEquals(1.5f, inner.last.scale)
+            assertEquals(Color.Blue, inner.last.color)
+
+            runBlocking { innerSource.emit(FocusInteraction.Unfocus(innerFocus)) }
             waitForIdle()
             assertEquals(1f, inner.last.scale)
             assertEquals(Color.Blue, inner.last.color)
