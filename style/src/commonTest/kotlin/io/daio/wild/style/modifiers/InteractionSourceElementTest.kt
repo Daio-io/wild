@@ -27,10 +27,10 @@ class InteractionSourceElementTest {
     fun overlappingPressesStayPressedUntilFinalRelease() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val recorder = InteractionRecorder()
+            val recorder = TestInteractionRecorder()
 
             setContent {
-                ParentWithObservers(
+                TestParentWithObservers(
                     interactionSource = source,
                     childTraversalKey = KeyA,
                     observerA = recorder,
@@ -66,10 +66,10 @@ class InteractionSourceElementTest {
     fun overlappingHoverAndFocusStayActiveUntilTheirFinalTerminalInteractions() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val recorder = InteractionRecorder()
+            val recorder = TestInteractionRecorder()
 
             setContent {
-                ParentWithObservers(
+                TestParentWithObservers(
                     interactionSource = source,
                     childTraversalKey = KeyA,
                     observerA = recorder,
@@ -120,10 +120,10 @@ class InteractionSourceElementTest {
     fun unknownTerminalInteractionsDoNotNotify() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val recorder = InteractionRecorder()
+            val recorder = TestInteractionRecorder()
 
             setContent {
-                ParentWithObservers(
+                TestParentWithObservers(
                     interactionSource = source,
                     childTraversalKey = KeyA,
                     observerA = recorder,
@@ -137,7 +137,7 @@ class InteractionSourceElementTest {
             }
 
             runOnIdle {
-                assertEquals(emptyList(), recorder.events)
+                assertEquals(emptyList<Interactions>(), recorder.events)
             }
         }
 
@@ -146,11 +146,11 @@ class InteractionSourceElementTest {
         runComposeUiTest {
             val sourceA = MutableInteractionSource()
             val sourceB = MutableInteractionSource()
-            val recorder = InteractionRecorder()
+            val recorder = TestInteractionRecorder()
             var interactionSource by mutableStateOf<androidx.compose.foundation.interaction.InteractionSource?>(sourceA)
 
             setContent {
-                ParentWithObservers(
+                TestParentWithObservers(
                     interactionSource = interactionSource,
                     childTraversalKey = KeyA,
                     observerA = recorder,
@@ -188,12 +188,12 @@ class InteractionSourceElementTest {
     fun keyOnlyUpdateDispatchesCurrentStateToNewMatchingDescendants() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val recorderA = InteractionRecorder()
-            val recorderB = InteractionRecorder()
+            val recorderA = TestInteractionRecorder()
+            val recorderB = TestInteractionRecorder()
             var childTraversalKey by mutableStateOf(KeyA as Any)
 
             setContent {
-                ParentWithObservers(
+                TestParentWithObservers(
                     interactionSource = source,
                     childTraversalKey = childTraversalKey,
                     observerA = recorderA,
@@ -233,11 +233,11 @@ class InteractionSourceElementTest {
 
 @OptIn(ExperimentalWildApi::class)
 @androidx.compose.runtime.Composable
-private fun ParentWithObservers(
+private fun TestParentWithObservers(
     interactionSource: androidx.compose.foundation.interaction.InteractionSource?,
     childTraversalKey: Any,
-    observerA: InteractionRecorder,
-    observerB: InteractionRecorder? = null,
+    observerA: TestInteractionRecorder,
+    observerB: TestInteractionRecorder? = null,
 ) {
     Box(
         modifier =
@@ -253,18 +253,18 @@ private fun ParentWithObservers(
     }
 }
 
-private class InteractionRecorder {
+private class TestInteractionRecorder {
     val events = mutableListOf<Interactions>()
 }
 
 private fun Modifier.interactionObserverNode(
     key: Any,
-    recorder: InteractionRecorder,
-): Modifier = this then InteractionObserverElement(key, recorder)
+    recorder: TestInteractionRecorder,
+): Modifier = this then TestInteractionObserverElement(key, recorder)
 
-private data class InteractionObserverElement(
+private data class TestInteractionObserverElement(
     private val key: Any,
-    private val recorder: InteractionRecorder,
+    private val recorder: TestInteractionRecorder,
 ) : ModifierNodeElement<InteractionObserverNode>() {
     override fun create(): InteractionObserverNode = InteractionObserverNode(key, recorder)
 
@@ -280,7 +280,7 @@ private data class InteractionObserverElement(
 
 private class InteractionObserverNode(
     var key: Any,
-    var recorder: InteractionRecorder,
+    var recorder: TestInteractionRecorder,
 ) : Modifier.Node(),
     InteractionSourceObserverNode,
     TraversableNode {
