@@ -57,6 +57,17 @@ In order for the styles to work you must use the same `InteractionSource` when s
 Wild `io.daio.wild.foundation.Modifier.clickable`, otherwise non of the events will be picked up to
 change the style based on the state.
 
+!!! note "StyleScope DSL reset semantics"
+    When using the `StyleScope` block overload of `interactionStyle`, each evaluation resets visual
+    properties to defaults before your block runs: `color = Color.Unspecified`, `alpha = 1f`,
+    `scale = 1f`, `shape = RectangleShape`, no border, and `scaleAnimationSpec = null`. If you omit
+    a property in a branch (for example only setting `color` when focused), the other properties
+    resolve to these defaults for that invocation—they do not persist from a previous state.
+    Interaction flags (`focused`, `hovered`, `pressed`, `selected`, `enabled`) are inputs available
+    inside the block, not style outputs that get reset. Child nodes are updated when the resolved
+    visual output or interaction inputs change; duplicate evaluations with identical resolved state
+    are skipped.
+
 !!! note
     Having to ensure you share the same `InteractionSource` is is an awkward part of the library
     right now which I am looking to solve with indication.

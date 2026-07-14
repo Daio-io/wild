@@ -441,6 +441,21 @@ fun Modifier.experimentalInteractionStyle(
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
+ * Each time the [block] is evaluated, visual properties on [StyleScope] are reset to their defaults
+ * before the block runs. Omitting a property in the block leaves that property at its default for
+ * that invocation; values are not carried over from prior evaluations.
+ *
+ * Defaults: [StyleScope.color] = [Color.Unspecified], [StyleScope.alpha] = `1f`,
+ * [StyleScope.scale] = `1f`, [StyleScope.shape] = [RectangleShape], [StyleScope.border] =
+ * [BorderDefaults.None], [StyleScope.scaleAnimationSpec] = `null`.
+ *
+ * Interaction and component flags ([StyleScope.focused], [StyleScope.hovered],
+ * [StyleScope.pressed], [StyleScope.selected], [StyleScope.enabled]) are inputs read by the block;
+ * they are not reset as style outputs.
+ *
+ * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
+ * evaluations with identical resolved state are skipped.
+ *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.
  * @param enabled Whether the element is currently enabled.
@@ -473,6 +488,21 @@ fun Modifier.experimentalInteractionStyle(
 
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
+ *
+ * Each time the [block] is evaluated, visual properties on [StyleScope] are reset to their defaults
+ * before the block runs. Omitting a property in the block leaves that property at its default for
+ * that invocation; values are not carried over from prior evaluations.
+ *
+ * Defaults: [StyleScope.color] = [Color.Unspecified], [StyleScope.alpha] = `1f`,
+ * [StyleScope.scale] = `1f`, [StyleScope.shape] = [RectangleShape], [StyleScope.border] =
+ * [BorderDefaults.None], [StyleScope.scaleAnimationSpec] = `null`.
+ *
+ * Interaction and component flags ([StyleScope.focused], [StyleScope.hovered],
+ * [StyleScope.pressed], [StyleScope.selected], [StyleScope.enabled]) are inputs read by the block;
+ * they are not reset as style outputs.
+ *
+ * Child nodes are notified when the resolved visual output or interaction inputs change. Duplicate
+ * evaluations with identical resolved state are skipped.
  *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
  * pressed and focus.

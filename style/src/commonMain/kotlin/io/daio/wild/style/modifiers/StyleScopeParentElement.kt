@@ -93,6 +93,7 @@ internal class StyleScopeParentNode(
     private var _hovered: Boolean = false
     private var _pressed: Boolean = false
     private var _selected: Boolean = selected
+    private var lastDispatchedStyle: StyleScopeSnapshot? = null
 
     fun updateState(
         selected: Boolean,
@@ -112,12 +113,41 @@ internal class StyleScopeParentNode(
     }
 
     private fun updateStyle() {
-        block.invoke(this)
+        resetResolvedStyle()
+        block(this)
+
+        val resolvedStyle = styleScopeSnapshot()
+        if (resolvedStyle == lastDispatchedStyle) return
+        lastDispatchedStyle = resolvedStyle
 
         traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
             it.updateStyle(this)
         }
     }
+
+    private fun resetResolvedStyle() {
+        color = Color.Unspecified
+        alpha = 1f
+        scale = 1f
+        shape = RectangleShape
+        border = BorderDefaults.None
+        scaleAnimationSpec = null
+    }
+
+    private fun styleScopeSnapshot() =
+        StyleScopeSnapshot(
+            color = color,
+            alpha = alpha,
+            scale = scale,
+            shape = shape,
+            border = border,
+            scaleAnimationSpec = scaleAnimationSpec,
+            focused = focused,
+            hovered = hovered,
+            pressed = pressed,
+            selected = selected,
+            enabled = enabled,
+        )
 
     override fun onInteractionStateChanged(interactions: Interactions) {
         if (_focused != interactions.focused ||
@@ -131,5 +161,25 @@ internal class StyleScopeParentNode(
         }
     }
 
+    override fun onReset() {
+        resetResolvedStyle()
+        lastDispatchedStyle = null
+    }
+
     override val traverseKey: Any = StyleParentTraversalKey
 }
+
+/** Complete [StyleScope] state observed by descendant style nodes. */
+private data class StyleScopeSnapshot(
+    val color: Color,
+    val alpha: Float,
+    val scale: Float,
+    val shape: Shape,
+    val border: Border,
+    val scaleAnimationSpec: AnimationSpec<Float>?,
+    val focused: Boolean,
+    val hovered: Boolean,
+    val pressed: Boolean,
+    val selected: Boolean,
+    val enabled: Boolean,
+)
