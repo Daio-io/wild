@@ -2,11 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.StyleScope
+import io.daio.wild.style.interactionStyle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 
 class StyleResolverEqualityTest {
@@ -48,6 +51,29 @@ class StyleResolverEqualityTest {
     }
 
     @Test
+    fun styleOverloadUsesValueResolver() {
+        val style = StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))
+        val element =
+            Modifier
+                .interactionStyle(
+                    interactionSource = null,
+                    enabled = true,
+                    selected = false,
+                    style = style,
+                )
+                .findElement<StyleScopeParentElement>()
+        assertEquals(
+            StyleScopeParentElement(
+                enabled = true,
+                selected = false,
+                resolver = StyleResolver.Value(style),
+            ),
+            element,
+        )
+        assertIs<StyleResolver.Value>(element!!.resolver)
+    }
+
+    @Test
     fun blockElementsUseBlockIdentity() {
         val block: StyleScope.() -> Unit = { color = Color.Red }
         val a = StyleScopeParentElement(resolver = StyleResolver.Block(block))
@@ -56,4 +82,14 @@ class StyleResolverEqualityTest {
         assertEquals(a, b)
         assertNotEquals(a, c)
     }
+}
+
+private inline fun <reified E : Modifier.Element> Modifier.findElement(): E? {
+    var found: E? = null
+    foldIn(Unit) { _, element ->
+        if (element is E && found == null) {
+            found = element
+        }
+    }
+    return found
 }

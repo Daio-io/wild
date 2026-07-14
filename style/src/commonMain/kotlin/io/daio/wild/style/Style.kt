@@ -324,120 +324,52 @@ object StyleDefaults {
  * @param style The [Style] to apply to the element.
  * @since 0.2.0
  */
+@OptIn(ExperimentalWildApi::class)
 fun Modifier.interactionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.interactionStyle(
+    this.interactionSourceNode(
         interactionSource = interactionSource,
-        enabled = enabled,
-        selected = selected,
-        block = {
-            color =
-                style.colors.colorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scale =
-                style.scale.scaleFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            alpha =
-                style.alpha.alphaFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            shape =
-                style.shapes.shapeFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            border =
-                style.borders.borderFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scaleAnimationSpec = style.scale.animationSpec
-        },
-    )
+        childTraversalKey = StyleParentTraversalKey,
+    ) then
+        StyleScopeParentElement(
+            enabled = enabled,
+            selected = selected,
+            resolver = StyleResolver.Value(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
 
 @Deprecated(
     message = "Use interactionStyle instead. The node-based style system is now the default.",
     replaceWith = ReplaceWith("interactionStyle(interactionSource, enabled, selected, style)"),
     level = DeprecationLevel.WARNING,
 )
+@OptIn(ExperimentalWildApi::class)
 fun Modifier.experimentalInteractionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.experimentalInteractionStyle(
+    this.interactionSourceNode(
         interactionSource = interactionSource,
-        enabled = enabled,
-        selected = selected,
-        block = {
-            color =
-                style.colors.colorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scale =
-                style.scale.scaleFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            alpha =
-                style.alpha.alphaFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            shape =
-                style.shapes.shapeFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            border =
-                style.borders.borderFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scaleAnimationSpec = style.scale.animationSpec
-        },
-    )
+        childTraversalKey = StyleParentTraversalKey,
+    ) then
+        StyleScopeParentElement(
+            enabled = enabled,
+            selected = selected,
+            resolver = StyleResolver.Value(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
 
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
