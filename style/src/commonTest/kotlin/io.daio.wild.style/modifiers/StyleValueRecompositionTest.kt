@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.interactionStyle
-import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class StyleValueRecompositionTest {
@@ -184,7 +184,9 @@ class StyleValueRecompositionTest {
             waitForIdle()
             val dispatchesBefore = recorder.snapshots.size
 
-            runBlocking { source.emit(FocusInteraction.Focus()) }
+            runOnIdle {
+                assertTrue(source.tryEmit(FocusInteraction.Focus()))
+            }
             waitForIdle()
 
             assertEquals(dispatchesBefore + 1, recorder.snapshots.size)

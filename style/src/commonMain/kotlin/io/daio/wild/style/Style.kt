@@ -350,26 +350,18 @@ fun Modifier.interactionStyle(
     replaceWith = ReplaceWith("interactionStyle(interactionSource, enabled, selected, style)"),
     level = DeprecationLevel.WARNING,
 )
-@OptIn(ExperimentalWildApi::class)
 fun Modifier.experimentalInteractionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.interactionSourceNode(
+    interactionStyle(
         interactionSource = interactionSource,
-        childTraversalKey = StyleParentTraversalKey,
-    ) then
-        StyleScopeParentElement(
-            enabled = enabled,
-            selected = selected,
-            resolver = StyleResolver.Value(style),
-        ) then
-        ScaleLayoutElement() then
-        BorderElement() then
-        BackgroundElement() then
-        ShapeLayoutElement()
+        enabled = enabled,
+        selected = selected,
+        style = style,
+    )
 
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].

@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
-import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Verifies that [StyleResolver.Value] resolves every [StyleScope] property to the same value
@@ -131,12 +131,14 @@ class StyleValueResolutionTest {
         }
         waitForIdle()
 
-        runBlocking {
-            if (focused) source.emit(FocusInteraction.Focus())
-            if (hovered) source.emit(HoverInteraction.Enter())
-            if (pressed) source.emit(PressInteraction.Press(Offset.Zero))
+        if (focused || hovered || pressed) {
+            runOnIdle {
+                if (focused) assertTrue(source.tryEmit(FocusInteraction.Focus()))
+                if (hovered) assertTrue(source.tryEmit(HoverInteraction.Enter()))
+                if (pressed) assertTrue(source.tryEmit(PressInteraction.Press(Offset.Zero)))
+            }
+            waitForIdle()
         }
-        waitForIdle()
 
         assertEquals(
             style.colors.colorFor(
