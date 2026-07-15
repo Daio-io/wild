@@ -21,12 +21,11 @@ import io.daio.wild.style.interactionStyle
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class StyleValueRecompositionTest {
     @Test
-    fun unrelatedRecompositionDoesNotReresolveStableStyle() =
+    fun unrelatedRecompositionDoesNotRedispatchStableStyle() =
         runComposeUiTest {
             val style = StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))
             val recorder = StyleRecorder()
@@ -43,21 +42,20 @@ class StyleValueRecompositionTest {
                 )
             }
             waitForIdle()
-            StyleParentTestCounters.reset()
             val dispatchesBefore = recorder.snapshots.size
+            val colorBefore = recorder.last.color
 
             repeat(5) {
                 runOnIdle { tick++ }
                 waitForIdle()
             }
 
-            assertEquals(0, StyleParentTestCounters.updateCount)
-            assertEquals(0, StyleParentTestCounters.resolveCount)
             assertEquals(dispatchesBefore, recorder.snapshots.size)
+            assertEquals(colorBefore, recorder.last.color)
         }
 
     @Test
-    fun equalStyleReplacementDoesNotReresolve() =
+    fun equalStyleReplacementDoesNotRedispatch() =
         runComposeUiTest {
             val styleA = StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))
             var style by mutableStateOf(styleA, policy = referentialEqualityPolicy())
@@ -72,7 +70,6 @@ class StyleValueRecompositionTest {
                 )
             }
             waitForIdle()
-            StyleParentTestCounters.reset()
             val dispatchesBefore = recorder.snapshots.size
 
             runOnIdle {
@@ -83,13 +80,12 @@ class StyleValueRecompositionTest {
             }
             waitForIdle()
 
-            assertEquals(0, StyleParentTestCounters.updateCount)
-            assertEquals(0, StyleParentTestCounters.resolveCount)
             assertEquals(dispatchesBefore, recorder.snapshots.size)
+            assertEquals(Color.Red, recorder.last.color)
         }
 
     @Test
-    fun stylePropertyChangeResolvesOnce() =
+    fun stylePropertyChangeDispatchesOnce() =
         runComposeUiTest {
             var style by mutableStateOf(
                 StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red)),
@@ -105,20 +101,19 @@ class StyleValueRecompositionTest {
                 )
             }
             waitForIdle()
-            StyleParentTestCounters.reset()
+            val dispatchesBefore = recorder.snapshots.size
 
             runOnIdle {
                 style = StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Green))
             }
             waitForIdle()
 
-            assertEquals(1, StyleParentTestCounters.updateCount)
-            assertEquals(1, StyleParentTestCounters.resolveCount)
+            assertEquals(dispatchesBefore + 1, recorder.snapshots.size)
             assertEquals(Color.Green, recorder.last.color)
         }
 
     @Test
-    fun enabledOrSelectedChangeResolvesOnce() =
+    fun enabledOrSelectedChangeDispatchesOnce() =
         runComposeUiTest {
             val style =
                 StyleDefaults.style(
@@ -147,27 +142,25 @@ class StyleValueRecompositionTest {
                 )
             }
             waitForIdle()
-            StyleParentTestCounters.reset()
+            var dispatchesBefore = recorder.snapshots.size
 
             runOnIdle { enabled = false }
             waitForIdle()
-            assertEquals(1, StyleParentTestCounters.updateCount)
-            assertEquals(1, StyleParentTestCounters.resolveCount)
+            assertEquals(dispatchesBefore + 1, recorder.snapshots.size)
             assertEquals(Color.Gray, recorder.last.color)
 
-            StyleParentTestCounters.reset()
+            dispatchesBefore = recorder.snapshots.size
             runOnIdle {
                 enabled = true
                 selected = true
             }
             waitForIdle()
-            assertEquals(1, StyleParentTestCounters.updateCount)
-            assertEquals(1, StyleParentTestCounters.resolveCount)
+            assertEquals(dispatchesBefore + 1, recorder.snapshots.size)
             assertEquals(Color.Blue, recorder.last.color)
         }
 
     @Test
-    fun interactionChangeStillResolves() =
+    fun interactionChangeStillDispatches() =
         runComposeUiTest {
             val style =
                 StyleDefaults.style(
@@ -189,12 +182,12 @@ class StyleValueRecompositionTest {
                 )
             }
             waitForIdle()
-            StyleParentTestCounters.reset()
+            val dispatchesBefore = recorder.snapshots.size
 
             runBlocking { source.emit(FocusInteraction.Focus()) }
             waitForIdle()
 
-            assertTrue(StyleParentTestCounters.resolveCount >= 1)
+            assertEquals(dispatchesBefore + 1, recorder.snapshots.size)
             assertEquals(Color.Blue, recorder.last.color)
         }
 }

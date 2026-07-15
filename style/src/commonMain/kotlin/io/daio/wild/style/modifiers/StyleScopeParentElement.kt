@@ -110,7 +110,6 @@ internal class StyleScopeParentNode(
             _enabled = enabled
             _selected = selected
             this.resolver = resolver
-            StyleParentTestCounters.onUpdate()
             updateStyle()
         }
     }
@@ -138,7 +137,6 @@ internal class StyleScopeParentNode(
     }
 
     private fun resolveStyle() {
-        StyleParentTestCounters.onResolve()
         when (val currentResolver = resolver) {
             is StyleResolver.Block ->
                 observeReads {
