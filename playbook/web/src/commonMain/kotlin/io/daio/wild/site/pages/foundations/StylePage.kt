@@ -769,8 +769,23 @@ fun StylePage(modifier: Modifier = Modifier) {
 
         // Usage
         SectionHeader("Usage")
+        SectionDescription(
+            "Build an immutable Style with StyleDefaults, then apply it to interactive " +
+                "components via the style parameter, or with Modifier.interactionStyle.",
+        )
         CodeBlock(
             code = STYLE_USAGE,
+            tabs = listOf("Kotlin"),
+        )
+
+        SectionHeader("Applying with interactionStyle")
+        SectionDescription(
+            "Prefer the Style value overload for StyleDefaults values — Wild resolves " +
+                "state from the Style and skips updates when Style, enabled, and selected " +
+                "are unchanged. Use the StyleScope DSL overload when you need custom logic.",
+        )
+        CodeBlock(
+            code = INTERACTION_STYLE_USAGE,
             tabs = listOf("Kotlin"),
         )
 
@@ -963,5 +978,24 @@ private val STYLE_USAGE =
     // Apply to any interactive component
     Container(onClick = { }, style = myStyle) {
         Text("Styled container")
+    }
+    """.trimIndent()
+
+private val INTERACTION_STYLE_USAGE =
+    """
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Preferred: pass an immutable Style value
+    Modifier
+        .clickable(interactionSource = interactionSource, onClick = { })
+        .interactionStyle(
+            interactionSource = interactionSource,
+            style = myStyle,
+        )
+
+    // Advanced: custom StyleScope DSL
+    Modifier.interactionStyle(interactionSource = interactionSource) {
+        color = if (focused) Color.Blue else Color.Red
+        scale = if (pressed) 0.95f else 1f
     }
     """.trimIndent()
