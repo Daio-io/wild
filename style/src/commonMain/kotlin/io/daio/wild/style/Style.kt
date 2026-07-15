@@ -17,6 +17,7 @@ import io.daio.wild.style.modifiers.BorderElement
 import io.daio.wild.style.modifiers.ScaleLayoutElement
 import io.daio.wild.style.modifiers.ShapeLayoutElement
 import io.daio.wild.style.modifiers.StyleParentTraversalKey
+import io.daio.wild.style.modifiers.StyleResolver
 import io.daio.wild.style.modifiers.StyleScopeParentElement
 import io.daio.wild.style.modifiers.border
 import io.daio.wild.style.modifiers.interactionSourceNode
@@ -323,60 +324,26 @@ object StyleDefaults {
  * @param style The [Style] to apply to the element.
  * @since 0.2.0
  */
+@OptIn(ExperimentalWildApi::class)
 fun Modifier.interactionStyle(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.interactionStyle(
+    this.interactionSourceNode(
         interactionSource = interactionSource,
-        enabled = enabled,
-        selected = selected,
-        block = {
-            color =
-                style.colors.colorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scale =
-                style.scale.scaleFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            alpha =
-                style.alpha.alphaFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            shape =
-                style.shapes.shapeFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            border =
-                style.borders.borderFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scaleAnimationSpec = style.scale.animationSpec
-        },
-    )
+        childTraversalKey = StyleParentTraversalKey,
+    ) then
+        StyleScopeParentElement(
+            enabled = enabled,
+            selected = selected,
+            resolver = StyleResolver.Value(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
 
 @Deprecated(
     message = "Use interactionStyle instead. The node-based style system is now the default.",
@@ -389,53 +356,11 @@ fun Modifier.experimentalInteractionStyle(
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.experimentalInteractionStyle(
+    interactionStyle(
         interactionSource = interactionSource,
         enabled = enabled,
         selected = selected,
-        block = {
-            color =
-                style.colors.colorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scale =
-                style.scale.scaleFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            alpha =
-                style.alpha.alphaFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            shape =
-                style.shapes.shapeFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            border =
-                style.borders.borderFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected,
-                )
-            scaleAnimationSpec = style.scale.animationSpec
-        },
+        style = style,
     )
 
 /**
@@ -484,7 +409,7 @@ fun Modifier.experimentalInteractionStyle(
     this.interactionSourceNode(
         interactionSource = interactionSource,
         childTraversalKey = StyleParentTraversalKey,
-    ) then StyleScopeParentElement(enabled, selected, block) then
+    ) then StyleScopeParentElement(enabled, selected, StyleResolver.Block(block)) then
         ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then
@@ -531,7 +456,7 @@ fun Modifier.interactionStyle(
     this.interactionSourceNode(
         interactionSource = interactionSource,
         childTraversalKey = StyleParentTraversalKey,
-    ) then StyleScopeParentElement(enabled, selected, block) then
+    ) then StyleScopeParentElement(enabled, selected, StyleResolver.Block(block)) then
         ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then

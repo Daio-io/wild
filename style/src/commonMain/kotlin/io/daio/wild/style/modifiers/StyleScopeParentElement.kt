@@ -14,27 +14,28 @@ import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.Style
 import io.daio.wild.style.StyleScope
 
 internal class StyleScopeParentElement(
     val enabled: Boolean = true,
     val selected: Boolean = false,
-    val block: StyleScope.() -> Unit,
+    val resolver: StyleResolver,
 ) : ModifierNodeElement<StyleScopeParentNode>() {
     override fun create() =
         StyleScopeParentNode(
-            block = block,
+            resolver = resolver,
             enabled = enabled,
             selected = selected,
         )
 
     override fun update(node: StyleScopeParentNode) {
-        node.updateState(selected = selected, enabled = enabled, block = block)
+        node.updateState(selected = selected, enabled = enabled, resolver = resolver)
     }
 
     override fun InspectorInfo.inspectableProperties() {
         name = "StyleScopeParentElement"
-        properties["block"] = block
+        properties["resolver"] = resolver
         properties["enabled"] = enabled
         properties["selected"] = selected
     }
@@ -47,7 +48,7 @@ internal class StyleScopeParentElement(
 
         if (enabled != other.enabled) return false
         if (selected != other.selected) return false
-        if (block != other.block) return false
+        if (resolver != other.resolver) return false
 
         return true
     }
@@ -55,13 +56,13 @@ internal class StyleScopeParentElement(
     override fun hashCode(): Int {
         var result = enabled.hashCode()
         result = 31 * result + selected.hashCode()
-        result = 31 * result + block.hashCode()
+        result = 31 * result + resolver.hashCode()
         return result
     }
 }
 
 internal class StyleScopeParentNode(
-    var block: StyleScope.() -> Unit,
+    var resolver: StyleResolver,
     enabled: Boolean = true,
     selected: Boolean = false,
 ) : StyleScope,
@@ -103,12 +104,12 @@ internal class StyleScopeParentNode(
     fun updateState(
         selected: Boolean,
         enabled: Boolean,
-        block: StyleScope.() -> Unit,
+        resolver: StyleResolver,
     ) {
-        if (_enabled != enabled || _selected != selected || this.block != block) {
+        if (_enabled != enabled || _selected != selected || this.resolver != resolver) {
             _enabled = enabled
             _selected = selected
-            this.block = block
+            this.resolver = resolver
             updateStyle()
         }
     }
@@ -136,10 +137,59 @@ internal class StyleScopeParentNode(
     }
 
     private fun resolveStyle() {
-        observeReads {
-            resetResolvedStyle()
-            block(this)
+        when (val currentResolver = resolver) {
+            is StyleResolver.Block ->
+                observeReads {
+                    resetResolvedStyle()
+                    currentResolver.block(this)
+                }
+
+            is StyleResolver.Value -> resolveValue(currentResolver.style)
         }
+    }
+
+    private fun resolveValue(style: Style) {
+        color =
+            style.colors.colorFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        scale =
+            style.scale.scaleFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        alpha =
+            style.alpha.alphaFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        shape =
+            style.shapes.shapeFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        border =
+            style.borders.borderFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        scaleAnimationSpec = style.scale.animationSpec
     }
 
     private fun dispatchResolvedStyle() {
