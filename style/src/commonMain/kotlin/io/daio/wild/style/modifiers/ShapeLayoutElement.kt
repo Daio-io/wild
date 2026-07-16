@@ -80,9 +80,13 @@ internal class ShapeLayoutModifier(
         alpha: Float,
     ) {
         if (this.shape != shape || this.alpha != alpha) {
+            val hadLayer = needsShapeLayer(this.shape, this.alpha)
             this.shape = shape
             this.alpha = alpha
-            invalidatePlacement()
+            val needsLayer = needsShapeLayer(shape, alpha)
+            if (hadLayer != needsLayer || needsLayer) {
+                invalidatePlacement()
+            }
         }
     }
 
@@ -92,11 +96,20 @@ internal class ShapeLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(0, 0) {
-                alpha = this@ShapeLayoutModifier.alpha
-                shape = this@ShapeLayoutModifier.shape
-                clip = true
-                compositingStrategy = CompositingStrategy.Offscreen
+            val currentShape = this@ShapeLayoutModifier.shape
+            val currentAlpha = this@ShapeLayoutModifier.alpha
+            if (needsShapeLayer(currentShape, currentAlpha)) {
+                placeable.placeWithLayer(0, 0) {
+                    alpha = currentAlpha
+                    shape = currentShape
+                    clip = true
+                    // Auto lets Compose choose the cheapest isolation required for
+                    // clipping and group alpha. Offscreen is only selected when
+                    // overlapping content or another operation requires it.
+                    compositingStrategy = CompositingStrategy.Auto
+                }
+            } else {
+                placeable.place(0, 0)
             }
         }
     }
@@ -108,4 +121,14 @@ internal class ShapeLayoutModifier(
             alpha = styleScope.alpha,
         )
     }
+}
+
+internal fun needsShapeLayer(
+    shape: Shape,
+    alpha: Float,
+): Boolean {
+    // RectangleShape is intentionally checked by identity: Shape has no
+    // cross-platform value equality contract, and a custom rectangle-equivalent
+    // shape may still carry different outline or clip semantics.
+    return shape !== RectangleShape || alpha != 1f
 }
