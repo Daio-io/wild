@@ -266,9 +266,7 @@ private class PlacementRecorder {
     var count: Int = 0
 }
 
-private fun Modifier.scaleLayoutForTest(
-    onNode: (ScaleLayoutModifier) -> Unit,
-): Modifier = this then TestScaleLayoutElement(onNode)
+private fun Modifier.scaleLayoutForTest(onNode: (ScaleLayoutModifier) -> Unit): Modifier = this then TestScaleLayoutElement(onNode)
 
 private data class TestScaleLayoutElement(
     private val onNode: (ScaleLayoutModifier) -> Unit,

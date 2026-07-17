@@ -208,7 +208,6 @@ internal enum class ScaleDefaultAnimationSpecKind {
 
 internal class ScaleAnimationRequestCoalescer {
     private var lastScale: Float? = null
-    private var lastZIndex: Float? = null
     private var lastCustomAnimationSpec: AnimationSpec<Float>? = null
     private var lastDefaultAnimationSpecKind: ScaleDefaultAnimationSpecKind? = null
 
@@ -235,7 +234,6 @@ internal class ScaleAnimationRequestCoalescer {
                 )
 
         lastScale = scale
-        lastZIndex = zIndex
         lastCustomAnimationSpec = animationSpec
         lastDefaultAnimationSpecKind =
             if (animationSpec == null) {
@@ -249,7 +247,6 @@ internal class ScaleAnimationRequestCoalescer {
 
     fun reset() {
         lastScale = null
-        lastZIndex = null
         lastCustomAnimationSpec = null
         lastDefaultAnimationSpecKind = null
     }
