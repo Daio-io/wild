@@ -166,9 +166,15 @@ internal class ScaleLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(0, 0, zIndex = zIndexState.value) {
-                scaleX = scaleState.value
-                scaleY = scaleState.value
+            val animatedScale = scaleState.value
+            val animatedZIndex = zIndexState.value
+            if (needsScaleLayer(animatedScale, animatedZIndex)) {
+                placeable.placeWithLayer(0, 0, zIndex = animatedZIndex) {
+                    scaleX = animatedScale
+                    scaleY = animatedScale
+                }
+            } else {
+                placeable.place(0, 0)
             }
         }
     }
@@ -186,6 +192,11 @@ internal class ScaleLayoutModifier(
         )
     }
 }
+
+internal fun needsScaleLayer(
+    animatedScale: Float,
+    zIndex: Float,
+): Boolean = animatedScale != 1f || zIndex != 0f
 
 internal data class ScaleAnimationRequest(
     val scale: Float,

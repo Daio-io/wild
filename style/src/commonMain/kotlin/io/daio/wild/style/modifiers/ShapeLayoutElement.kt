@@ -18,6 +18,10 @@ import io.daio.wild.style.StyleScope
 
 /**
  * Applies the main [Shape] to the element as part of the [StyleScopeParentNode].
+ *
+ * This layer remains separate from [ScaleLayoutModifier] because [BorderNode] is ordered between
+ * them. The border must scale with the surface while remaining outside this inner shape clip, such
+ * as when a focus ring uses a positive inset.
  */
 internal class ShapeLayoutElement(
     val shape: Shape = RectangleShape,
@@ -80,9 +84,13 @@ internal class ShapeLayoutModifier(
         alpha: Float,
     ) {
         if (this.shape != shape || this.alpha != alpha) {
+            val hadLayer = needsShapeLayer(this.shape, this.alpha)
             this.shape = shape
             this.alpha = alpha
-            invalidatePlacement()
+            val needsLayer = needsShapeLayer(shape, alpha)
+            if (hadLayer != needsLayer || needsLayer) {
+                invalidatePlacement()
+            }
         }
     }
 
@@ -92,11 +100,21 @@ internal class ShapeLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            placeable.placeWithLayer(0, 0) {
-                alpha = this@ShapeLayoutModifier.alpha
-                shape = this@ShapeLayoutModifier.shape
-                clip = true
-                compositingStrategy = CompositingStrategy.Offscreen
+            val currentShape = this@ShapeLayoutModifier.shape
+            val currentAlpha = this@ShapeLayoutModifier.alpha
+            val layerMode = shapeLayerMode(currentShape, currentAlpha)
+            if (layerMode.needsLayer) {
+                placeable.placeWithLayer(0, 0) {
+                    alpha = currentAlpha
+                    shape = currentShape
+                    clip = true
+                    // Auto avoids an offscreen buffer for opaque clipping. For alpha below 1f,
+                    // Auto preserves group alpha by rendering to an offscreen buffer. We cannot
+                    // use ModulateAlpha because styled content may contain overlapping draws.
+                    compositingStrategy = CompositingStrategy.Auto
+                }
+            } else {
+                placeable.place(0, 0)
             }
         }
     }
@@ -108,4 +126,33 @@ internal class ShapeLayoutModifier(
             alpha = styleScope.alpha,
         )
     }
+}
+
+internal fun needsShapeLayer(
+    shape: Shape,
+    alpha: Float,
+): Boolean = shapeLayerMode(shape, alpha).needsLayer
+
+internal fun shapeLayerMode(
+    shape: Shape,
+    alpha: Float,
+): ShapeLayerMode {
+    // RectangleShape is intentionally checked by identity: Shape has no
+    // cross-platform value equality contract, and a custom rectangle-equivalent
+    // shape may still carry different outline or clip semantics.
+    val clipsToShape = shape !== RectangleShape
+    val appliesGroupAlpha = alpha != 1f
+    return when {
+        clipsToShape && appliesGroupAlpha -> ShapeLayerMode.ClipAndGroupAlpha
+        clipsToShape -> ShapeLayerMode.Clip
+        appliesGroupAlpha -> ShapeLayerMode.GroupAlpha
+        else -> ShapeLayerMode.None
+    }
+}
+
+internal enum class ShapeLayerMode(val needsLayer: Boolean) {
+    None(needsLayer = false),
+    Clip(needsLayer = true),
+    GroupAlpha(needsLayer = true),
+    ClipAndGroupAlpha(needsLayer = true),
 }
