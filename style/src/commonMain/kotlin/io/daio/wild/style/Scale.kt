@@ -15,6 +15,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 
+private val DefaultScaleAnimationEasing = CubicBezierEasing(0f, 0f, 0.2f, 1f)
+private val PressedScaleAnimationSpec = tween<Float>(durationMillis = 120, easing = DefaultScaleAnimationEasing)
+private val RestingScaleAnimationSpec = tween<Float>(durationMillis = 300, easing = DefaultScaleAnimationEasing)
+
 @Immutable
 data class Scale(
     val scale: Float = 1f,
@@ -122,15 +126,11 @@ fun defaultScaleAnimationSpec(
     focused: Boolean,
     hovered: Boolean,
 ): TweenSpec<Float> =
-    tween(
-        durationMillis =
-            when {
-                (focused || hovered) && !pressed -> 300
-                pressed -> 120
-                else -> 300
-            },
-        easing = CubicBezierEasing(0f, 0f, 0.2f, 1f),
-    )
+    when {
+        pressed -> PressedScaleAnimationSpec
+        focused || hovered -> RestingScaleAnimationSpec
+        else -> RestingScaleAnimationSpec
+    }
 
 /**
  * Contains default [Scale] presets for common interaction patterns.
