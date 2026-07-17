@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -26,12 +27,24 @@ class LayerSelectionTest {
     }
 
     @Test
-    fun shapeLayerIsSkippedForOpaqueRectangle() {
+    fun shapeLayerModeCoversClipAndGroupAlphaMatrix() {
+        assertEquals(
+            ShapeLayerMode.None,
+            shapeLayerMode(shape = RectangleShape, alpha = 1f),
+        )
+        assertEquals(
+            ShapeLayerMode.Clip,
+            shapeLayerMode(shape = testShape, alpha = 1f),
+        )
+        assertEquals(
+            ShapeLayerMode.GroupAlpha,
+            shapeLayerMode(shape = RectangleShape, alpha = 0.5f),
+        )
+        assertEquals(
+            ShapeLayerMode.ClipAndGroupAlpha,
+            shapeLayerMode(shape = testShape, alpha = 0.5f),
+        )
         assertFalse(needsShapeLayer(shape = RectangleShape, alpha = 1f))
-    }
-
-    @Test
-    fun shapeLayerIsUsedForNonRectangleOrTransparency() {
         assertTrue(needsShapeLayer(shape = testShape, alpha = 1f))
         assertTrue(needsShapeLayer(shape = RectangleShape, alpha = 0.5f))
     }
