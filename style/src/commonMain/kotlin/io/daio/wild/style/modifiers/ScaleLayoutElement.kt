@@ -132,7 +132,6 @@ internal class ScaleLayoutModifier(
         if (
             !animationRequestCoalescer.shouldAnimate(
                 scale = scale,
-                zIndex = zIndex,
                 animationSpec = animationSpec,
                 focused = focused,
                 pressed = pressed,
@@ -213,7 +212,6 @@ internal class ScaleAnimationRequestCoalescer {
 
     fun shouldAnimate(
         scale: Float,
-        zIndex: Float,
         animationSpec: AnimationSpec<Float>? = null,
         focused: Boolean = false,
         pressed: Boolean = false,

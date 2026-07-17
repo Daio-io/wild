@@ -55,34 +55,34 @@ class ScaleAnimationRequestTest {
     fun coalescerAnimatesFirstRequest() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        assertTrue(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f))
+        assertTrue(coalescer.shouldAnimate(scale = 1.1f))
     }
 
     @Test
     fun coalescerSkipsMatchingRequest() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f)
+        coalescer.shouldAnimate(scale = 1.1f)
 
-        assertFalse(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f))
+        assertFalse(coalescer.shouldAnimate(scale = 1.1f))
     }
 
     @Test
     fun coalescerAnimatesChangedScale() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f)
+        coalescer.shouldAnimate(scale = 1.1f)
 
-        assertTrue(coalescer.shouldAnimate(scale = 1.2f, zIndex = 0.5f))
+        assertTrue(coalescer.shouldAnimate(scale = 1.2f))
     }
 
     @Test
     fun coalescerAnimatesWhenPressedDefaultChanges() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f)
+        coalescer.shouldAnimate(scale = 1.1f)
 
-        assertTrue(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f, pressed = true))
+        assertTrue(coalescer.shouldAnimate(scale = 1.1f, pressed = true))
     }
 
     @Test
@@ -91,14 +91,12 @@ class ScaleAnimationRequestTest {
 
         coalescer.shouldAnimate(
             scale = 1.1f,
-            zIndex = 0.5f,
             focused = true,
         )
 
         assertFalse(
             coalescer.shouldAnimate(
                 scale = 1.1f,
-                zIndex = 0.5f,
                 hovered = true,
             ),
         )
@@ -110,14 +108,12 @@ class ScaleAnimationRequestTest {
 
         coalescer.shouldAnimate(
             scale = 1.1f,
-            zIndex = 0.5f,
             animationSpec = tween(durationMillis = 100),
         )
 
         assertFalse(
             coalescer.shouldAnimate(
                 scale = 1.1f,
-                zIndex = 0.5f,
                 animationSpec = tween(durationMillis = 100),
             ),
         )
@@ -127,12 +123,11 @@ class ScaleAnimationRequestTest {
     fun coalescerAnimatesWhenChangingBetweenDefaultAndCustomSpecs() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f)
+        coalescer.shouldAnimate(scale = 1.1f)
 
         assertTrue(
             coalescer.shouldAnimate(
                 scale = 1.1f,
-                zIndex = 0.5f,
                 animationSpec = tween(durationMillis = 100),
             ),
         )
@@ -144,31 +139,20 @@ class ScaleAnimationRequestTest {
 
         coalescer.shouldAnimate(
             scale = 1.1f,
-            zIndex = 0.5f,
             animationSpec = tween(durationMillis = 100),
         )
 
-        assertTrue(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f))
-    }
-
-    @Test
-    fun coalescerTracksZIndexChangesWithoutRestartingScaleAnimation() {
-        val coalescer = ScaleAnimationRequestCoalescer()
-
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0f)
-
-        assertFalse(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f))
-        assertFalse(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0f))
+        assertTrue(coalescer.shouldAnimate(scale = 1.1f))
     }
 
     @Test
     fun coalescerAnimatesMatchingRequestAfterReset() {
         val coalescer = ScaleAnimationRequestCoalescer()
 
-        coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f)
+        coalescer.shouldAnimate(scale = 1.1f)
         coalescer.reset()
 
-        assertTrue(coalescer.shouldAnimate(scale = 1.1f, zIndex = 0.5f))
+        assertTrue(coalescer.shouldAnimate(scale = 1.1f))
     }
 
     @Test
