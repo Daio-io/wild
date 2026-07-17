@@ -7,6 +7,10 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.ReusableContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.InspectorInfo
@@ -242,6 +246,44 @@ class ScaleAnimationRequestTest {
                 )
             }
 
+            assertTrue(node.isScaleAnimationRunningForTest)
+        }
+
+    @Test
+    fun reusableContentResetsAndReusesScaleNode() =
+        runComposeUiTest {
+            var contentKey by mutableStateOf(0)
+            lateinit var node: ScaleLayoutModifier
+            val slowSpec = tween<Float>(durationMillis = 10_000, easing = LinearEasing)
+
+            setContent {
+                ReusableContent(key = contentKey) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(8.dp)
+                                .scaleLayoutForTest { node = it },
+                    )
+                }
+            }
+            waitForIdle()
+
+            runOnIdle {
+                node.updateStyle(testStyleScope(scale = 1.2f, animationSpec = slowSpec))
+            }
+            waitUntil { node.isScaleAnimationRunningForTest && node.animatedScaleForTest > 1f }
+
+            runOnIdle { contentKey = 1 }
+            waitForIdle()
+
+            assertEquals(1f, node.scale)
+            assertEquals(0f, node.zIndex)
+            assertEquals(1f, node.animatedScaleForTest)
+            assertFalse(node.isScaleAnimationRunningForTest)
+
+            runOnIdle {
+                node.updateStyle(testStyleScope(scale = 1.2f, animationSpec = slowSpec))
+            }
             assertTrue(node.isScaleAnimationRunningForTest)
         }
 }
