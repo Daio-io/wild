@@ -117,6 +117,70 @@ class StyleTraversalIntegrationTest {
         }
 
     @Test
+    fun dynamicAttachedEnabledAndSelectedStateChangesDispatchOnce() =
+        runComposeUiTest {
+            val recorder = StyleRecorder()
+            var enabled by mutableStateOf(true)
+            var selected by mutableStateOf(false)
+            var recompositionVersion by mutableStateOf(0)
+
+            setContent {
+                val recompositionVersionAtComposition = recompositionVersion
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(null, enabled = enabled, selected = selected) {
+                            color =
+                                if (recompositionVersionAtComposition < 0) {
+                                    Color.Black
+                                } else if (this.enabled && !this.selected) {
+                                    Color.Red
+                                } else {
+                                    Color.Blue
+                                }
+                        },
+                ) {
+                    Box(Modifier.size(1.dp).recordStyle(recorder))
+                }
+            }
+            waitForIdle()
+            val initialUpdates = recorder.snapshots.size
+            assertTrue(initialUpdates > 0)
+            assertTrue(recorder.last.enabled)
+            assertFalse(recorder.last.selected)
+
+            runOnIdle { enabled = false }
+            waitForIdle()
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
+            assertFalse(recorder.last.enabled)
+            assertFalse(recorder.last.selected)
+
+            runOnIdle {
+                enabled = false
+                recompositionVersion++
+            }
+            waitForIdle()
+            assertEquals(initialUpdates + 1, recorder.snapshots.size)
+            assertFalse(recorder.last.enabled)
+            assertFalse(recorder.last.selected)
+
+            runOnIdle { selected = true }
+            waitForIdle()
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
+            assertFalse(recorder.last.enabled)
+            assertTrue(recorder.last.selected)
+
+            runOnIdle {
+                selected = true
+                recompositionVersion++
+            }
+            waitForIdle()
+            assertEquals(initialUpdates + 2, recorder.snapshots.size)
+            assertFalse(recorder.last.enabled)
+            assertTrue(recorder.last.selected)
+        }
+
+    @Test
     fun effectiveStateChangesDispatchOnceAndRepeatedIdenticalStateDoesNotRedispatch() =
         runComposeUiTest {
             val source = MutableInteractionSource()
