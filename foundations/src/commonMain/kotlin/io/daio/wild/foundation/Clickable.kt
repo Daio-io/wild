@@ -25,6 +25,7 @@ import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
+import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.SemanticsModifierNode
@@ -316,8 +317,7 @@ private fun Modifier.handleTvInputIfRequired(
     onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
-) = this then PlatformFocusabilityElement(enabled) then
-    Modifier.focusable(enabled = true, interactionSource = interactionSource) then
+) = this then PlatformFocusableElement(enabled, interactionSource) then
     HardwareEnterKeyElement(
         enabled = enabled,
         interactionSource = interactionSource,
@@ -331,57 +331,85 @@ private fun Modifier.handleTvInputIfRequired(
         onClickLabel = onClickLabel,
     )
 
-private data class PlatformFocusabilityElement(
+private data class PlatformFocusableElement(
     val enabled: Boolean,
-) : ModifierNodeElement<PlatformFocusabilityNode>() {
-    override fun create(): PlatformFocusabilityNode = PlatformFocusabilityNode(enabled)
+    val interactionSource: MutableInteractionSource?,
+) : ModifierNodeElement<PlatformFocusableNode>() {
+    override fun create(): PlatformFocusableNode = PlatformFocusableNode(enabled, interactionSource)
 
-    override fun update(node: PlatformFocusabilityNode) {
-        node.update(enabled)
+    override fun update(node: PlatformFocusableNode) {
+        node.update(enabled, interactionSource)
     }
 
     override fun InspectorInfo.inspectableProperties() {
-        name = "platformFocusability"
+        name = "platformFocusable"
         properties["enabled"] = enabled
+        properties["interactionSource"] = interactionSource
     }
 }
 
 @OptIn(ExperimentalWildApi::class)
-private class PlatformFocusabilityNode(
+private class PlatformFocusableNode(
     private var enabled: Boolean,
-) : Modifier.Node(),
+    private var interactionSource: MutableInteractionSource?,
+) : DelegatingNode(),
     CompositionLocalConsumerModifierNode,
-    ObserverModifierNode,
-    FocusPropertiesModifierNode {
-    private var focusEnabled = false
+    ObserverModifierNode {
+    private var focusableElement = focusableNodeElement(interactionSource)
+    private val focusableNode = focusableElement.create()
+    private var focusableNodeDelegated = false
 
     override fun onAttach() {
-        updateFocusProperties()
+        updateFocusableDelegation()
     }
 
     override fun onObservedReadsChanged() {
-        updateFocusProperties()
+        updateFocusableDelegation()
     }
 
-    fun update(enabled: Boolean) {
+    fun update(
+        enabled: Boolean,
+        interactionSource: MutableInteractionSource?,
+    ) {
+        if (this.interactionSource !== interactionSource) {
+            this.interactionSource = interactionSource
+            focusableElement = focusableNodeElement(interactionSource)
+            focusableElement.update(focusableNode)
+        }
         if (this.enabled != enabled) {
             this.enabled = enabled
-            if (isAttached) updateFocusProperties()
+            if (isAttached) updateFocusableDelegation()
         }
     }
 
-    override fun applyFocusProperties(focusProperties: FocusProperties) {
-        focusProperties.canFocus = focusEnabled
-    }
-
-    private fun updateFocusProperties() {
+    private fun updateFocusableDelegation() {
         var requiresHardwareInput = false
         observeReads {
             requiresHardwareInput = currentValueOf(LocalPlatformInteractions).requiresHardwareInput
         }
-        focusEnabled = enabled || requiresHardwareInput
-        invalidateFocusProperties()
+        val shouldDelegate = enabled || requiresHardwareInput
+        if (shouldDelegate && !focusableNodeDelegated) {
+            delegate(focusableNode)
+            focusableNodeDelegated = true
+        } else if (!shouldDelegate && focusableNodeDelegated) {
+            undelegate(focusableNode)
+            focusableNodeDelegated = false
+        }
     }
+}
+
+// Compose 1.11.1 exposes focusable as one ordinary node element. Retain that complete node so its
+// pinning, focused-bounds, semantics, and interaction lifecycle can be conditionally delegated.
+@Suppress("UNCHECKED_CAST")
+private fun focusableNodeElement(interactionSource: MutableInteractionSource?): ModifierNodeElement<Modifier.Node> {
+    val element =
+        Modifier.focusable(enabled = true, interactionSource = interactionSource)
+            .foldIn<Modifier.Element?>(null) { previous, current ->
+                check(previous == null) { "Expected Modifier.focusable to contain one element" }
+                current
+            }
+    check(element is ModifierNodeElement<*>) { "Expected Modifier.focusable to use a modifier node" }
+    return element as ModifierNodeElement<Modifier.Node>
 }
 
 /**
