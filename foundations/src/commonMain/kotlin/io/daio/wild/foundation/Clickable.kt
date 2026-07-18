@@ -8,16 +8,18 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusEventModifierNode
+import androidx.compose.ui.focus.FocusProperties
+import androidx.compose.ui.focus.FocusPropertiesModifierNode
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.FocusTargetModifierNode
+import androidx.compose.ui.focus.Focusability
+import androidx.compose.ui.focus.invalidateFocusProperties
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
@@ -25,19 +27,24 @@ import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
+import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.ObserverModifierNode
+import androidx.compose.ui.node.SemanticsModifierNode
 import androidx.compose.ui.node.currentValueOf
+import androidx.compose.ui.node.invalidateSemantics
+import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.focused
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.requestFocus
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
-import io.daio.wild.modifier.thenIf
-import io.daio.wild.modifier.thenIfNotNull
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -314,82 +321,130 @@ private fun Modifier.handleTvInputIfRequired(
     onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
-) = this.composed {
-    val hardwareInputDevice = LocalPlatformInteractions.current.requiresHardwareInput
-    // On Tv we disable click actions but maintain focusable to ensure navigation through UI.
-    val focusEnabled = enabled || hardwareInputDevice
+) = this then PlatformFocusableElement(enabled, interactionSource) then
+    HardwareEnterKeyElement(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        observePlatformInteractions = true,
+        selected = selected,
+        role = role,
+        onLongClickLabel = onLongClickLabel,
+        onClickLabel = onClickLabel,
+    )
 
-    this.focusable(enabled = focusEnabled, interactionSource = interactionSource)
-        .thenIf(
-            condition = hardwareInputDevice,
-            ifTrueModifier =
-                Modifier.handleHardwareInputEnter(
-                    enabled = enabled,
-                    interactionSource = interactionSource,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    onDoubleClick = onDoubleClick,
-                ).hardwareSemantics(
-                    enabled = enabled,
-                    selected = selected,
-                    role = role,
-                    interactionSource = interactionSource,
-                    onLongClickLabel = onLongClickLabel,
-                    onLongClick = onLongClick,
-                    onClickLabel = onClickLabel,
-                    onClick = onClick,
-                ).focusProperties {
-                    // Since we already configure the node to be focusable we want to ensure any
-                    // modifiers applied after that create new focusable Nodes can not be focused.
-                    // This ensures the Composable can not be focused if the component itself has
-                    // canFocus disabled.
-                    canFocus = false
-                },
-        )
+private data class PlatformFocusableElement(
+    val enabled: Boolean,
+    val interactionSource: MutableInteractionSource?,
+) : ModifierNodeElement<PlatformFocusableNode>() {
+    override fun create(): PlatformFocusableNode = PlatformFocusableNode(enabled, interactionSource)
+
+    override fun update(node: PlatformFocusableNode) {
+        node.update(enabled, interactionSource)
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "platformFocusable"
+        properties["enabled"] = enabled
+        properties["interactionSource"] = interactionSource
+    }
 }
 
-private fun Modifier.hardwareSemantics(
-    enabled: Boolean,
-    role: Role?,
-    interactionSource: MutableInteractionSource?,
-    indication: Indication? = null,
-    selected: Boolean? = null,
-    onLongClickLabel: String? = null,
-    onLongClick: (() -> Unit)? = null,
-    onClickLabel: String? = null,
-    onClick: (() -> Unit)? = null,
-): Modifier =
-    this.semantics(mergeDescendants = true) {
-        if (selected != null) {
-            this.selected = selected
-        }
+@OptIn(ExperimentalWildApi::class)
+private class PlatformFocusableNode(
+    private var enabled: Boolean,
+    private var interactionSource: MutableInteractionSource?,
+) : DelegatingNode(),
+    CompositionLocalConsumerModifierNode,
+    ObserverModifierNode,
+    SemanticsModifierNode {
+    private val focusTarget =
+        delegate(
+            FocusTargetModifierNode(
+                focusability = Focusability.Never,
+                onFocusChange = ::onFocusChange,
+            ),
+        )
+    private var focusInteraction: FocusInteraction.Focus? = null
+    private var focusEnabled = false
 
-        if (role != null) {
-            this.role = role
+    override fun onAttach() {
+        updateFocusability()
+    }
+
+    override fun onObservedReadsChanged() {
+        updateFocusability()
+    }
+
+    fun update(
+        enabled: Boolean,
+        interactionSource: MutableInteractionSource?,
+    ) {
+        if (this.interactionSource !== interactionSource) {
+            disposeFocusInteraction()
+            this.interactionSource = interactionSource
+            if (focusTarget.focusState.isFocused) emitFocusInteraction()
         }
-        onClick(label = onClickLabel) {
-            onClick?.let { nnOnClick ->
-                nnOnClick()
-                return@onClick true
+        if (this.enabled != enabled) {
+            this.enabled = enabled
+            if (isAttached) updateFocusability()
+        }
+    }
+
+    override fun SemanticsPropertyReceiver.applySemantics() {
+        if (focusEnabled) {
+            focused = focusTarget.focusState.isFocused
+            requestFocus { focusTarget.requestFocus() }
+        }
+    }
+
+    override fun onDetach() {
+        disposeFocusInteraction()
+    }
+
+    private fun updateFocusability() {
+        var requiresHardwareInput = false
+        observeReads {
+            requiresHardwareInput = currentValueOf(LocalPlatformInteractions).requiresHardwareInput
+        }
+        focusEnabled = enabled || requiresHardwareInput
+        focusTarget.focusability =
+            if (focusEnabled) {
+                Focusability.Always
+            } else {
+                Focusability.Never
             }
-            false
+        invalidateSemantics()
+    }
+
+    private fun onFocusChange(
+        previous: FocusState,
+        current: FocusState,
+    ) {
+        if (previous.isFocused == current.isFocused) return
+        if (current.isFocused) {
+            emitFocusInteraction()
+        } else {
+            disposeFocusInteraction()
         }
-        onLongClick(label = onLongClickLabel) {
-            onLongClick?.let { nnOnLongClick ->
-                nnOnLongClick()
-                return@onLongClick true
-            }
-            false
+        invalidateSemantics()
+    }
+
+    private fun emitFocusInteraction() {
+        val interaction = FocusInteraction.Focus()
+        focusInteraction = interaction
+        coroutineScope.launch { interactionSource?.emit(interaction) }
+    }
+
+    private fun disposeFocusInteraction() {
+        focusInteraction?.let { interaction ->
+            interactionSource?.tryEmit(FocusInteraction.Unfocus(interaction))
         }
-        if (!enabled) {
-            disabled()
-        }
-    }.thenIfNotNull(
-        value = interactionSource,
-        ifNotNullModifier = { interactionSource ->
-            Modifier.indication(interactionSource, indication)
-        },
-    )
+        focusInteraction = null
+    }
+}
 
 /**
  * Modifier to set up handling of hardware input enter keys, such as Tv remote Dpad enter and
@@ -404,11 +459,11 @@ internal fun Modifier.handleHardwareInputEnter(
 ): Modifier =
     this then
         HardwareEnterKeyElement(
-            enabled,
-            interactionSource,
-            onClick,
-            onLongClick,
-            onDoubleClick,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            onClick = onClick,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
         )
 
 private data class HardwareEnterKeyElement(
@@ -417,6 +472,11 @@ private data class HardwareEnterKeyElement(
     val onClick: (() -> Unit)? = null,
     val onLongClick: (() -> Unit)? = null,
     val onDoubleClick: (() -> Unit)? = null,
+    val observePlatformInteractions: Boolean = false,
+    val selected: Boolean? = null,
+    val role: Role? = null,
+    val onLongClickLabel: String? = null,
+    val onClickLabel: String? = null,
 ) : ModifierNodeElement<HardwareEnterKeyEventNode>() {
     override fun create(): HardwareEnterKeyEventNode =
         HardwareEnterKeyEventNode(
@@ -425,6 +485,11 @@ private data class HardwareEnterKeyElement(
             onClick = onClick,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
+            observePlatformInteractions = observePlatformInteractions,
+            selected = selected,
+            role = role,
+            onLongClickLabel = onLongClickLabel,
+            onClickLabel = onClickLabel,
         )
 
     override fun update(node: HardwareEnterKeyEventNode) {
@@ -433,6 +498,12 @@ private data class HardwareEnterKeyElement(
         node.onClick = onClick
         node.onLongClick = onLongClick
         node.onDoubleClick = onDoubleClick
+        node.observePlatformInteractions = observePlatformInteractions
+        node.selected = selected
+        node.role = role
+        node.onLongClickLabel = onLongClickLabel
+        node.onClickLabel = onClickLabel
+        if (node.isAttached) node.updatePlatformConfiguration()
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -442,6 +513,11 @@ private data class HardwareEnterKeyElement(
         properties["onClick"] = onClick
         properties["onLongClick"] = onLongClick
         properties["onDoubleClick"] = onDoubleClick
+        properties["observePlatformInteractions"] = observePlatformInteractions
+        properties["selected"] = selected
+        properties["role"] = role
+        properties["onLongClickLabel"] = onLongClickLabel
+        properties["onClickLabel"] = onClickLabel
     }
 }
 
@@ -451,10 +527,18 @@ private class HardwareEnterKeyEventNode(
     var onLongClick: (() -> Unit)? = null,
     var onDoubleClick: (() -> Unit)? = null,
     var interactionSource: MutableInteractionSource?,
+    var observePlatformInteractions: Boolean = false,
+    var selected: Boolean? = null,
+    var role: Role? = null,
+    var onLongClickLabel: String? = null,
+    var onClickLabel: String? = null,
     var timeNow: () -> Instant = { Clock.System.now() },
 ) : KeyInputModifierNode,
     FocusEventModifierNode,
     CompositionLocalConsumerModifierNode,
+    ObserverModifierNode,
+    SemanticsModifierNode,
+    FocusPropertiesModifierNode,
     Modifier.Node() {
     private val pressInteraction = PressInteraction.Press(Offset.Zero)
     private var focusState: FocusState? = null
@@ -466,14 +550,58 @@ private class HardwareEnterKeyEventNode(
     private var awaitingSecondClick: Boolean = false
     private var doubleClickTimeoutJob: Job? = null
     private var doubleClickTimeout: Duration = 300.milliseconds
+    private var hardwareInputRequired: Boolean = !observePlatformInteractions
 
     override fun onAttach() {
-        doubleClickTimeout =
-            currentValueOf(LocalViewConfiguration).doubleTapTimeoutMillis.milliseconds
+        updatePlatformConfiguration()
+    }
+
+    override fun onObservedReadsChanged() {
+        updatePlatformConfiguration()
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    fun updatePlatformConfiguration() {
+        val previouslyRequiredHardwareInput = hardwareInputRequired
+        observeReads {
+            doubleClickTimeout =
+                currentValueOf(LocalViewConfiguration).doubleTapTimeoutMillis.milliseconds
+            hardwareInputRequired =
+                !observePlatformInteractions ||
+                currentValueOf(LocalPlatformInteractions).requiresHardwareInput
+        }
+        if (previouslyRequiredHardwareInput && !hardwareInputRequired && pressed) {
+            resetDoubleClick()
+            releasePressInteraction()
+        }
+        invalidateSemantics()
+        invalidateFocusProperties()
+    }
+
+    override fun applyFocusProperties(focusProperties: FocusProperties) {
+        if (hardwareInputRequired) {
+            focusProperties.canFocus = false
+        }
+    }
+
+    override fun SemanticsPropertyReceiver.applySemantics() {
+        if (!observePlatformInteractions || !hardwareInputRequired) return
+
+        this@HardwareEnterKeyEventNode.selected?.let { selected = it }
+        this@HardwareEnterKeyEventNode.role?.let { role = it }
+        onClick(label = onClickLabel) {
+            this@HardwareEnterKeyEventNode.onClick?.invoke()
+            this@HardwareEnterKeyEventNode.onClick != null
+        }
+        onLongClick(label = onLongClickLabel) {
+            this@HardwareEnterKeyEventNode.onLongClick?.invoke()
+            this@HardwareEnterKeyEventNode.onLongClick != null
+        }
+        if (!enabled) disabled()
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
+        if (hardwareInputRequired && HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
             when (event.type) {
                 KeyEventType.KeyDown -> {
                     when (event.repeatCount) {
