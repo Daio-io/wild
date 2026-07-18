@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.defaultScaleAnimationSpec
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 /**
@@ -65,8 +64,9 @@ internal class ScaleLayoutModifier(
 ) : LayoutModifierNode,
     Modifier.Node(),
     StyleScopeChildNode {
-    private val zIndexState = AnimationState(initialValue = zIndex)
-    private val scaleState = AnimationState(initialValue = scale)
+    private var scaleState = AnimationState(initialValue = scale)
+    internal val animatedScale: Float
+        get() = scaleState.value
 
     /**
      * Invalidation is handled by [updateScale]
@@ -75,6 +75,8 @@ internal class ScaleLayoutModifier(
         get() = false
 
     private var updateJob: Job? = null
+    internal val isScaleAnimationRunningForTest: Boolean
+        get() = updateJob?.isActive == true
     private val animationRequestCoalescer = ScaleAnimationRequestCoalescer()
 
     override fun onAttach() {
@@ -85,6 +87,7 @@ internal class ScaleLayoutModifier(
         updateJob?.cancel()
         updateJob = null
         animationRequestCoalescer.reset()
+        scaleState = AnimationState(initialValue = 1f)
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
@@ -120,39 +123,39 @@ internal class ScaleLayoutModifier(
         hovered: Boolean,
         animationSpec: AnimationSpec<Float>? = customAnimationSpec,
     ) {
-        val animationRequest =
-            scaleAnimationRequest(
+        this.scale = scale
+        if (this.zIndex != zIndex) {
+            this.zIndex = zIndex
+            invalidatePlacement()
+        }
+
+        if (
+            !animationRequestCoalescer.shouldAnimate(
                 scale = scale,
-                zIndex = zIndex,
                 animationSpec = animationSpec,
                 focused = focused,
                 pressed = pressed,
                 hovered = hovered,
             )
+        ) {
+            return
+        }
 
-        this.scale = scale
-        this.zIndex = zIndex
-
-        if (!animationRequestCoalescer.shouldAnimate(animationRequest)) return
+        val effectiveAnimationSpec =
+            animationSpec
+                ?: defaultScaleAnimationSpec(
+                    focused = focused,
+                    pressed = pressed,
+                    hovered = hovered,
+                )
 
         updateJob?.cancel()
         updateJob =
             coroutineScope.launch {
                 try {
-                    joinAll(
-                        launch { zIndexState.animateTo(zIndex) },
-                        launch {
-                            scaleState.animateTo(
-                                targetValue = scale,
-                                animationSpec =
-                                    animationSpec
-                                        ?: defaultScaleAnimationSpec(
-                                            focused = focused,
-                                            pressed = pressed,
-                                            hovered = hovered,
-                                        ),
-                            )
-                        },
+                    scaleState.animateTo(
+                        targetValue = scale,
+                        animationSpec = effectiveAnimationSpec,
                     )
                 } finally {
                     invalidatePlacement()
@@ -167,9 +170,8 @@ internal class ScaleLayoutModifier(
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
             val animatedScale = scaleState.value
-            val animatedZIndex = zIndexState.value
-            if (needsScaleLayer(animatedScale, animatedZIndex)) {
-                placeable.placeWithLayer(0, 0, zIndex = animatedZIndex) {
+            if (needsScaleLayer(animatedScale, zIndex)) {
+                placeable.placeWithLayer(0, 0, zIndex = zIndex) {
                     scaleX = animatedScale
                     scaleY = animatedScale
                 }
@@ -198,63 +200,75 @@ internal fun needsScaleLayer(
     zIndex: Float,
 ): Boolean = animatedScale != 1f || zIndex != 0f
 
-internal data class ScaleAnimationRequest(
-    val scale: Float,
-    val zIndex: Float,
-    val animationSpecKey: ScaleAnimationSpecKey,
-)
-
-internal data class ScaleAnimationSpecKey(
-    val animationSpec: AnimationSpec<Float>,
-)
+internal enum class ScaleDefaultAnimationSpecKind {
+    Pressed,
+    Resting,
+}
 
 internal class ScaleAnimationRequestCoalescer {
-    private var lastAnimationRequest: ScaleAnimationRequest? = null
+    private var lastScale: Float? = null
+    private var lastCustomAnimationSpec: AnimationSpec<Float>? = null
+    private var lastDefaultAnimationSpecKind: ScaleDefaultAnimationSpecKind? = null
 
-    fun shouldAnimate(animationRequest: ScaleAnimationRequest): Boolean {
-        if (animationRequest == lastAnimationRequest) return false
+    fun shouldAnimate(
+        scale: Float,
+        animationSpec: AnimationSpec<Float>? = null,
+        focused: Boolean = false,
+        pressed: Boolean = false,
+        hovered: Boolean = false,
+    ): Boolean {
+        val defaultAnimationSpecKind =
+            defaultAnimationSpecKind(
+                pressed = pressed,
+                focused = focused,
+                hovered = hovered,
+            )
+        val shouldAnimate =
+            lastScale == null ||
+                scale != lastScale ||
+                hasAnimationSpecChanged(
+                    animationSpec = animationSpec,
+                    defaultAnimationSpecKind = defaultAnimationSpecKind,
+                )
 
-        lastAnimationRequest = animationRequest
-        return true
+        lastScale = scale
+        lastCustomAnimationSpec = animationSpec
+        lastDefaultAnimationSpecKind =
+            if (animationSpec == null) {
+                defaultAnimationSpecKind
+            } else {
+                null
+            }
+
+        return shouldAnimate
     }
 
     fun reset() {
-        lastAnimationRequest = null
+        lastScale = null
+        lastCustomAnimationSpec = null
+        lastDefaultAnimationSpecKind = null
     }
+
+    private fun hasAnimationSpecChanged(
+        animationSpec: AnimationSpec<Float>?,
+        defaultAnimationSpecKind: ScaleDefaultAnimationSpecKind,
+    ): Boolean =
+        when {
+            animationSpec != null && lastCustomAnimationSpec != null ->
+                animationSpec !== lastCustomAnimationSpec && animationSpec != lastCustomAnimationSpec
+            animationSpec == null && lastCustomAnimationSpec == null ->
+                defaultAnimationSpecKind != lastDefaultAnimationSpecKind
+            else -> true
+        }
+
+    private fun defaultAnimationSpecKind(
+        pressed: Boolean,
+        focused: Boolean,
+        hovered: Boolean,
+    ): ScaleDefaultAnimationSpecKind =
+        when {
+            pressed -> ScaleDefaultAnimationSpecKind.Pressed
+            focused || hovered -> ScaleDefaultAnimationSpecKind.Resting
+            else -> ScaleDefaultAnimationSpecKind.Resting
+        }
 }
-
-internal fun scaleAnimationRequest(
-    scale: Float,
-    zIndex: Float,
-    animationSpec: AnimationSpec<Float>?,
-    focused: Boolean,
-    pressed: Boolean,
-    hovered: Boolean,
-): ScaleAnimationRequest =
-    ScaleAnimationRequest(
-        scale = scale,
-        zIndex = zIndex,
-        animationSpecKey =
-            scaleAnimationSpecKey(
-                animationSpec = animationSpec,
-                focused = focused,
-                pressed = pressed,
-                hovered = hovered,
-            ),
-    )
-
-internal fun scaleAnimationSpecKey(
-    animationSpec: AnimationSpec<Float>?,
-    focused: Boolean,
-    pressed: Boolean,
-    hovered: Boolean,
-): ScaleAnimationSpecKey =
-    ScaleAnimationSpecKey(
-        animationSpec =
-            animationSpec
-                ?: defaultScaleAnimationSpec(
-                    focused = focused,
-                    pressed = pressed,
-                    hovered = hovered,
-                ),
-    )
