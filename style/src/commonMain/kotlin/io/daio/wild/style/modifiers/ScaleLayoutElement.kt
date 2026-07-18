@@ -65,7 +65,7 @@ internal class ScaleLayoutModifier(
     Modifier.Node(),
     StyleScopeChildNode {
     private var scaleState = AnimationState(initialValue = scale)
-    internal val animatedScaleForTest: Float
+    internal val animatedScale: Float
         get() = scaleState.value
 
     /**

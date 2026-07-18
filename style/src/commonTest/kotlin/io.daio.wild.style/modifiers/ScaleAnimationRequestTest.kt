@@ -225,7 +225,7 @@ class ScaleAnimationRequestTest {
                     ),
                 )
             }
-            waitUntil { node.isScaleAnimationRunningForTest && node.animatedScaleForTest > 1f }
+            waitUntil { node.isScaleAnimationRunningForTest && node.animatedScale > 1f }
 
             runOnIdle {
                 node.onReset()
@@ -235,7 +235,7 @@ class ScaleAnimationRequestTest {
             assertFalse(node.isScaleAnimationRunningForTest)
             assertEquals(1f, node.scale)
             assertEquals(0f, node.zIndex)
-            assertEquals(1f, node.animatedScaleForTest)
+            assertEquals(1f, node.animatedScale)
 
             runOnIdle {
                 node.updateStyle(
@@ -271,14 +271,14 @@ class ScaleAnimationRequestTest {
             runOnIdle {
                 node.updateStyle(testStyleScope(scale = 1.2f, animationSpec = slowSpec))
             }
-            waitUntil { node.isScaleAnimationRunningForTest && node.animatedScaleForTest > 1f }
+            waitUntil { node.isScaleAnimationRunningForTest && node.animatedScale > 1f }
 
             runOnIdle { contentKey = 1 }
             waitForIdle()
 
             assertEquals(1f, node.scale)
             assertEquals(0f, node.zIndex)
-            assertEquals(1f, node.animatedScaleForTest)
+            assertEquals(1f, node.animatedScale)
             assertFalse(node.isScaleAnimationRunningForTest)
 
             runOnIdle {
