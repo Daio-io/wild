@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -101,6 +102,32 @@ class ClickableFastPathTest {
 
             onNodeWithTag(TARGET_TAG).assertIsFocused().performClick()
             runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
+    fun disabledNonHardwareClickableHasNoFocusSemantics() =
+        runComposeUiTest {
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = false),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .clickable(
+                                    enabled = false,
+                                    interactionSource = MutableInteractionSource(),
+                                    onClick = {},
+                                ).testTag(TARGET_TAG),
+                    )
+                }
+            }
+
+            val semantics = onNodeWithTag(TARGET_TAG).assertIsNotEnabled().fetchSemanticsNode().config
+
+            assertFalse(semantics.contains(SemanticsProperties.Focused))
+            assertFalse(semantics.contains(SemanticsActions.RequestFocus))
         }
 
     @Test
