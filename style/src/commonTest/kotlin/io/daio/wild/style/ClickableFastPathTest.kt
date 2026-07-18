@@ -5,18 +5,22 @@
 package io.daio.wild.style
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.materialize
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.unit.dp
 import io.daio.wild.style.modifiers.InteractionSourceElement
 import io.daio.wild.style.modifiers.StyleRecorder
 import io.daio.wild.style.modifiers.recordStyle
@@ -115,7 +119,7 @@ class ClickableFastPathTest {
         }
 
     @Test
-    fun injectedSourceDrivesStyleObservation() =
+    fun focusInputThroughInjectedSourceDrivesStyleObservation() =
         runComposeUiTest {
             val source = MutableInteractionSource()
             val recorder = StyleRecorder()
@@ -124,20 +128,25 @@ class ClickableFastPathTest {
                 Box(
                     modifier =
                         Modifier
+                            .size(10.dp)
                             .clickable(
                                 interactionSource = source,
                                 style = StyleDefaults.None,
                                 onClick = {},
-                            ).recordStyle(recorder),
+                            ).recordStyle(recorder)
+                            .testTag(TARGET_TAG),
                 )
             }
 
-            runOnIdle {
-                assertTrue(source.tryEmit(PressInteraction.Press(Offset.Zero)))
-            }
-            runOnIdle { assertTrue(recorder.last.pressed) }
+            onNodeWithTag(TARGET_TAG)
+                .performSemanticsAction(SemanticsActions.RequestFocus)
+            waitForIdle()
+
+            runOnIdle { assertTrue(recorder.last.focused) }
         }
 }
+
+private const val TARGET_TAG = "target"
 
 private data object ReceiverMarker : Modifier.Element
 

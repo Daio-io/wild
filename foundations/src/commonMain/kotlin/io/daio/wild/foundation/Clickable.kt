@@ -8,7 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.selection.selectable
@@ -17,8 +17,6 @@ import androidx.compose.ui.focus.FocusEventModifierNode
 import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusPropertiesModifierNode
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.FocusTargetModifierNode
-import androidx.compose.ui.focus.Focusability
 import androidx.compose.ui.focus.invalidateFocusProperties
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.KeyEvent
@@ -27,7 +25,6 @@ import androidx.compose.ui.input.key.KeyInputModifierNode
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
-import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.SemanticsModifierNode
@@ -39,10 +36,8 @@ import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.disabled
-import androidx.compose.ui.semantics.focused
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.onLongClick
-import androidx.compose.ui.semantics.requestFocus
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import kotlinx.coroutines.Job
@@ -321,7 +316,8 @@ private fun Modifier.handleTvInputIfRequired(
     onDoubleClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
     onClick: (() -> Unit),
-) = this then PlatformFocusableElement(enabled, interactionSource) then
+) = this then PlatformFocusabilityElement(enabled) then
+    Modifier.focusable(enabled = true, interactionSource = interactionSource) then
     HardwareEnterKeyElement(
         enabled = enabled,
         interactionSource = interactionSource,
@@ -335,114 +331,56 @@ private fun Modifier.handleTvInputIfRequired(
         onClickLabel = onClickLabel,
     )
 
-private data class PlatformFocusableElement(
+private data class PlatformFocusabilityElement(
     val enabled: Boolean,
-    val interactionSource: MutableInteractionSource?,
-) : ModifierNodeElement<PlatformFocusableNode>() {
-    override fun create(): PlatformFocusableNode = PlatformFocusableNode(enabled, interactionSource)
+) : ModifierNodeElement<PlatformFocusabilityNode>() {
+    override fun create(): PlatformFocusabilityNode = PlatformFocusabilityNode(enabled)
 
-    override fun update(node: PlatformFocusableNode) {
-        node.update(enabled, interactionSource)
+    override fun update(node: PlatformFocusabilityNode) {
+        node.update(enabled)
     }
 
     override fun InspectorInfo.inspectableProperties() {
-        name = "platformFocusable"
+        name = "platformFocusability"
         properties["enabled"] = enabled
-        properties["interactionSource"] = interactionSource
     }
 }
 
 @OptIn(ExperimentalWildApi::class)
-private class PlatformFocusableNode(
+private class PlatformFocusabilityNode(
     private var enabled: Boolean,
-    private var interactionSource: MutableInteractionSource?,
-) : DelegatingNode(),
+) : Modifier.Node(),
     CompositionLocalConsumerModifierNode,
     ObserverModifierNode,
-    SemanticsModifierNode {
-    private val focusTarget =
-        delegate(
-            FocusTargetModifierNode(
-                focusability = Focusability.Never,
-                onFocusChange = ::onFocusChange,
-            ),
-        )
-    private var focusInteraction: FocusInteraction.Focus? = null
+    FocusPropertiesModifierNode {
     private var focusEnabled = false
 
     override fun onAttach() {
-        updateFocusability()
+        updateFocusProperties()
     }
 
     override fun onObservedReadsChanged() {
-        updateFocusability()
+        updateFocusProperties()
     }
 
-    fun update(
-        enabled: Boolean,
-        interactionSource: MutableInteractionSource?,
-    ) {
-        if (this.interactionSource !== interactionSource) {
-            disposeFocusInteraction()
-            this.interactionSource = interactionSource
-            if (focusTarget.focusState.isFocused) emitFocusInteraction()
-        }
+    fun update(enabled: Boolean) {
         if (this.enabled != enabled) {
             this.enabled = enabled
-            if (isAttached) updateFocusability()
+            if (isAttached) updateFocusProperties()
         }
     }
 
-    override fun SemanticsPropertyReceiver.applySemantics() {
-        if (focusEnabled) {
-            focused = focusTarget.focusState.isFocused
-            requestFocus { focusTarget.requestFocus() }
-        }
+    override fun applyFocusProperties(focusProperties: FocusProperties) {
+        focusProperties.canFocus = focusEnabled
     }
 
-    override fun onDetach() {
-        disposeFocusInteraction()
-    }
-
-    private fun updateFocusability() {
+    private fun updateFocusProperties() {
         var requiresHardwareInput = false
         observeReads {
             requiresHardwareInput = currentValueOf(LocalPlatformInteractions).requiresHardwareInput
         }
         focusEnabled = enabled || requiresHardwareInput
-        focusTarget.focusability =
-            if (focusEnabled) {
-                Focusability.Always
-            } else {
-                Focusability.Never
-            }
-        invalidateSemantics()
-    }
-
-    private fun onFocusChange(
-        previous: FocusState,
-        current: FocusState,
-    ) {
-        if (previous.isFocused == current.isFocused) return
-        if (current.isFocused) {
-            emitFocusInteraction()
-        } else {
-            disposeFocusInteraction()
-        }
-        invalidateSemantics()
-    }
-
-    private fun emitFocusInteraction() {
-        val interaction = FocusInteraction.Focus()
-        focusInteraction = interaction
-        coroutineScope.launch { interactionSource?.emit(interaction) }
-    }
-
-    private fun disposeFocusInteraction() {
-        focusInteraction?.let { interaction ->
-            interactionSource?.tryEmit(FocusInteraction.Unfocus(interaction))
-        }
-        focusInteraction = null
+        invalidateFocusProperties()
     }
 }
 
