@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.foundation
 
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -97,6 +101,91 @@ class ClickableFastPathTest {
 
             onNodeWithTag(TARGET_TAG).assertIsFocused().performClick()
             runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
+    fun focusedLazyItemRemainsPinnedWhenScrolledOutOfView() =
+        runComposeUiTest {
+            var scrollToItem by mutableStateOf(0)
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    val state = rememberLazyListState()
+                    LazyColumn(
+                        modifier = Modifier.size(width = 100.dp, height = 30.dp),
+                        state = state,
+                    ) {
+                        items(30) { index ->
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(width = 100.dp, height = 10.dp)
+                                        .clickable(
+                                            interactionSource = MutableInteractionSource(),
+                                            onClick = {},
+                                        ).testTag("item-$index"),
+                            )
+                        }
+                    }
+                    LaunchedEffect(scrollToItem) {
+                        if (scrollToItem > 0) state.scrollToItem(scrollToItem)
+                    }
+                }
+            }
+
+            onNodeWithTag("item-0")
+                .performSemanticsAction(SemanticsActions.RequestFocus)
+                .assertIsFocused()
+            runOnIdle { scrollToItem = 20 }
+            waitForIdle()
+
+            onNodeWithTag("item-0").assertIsFocused()
+        }
+
+    @Test
+    fun replacingSourceWhileFocusedBalancesOnlyTheOldSource() =
+        runComposeUiTest {
+            val firstSource = MutableInteractionSource()
+            val secondSource = MutableInteractionSource()
+            val firstInteractions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val secondInteractions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val requester = FocusRequester()
+            var source by mutableStateOf(firstSource)
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .clickable(interactionSource = source, onClick = {})
+                                .testTag(TARGET_TAG),
+                    )
+                    LaunchedEffect(requester) { requester.requestFocus() }
+                    LaunchedEffect(firstSource) {
+                        firstSource.interactions.collect { firstInteractions += it }
+                    }
+                    LaunchedEffect(secondSource) {
+                        secondSource.interactions.collect { secondInteractions += it }
+                    }
+                }
+            }
+
+            waitUntil { firstInteractions.any { it is FocusInteraction.Focus } }
+            runOnIdle { source = secondSource }
+            waitForIdle()
+
+            runOnIdle {
+                val focus = firstInteractions.filterIsInstance<FocusInteraction.Focus>().single()
+                val unfocus = firstInteractions.filterIsInstance<FocusInteraction.Unfocus>().single()
+                assertSame(focus, unfocus.focus)
+                assertTrue(secondInteractions.none { it is FocusInteraction })
+            }
         }
 
     @Test
