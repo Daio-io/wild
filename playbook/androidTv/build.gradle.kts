@@ -11,6 +11,8 @@ dependencies {
     implementation(compose.foundation)
     implementation(projects.layout.container)
     implementation(projects.components.button)
+
+    testImplementation(libs.junit)
 }
 
 android {
