@@ -7,9 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.semantics.Role
-import io.daio.wild.foundation.clickable
-import io.daio.wild.foundation.selectable
 import io.daio.wild.modifier.thenIfNotNull
+import io.daio.wild.foundation.clickable as foundationClickable
+import io.daio.wild.foundation.selectable as foundationSelectable
 
 /**
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
@@ -207,24 +207,17 @@ fun Modifier.clickable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Modifier.clickable(
-        enabled = enabled,
-        interactionSource = interactionSource,
-        role = role,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-    ).thenIfNotNull(
-        style,
-        ifNotNullModifier = {
-            Modifier.interactionStyle(interactionSource, enabled, style = it)
-        },
-    )
-}
+): Modifier =
+    if (interactionSource != null) {
+        clickableWithStyle(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            clickableWithStyle(enabled, rememberedInteractionSource, style, role, onLongClick, onDoubleClick, onClick)
+        }
+    }
 
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
@@ -256,24 +249,25 @@ fun Modifier.experimentalClickable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Modifier.clickable(
-        enabled = enabled,
-        interactionSource = interactionSource,
-        role = role,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-    ).thenIfNotNull(
-        style,
-        ifNotNullModifier = {
-            Modifier.experimentalInteractionStyle(interactionSource, enabled, style = it)
-        },
-    )
-}
+): Modifier =
+    if (interactionSource != null) {
+        experimentalClickableWithStyle(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            experimentalClickableWithStyle(
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
+            )
+        }
+    }
 
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
@@ -304,24 +298,25 @@ fun Modifier.experimentalClickable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Modifier.clickable(
-        enabled = enabled,
-        interactionSource = interactionSource,
-        role = role,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-    ).thenIfNotNull(
-        style,
-        ifNotNullModifier = {
-            Modifier.experimentalInteractionStyle(interactionSource, enabled, block = it)
-        },
-    )
-}
+): Modifier =
+    if (interactionSource != null) {
+        experimentalClickableWithStyle(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            experimentalClickableWithStyle(
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
+            )
+        }
+    }
 
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
@@ -350,30 +345,26 @@ fun Modifier.selectable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Modifier.selectable(
-        selected = selected,
-        enabled = enabled,
-        interactionSource = interactionSource,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-        role = role,
-        onClick = onClick,
-    ).thenIfNotNull(
-        value = style,
-        ifNotNullModifier = {
-            Modifier.interactionStyle(
-                style = it,
-                interactionSource = interactionSource,
-                enabled = enabled,
-                selected = selected,
+): Modifier =
+    if (interactionSource != null) {
+        selectableWithStyle(selected, enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            selectableWithStyle(
+                selected,
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
             )
-        },
-    )
-}
+        }
+    }
 
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
@@ -407,11 +398,107 @@ fun Modifier.experimentalSelectable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+): Modifier =
+    if (interactionSource != null) {
+        experimentalSelectableWithStyle(
+            selected,
+            enabled,
+            interactionSource,
+            style,
+            role,
+            onLongClick,
+            onDoubleClick,
+            onClick,
+        )
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            experimentalSelectableWithStyle(
+                selected,
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
+            )
+        }
+    }
 
-    Modifier.selectable(
+private fun Modifier.clickableWithStyle(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: Style?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationClickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.interactionStyle(interactionSource, enabled, style = it)
+    })
+
+private fun Modifier.experimentalClickableWithStyle(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: Style?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationClickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.experimentalInteractionStyle(interactionSource, enabled, style = it)
+    })
+
+private fun Modifier.experimentalClickableWithStyle(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: (StyleScope.() -> Unit)?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationClickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.experimentalInteractionStyle(interactionSource, enabled, block = it)
+    })
+
+private fun Modifier.selectableWithStyle(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: Style?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationSelectable(
         selected = selected,
         enabled = enabled,
         interactionSource = interactionSource,
@@ -419,18 +506,68 @@ fun Modifier.experimentalSelectable(
         onDoubleClick = onDoubleClick,
         role = role,
         onClick = onClick,
-    ).thenIfNotNull(
-        value = style,
-        ifNotNullModifier = {
-            Modifier.experimentalInteractionStyle(
-                style = it,
-                interactionSource = interactionSource,
-                enabled = enabled,
-                selected = selected,
-            )
-        },
-    )
-}
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.interactionStyle(
+            style = it,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            selected = selected,
+        )
+    })
+
+private fun Modifier.experimentalSelectableWithStyle(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: Style?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationSelectable(
+        selected = selected,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        role = role,
+        onClick = onClick,
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.experimentalInteractionStyle(
+            style = it,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            selected = selected,
+        )
+    })
+
+private fun Modifier.experimentalSelectableWithStyle(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: (StyleScope.() -> Unit)?,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationSelectable(
+        selected = selected,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        role = role,
+        onClick = onClick,
+    ).thenIfNotNull(style, ifNotNullModifier = {
+        Modifier.experimentalInteractionStyle(
+            block = it,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            selected = selected,
+        )
+    })
 
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
@@ -462,27 +599,32 @@ fun Modifier.experimentalSelectable(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
-) = composed {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Modifier.selectable(
-        selected = selected,
-        enabled = enabled,
-        interactionSource = interactionSource,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-        role = role,
-        onClick = onClick,
-    ).thenIfNotNull(
-        value = style,
-        ifNotNullModifier = {
-            Modifier.experimentalInteractionStyle(
-                block = it,
-                interactionSource = interactionSource,
-                enabled = enabled,
-                selected = selected,
+): Modifier =
+    if (interactionSource != null) {
+        experimentalSelectableWithStyle(
+            selected,
+            enabled,
+            interactionSource,
+            style,
+            role,
+            onLongClick,
+            onDoubleClick,
+            onClick,
+        )
+    } else {
+        // Compatibility path for callers relying on the nullable-source API. Keep one source for
+        // the lifetime of this modifier instance and share it between input and style observation.
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            experimentalSelectableWithStyle(
+                selected,
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
             )
-        },
-    )
-}
+        }
+    }

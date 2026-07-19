@@ -1,5 +1,7 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
+@file:OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+
 plugins {
     id("io.daio.compose")
     id("io.daio.android.library")
@@ -19,6 +21,14 @@ kotlin {
             dependencies {
                 implementation(compose.foundation)
                 implementation(projects.modifier)
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(compose.uiTest)
+                implementation(compose.desktop.currentOs)
             }
         }
     }
