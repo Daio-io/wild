@@ -11,6 +11,7 @@ dokka = "2.2.0"
 ktlint = "1.0.1"
 kotlin = "2.4.10"
 roborazzi = "1.69.0"
+robolectric = "4.16"
 spotless = "8.8.0"
 tv-foundation = "1.0.0"
 tv-material = "1.1.0"
@@ -41,6 +42,7 @@ ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version = "0.6.3" }
 tools-desugarjdklibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }

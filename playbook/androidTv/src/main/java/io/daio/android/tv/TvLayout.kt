@@ -88,7 +88,9 @@ internal fun benchmarkStyleVariant(extraValue: String): StyleVariant =
     StyleVariant.entries.firstOrNull { it.extraValue == extraValue } ?: StyleVariant.Container
 
 @Stable
-internal class BenchmarkRecompositionDriver {
+internal class BenchmarkRecompositionDriver(
+    internal val runtimeObserver: BenchmarkItemRuntimeObserver? = null,
+) {
     private val generationState = mutableIntStateOf(0)
     private val appliedGenerationState = mutableIntStateOf(0)
 
@@ -104,6 +106,30 @@ internal class BenchmarkRecompositionDriver {
         if (generation > appliedGenerationState.intValue) {
             appliedGenerationState.intValue = generation
         }
+    }
+}
+
+internal data class BenchmarkItemAppliedComposition(
+    val generation: Int,
+    val receiverModifier: Modifier,
+    val onClick: () -> Unit,
+    val style: Style,
+    val interactionSourceStrategy: BenchmarkInteractionSourceStrategy,
+    val interactionSource: MutableInteractionSource?,
+    val clickableModifier: Modifier,
+    val markerBefore: String,
+    val markerAfter: String,
+)
+
+@Stable
+internal class BenchmarkItemRuntimeObserver {
+    private val mutableAppliedCompositions = mutableListOf<BenchmarkItemAppliedComposition>()
+
+    val appliedCompositions: List<BenchmarkItemAppliedComposition>
+        get() = mutableAppliedCompositions
+
+    internal fun recordApplied(composition: BenchmarkItemAppliedComposition) {
+        mutableAppliedCompositions += composition
     }
 }
 
@@ -197,6 +223,29 @@ private fun BenchmarkLayout(
         "list" -> OptionsList(variant, modifier, recompositionDriver)
         "grid" -> OptionsGrid(variant, modifier, recompositionDriver)
     }
+}
+
+@Composable
+internal fun BenchmarkSourcePathItem(
+    variant: StyleVariant,
+    recompositionDriver: BenchmarkRecompositionDriver,
+    modifier: Modifier = Modifier,
+) {
+    require(variant.implementation == BenchmarkItemImplementation.StyledClickable)
+    val config = remember { BenchmarkItemConfig() }
+    val style = remember(config) { config.style }
+    val onClick = remember { {} }
+
+    BenchmarkItem(
+        variant = variant,
+        title = variant.benchmarkTitle,
+        style = style,
+        config = config,
+        marker = "benchmark-source-path-probe",
+        recompositionDriver = recompositionDriver,
+        onClick = onClick,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -307,26 +356,51 @@ private fun StyledClickableItem(
     recompositionDriver: BenchmarkRecompositionDriver?,
     modifier: Modifier = Modifier,
 ) {
-    if (recompositionDriver != null) {
-        // The stable driver parameter does not change. Reading its snapshot state invalidates this
-        // scope directly while every clickable argument remains unchanged, and SideEffect publishes
-        // completion only after the successful composition has been applied.
-        val recompositionGeneration = recompositionDriver.generation
-        SideEffect { recompositionDriver.acknowledgeApplied(recompositionGeneration) }
-    }
+    // The stable driver parameter does not change. Reading its snapshot state invalidates this
+    // scope directly while every clickable argument remains unchanged.
+    val recompositionGeneration = recompositionDriver?.generation
 
     val interactionSource =
         when (interactionSourceStrategy) {
             BenchmarkInteractionSourceStrategy.Explicit -> remember { MutableInteractionSource() }
             BenchmarkInteractionSourceStrategy.NullCompatibility -> null
         }
+    val clickableModifier =
+        modifier.clickable(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            style = style,
+        )
+    val runtimeObserver = recompositionDriver?.runtimeObserver
+
+    if (recompositionDriver != null && recompositionGeneration != null) {
+        if (runtimeObserver == null) {
+            SideEffect { recompositionDriver.acknowledgeApplied(recompositionGeneration) }
+        } else {
+            // Observer-only values stay out of the measured null-observer path. The detailed record
+            // is published after this successful test-probe composition has been applied.
+            SideEffect {
+                val markerBefore = recompositionDriver.marker
+                recompositionDriver.acknowledgeApplied(recompositionGeneration)
+                runtimeObserver.recordApplied(
+                    BenchmarkItemAppliedComposition(
+                        generation = recompositionGeneration,
+                        receiverModifier = modifier,
+                        onClick = onClick,
+                        style = style,
+                        interactionSourceStrategy = interactionSourceStrategy,
+                        interactionSource = interactionSource,
+                        clickableModifier = clickableModifier,
+                        markerBefore = markerBefore,
+                        markerAfter = recompositionDriver.marker,
+                    ),
+                )
+            }
+        }
+    }
+
     Box(
-        modifier =
-            modifier.clickable(
-                onClick = onClick,
-                interactionSource = interactionSource,
-                style = style,
-            ),
+        modifier = clickableModifier,
     ) {
         BenchmarkItemText(title)
     }

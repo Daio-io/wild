@@ -13,6 +13,9 @@ dependencies {
     implementation(projects.components.button)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
 }
 
 android {
@@ -23,6 +26,23 @@ android {
         versionName = "1.0.0"
         applicationId = "io.daio.wild.playbook.tv"
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+        unitTests.all {
+            val configuredLocalRepository = System.getProperty("maven.repo.local")
+            val resolvedLocalRepository =
+                configuredLocalRepository
+                    ?.takeUnless { path -> path.isBlank() || "\${user.home}" in path }
+                    ?: "${System.getProperty("user.home")}/.m2/repository"
+            it.systemProperty(
+                "maven.repo.local",
+                resolvedLocalRepository,
+            )
+        }
     }
 
     buildTypes {
