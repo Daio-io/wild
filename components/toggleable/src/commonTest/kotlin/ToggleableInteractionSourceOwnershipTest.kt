@@ -91,11 +91,11 @@ class ToggleableInteractionSourceOwnershipTest {
             }
 
             runOnIdle {
-                ownedSources += compositionData.directlyOwnedInteractionSources().single()
+                ownedSources += compositionData.ownedInteractionSources().single()
                 generation.intValue++
             }
             runOnIdle {
-                val sources = compositionData.directlyOwnedInteractionSources()
+                val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
                 assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
@@ -122,11 +122,11 @@ class ToggleableInteractionSourceOwnershipTest {
             }
 
             runOnIdle {
-                ownedSources += compositionData.directlyOwnedInteractionSources().single()
+                ownedSources += compositionData.ownedInteractionSources().single()
                 generation.intValue++
             }
             runOnIdle {
-                val sources = compositionData.directlyOwnedInteractionSources()
+                val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size)
                 assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
@@ -153,7 +153,7 @@ class ToggleableInteractionSourceOwnershipTest {
 
             runOnIdle {
                 assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
-                assertSame(source, compositionData.directlyOwnedInteractionSources().single())
+                assertSame(source, compositionData.ownedInteractionSources().single())
             }
         }
 
@@ -235,12 +235,22 @@ private class RecordingMutableInteractionSource : MutableInteractionSource {
     }
 }
 
-private fun CompositionData.directlyOwnedInteractionSources(): List<MutableInteractionSource> =
+private fun CompositionData.ownedInteractionSources(): List<MutableInteractionSource> =
     firstSourceOwnerGroup()
-        ?.compositionGroups
-        ?.flatMap { group -> group.data.filterIsInstance<MutableInteractionSource>() }
-        ?.distinct()
+        ?.allInteractionSources()
         .orEmpty()
+
+private fun CompositionGroup.allInteractionSources(): List<MutableInteractionSource> =
+    mutableListOf<MutableInteractionSource>().also(::collectInteractionSources)
+
+private fun CompositionGroup.collectInteractionSources(sources: MutableList<MutableInteractionSource>) {
+    data.filterIsInstance<MutableInteractionSource>().forEach { source ->
+        if (sources.none { it === source }) {
+            sources += source
+        }
+    }
+    compositionGroups.forEach { group -> group.collectInteractionSources(sources) }
+}
 
 private fun CompositionData.firstSourceOwnerGroup(): CompositionGroup? =
     compositionGroups.firstNotNullOfOrNull { group ->

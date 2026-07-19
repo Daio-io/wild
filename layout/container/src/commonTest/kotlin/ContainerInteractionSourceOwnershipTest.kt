@@ -72,11 +72,11 @@ class ContainerInteractionSourceOwnershipTest {
             }
 
             runOnIdle {
-                ownedSources += compositionData.firstDirectlyOwnedInteractionSources().single()
+                ownedSources += compositionData.ownedInteractionSources().single()
                 generation.intValue++
             }
             runOnIdle {
-                val sources = compositionData.firstDirectlyOwnedInteractionSources()
+                val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
                 assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
@@ -104,7 +104,7 @@ class ContainerInteractionSourceOwnershipTest {
             onNodeWithTag("container").performClick()
             runOnIdle {
                 assertEquals(1, clickCount)
-                assertSame(source, compositionData.firstDirectlyOwnedInteractionSources().single())
+                assertSame(source, compositionData.ownedInteractionSources().single())
             }
         }
 }
@@ -121,12 +121,22 @@ private fun focusedContentStyle() =
             ),
     )
 
-private fun CompositionData.firstDirectlyOwnedInteractionSources(): List<MutableInteractionSource> =
+private fun CompositionData.ownedInteractionSources(): List<MutableInteractionSource> =
     firstSourceOwnerGroup()
-        ?.compositionGroups
-        ?.flatMap { group -> group.data.filterIsInstance<MutableInteractionSource>() }
-        ?.distinct()
+        ?.allInteractionSources()
         .orEmpty()
+
+private fun CompositionGroup.allInteractionSources(): List<MutableInteractionSource> =
+    mutableListOf<MutableInteractionSource>().also(::collectInteractionSources)
+
+private fun CompositionGroup.collectInteractionSources(sources: MutableList<MutableInteractionSource>) {
+    data.filterIsInstance<MutableInteractionSource>().forEach { source ->
+        if (sources.none { it === source }) {
+            sources += source
+        }
+    }
+    compositionGroups.forEach { group -> group.collectInteractionSources(sources) }
+}
 
 private fun CompositionData.firstSourceOwnerGroup(): CompositionGroup? =
     compositionGroups.firstNotNullOfOrNull { group ->
