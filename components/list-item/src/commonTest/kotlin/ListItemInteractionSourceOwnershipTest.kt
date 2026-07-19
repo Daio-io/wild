@@ -9,12 +9,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.tooling.CompositionData
 import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -22,6 +28,53 @@ import kotlin.test.assertSame
 
 @OptIn(ExperimentalTestApi::class)
 class ListItemInteractionSourceOwnershipTest {
+    @Test
+    fun contentOnlyListItemKeepsFocusedContentColorAcrossParentRecomposition() =
+        runComposeUiTest {
+            val generation = mutableIntStateOf(0)
+            var observedContentColor = Color.Unspecified
+
+            setContent {
+                ListItem(
+                    onClick = {},
+                    modifier =
+                        Modifier
+                            .testTag("content-only-list-item-${generation.intValue}")
+                            .size(48.dp),
+                    style = focusedContentStyle(),
+                ) { observedContentColor = LocalContentColor.current }
+            }
+
+            assertFocusAndColorSurviveRecomposition(
+                targetTagPrefix = "content-only-list-item",
+                generation = generation,
+                observedContentColor = { observedContentColor },
+            )
+        }
+
+    @Test
+    fun slottedListItemKeepsFocusedContentColorAcrossParentRecomposition() =
+        runComposeUiTest {
+            val generation = mutableIntStateOf(0)
+            var observedContentColor = Color.Unspecified
+
+            setContent {
+                ListItem(
+                    onClick = {},
+                    leadingContent = {},
+                    trailingContent = {},
+                    modifier = Modifier.testTag("slotted-list-item-${generation.intValue}").size(48.dp),
+                    style = focusedContentStyle(),
+                ) { observedContentColor = LocalContentColor.current }
+            }
+
+            assertFocusAndColorSurviveRecomposition(
+                targetTagPrefix = "slotted-list-item",
+                generation = generation,
+                observedContentColor = { observedContentColor },
+            )
+        }
+
     @Test
     fun contentOnlyListItemOwnsStableImplicitInteractionSource() =
         runComposeUiTest {
@@ -133,6 +186,37 @@ class ListItemInteractionSourceOwnershipTest {
                 assertSame(source, compositionData.directlyOwnedInteractionSources().single())
             }
         }
+}
+
+private val UnfocusedContentColor = Color.Red
+private val FocusedContentColor = Color.Green
+
+private fun focusedContentStyle() =
+    StyleDefaults.style(
+        colors =
+            StyleDefaults.colors(
+                contentColor = UnfocusedContentColor,
+                focusedContentColor = FocusedContentColor,
+            ),
+    )
+
+@OptIn(ExperimentalTestApi::class)
+private fun androidx.compose.ui.test.ComposeUiTest.assertFocusAndColorSurviveRecomposition(
+    targetTagPrefix: String,
+    generation: androidx.compose.runtime.MutableIntState,
+    observedContentColor: () -> Color,
+) {
+    runOnIdle { assertEquals(UnfocusedContentColor, observedContentColor()) }
+    onNodeWithTag("$targetTagPrefix-0")
+        .performSemanticsAction(SemanticsActions.RequestFocus)
+        .assertIsFocused()
+    waitForIdle()
+    runOnIdle { assertEquals(FocusedContentColor, observedContentColor()) }
+
+    runOnIdle { generation.intValue++ }
+
+    onNodeWithTag("$targetTagPrefix-1").assertIsFocused()
+    runOnIdle { assertEquals(FocusedContentColor, observedContentColor()) }
 }
 
 private fun CompositionData.directlyOwnedInteractionSources(): List<MutableInteractionSource> =
