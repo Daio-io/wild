@@ -159,7 +159,8 @@ fun Container(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
     Box(
         modifier =
@@ -170,13 +171,13 @@ fun Container(
                 onClick = onClick,
                 onLongClick = onLongClick,
                 onDoubleClick = onDoubleClick,
-                interactionSource = effectiveInteractionSource,
+                interactionSource = interactionSource,
             ),
         propagateMinConstraints = true,
         content = {
-            val focused by effectiveInteractionSource.collectIsFocusedAsState()
-            val pressed by effectiveInteractionSource.collectIsPressedAsState()
-            val hovered by effectiveInteractionSource.collectIsHoveredAsState()
+            val focused by interactionSource.collectIsFocusedAsState()
+            val pressed by interactionSource.collectIsPressedAsState()
+            val hovered by interactionSource.collectIsHoveredAsState()
             ProvidesContentColor(
                 style.colors.contentColorFor(
                     enabled = enabled,
