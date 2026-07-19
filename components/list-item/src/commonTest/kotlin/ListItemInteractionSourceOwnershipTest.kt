@@ -23,8 +23,8 @@ import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class ListItemInteractionSourceOwnershipTest {
@@ -76,7 +76,7 @@ class ListItemInteractionSourceOwnershipTest {
         }
 
     @Test
-    fun contentOnlyListItemOwnsStableImplicitInteractionSource() =
+    fun contentOnlyListItemUsesContainerOwnedStableInteractionSource() =
         runComposeUiTest {
             val generation = mutableIntStateOf(0)
             lateinit var compositionData: CompositionData
@@ -98,7 +98,7 @@ class ListItemInteractionSourceOwnershipTest {
             runOnIdle {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
                 assertEquals(2, ownedSources.size)
                 assertSame(ownedSources.first(), ownedSources.last())
@@ -106,7 +106,7 @@ class ListItemInteractionSourceOwnershipTest {
         }
 
     @Test
-    fun slottedListItemOwnsStableImplicitInteractionSource() =
+    fun slottedListItemUsesContainerOwnedStableInteractionSource() =
         runComposeUiTest {
             val generation = mutableIntStateOf(0)
             lateinit var compositionData: CompositionData
@@ -130,7 +130,7 @@ class ListItemInteractionSourceOwnershipTest {
             runOnIdle {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size)
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
                 assertEquals(2, ownedSources.size)
                 assertSame(ownedSources.first(), ownedSources.last())
@@ -156,7 +156,6 @@ class ListItemInteractionSourceOwnershipTest {
             onNodeWithTag("content-only-list-item").performClick()
             runOnIdle {
                 assertEquals(1, clickCount)
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 assertSame(source, compositionData.ownedInteractionSources().single())
             }
         }
@@ -182,7 +181,6 @@ class ListItemInteractionSourceOwnershipTest {
             onNodeWithTag("slotted-list-item").performClick()
             runOnIdle {
                 assertEquals(1, clickCount)
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 assertSame(source, compositionData.ownedInteractionSources().single())
             }
         }

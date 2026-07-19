@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -58,8 +57,6 @@ fun ListItem(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable () -> Unit,
 ) {
-    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
-
     Container(
         onClick = onClick,
         modifier =
@@ -69,7 +66,7 @@ fun ListItem(
         enabled = enabled,
         selected = selected,
         style = style,
-        interactionSource = effectiveInteractionSource,
+        interactionSource = interactionSource,
     ) {
         Row(
             modifier =
@@ -118,8 +115,6 @@ fun ListItem(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable () -> Unit,
 ) {
-    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
-
     Container(
         onClick = onClick,
         modifier =
@@ -129,7 +124,7 @@ fun ListItem(
         enabled = enabled,
         selected = selected,
         style = style,
-        interactionSource = effectiveInteractionSource,
+        interactionSource = interactionSource,
     ) {
         Row(
             modifier =

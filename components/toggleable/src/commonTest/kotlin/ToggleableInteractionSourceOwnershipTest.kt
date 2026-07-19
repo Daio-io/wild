@@ -23,7 +23,6 @@ import io.daio.wild.style.StyleDefaults
 import kotlinx.coroutines.flow.Flow
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -74,7 +73,7 @@ class ToggleableInteractionSourceOwnershipTest {
         }
 
     @Test
-    fun toggleableOwnsStableImplicitInteractionSource() =
+    fun toggleableUsesContainerOwnedStableInteractionSource() =
         runComposeUiTest {
             val generation = mutableIntStateOf(0)
             lateinit var compositionData: CompositionData
@@ -97,7 +96,7 @@ class ToggleableInteractionSourceOwnershipTest {
             runOnIdle {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
                 assertEquals(2, ownedSources.size)
                 assertSame(ownedSources.first(), ownedSources.last())
@@ -105,7 +104,7 @@ class ToggleableInteractionSourceOwnershipTest {
         }
 
     @Test
-    fun selectableOwnsStableImplicitInteractionSource() =
+    fun selectableUsesContainerOwnedStableInteractionSource() =
         runComposeUiTest {
             val generation = mutableIntStateOf(0)
             lateinit var compositionData: CompositionData
@@ -128,7 +127,7 @@ class ToggleableInteractionSourceOwnershipTest {
             runOnIdle {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size)
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
                 assertEquals(2, ownedSources.size)
                 assertSame(ownedSources.first(), ownedSources.last())
@@ -152,7 +151,6 @@ class ToggleableInteractionSourceOwnershipTest {
             }
 
             runOnIdle {
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 assertSame(source, compositionData.ownedInteractionSources().single())
             }
         }

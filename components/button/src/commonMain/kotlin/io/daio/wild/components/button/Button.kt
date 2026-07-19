@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -78,8 +77,6 @@ fun Button(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
-
     Container(
         modifier =
             modifier
@@ -90,7 +87,7 @@ fun Button(
         onClick = onClick,
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
-        interactionSource = effectiveInteractionSource,
+        interactionSource = interactionSource,
         content = {
             Box(
                 modifier =

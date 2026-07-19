@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -59,7 +58,7 @@ class ButtonInteractionSourceOwnershipTest {
         }
 
     @Test
-    fun implicitInteractionSourceIsOwnedByButtonAndStableAcrossRecomposition() =
+    fun implicitInteractionSourceIsOwnedByContainerAndStableAcrossRecomposition() =
         runComposeUiTest {
             val generation = mutableIntStateOf(0)
             lateinit var compositionData: CompositionData
@@ -81,7 +80,7 @@ class ButtonInteractionSourceOwnershipTest {
             runOnIdle {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
-                assertFalse(compositionData.firstSourceOwnerHasDirectLayoutNode())
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
                 ownedSources += sources.single()
                 assertEquals(2, ownedSources.size)
                 assertSame(ownedSources.first(), ownedSources.last())
