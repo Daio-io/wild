@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.foundation
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -357,6 +359,122 @@ class ClickableFastPathTest {
             waitForIdle()
 
             runOnIdle { assertEquals(0, clicks) }
+        }
+
+    @Test
+    fun removingNodeDuringHardwarePressCancelsTheCapturedSourceWithoutClicking() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val interactions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val requester = FocusRequester()
+            var clicks = 0
+            var showTarget by mutableStateOf(true)
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    if (showTarget) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .size(10.dp)
+                                    .focusRequester(requester)
+                                    .clickable(
+                                        interactionSource = source,
+                                        onClick = { clicks++ },
+                                    ).testTag(TARGET_TAG),
+                        )
+                        LaunchedEffect(requester) { requester.requestFocus() }
+                    }
+                    LaunchedEffect(source) {
+                        source.interactions.collect { interactions += it }
+                    }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG).assertIsFocused()
+            target.performKeyInput { keyDown(Key.Enter) }
+            waitUntil { interactions.any { it is PressInteraction.Press } }
+
+            runOnIdle { showTarget = false }
+            waitForIdle()
+
+            runOnIdle {
+                val press = interactions.filterIsInstance<PressInteraction.Press>().single()
+                val cancel = interactions.filterIsInstance<PressInteraction.Cancel>().single()
+                assertSame(press, cancel.press)
+                assertEquals(0, clicks)
+            }
+        }
+
+    @Test
+    fun longClickDisablingThenReenablingDoesNotCorruptTheNextHardwarePress() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val interactions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val requester = FocusRequester()
+            var clicks = 0
+            var longClicks = 0
+            var enabled by mutableStateOf(true)
+
+            setContent {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(10.dp)
+                            .focusRequester(requester)
+                            .focusable(interactionSource = source)
+                            .handleHardwareInputEnter(
+                                enabled = enabled,
+                                interactionSource = source,
+                                onLongClick = {
+                                    longClicks++
+                                    enabled = false
+                                },
+                                onClick = { clicks++ },
+                                eventRepeatCount = { event ->
+                                    if (event.key == Key.NumPadEnter) 1 else 0
+                                },
+                            ).testTag(TARGET_TAG),
+                )
+                LaunchedEffect(requester) { requester.requestFocus() }
+                LaunchedEffect(source) {
+                    source.interactions.collect { interactions += it }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG).assertIsFocused()
+            target.performKeyInput {
+                keyDown(Key.Enter)
+                keyDown(Key.NumPadEnter)
+            }
+            waitUntil { longClicks == 1 }
+            waitForIdle()
+
+            target.performKeyInput {
+                keyUp(Key.NumPadEnter)
+                keyUp(Key.Enter)
+            }
+            runOnIdle { enabled = true }
+            waitForIdle()
+
+            target.performKeyInput {
+                keyDown(Key.Enter)
+                keyUp(Key.Enter)
+            }
+            waitForIdle()
+
+            runOnIdle {
+                val presses = interactions.filterIsInstance<PressInteraction.Press>()
+                val releases = interactions.filterIsInstance<PressInteraction.Release>()
+                assertEquals(2, presses.size)
+                assertEquals(2, releases.size)
+                assertSame(presses[0], releases[0].press)
+                assertSame(presses[1], releases[1].press)
+                assertEquals(1, longClicks)
+                assertEquals(1, clicks)
+            }
         }
 
     @Test

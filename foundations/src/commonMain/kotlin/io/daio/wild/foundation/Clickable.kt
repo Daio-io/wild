@@ -422,6 +422,7 @@ internal fun Modifier.handleHardwareInputEnter(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    eventRepeatCount: ((KeyEvent) -> Int)? = null,
 ): Modifier =
     this then
         HardwareEnterKeyElement(
@@ -430,6 +431,7 @@ internal fun Modifier.handleHardwareInputEnter(
             onClick = onClick,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
+            eventRepeatCount = eventRepeatCount,
         )
 
 private data class HardwareEnterKeyElement(
@@ -443,6 +445,7 @@ private data class HardwareEnterKeyElement(
     val role: Role? = null,
     val onLongClickLabel: String? = null,
     val onClickLabel: String? = null,
+    val eventRepeatCount: ((KeyEvent) -> Int)? = null,
 ) : ModifierNodeElement<HardwareEnterKeyEventNode>() {
     override fun create(): HardwareEnterKeyEventNode =
         HardwareEnterKeyEventNode(
@@ -456,6 +459,7 @@ private data class HardwareEnterKeyElement(
             role = role,
             onLongClickLabel = onLongClickLabel,
             onClickLabel = onClickLabel,
+            eventRepeatCount = eventRepeatCount,
         )
 
     override fun update(node: HardwareEnterKeyEventNode) {
@@ -470,6 +474,7 @@ private data class HardwareEnterKeyElement(
             role = role,
             onLongClickLabel = onLongClickLabel,
             onClickLabel = onClickLabel,
+            eventRepeatCount = eventRepeatCount,
         )
     }
 
@@ -485,6 +490,7 @@ private data class HardwareEnterKeyElement(
         properties["role"] = role
         properties["onLongClickLabel"] = onLongClickLabel
         properties["onClickLabel"] = onClickLabel
+        properties["eventRepeatCount"] = eventRepeatCount
     }
 }
 
@@ -499,6 +505,7 @@ private class HardwareEnterKeyEventNode(
     private var role: Role? = null,
     private var onLongClickLabel: String? = null,
     private var onClickLabel: String? = null,
+    private var eventRepeatCount: ((KeyEvent) -> Int)? = null,
     var timeNow: () -> Instant = { Clock.System.now() },
 ) : KeyInputModifierNode,
     FocusEventModifierNode,
@@ -534,10 +541,10 @@ private class HardwareEnterKeyEventNode(
         role: Role?,
         onLongClickLabel: String?,
         onClickLabel: String?,
+        eventRepeatCount: ((KeyEvent) -> Int)?,
     ) {
-        if (activePress != null && (!enabled || interactionSource !== this.interactionSource)) {
-            resetDoubleClick()
-            cancelPressInteraction()
+        if (!enabled || (activePress != null && interactionSource !== this.interactionSource)) {
+            terminateGesture()
         }
 
         this.enabled = enabled
@@ -550,6 +557,7 @@ private class HardwareEnterKeyEventNode(
         this.role = role
         this.onLongClickLabel = onLongClickLabel
         this.onClickLabel = onClickLabel
+        this.eventRepeatCount = eventRepeatCount
         if (isAttached) updatePlatformConfiguration()
     }
 
@@ -605,7 +613,7 @@ private class HardwareEnterKeyEventNode(
         if (hardwareInputRequired && HardwareEnterKeys.contains(event.key.keyCode) && enabled) {
             when (event.type) {
                 KeyEventType.KeyDown -> {
-                    when (event.repeatCount) {
+                    when (eventRepeatCount?.invoke(event) ?: event.repeatCount) {
                         0 -> {
                             // If we are handling double clicks we should check if this
                             // key down event is potentially a second click.
@@ -636,8 +644,7 @@ private class HardwareEnterKeyEventNode(
                             onClick?.invoke()
                         }
                     } else {
-                        activePress = null
-                        isLongClick = false
+                        terminateGesture()
                     }
                 }
             }
@@ -661,11 +668,11 @@ private class HardwareEnterKeyEventNode(
     }
 
     override fun onReset() {
-        reset()
+        terminateGesture(synchronously = true)
     }
 
     override fun onDetach() {
-        reset()
+        terminateGesture(synchronously = true)
     }
 
     private fun emitPressInteraction() {
@@ -686,12 +693,16 @@ private class HardwareEnterKeyEventNode(
         }
     }
 
-    private fun cancelPressInteraction() {
+    private fun cancelPressInteraction(synchronously: Boolean) {
         val press = activePress ?: return
         activePress = null
-        isLongClick = false
-        coroutineScope.launch {
-            press.interactionSource?.emit(PressInteraction.Cancel(press.interaction))
+        val cancel = PressInteraction.Cancel(press.interaction)
+        if (synchronously) {
+            press.interactionSource?.tryEmit(cancel)
+        } else {
+            coroutineScope.launch {
+                press.interactionSource?.emit(cancel)
+            }
         }
     }
 
@@ -742,9 +753,9 @@ private class HardwareEnterKeyEventNode(
         }
     }
 
-    private fun reset() {
+    private fun terminateGesture(synchronously: Boolean = false) {
         resetDoubleClick()
-        activePress = null
+        cancelPressInteraction(synchronously)
         isLongClick = false
     }
 
