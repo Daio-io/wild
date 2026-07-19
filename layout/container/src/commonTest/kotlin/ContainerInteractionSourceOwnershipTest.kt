@@ -9,12 +9,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.tooling.CompositionData
 import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -22,6 +28,33 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class ContainerInteractionSourceOwnershipTest {
+    @Test
+    fun implicitInteractionSourceKeepsFocusedContentColorAcrossParentRecomposition() =
+        runComposeUiTest {
+            val generation = mutableIntStateOf(0)
+            var observedContentColor = Color.Unspecified
+
+            setContent {
+                Container(
+                    onClick = {},
+                    modifier = Modifier.testTag("container-${generation.intValue}").size(48.dp),
+                    style = focusedContentStyle(),
+                ) { observedContentColor = LocalContentColor.current }
+            }
+
+            runOnIdle { assertEquals(UnfocusedContentColor, observedContentColor) }
+            onNodeWithTag("container-0")
+                .performSemanticsAction(SemanticsActions.RequestFocus)
+                .assertIsFocused()
+            waitForIdle()
+            runOnIdle { assertEquals(FocusedContentColor, observedContentColor) }
+
+            runOnIdle { generation.intValue++ }
+
+            onNodeWithTag("container-1").assertIsFocused()
+            runOnIdle { assertEquals(FocusedContentColor, observedContentColor) }
+        }
+
     @Test
     fun implicitInteractionSourceIsOwnedByContainerAndStableAcrossRecomposition() =
         runComposeUiTest {
@@ -75,6 +108,18 @@ class ContainerInteractionSourceOwnershipTest {
             }
         }
 }
+
+private val UnfocusedContentColor = Color.Red
+private val FocusedContentColor = Color.Green
+
+private fun focusedContentStyle() =
+    StyleDefaults.style(
+        colors =
+            StyleDefaults.colors(
+                contentColor = UnfocusedContentColor,
+                focusedContentColor = FocusedContentColor,
+            ),
+    )
 
 private fun CompositionData.firstDirectlyOwnedInteractionSources(): List<MutableInteractionSource> =
     firstSourceOwnerGroup()

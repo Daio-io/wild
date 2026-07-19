@@ -9,16 +9,70 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.tooling.CompositionData
 import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.StyleDefaults
+import kotlinx.coroutines.flow.Flow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class ToggleableInteractionSourceOwnershipTest {
+    @Test
+    fun toggleableKeepsFocusedContentColorAcrossParentRecomposition() =
+        runComposeUiTest {
+            val generation = mutableIntStateOf(0)
+            var observedContentColor = Color.Unspecified
+
+            setContent {
+                Toggleable(
+                    checked = false,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("toggleable-${generation.intValue}").size(48.dp),
+                    style = focusedContentStyle(),
+                ) { observedContentColor = LocalContentColor.current }
+            }
+
+            assertFocusAndColorSurviveRecomposition(
+                targetTagPrefix = "toggleable",
+                generation = generation,
+                observedContentColor = { observedContentColor },
+            )
+        }
+
+    @Test
+    fun selectableKeepsFocusedContentColorAcrossParentRecomposition() =
+        runComposeUiTest {
+            val generation = mutableIntStateOf(0)
+            var observedContentColor = Color.Unspecified
+
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = {},
+                    modifier = Modifier.testTag("selectable-${generation.intValue}").size(48.dp),
+                    style = focusedContentStyle(),
+                ) { observedContentColor = LocalContentColor.current }
+            }
+
+            assertFocusAndColorSurviveRecomposition(
+                targetTagPrefix = "selectable",
+                generation = generation,
+                observedContentColor = { observedContentColor },
+            )
+        }
+
     @Test
     fun toggleableOwnsStableImplicitInteractionSource() =
         runComposeUiTest {
@@ -102,6 +156,83 @@ class ToggleableInteractionSourceOwnershipTest {
                 assertSame(source, compositionData.directlyOwnedInteractionSources().single())
             }
         }
+
+    @Test
+    fun selectableEmitsFocusIntoExplicitInteractionSource() =
+        runComposeUiTest {
+            val source = RecordingMutableInteractionSource()
+
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = {},
+                    modifier = Modifier.testTag("selectable").size(48.dp),
+                    interactionSource = source,
+                ) {}
+            }
+
+            onNodeWithTag("selectable")
+                .performSemanticsAction(SemanticsActions.RequestFocus)
+                .assertIsFocused()
+            waitForIdle()
+
+            runOnIdle {
+                assertTrue(
+                    source.emittedInteractions.any {
+                        it is androidx.compose.foundation.interaction.FocusInteraction.Focus
+                    },
+                )
+            }
+        }
+}
+
+private val UnfocusedContentColor = Color.Red
+private val FocusedContentColor = Color.Green
+
+private fun focusedContentStyle() =
+    StyleDefaults.style(
+        colors =
+            StyleDefaults.colors(
+                contentColor = UnfocusedContentColor,
+                focusedContentColor = FocusedContentColor,
+            ),
+    )
+
+@OptIn(ExperimentalTestApi::class)
+private fun androidx.compose.ui.test.ComposeUiTest.assertFocusAndColorSurviveRecomposition(
+    targetTagPrefix: String,
+    generation: androidx.compose.runtime.MutableIntState,
+    observedContentColor: () -> Color,
+) {
+    runOnIdle { assertEquals(UnfocusedContentColor, observedContentColor()) }
+    onNodeWithTag("$targetTagPrefix-0")
+        .performSemanticsAction(SemanticsActions.RequestFocus)
+        .assertIsFocused()
+    waitForIdle()
+    runOnIdle { assertEquals(FocusedContentColor, observedContentColor()) }
+
+    runOnIdle { generation.intValue++ }
+
+    onNodeWithTag("$targetTagPrefix-1").assertIsFocused()
+    runOnIdle { assertEquals(FocusedContentColor, observedContentColor()) }
+}
+
+private class RecordingMutableInteractionSource : MutableInteractionSource {
+    private val delegate = MutableInteractionSource()
+
+    val emittedInteractions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+
+    override val interactions: Flow<androidx.compose.foundation.interaction.Interaction> = delegate.interactions
+
+    override suspend fun emit(interaction: androidx.compose.foundation.interaction.Interaction) {
+        emittedInteractions += interaction
+        delegate.emit(interaction)
+    }
+
+    override fun tryEmit(interaction: androidx.compose.foundation.interaction.Interaction): Boolean {
+        emittedInteractions += interaction
+        return delegate.tryEmit(interaction)
+    }
 }
 
 private fun CompositionData.directlyOwnedInteractionSources(): List<MutableInteractionSource> =
