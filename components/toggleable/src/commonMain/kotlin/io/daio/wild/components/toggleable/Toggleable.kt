@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -90,6 +91,8 @@ fun Toggleable(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+
     Container(
         onClick = { onCheckedChange(!checked) },
         modifier =
@@ -99,7 +102,7 @@ fun Toggleable(
         enabled = enabled,
         selected = checked,
         style = style,
-        interactionSource = interactionSource,
+        interactionSource = effectiveInteractionSource,
         content = content,
     )
 }
@@ -144,6 +147,8 @@ fun Selectable(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val effectiveInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+
     Container(
         onClick = onClick,
         modifier =
@@ -153,7 +158,7 @@ fun Selectable(
         enabled = enabled,
         selected = selected,
         style = style,
-        interactionSource = interactionSource,
+        interactionSource = effectiveInteractionSource,
         content = content,
     )
 }
