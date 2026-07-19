@@ -39,6 +39,7 @@ import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -474,6 +475,111 @@ class ClickableFastPathTest {
                 assertEquals(2, releases.size)
                 assertSame(presses[0], releases[0].press)
                 assertSame(presses[1], releases[1].press)
+                assertEquals(1, longClicks)
+                assertEquals(1, clicks)
+            }
+        }
+
+    @Test
+    fun leavingHardwareModeCancelsPendingDoubleClick() =
+        runComposeUiTest {
+            var clicks = 0
+            var doubleClicks = 0
+            var requiresHardwareInput by mutableStateOf(true)
+            val requester = FocusRequester()
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides
+                        PlatformInteractions(requiresHardwareInput = requiresHardwareInput),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .clickable(
+                                    interactionSource = MutableInteractionSource(),
+                                    onDoubleClick = { doubleClicks++ },
+                                    onClick = { clicks++ },
+                                ).testTag(TARGET_TAG),
+                    )
+                    LaunchedEffect(requester) { requester.requestFocus() }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG)
+            target.performKeyInput {
+                keyDown(Key.Enter)
+                keyUp(Key.Enter)
+            }
+            runOnIdle { requiresHardwareInput = false }
+            waitForIdle()
+            runOnIdle { requiresHardwareInput = true }
+            waitForIdle()
+            delay(400)
+            runOnIdle {
+                assertEquals(0, clicks)
+                assertEquals(0, doubleClicks)
+            }
+        }
+
+    @Test
+    fun leavingHardwareModeClearsCompletedLongClickState() =
+        runComposeUiTest {
+            var clicks = 0
+            var longClicks = 0
+            var requiresHardwareInput by mutableStateOf(true)
+            val requester = FocusRequester()
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides
+                        PlatformInteractions(requiresHardwareInput = requiresHardwareInput),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .focusable()
+                                .handleHardwareInputEnter(
+                                    enabled = true,
+                                    interactionSource = MutableInteractionSource(),
+                                    onLongClick = { longClicks++ },
+                                    onClick = { clicks++ },
+                                    eventRepeatCount = { event ->
+                                        if (event.key == Key.NumPadEnter) 1 else 0
+                                    },
+                                ).testTag(TARGET_TAG),
+                    )
+                    LaunchedEffect(requester) { requester.requestFocus() }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG)
+            target.performKeyInput { keyDown(Key.Enter) }
+            target.performKeyInput { keyDown(Key.NumPadEnter) }
+            waitForIdle()
+            target.performKeyInput {
+                keyUp(Key.NumPadEnter)
+                keyUp(Key.Enter)
+            }
+            runOnIdle { assertEquals(1, longClicks) }
+
+            runOnIdle { requiresHardwareInput = false }
+            waitForIdle()
+            runOnIdle {
+                requiresHardwareInput = true
+                requester.requestFocus()
+            }
+            waitForIdle()
+
+            target.performKeyInput {
+                keyDown(Key.Enter)
+                keyUp(Key.Enter)
+            }
+            runOnIdle {
                 assertEquals(1, longClicks)
                 assertEquals(1, clicks)
             }

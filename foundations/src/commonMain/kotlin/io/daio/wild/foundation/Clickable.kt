@@ -579,9 +579,10 @@ private class HardwareEnterKeyEventNode(
                 !observePlatformInteractions ||
                 currentValueOf(LocalPlatformInteractions).requiresHardwareInput
         }
-        if (previouslyRequiredHardwareInput && !hardwareInputRequired && activePress != null) {
+        if (previouslyRequiredHardwareInput && !hardwareInputRequired) {
             resetDoubleClick()
-            releasePressInteraction()
+            isLongClick = false
+            if (activePress != null) releasePressInteraction()
         }
         invalidateSemantics()
         invalidateFocusProperties()
