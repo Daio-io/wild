@@ -253,6 +253,113 @@ class ClickableFastPathTest {
         }
 
     @Test
+    fun replacingSourceDuringHardwarePressCancelsTheOldSourceWithoutClicking() =
+        runComposeUiTest {
+            val firstSource = MutableInteractionSource()
+            val secondSource = MutableInteractionSource()
+            val firstInteractions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val secondInteractions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val requester = FocusRequester()
+            var clicks = 0
+            var source by mutableStateOf(firstSource)
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .clickable(
+                                    interactionSource = source,
+                                    onClick = { clicks++ },
+                                ).testTag(TARGET_TAG),
+                    )
+                    LaunchedEffect(requester) { requester.requestFocus() }
+                    LaunchedEffect(firstSource) {
+                        firstSource.interactions.collect { firstInteractions += it }
+                    }
+                    LaunchedEffect(secondSource) {
+                        secondSource.interactions.collect { secondInteractions += it }
+                    }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG).assertIsFocused()
+            target.performKeyInput { keyDown(Key.Enter) }
+            waitUntil { firstInteractions.any { it is PressInteraction.Press } }
+
+            runOnIdle { source = secondSource }
+            waitForIdle()
+
+            runOnIdle {
+                val press = firstInteractions.filterIsInstance<PressInteraction.Press>().single()
+                val cancel = firstInteractions.filterIsInstance<PressInteraction.Cancel>().single()
+                assertSame(press, cancel.press)
+            }
+
+            target.performKeyInput { keyUp(Key.Enter) }
+            waitForIdle()
+
+            runOnIdle {
+                assertEquals(0, clicks)
+                assertTrue(secondInteractions.none { it is PressInteraction })
+            }
+        }
+
+    @Test
+    fun disablingDuringHardwarePressCancelsThePressWithoutClicking() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val interactions = mutableListOf<androidx.compose.foundation.interaction.Interaction>()
+            val requester = FocusRequester()
+            var clicks = 0
+            var enabled by mutableStateOf(true)
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .clickable(
+                                    enabled = enabled,
+                                    interactionSource = source,
+                                    onClick = { clicks++ },
+                                ).testTag(TARGET_TAG),
+                    )
+                    LaunchedEffect(requester) { requester.requestFocus() }
+                    LaunchedEffect(source) {
+                        source.interactions.collect { interactions += it }
+                    }
+                }
+            }
+
+            val target = onNodeWithTag(TARGET_TAG).assertIsFocused()
+            target.performKeyInput { keyDown(Key.Enter) }
+            waitUntil { interactions.any { it is PressInteraction.Press } }
+
+            runOnIdle { enabled = false }
+            waitForIdle()
+
+            runOnIdle {
+                val press = interactions.filterIsInstance<PressInteraction.Press>().single()
+                val cancel = interactions.filterIsInstance<PressInteraction.Cancel>().single()
+                assertSame(press, cancel.press)
+            }
+
+            target.performKeyInput { keyUp(Key.Enter) }
+            waitForIdle()
+
+            runOnIdle { assertEquals(0, clicks) }
+        }
+
+    @Test
     fun hardwareDoubleEnterInvokesDoubleClick() =
         runComposeUiTest {
             var clicks = 0
