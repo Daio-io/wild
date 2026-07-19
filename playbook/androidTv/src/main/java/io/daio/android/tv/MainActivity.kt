@@ -11,8 +11,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val mode = intent.getStringExtra("MODE") ?: "grid"
         val items = intent.getStringExtra("ITEMS") ?: "container"
+        val enableRecompositionDriver = intent.getBooleanExtra("RECOMPOSITION_DRIVER", false)
         setContent {
-            TvLayout(itemsType = items, mode = mode)
+            TvLayout(
+                itemsType = items,
+                mode = mode,
+                enableRecompositionDriver = enableRecompositionDriver,
+            )
         }
     }
 }
