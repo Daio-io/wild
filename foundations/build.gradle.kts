@@ -24,14 +24,10 @@ kotlin {
             }
         }
 
-        commonTest {
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(compose.uiTest)
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
                 implementation(compose.desktop.currentOs)
             }
         }

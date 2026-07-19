@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.foundation
 
+// Desktop-only: runComposeUiTest requires a platform host and Android local unit tests do not provide one.
+
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
