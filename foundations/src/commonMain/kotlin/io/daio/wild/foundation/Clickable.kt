@@ -459,17 +459,18 @@ private data class HardwareEnterKeyElement(
         )
 
     override fun update(node: HardwareEnterKeyEventNode) {
-        node.enabled = enabled
-        node.interactionSource = interactionSource
-        node.onClick = onClick
-        node.onLongClick = onLongClick
-        node.onDoubleClick = onDoubleClick
-        node.observePlatformInteractions = observePlatformInteractions
-        node.selected = selected
-        node.role = role
-        node.onLongClickLabel = onLongClickLabel
-        node.onClickLabel = onClickLabel
-        if (node.isAttached) node.updatePlatformConfiguration()
+        node.update(
+            enabled = enabled,
+            interactionSource = interactionSource,
+            onClick = onClick,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            observePlatformInteractions = observePlatformInteractions,
+            selected = selected,
+            role = role,
+            onLongClickLabel = onLongClickLabel,
+            onClickLabel = onClickLabel,
+        )
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -488,16 +489,16 @@ private data class HardwareEnterKeyElement(
 }
 
 private class HardwareEnterKeyEventNode(
-    var enabled: Boolean,
-    var onClick: (() -> Unit)? = null,
-    var onLongClick: (() -> Unit)? = null,
-    var onDoubleClick: (() -> Unit)? = null,
-    var interactionSource: MutableInteractionSource?,
-    var observePlatformInteractions: Boolean = false,
-    var selected: Boolean? = null,
-    var role: Role? = null,
-    var onLongClickLabel: String? = null,
-    var onClickLabel: String? = null,
+    private var enabled: Boolean,
+    private var onClick: (() -> Unit)? = null,
+    private var onLongClick: (() -> Unit)? = null,
+    private var onDoubleClick: (() -> Unit)? = null,
+    private var interactionSource: MutableInteractionSource?,
+    private var observePlatformInteractions: Boolean = false,
+    private var selected: Boolean? = null,
+    private var role: Role? = null,
+    private var onLongClickLabel: String? = null,
+    private var onClickLabel: String? = null,
     var timeNow: () -> Instant = { Clock.System.now() },
 ) : KeyInputModifierNode,
     FocusEventModifierNode,
@@ -506,9 +507,13 @@ private class HardwareEnterKeyEventNode(
     SemanticsModifierNode,
     FocusPropertiesModifierNode,
     Modifier.Node() {
-    private val pressInteraction = PressInteraction.Press(Offset.Zero)
+    private data class ActivePress(
+        val interaction: PressInteraction.Press,
+        val interactionSource: MutableInteractionSource?,
+    )
+
     private var focusState: FocusState? = null
-    private var pressed: Boolean = false
+    private var activePress: ActivePress? = null
     private var isLongClick: Boolean = false
 
     // Double-click state
@@ -517,6 +522,36 @@ private class HardwareEnterKeyEventNode(
     private var doubleClickTimeoutJob: Job? = null
     private var doubleClickTimeout: Duration = 300.milliseconds
     private var hardwareInputRequired: Boolean = !observePlatformInteractions
+
+    fun update(
+        enabled: Boolean,
+        interactionSource: MutableInteractionSource?,
+        onClick: (() -> Unit)?,
+        onLongClick: (() -> Unit)?,
+        onDoubleClick: (() -> Unit)?,
+        observePlatformInteractions: Boolean,
+        selected: Boolean?,
+        role: Role?,
+        onLongClickLabel: String?,
+        onClickLabel: String?,
+    ) {
+        if (activePress != null && (!enabled || interactionSource !== this.interactionSource)) {
+            resetDoubleClick()
+            cancelPressInteraction()
+        }
+
+        this.enabled = enabled
+        this.interactionSource = interactionSource
+        this.onClick = onClick
+        this.onLongClick = onLongClick
+        this.onDoubleClick = onDoubleClick
+        this.observePlatformInteractions = observePlatformInteractions
+        this.selected = selected
+        this.role = role
+        this.onLongClickLabel = onLongClickLabel
+        this.onClickLabel = onClickLabel
+        if (isAttached) updatePlatformConfiguration()
+    }
 
     override fun onAttach() {
         updatePlatformConfiguration()
@@ -536,7 +571,7 @@ private class HardwareEnterKeyEventNode(
                 !observePlatformInteractions ||
                 currentValueOf(LocalPlatformInteractions).requiresHardwareInput
         }
-        if (previouslyRequiredHardwareInput && !hardwareInputRequired && pressed) {
+        if (previouslyRequiredHardwareInput && !hardwareInputRequired && activePress != null) {
             resetDoubleClick()
             releasePressInteraction()
         }
@@ -593,7 +628,7 @@ private class HardwareEnterKeyEventNode(
                 }
 
                 KeyEventType.KeyUp -> {
-                    if (!isLongClick && pressed) {
+                    if (!isLongClick && activePress != null) {
                         releasePressInteraction()
                         if (onDoubleClick != null) {
                             handleAsDoubleClick()
@@ -601,7 +636,7 @@ private class HardwareEnterKeyEventNode(
                             onClick?.invoke()
                         }
                     } else {
-                        pressed = false
+                        activePress = null
                         isLongClick = false
                     }
                 }
@@ -618,7 +653,7 @@ private class HardwareEnterKeyEventNode(
         if (this.focusState != focusState) {
             this.focusState = focusState
 
-            if (!focusState.isFocused && pressed) {
+            if (!focusState.isFocused && activePress != null) {
                 resetDoubleClick()
                 releasePressInteraction()
             }
@@ -634,16 +669,29 @@ private class HardwareEnterKeyEventNode(
     }
 
     private fun emitPressInteraction() {
+        if (activePress != null) return
+
+        val press = ActivePress(PressInteraction.Press(Offset.Zero), interactionSource)
+        activePress = press
         coroutineScope.launch {
-            interactionSource?.emit(pressInteraction)
-            pressed = true
+            press.interactionSource?.emit(press.interaction)
         }
     }
 
     private fun releasePressInteraction() {
+        val press = activePress ?: return
+        activePress = null
         coroutineScope.launch {
-            interactionSource?.emit(PressInteraction.Release(pressInteraction))
-            pressed = false
+            press.interactionSource?.emit(PressInteraction.Release(press.interaction))
+        }
+    }
+
+    private fun cancelPressInteraction() {
+        val press = activePress ?: return
+        activePress = null
+        isLongClick = false
+        coroutineScope.launch {
+            press.interactionSource?.emit(PressInteraction.Cancel(press.interaction))
         }
     }
 
@@ -696,7 +744,7 @@ private class HardwareEnterKeyEventNode(
 
     private fun reset() {
         resetDoubleClick()
-        pressed = false
+        activePress = null
         isLongClick = false
     }
 

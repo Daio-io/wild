@@ -377,8 +377,9 @@ private fun StyledClickableItem(
         if (runtimeObserver == null) {
             SideEffect { recompositionDriver.acknowledgeApplied(recompositionGeneration) }
         } else {
-            // Observer-only values stay out of the measured null-observer path. The detailed record
-            // is published after this successful test-probe composition has been applied.
+            // Both benchmark variants share the nullable-observer lookup and branch. Detailed
+            // records and marker strings are created only by observer-enabled test probes, after
+            // the composition has been applied.
             SideEffect {
                 val markerBefore = recompositionDriver.marker
                 recompositionDriver.acknowledgeApplied(recompositionGeneration)
