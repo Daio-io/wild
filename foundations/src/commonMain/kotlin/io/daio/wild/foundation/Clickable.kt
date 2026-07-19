@@ -422,6 +422,7 @@ internal fun Modifier.handleHardwareInputEnter(
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
+    observePlatformInteractions: Boolean = false,
     eventRepeatCount: ((KeyEvent) -> Int)? = null,
 ): Modifier =
     this then
@@ -431,6 +432,7 @@ internal fun Modifier.handleHardwareInputEnter(
             onClick = onClick,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
+            observePlatformInteractions = observePlatformInteractions,
             eventRepeatCount = eventRepeatCount,
         )
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -32,6 +33,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -80,6 +82,34 @@ class ClickableFastPathTest {
         assertTrue(elements.size > 1)
         assertSame(ReceiverMarker, elements.first())
     }
+
+    @Test
+    fun callerFocusPropertiesDisableBothHardwareFocusTargets() =
+        runComposeUiTest {
+            val requester = FocusRequester()
+            val source = MutableInteractionSource()
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalPlatformInteractions provides PlatformInteractions(requiresHardwareInput = true),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(10.dp)
+                                .focusRequester(requester)
+                                .focusProperties { canFocus = false }
+                                .clickable(
+                                    interactionSource = source,
+                                    onClick = {},
+                                ).testTag(TARGET_TAG),
+                    )
+                }
+            }
+
+            runOnIdle { assertFalse(requester.requestFocus()) }
+            onNodeWithTag(TARGET_TAG).assertIsNotFocused()
+        }
 
     @Test
     fun nonHardwareClickableRemainsFocusableAndClickable() =
@@ -487,6 +517,7 @@ class ClickableFastPathTest {
             var doubleClicks = 0
             var requiresHardwareInput by mutableStateOf(true)
             val requester = FocusRequester()
+            val source = MutableInteractionSource()
 
             setContent {
                 CompositionLocalProvider(
@@ -499,7 +530,7 @@ class ClickableFastPathTest {
                                 .size(10.dp)
                                 .focusRequester(requester)
                                 .clickable(
-                                    interactionSource = MutableInteractionSource(),
+                                    interactionSource = source,
                                     onDoubleClick = { doubleClicks++ },
                                     onClick = { clicks++ },
                                 ).testTag(TARGET_TAG),
@@ -531,6 +562,7 @@ class ClickableFastPathTest {
             var longClicks = 0
             var requiresHardwareInput by mutableStateOf(true)
             val requester = FocusRequester()
+            val source = MutableInteractionSource()
 
             setContent {
                 CompositionLocalProvider(
@@ -545,9 +577,10 @@ class ClickableFastPathTest {
                                 .focusable()
                                 .handleHardwareInputEnter(
                                     enabled = true,
-                                    interactionSource = MutableInteractionSource(),
+                                    interactionSource = source,
                                     onLongClick = { longClicks++ },
                                     onClick = { clicks++ },
+                                    observePlatformInteractions = true,
                                     eventRepeatCount = { event ->
                                         if (event.key == Key.NumPadEnter) 1 else 0
                                     },
@@ -561,14 +594,14 @@ class ClickableFastPathTest {
             target.performKeyInput { keyDown(Key.Enter) }
             target.performKeyInput { keyDown(Key.NumPadEnter) }
             waitForIdle()
+            runOnIdle { requiresHardwareInput = false }
+            waitForIdle()
             target.performKeyInput {
                 keyUp(Key.NumPadEnter)
                 keyUp(Key.Enter)
             }
             runOnIdle { assertEquals(1, longClicks) }
 
-            runOnIdle { requiresHardwareInput = false }
-            waitForIdle()
             runOnIdle {
                 requiresHardwareInput = true
                 requester.requestFocus()
