@@ -20,6 +20,10 @@ the benchmark injects a handled `R` key-up. Every visible item observes the same
 snapshot generation, so the items recompose while their parameters and clickable configuration stay
 unchanged. A `SideEffect` acknowledges the generation only after item composition applies; the app
 then exposes `benchmark-recomposition-N` so the macrobenchmark waits for completion before continuing.
+The optional real-wiring test observer leaves one nullable field on the shared driver and one
+lookup/null branch in each driven item. Both measured variants pay that same minimal overhead;
+detailed composition records and their marker strings are created only when the test observer is
+present.
 
 ## Reproduction
 
