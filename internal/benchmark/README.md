@@ -51,6 +51,10 @@ Run at least two invocations and compare variance before making performance conc
 
 The macrobenchmarks use warm startup, 20 measured iterations, `CompilationMode.Partial()`, `FrameTimingMetric`, and `MemoryUsageMetric(Mode.Max)`. Record the device model, Android version, build type, Compose version, compilation mode, iteration count, and item count with exported benchmark results.
 
+On Fire TV / nested `LazyRow` grids, the harness uses a hard `SystemClock.sleep` pace between
+DPAD keys (not only `waitForIdle`) and re-scrolls horizontally after vertical moves so the
+terminal focus target remains reachable. Compare runs only when they share that same input pace.
+
 Report median and tail frame times, missed or overrun frames, max memory usage, and run-to-run variance. Establish a baseline before adding regression thresholds.
 
 Peak memory supports a relative allocation-pressure comparison but is not an exact allocation count.

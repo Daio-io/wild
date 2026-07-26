@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.benchmark
 
+import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.ExperimentalMetricApi
@@ -27,8 +28,8 @@ private const val GRID_MODE = "grid"
 private const val FIRST_FOCUS_TARGET = "benchmark-item-0-0"
 private const val TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
-private const val FOCUS_TARGET_TIMEOUT_MS = 5_000L
-private const val INPUT_PACE_MS = 80L
+private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
+private const val INPUT_PACE_MS = 250L
 private val BENCHMARK_COMPILATION_MODE = CompilationMode.Partial()
 
 private enum class StyleVariant(val extraValue: String) {
@@ -41,11 +42,12 @@ private enum class StyleVariant(val extraValue: String) {
 
 private val DETERMINISTIC_FOCUS_SEQUENCE =
     listOf(
+        // Nested LazyRows reset column on vertical moves, so re-scroll after DOWN before the
+        // terminal check. Pace is enforced with SystemClock.sleep(INPUT_PACE_MS).
         KeyEvent.KEYCODE_DPAD_RIGHT to 15,
-        KeyEvent.KEYCODE_DPAD_DOWN to 10,
-        KeyEvent.KEYCODE_DPAD_RIGHT to 15,
-        KeyEvent.KEYCODE_DPAD_LEFT to 10,
-        KeyEvent.KEYCODE_DPAD_UP to 5,
+        KeyEvent.KEYCODE_DPAD_DOWN to 5,
+        KeyEvent.KEYCODE_DPAD_RIGHT to 25,
+        KeyEvent.KEYCODE_DPAD_LEFT to 5,
     ).flatMap { (keyCode, count) -> List(count) { keyCode } }
 
 @RunWith(AndroidJUnit4::class)
@@ -128,13 +130,17 @@ private fun UiDevice.runDeterministicFocusSequence(enableRecompositionDriver: Bo
 
     pressKeyCode(KeyEvent.KEYCODE_DPAD_RIGHT)
     waitForIdle()
+    SystemClock.sleep(INPUT_PACE_MS)
     if (enableRecompositionDriver) {
         requestUnchangedRecomposition(++recompositionGeneration)
     }
 
     DETERMINISTIC_FOCUS_SEQUENCE.forEach { keyCode ->
         pressKeyCode(keyCode)
-        waitForIdle(INPUT_PACE_MS)
+        waitForIdle()
+        // Fire TV LazyRow needs a real paced delay; waitForIdle alone returns as soon as the
+        // hierarchy is idle and can drop focus moves before the row has scrolled.
+        SystemClock.sleep(INPUT_PACE_MS)
         if (enableRecompositionDriver) {
             requestUnchangedRecomposition(++recompositionGeneration)
         }
@@ -147,7 +153,8 @@ private fun UiDevice.runDeterministicFocusSequence(enableRecompositionDriver: Bo
 
 private fun UiDevice.requestUnchangedRecomposition(generation: Int) {
     check(pressKeyCode(KeyEvent.KEYCODE_R)) { "Failed to inject recomposition key" }
-    waitForIdle(INPUT_PACE_MS)
+    waitForIdle()
+    SystemClock.sleep(INPUT_PACE_MS)
 
     val marker = recompositionMarker(generation)
     check(wait(Until.hasObject(By.desc(marker)), FOCUS_TARGET_TIMEOUT_MS)) {
