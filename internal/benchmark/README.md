@@ -7,7 +7,10 @@ The TV macrobenchmark suite compares equivalent grid items across explicit style
   `MutableInteractionSource`, exercising the ordinary modifier path.
 - `null_source_compatibility`: the same styled clickable and item configuration with a null source,
   exercising the compatibility `composed` path.
-- `candidate_composite`: benchmark-only candidate path that routes the same shared item configuration through `Container` so it can be replaced by a unified-node prototype without changing scenario setup.
+- `candidate_composite`: benchmark-only path using `@ExperimentalWildApi`
+  `Modifier.interactionStyleComposite` (unified `InteractionStyleNode` + layout/draw delegates)
+  with foundations `clickable` for input. Same shared `Style` / size / focus scenario as
+  `current_traversal`. See `docs/superpowers/specs/2026-07-26-the-217-interaction-style-node-decision.md`.
 - `material_surface`: Android TV Material `Surface` baseline using matching size, colors, shape, border, scale target, item count, and deterministic focus input.
 
 The benchmark hoists the shared Wild `Style` out of lazy item bodies for the Wild variants. This keeps style construction out of the scroll measurement; add a separate microbenchmark if style construction or node creation cost is the target.
