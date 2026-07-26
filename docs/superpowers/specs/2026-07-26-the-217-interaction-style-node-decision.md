@@ -24,7 +24,7 @@ Keep production `current_traversal` as the default. Keep the `candidate_composit
 ## Parity evidence (this branch)
 
 - Common tests: value/block resolution, THE-219 reset, THE-225 snapshot observation, equal-output no-op dispatch, change-mask isolation, nesting, no `TraversableNode`, unreachable under real style-parent traversal, interaction-source replacement.
-- JVM rendering tests: rectangle/circle clip + alpha, group-alpha compositing, focus/press scale, border inset outside clip, nested clip/color — pixel-compared against the existing traversal chain where applicable.
+- JVM smoke pixel tests: rectangle/circle clip + alpha, and group-alpha compositing for overlapping content (the novel draw-path behaviors).
 - Verification run: `./gradlew :style:jvmTest :style:spotlessCheck` and `:playbook:androidTv:testDebugUnitTest` (green on this branch).
 
 ## Benchmark status

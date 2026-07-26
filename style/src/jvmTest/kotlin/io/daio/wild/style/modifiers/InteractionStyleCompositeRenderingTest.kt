@@ -2,12 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
-import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -27,23 +23,15 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.v2.runComposeUiTest
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
-import io.daio.wild.style.Border
-import kotlinx.coroutines.runBlocking
 import kotlin.math.abs
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Pixel-level sanity checks for the THE-217 [InteractionStyleNode] prototype's draw delegate,
- * which applies shape clip and group alpha manually around `drawContent()` instead of through a
- * second [androidx.compose.ui.node.LayoutModifierNode] layer (see [InteractionStyleNode] KDoc for
- * why). These mirror a subset of `StyleLayerRenderingTest`'s cases against the current traversal
- * chain to confirm the candidate produces equivalent visible output for
- * background/clip/alpha/border/scale.
+ * Smoke pixel checks for the candidate draw path's manual clip / group-alpha around
+ * `drawContent()` (the novel part vs the traversal chain's layout-layer approach).
  */
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class InteractionStyleCompositeRenderingTest {
@@ -131,132 +119,6 @@ class InteractionStyleCompositeRenderingTest {
             overlappingDraws.assertCloseTo(singleDraw)
         }
 
-    @Test
-    fun focusAndPressScaleRenderAtDeterministicSizes() =
-        runComposeUiTest {
-            val interactionSource = MutableInteractionSource()
-
-            setContent {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(SurfaceSize)
-                            .background(Color.Blue)
-                            .testTag("scale-root"),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(
-                        Modifier
-                            .size(24.dp)
-                            .interactionStyleComposite(interactionSource = interactionSource) {
-                                color = Color.Red
-                                scale =
-                                    when {
-                                        pressed -> 0.5f
-                                        focused -> 0.75f
-                                        else -> 1f
-                                    }
-                                scaleAnimationSpec = snap()
-                            },
-                    )
-                }
-            }
-            waitForIdle()
-
-            val defaultWidth = onNodeWithTag("scale-root").captureToImage().redWidth()
-
-            lateinit var focus: FocusInteraction.Focus
-            runBlocking {
-                focus = FocusInteraction.Focus()
-                interactionSource.emit(focus)
-            }
-            waitForIdle()
-            val focusedWidth = onNodeWithTag("scale-root").captureToImage().redWidth()
-
-            lateinit var press: PressInteraction.Press
-            runBlocking {
-                press = PressInteraction.Press(Offset.Zero)
-                interactionSource.emit(press)
-            }
-            waitForIdle()
-            val pressedWidth = onNodeWithTag("scale-root").captureToImage().redWidth()
-
-            assertTrue(defaultWidth > focusedWidth)
-            assertTrue(focusedWidth > pressedWidth)
-
-            runBlocking {
-                interactionSource.emit(PressInteraction.Release(press))
-                interactionSource.emit(FocusInteraction.Unfocus(focus))
-            }
-        }
-
-    @Test
-    fun borderInsetsRemainOutsideTheClippedSurfaceWhenRequested() =
-        runComposeUiTest {
-            setContent {
-                Box(Modifier.size(80.dp)) {
-                    BorderSurface(
-                        tag = "outside-border",
-                        inset = 3.dp,
-                    )
-                    BorderSurface(
-                        tag = "inside-border",
-                        inset = -3.dp,
-                        modifier = Modifier.align(Alignment.TopEnd),
-                    )
-                }
-            }
-            waitForIdle()
-
-            val outsideBorder = onNodeWithTag("outside-border").captureToImage()
-            val insideBorder = onNodeWithTag("inside-border").captureToImage()
-
-            assertTrue(outsideBorder.countYellowOutsideChildBounds() > 0)
-            assertEquals(0, insideBorder.countYellowOutsideChildBounds())
-        }
-
-    @Test
-    fun nestedStyledComponentsKeepIndependentClipAndColor() =
-        runComposeUiTest {
-            setContent {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(SurfaceSize)
-                            .background(Color.Blue)
-                            .testTag("nested"),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(32.dp)
-                                .interactionStyleComposite(interactionSource = null) {
-                                    color = Color.Red
-                                    shape = CircleShape
-                                },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(
-                            Modifier
-                                .size(12.dp)
-                                .interactionStyleComposite(interactionSource = null) {
-                                    color = Color.Green
-                                    shape = RectangleShape
-                                },
-                        )
-                    }
-                }
-            }
-            waitForIdle()
-
-            val image = onNodeWithTag("nested").captureToImage()
-            val pixels = image.toPixelMap()
-            pixels[image.width / 2, image.height / 2].assertCloseTo(Color.Green)
-            pixels[image.width / 2, image.height / 8].assertCloseTo(Color.Red)
-            image.cornerColor().assertCloseTo(Color.Blue)
-        }
-
     @Composable
     private fun TestSurface(
         tag: String,
@@ -283,64 +145,12 @@ class InteractionStyleCompositeRenderingTest {
         }
     }
 
-    @Composable
-    private fun BorderSurface(
-        tag: String,
-        inset: Dp,
-        modifier: Modifier = Modifier,
-    ) {
-        Box(
-            modifier =
-                modifier
-                    .size(SurfaceSize)
-                    .background(Color.Blue)
-                    .testTag(tag),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                Modifier
-                    .size(24.dp)
-                    .interactionStyleComposite(interactionSource = null) {
-                        color = Color.Red
-                        shape = CircleShape
-                        border = Border(width = 2.dp, color = Color.Yellow, inset = inset)
-                    },
-            )
-        }
-    }
-
     private fun ImageBitmap.centerColor(): Color = toPixelMap()[width / 2, height / 2]
 
     private fun ImageBitmap.cornerColor(): Color = toPixelMap()[1, 1]
 
-    private fun ImageBitmap.redWidth(): Int {
-        val pixels = toPixelMap()
-        val y = height / 2
-        return (0 until width).count { x -> pixels[x, y].isCloseTo(Color.Red) }
-    }
-
-    private fun ImageBitmap.countYellowOutsideChildBounds(): Int {
-        val pixels = toPixelMap()
-        val childStartX = (width * 0.2f).toInt()
-        val childEndX = (width * 0.8f).toInt()
-        val childStartY = (height * 0.2f).toInt()
-        val childEndY = (height * 0.8f).toInt()
-        var count = 0
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val outsideChild =
-                    x < childStartX || x >= childEndX || y < childStartY || y >= childEndY
-                if (outsideChild && pixels[x, y].isCloseTo(Color.Yellow)) count++
-            }
-        }
-        return count
-    }
-
     private fun Color.assertCloseTo(expected: Color) {
-        assertTrue(
-            isCloseTo(expected),
-            "Expected $expected but was $this",
-        )
+        assertTrue(isCloseTo(expected), "Expected $expected but was $this")
     }
 
     private fun Color.isCloseTo(

@@ -156,26 +156,10 @@ internal class InteractionStyleElement(
 }
 
 /**
- * Candidate composite node prototyped for THE-217.
- *
- * Owns interaction collection, [StyleScope] resolution and direct references to its layout and
- * draw delegates. There is deliberately no [androidx.compose.ui.node.TraversableNode]
- * participation anywhere in this subtree: interaction state is collected directly from
- * [interactionSource], resolved style fields are compared against the previous resolution to
- * build a change mask, and only the delegates affected by that mask are updated. Delegates that
- * are not updated never call `invalidateDraw`/`invalidatePlacement`.
- *
- * There is a single [LayoutModifierNode] delegate, [scaleNode], applying scale/z-index around the
- * whole surface (including the border), and a single [DrawModifierNode] delegate,
- * [backgroundBorderNode], drawing the background, then clipping/group-alpha-compositing the
- * actual content, then the border. Shape clip and alpha are applied by the draw delegate directly
- * around its `drawContent()` call rather than through a second layout layer: the Compose UI
- * runtime does not allow a [DelegatingNode] to delegate to more than one [LayoutModifierNode]
- * unless the owner itself implements [LayoutModifierNode], and a second layer positioned outside
- * the border (to keep scale surrounding everything) would incorrectly clip/alpha-composite the
- * border too. Applying clip/alpha at draw time, after the border delegate's own background pass
- * but before its border pass, keeps the border outside the clipped region (preserving positive
- * inset/focus-ring behavior) while still scaling with the rest of the surface via [scaleNode].
+ * THE-217 candidate: [DelegatingNode] owning interaction + [StyleScope] resolution with direct
+ * layout/draw delegates (no traversal). One [LayoutModifierNode] for scale/z-index; one
+ * [DrawModifierNode] for background → clipped/alpha content → border. Equal output skips
+ * delegate updates / phase invalidation.
  */
 internal class InteractionStyleNode(
     interactionSource: InteractionSource?,
@@ -471,8 +455,6 @@ internal class InteractionStyleNode(
             focused = focused,
             hovered = hovered,
             pressed = pressed,
-            selected = selected,
-            enabled = enabled,
         )
 }
 
@@ -487,8 +469,6 @@ private data class InteractionStyleSnapshot(
     val focused: Boolean,
     val hovered: Boolean,
     val pressed: Boolean,
-    val selected: Boolean,
-    val enabled: Boolean,
 )
 
 /**
@@ -504,12 +484,6 @@ internal class InteractionStyleScaleLayoutNode : LayoutModifierNode, Modifier.No
     private var updateJob: Job? = null
     private var customAnimationSpec: AnimationSpec<Float>? = null
     private val animationRequestCoalescer = ScaleAnimationRequestCoalescer()
-
-    internal val animatedScaleForTest: Float
-        get() = scaleState.value
-
-    internal val isScaleAnimationRunningForTest: Boolean
-        get() = updateJob?.isActive == true
 
     /** Number of times [updateScale] was invoked by the owning node. Exposed for tests. */
     internal var updateCallCountForTest: Int = 0
@@ -598,14 +572,7 @@ internal class InteractionStyleScaleLayoutNode : LayoutModifierNode, Modifier.No
 }
 
 /**
- * Combined background + content-clip/alpha + border draw delegate for [InteractionStyleNode].
- * Draws the background, then the wrapped content (clipped/group-alpha-composited to the current
- * shape/alpha as needed), then the border, matching the externally visible draw order of the
- * current traversal chain. Clip/alpha are applied manually around `drawContent()` (clipping via
- * [clipPath] and, when `alpha < 1f`, an explicit `Canvas.saveLayer` for correct group-alpha
- * compositing of overlapping content) rather than through a [LayoutModifierNode] graphics layer,
- * see [InteractionStyleNode] for why. Driven entirely by direct calls from the owning node; never
- * participates in traversal.
+ * Draw delegate for [InteractionStyleNode]: background, then clipped/alpha content, then border.
  */
 internal class InteractionStyleBackgroundBorderNode :
     DrawModifierNode,
@@ -759,58 +726,71 @@ internal class InteractionStyleBackgroundBorderNode :
         clipPath(path) { contentDrawScope.drawContent() }
     }
 
-    private fun ContentDrawScope.getContentOutline(): Outline {
-        var outline: Outline? = null
-        if (
-            size == lastContentSize &&
-            layoutDirection == lastContentLayoutDirection &&
-            lastContentShape == contentShape &&
-            lastContentOutline != null
-        ) {
-            outline = lastContentOutline
-        } else {
-            observeReads {
-                outline = contentShape.createOutline(size, layoutDirection, this)
-            }
-        }
-        lastContentOutline = outline
-        lastContentSize = size
-        lastContentLayoutDirection = layoutDirection
-        lastContentShape = contentShape
-        return outline!!
-    }
+    private fun ContentDrawScope.getContentOutline(): Outline =
+        cachedOutline(
+            shape = contentShape,
+            lastSize = lastContentSize,
+            lastLayoutDirection = lastContentLayoutDirection,
+            lastShape = lastContentShape,
+            lastOutline = lastContentOutline,
+            store = { outline, measuredSize, direction, shape ->
+                lastContentOutline = outline
+                lastContentSize = measuredSize
+                lastContentLayoutDirection = direction
+                lastContentShape = shape
+            },
+        )
 
     private fun ContentDrawScope.drawBackground() {
-        if (backgroundShape === RectangleShape) {
-            if (backgroundColor.isSpecified) {
+        if (backgroundColor.isSpecified) {
+            if (backgroundShape === RectangleShape) {
                 drawRect(color = backgroundColor)
-            }
-        } else {
-            if (backgroundColor.isSpecified) {
+            } else {
                 drawOutline(getBackgroundOutline(), color = backgroundColor)
             }
         }
     }
 
-    private fun ContentDrawScope.getBackgroundOutline(): Outline {
-        var outline: Outline? = null
-        if (
-            size == lastSize &&
-            layoutDirection == lastLayoutDirection &&
-            lastBackgroundShape == backgroundShape &&
-            lastOutline != null
-        ) {
-            outline = lastOutline
-        } else {
-            observeReads {
-                outline = backgroundShape.createOutline(size, layoutDirection, this)
+    private fun ContentDrawScope.getBackgroundOutline(): Outline =
+        cachedOutline(
+            shape = backgroundShape,
+            lastSize = lastSize,
+            lastLayoutDirection = lastLayoutDirection,
+            lastShape = lastBackgroundShape,
+            lastOutline = lastOutline,
+            store = { outline, measuredSize, direction, shape ->
+                lastOutline = outline
+                lastSize = measuredSize
+                lastLayoutDirection = direction
+                lastBackgroundShape = shape
+            },
+        )
+
+    private fun ContentDrawScope.cachedOutline(
+        shape: Shape,
+        lastSize: Size,
+        lastLayoutDirection: LayoutDirection?,
+        lastShape: Shape?,
+        lastOutline: Outline?,
+        store: (Outline, Size, LayoutDirection, Shape) -> Unit,
+    ): Outline {
+        val outline =
+            if (
+                size == lastSize &&
+                layoutDirection == lastLayoutDirection &&
+                lastShape == shape &&
+                lastOutline != null
+            ) {
+                lastOutline
+            } else {
+                var created: Outline? = null
+                observeReads {
+                    created = shape.createOutline(size, layoutDirection, this)
+                }
+                created!!
             }
-        }
-        lastOutline = outline
-        lastSize = size
-        lastLayoutDirection = layoutDirection
-        lastBackgroundShape = backgroundShape
-        return outline!!
+        store(outline, size, layoutDirection, shape)
+        return outline
     }
 
     private fun ContentDrawScope.drawBorder() {
