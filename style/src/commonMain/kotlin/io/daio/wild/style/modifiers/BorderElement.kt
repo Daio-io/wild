@@ -171,7 +171,7 @@ internal class BorderNode(
 }
 
 /** Caches the outline stroke across re-compositions */
-private class OutlineStrokeCache(private var widthPx: Float) {
+internal class OutlineStrokeCache(private var widthPx: Float) {
     private var outlineStroke: Stroke? = null
 
     /**
