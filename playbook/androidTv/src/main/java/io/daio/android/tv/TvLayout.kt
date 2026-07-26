@@ -39,13 +39,13 @@ import androidx.tv.material3.Surface
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.content.ProvidesContentColor
 import io.daio.wild.foundation.ExperimentalWildApi
-import io.daio.wild.foundation.clickable as foundationClickable
 import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
 import io.daio.wild.style.modifiers.interactionStyleComposite
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
+import io.daio.wild.foundation.clickable as foundationClickable
 
 private const val GRID_ROWS = 20
 private const val GRID_COLUMNS = 100
