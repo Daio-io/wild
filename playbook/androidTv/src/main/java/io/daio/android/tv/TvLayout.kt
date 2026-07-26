@@ -5,6 +5,9 @@ package io.daio.android.tv
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +19,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,12 +36,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.Surface
-import io.daio.wild.container.Container
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.content.ProvidesContentColor
+import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.foundation.clickable as foundationClickable
 import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
+import io.daio.wild.style.modifiers.interactionStyleComposite
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
 
 private const val GRID_ROWS = 20
@@ -407,6 +414,7 @@ private fun StyledClickableItem(
     }
 }
 
+@OptIn(ExperimentalWildApi::class)
 @Composable
 private fun CandidateCompositeItem(
     title: String,
@@ -415,13 +423,31 @@ private fun CandidateCompositeItem(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Container(
-        style = style,
-        modifier = modifier,
-        interactionSource = interactionSource,
-        onClick = onClick,
+    val focused by interactionSource.collectIsFocusedAsState()
+    val pressed by interactionSource.collectIsPressedAsState()
+    val hovered by interactionSource.collectIsHoveredAsState()
+    Box(
+        modifier =
+            modifier
+                .foundationClickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                ).interactionStyleComposite(
+                    interactionSource = interactionSource,
+                    style = style,
+                ),
     ) {
-        BenchmarkItemText(title)
+        ProvidesContentColor(
+            style.colors.contentColorFor(
+                enabled = true,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = false,
+            ),
+        ) {
+            BenchmarkItemText(title)
+        }
     }
 }
 

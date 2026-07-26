@@ -320,6 +320,43 @@ class InteractionStyleNodeTest {
 
             assertEquals(Color.Blue, node.color)
         }
+
+    @Test
+    fun replacingInteractionSourceStartsListeningToTheNewSource() =
+        runComposeUiTest {
+            lateinit var node: InteractionStyleNode
+            val firstSource = MutableInteractionSource()
+            val secondSource = MutableInteractionSource()
+            var source by mutableStateOf<MutableInteractionSource>(firstSource)
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .captureInteractionStyleNode(interactionSource = source, style = style) {
+                            node = it
+                        },
+                )
+            }
+            waitForIdle()
+
+            runBlocking { firstSource.emit(FocusInteraction.Focus()) }
+            waitForIdle()
+            assertEquals(Color.Blue, node.color)
+            assertEquals(1.1f, node.scale)
+
+            // Swap to a new source; the previous focus must not stick, and the new source must drive
+            // style updates.
+            runOnIdle { source = secondSource }
+            waitForIdle()
+            assertEquals(Color.Black, node.color)
+            assertEquals(1f, node.scale)
+
+            runBlocking { secondSource.emit(FocusInteraction.Focus()) }
+            waitForIdle()
+            assertEquals(Color.Blue, node.color)
+            assertEquals(1.1f, node.scale)
+        }
 }
 
 @OptIn(ExperimentalWildApi::class)

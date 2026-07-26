@@ -432,6 +432,11 @@ package io.daio.wild.style.modifiers {
     method public void onInteractionStateChanged(io.daio.wild.style.modifiers.Interactions interactions);
   }
 
+  public final class InteractionStyleElementKt {
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier interactionStyleComposite(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier interactionStyleComposite(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
+  }
+
   @androidx.compose.runtime.Immutable public final class Interactions {
     ctor public Interactions(boolean focused, boolean hovered, boolean pressed);
     method public boolean component1();

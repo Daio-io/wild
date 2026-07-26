@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.Style
@@ -54,12 +55,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Internal benchmark-only candidate path for THE-217. Installs a single [InteractionStyleNode]
- * directly instead of the six-element traversal chain installed by
- * [io.daio.wild.style.interactionStyle]. Used only by tests and playbook benchmark wiring; never
- * exposed publicly, and does not change the behavior of [io.daio.wild.style.interactionStyle].
+ * Benchmark-only candidate path for THE-217. Installs a single [InteractionStyleNode] instead of
+ * the six-element traversal chain used by [io.daio.wild.style.interactionStyle].
+ *
+ * Marked experimental so the TV `candidate_composite` benchmark path can opt in without changing
+ * default style wiring.
  */
-internal fun Modifier.interactionStyleComposite(
+@ExperimentalWildApi
+fun Modifier.interactionStyleComposite(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
@@ -76,7 +79,8 @@ internal fun Modifier.interactionStyleComposite(
 /**
  * Block-based overload of [interactionStyleComposite]. See that function for details.
  */
-internal fun Modifier.interactionStyleComposite(
+@ExperimentalWildApi
+fun Modifier.interactionStyleComposite(
     interactionSource: InteractionSource?,
     enabled: Boolean = true,
     selected: Boolean = false,
