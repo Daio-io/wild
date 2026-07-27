@@ -2,22 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.docs.cli
 
-import io.daio.wild.docs.api.MetalavaApi
 import io.daio.wild.docs.catalog.WildCatalog
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.nio.file.Path
-import kotlin.io.path.readText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WildDocsCliTest {
-    private val cli =
-        WildDocsCli(
-            docs = WildCatalog.components,
-            api = MetalavaApi.parse(buttonApiText()),
-        )
+    private val cli = WildDocsCli(docs = WildCatalog.components)
 
     @Test
     fun `search explains the next command`() {
@@ -41,14 +34,14 @@ class WildDocsCliTest {
     }
 
     @Test
-    fun `component dense view exposes setup and public parameters`() {
+    fun `component dense view exposes setup and authored parameter guidance`() {
         val result = run("component", "Button", "--dense")
 
         assertEquals(0, result.exitCode)
         assertTrue(result.output.contains("io.daio.wild:button"))
         assertTrue(result.output.contains("import io.daio.wild.components.button.Button"))
-        assertTrue(result.output.contains("onClick: kotlin.jvm.functions.Function0<kotlin.Unit> (required)"))
-        assertTrue(result.output.contains("modifier: androidx.compose.ui.Modifier (optional)"))
+        assertTrue(result.output.contains("onClick: Invoked when the button is clicked."))
+        assertTrue(result.output.contains("modifier: Applies layout, drawing, input, and semantics modifications."))
     }
 
     @Test
@@ -58,7 +51,8 @@ class WildDocsCliTest {
         assertEquals(0, result.exitCode)
         assertTrue(result.output.startsWith("""{"type":"component","data":{"""))
         assertTrue(result.output.contains(""""artifact":"io.daio.wild:button""""))
-        assertTrue(result.output.contains(""""required":true"""))
+        assertTrue(result.output.contains(""""name":"onClick""""))
+        assertTrue(result.output.contains("\"description\":\"Invoked when the button is clicked.\""))
         assertTrue(result.output.contains(""""id":"button-basic""""))
     }
 
@@ -91,7 +85,7 @@ class WildDocsCliTest {
         assertEquals(0, result.exitCode)
         assertTrue(result.output.contains("search <query>"))
         assertTrue(result.output.contains("component <name>"))
-        assertTrue(result.output.contains("validate"))
+        assertTrue(result.output.contains("validate             Check authored docs for structural mistakes"))
         assertTrue(result.output.contains("--json"))
         assertTrue(result.output.contains("--dense"))
     }
@@ -107,16 +101,6 @@ class WildDocsCliTest {
             )
         return CliResult(exitCode, output.toString(), error.toString())
     }
-
-    private fun buttonApiText(): String =
-        Path
-            .of(
-                System.getProperty("wild.repoRoot"),
-                "components",
-                "button",
-                "api",
-                "api.txt",
-            ).readText()
 
     private data class CliResult(
         val exitCode: Int,

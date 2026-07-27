@@ -1,7 +1,5 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -45,12 +43,4 @@ sourceSets {
             "**/*.samples.kt",
         )
     }
-}
-
-tasks.withType<Test>().configureEach {
-    systemProperty("wild.repoRoot", rootProject.projectDir.absolutePath)
-}
-
-tasks.withType<JavaExec>().configureEach {
-    workingDir(rootProject.projectDir)
 }

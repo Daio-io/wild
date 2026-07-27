@@ -9,12 +9,10 @@ The canonical component description is Kotlin:
 - `Button.samples.kt` contains a real, compiled Compose sample.
 - the Button module excludes both sidecars from its published artifact;
 - this module compiles the sidecars with a small documentation DSL;
-- validation compares the documented symbol and parameters with Button's
-  Metalava `api.txt`.
+- validation checks the authored documentation for structural mistakes.
 
-This gives authors IDE completion and compile-time checks for samples while
-Metalava catches documentation drift when a public parameter is added, removed,
-or renamed.
+This gives authors IDE completion and compile-time checks for samples without
+parsing generated API files or duplicating parameter types and defaults.
 
 ## Try the workflow
 
@@ -31,7 +29,7 @@ Results for "press":
   → component Button
 ```
 
-Ask for compact setup and API context:
+Ask for compact setup and semantic guidance:
 
 ```shell
 ./gradlew :internal:docs-cli:run --args="component Button --dense"
@@ -43,7 +41,7 @@ The result includes:
 artifact: io.daio.wild:button
 import: import io.daio.wild.components.button.Button
 platforms: Compose Multiplatform, Android, Android TV, Desktop, Web, iOS
-parameters: onClick: kotlin.jvm.functions.Function0<kotlin.Unit> (required); ...
+parameters: onClick: Invoked when the button is clicked.; ...
 ```
 
 Use a stable JSON envelope when another tool or agent is the caller:
@@ -72,7 +70,7 @@ One colocated source can supply:
 3. concise agent context;
 4. structured JSON for future site, MCP, or IDE adapters;
 5. compiled Compose examples; and
-6. validation against Wild's tracked public API.
+6. validation for malformed or duplicate documentation.
 
 The catalog and search engine are shared Kotlin code. The CLI is only an
 adapter, so future outputs do not need to scrape Markdown or reimplement
@@ -83,8 +81,10 @@ ranking.
 - Only `Button` is registered.
 - The catalog is handwritten rather than generated.
 - The CLI runs from the repository through Gradle.
-- Parameter types retain Metalava's raw signature spelling rather than being
-  normalized to Kotlin source syntax.
+- Parameters contain authored semantic guidance, not a duplicated API
+  signature.
+- Compiled samples verify the component usage they contain, but do not prove
+  that every public parameter is documented.
 - Search uses deterministic exact and substring ranking; it has no fuzzy
   matching or synonyms yet.
 - There is no published CLI, generated website, `llms.txt`, MCP server, or

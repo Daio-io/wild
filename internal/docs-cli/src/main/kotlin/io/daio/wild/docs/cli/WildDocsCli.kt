@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.docs.cli
 
-import io.daio.wild.docs.api.ApiFunction
-import io.daio.wild.docs.api.MetalavaApi
 import io.daio.wild.docs.model.ComponentDoc
 import io.daio.wild.docs.search.DocSearch
 import io.daio.wild.docs.validation.DocIssue
@@ -12,7 +10,6 @@ import java.io.PrintWriter
 
 class WildDocsCli(
     private val docs: List<ComponentDoc>,
-    private val api: MetalavaApi,
 ) {
     fun run(
         args: List<String>,
@@ -92,19 +89,11 @@ class WildDocsCli(
         val doc =
             docs.firstOrNull { it.name.equals(name, ignoreCase = true) }
                 ?: return fail("No component named \"$name\".", "ERR_UNKNOWN_COMPONENT", json, err)
-        val function =
-            api.function(doc.symbol.substringAfterLast('.'))
-                ?: return fail(
-                    "No tracked API found for ${doc.symbol}.",
-                    "ERR_COMPONENT_API_MISSING",
-                    json,
-                    err,
-                )
 
         when {
-            json -> out.println(componentJson(doc, function))
-            dense -> printDenseComponent(doc, function, out)
-            else -> printComponent(doc, function, out)
+            json -> out.println(componentJson(doc))
+            dense -> printDenseComponent(doc, out)
+            else -> printComponent(doc, out)
         }
         return 0
     }
@@ -113,7 +102,7 @@ class WildDocsCli(
         json: Boolean,
         out: PrintWriter,
     ): Int {
-        val issues = docs.flatMap { DocValidator.validate(it, api) }
+        val issues = docs.flatMap(DocValidator::validate)
         if (json) {
             val encodedIssues = issues.joinToString(",") { it.json() }
             out.println(
@@ -130,7 +119,6 @@ class WildDocsCli(
 
     private fun printComponent(
         doc: ComponentDoc,
-        function: ApiFunction,
         out: PrintWriter,
     ) {
         out.println(doc.name)
@@ -142,13 +130,8 @@ class WildDocsCli(
         out.println("  platforms: ${doc.platforms.joinToString { it.displayName }}")
         out.println()
         out.println("Parameters")
-        function.parameters.forEach { parameter ->
-            val description = doc.parameters.first { it.name == parameter.name }.description
-            out.println(
-                "  ${parameter.name}: ${parameter.type} " +
-                    "(${if (parameter.optional) "optional" else "required"})",
-            )
-            out.println("    $description")
+        doc.parameters.forEach { parameter ->
+            out.println("  ${parameter.name}: ${parameter.description}")
         }
         out.println()
         out.println("Guidance")
@@ -167,7 +150,6 @@ class WildDocsCli(
 
     private fun printDenseComponent(
         doc: ComponentDoc,
-        function: ApiFunction,
         out: PrintWriter,
     ) {
         out.println("${doc.name}: ${doc.summary}")
@@ -176,27 +158,20 @@ class WildDocsCli(
         out.println("platforms: ${doc.platforms.joinToString { it.displayName }}")
         out.println(
             "parameters: " +
-                function.parameters.joinToString("; ") { parameter ->
-                    "${parameter.name}: ${parameter.type} " +
-                        "(${if (parameter.optional) "optional" else "required"})"
+                doc.parameters.joinToString("; ") { parameter ->
+                    "${parameter.name}: ${parameter.description}"
                 },
         )
     }
 
-    private fun componentJson(
-        doc: ComponentDoc,
-        function: ApiFunction,
-    ): String {
+    private fun componentJson(doc: ComponentDoc): String {
         val platforms = doc.platforms.joinToString(",") { it.displayName.json() }
         val keywords = doc.keywords.joinToString(",") { it.json() }
         val parameters =
-            function.parameters.joinToString(",") { parameter ->
-                val guidance = doc.parameters.first { it.name == parameter.name }
+            doc.parameters.joinToString(",") { parameter ->
                 jsonObject(
                     "name" to parameter.name.json(),
-                    "type" to parameter.type.json(),
-                    "required" to (!parameter.optional).toString(),
-                    "description" to guidance.description.json(),
+                    "description" to parameter.description.json(),
                 )
             }
         val guidance =
@@ -243,7 +218,7 @@ class WildDocsCli(
         out.println("Commands:")
         out.println("  search <query>       Find components by name or intent")
         out.println("  component <name>     Show setup, parameters, guidance, and examples")
-        out.println("  validate             Compare docs with the tracked public API")
+        out.println("  validate             Check authored docs for structural mistakes")
         out.println()
         out.println("Options:")
         out.println("  --json               Stable machine-readable output")
