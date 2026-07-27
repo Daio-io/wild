@@ -49,7 +49,30 @@ Run at least two invocations and compare variance before making performance conc
 ./gradlew :internal:benchmark:connectedCheck
 ```
 
-The macrobenchmarks use warm startup, 20 measured iterations, `CompilationMode.Partial()`, `FrameTimingMetric`, and `MemoryUsageMetric(Mode.Max)`. Record the device model, Android version, build type, Compose version, compilation mode, iteration count, and item count with exported benchmark results.
+To isolate style-update cost without deep grid scroll, run the horizontal focus-flip pair:
+
+```bash
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithCurrentTraversal"
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithCandidateComposite"
+```
+
+**Confirmation / release profile (default in `TvBenchmarkTest`):** warm startup, 20 measured
+iterations, `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, plus
+`focusFlip*` cases. Keys use a fixed ~50ms `SystemClock.sleep` pace (not only `waitForIdle`) so
+bursty DPAD input stays comparable across devices. Nested `LazyRow` grids reset column on vertical
+moves, so scroll sequences re-scroll horizontally after each `DOWN`. The playbook grid centers
+focused items with `BringIntoViewSpec` so scroll stays aligned under rapid focus moves.
+`FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`.
+
+**Local optimization profile:** temporarily lower iteration count, use `CompilationMode.None()`,
+and/or shorten the scroll sequence (for example end at `benchmark-item-2-10`). Restore the
+confirmation profile before release claims. Compare runs only when they share the same input pace,
+path, compilation mode, and iteration count.
+
+Record the device model, Android version, build type, Compose version, compilation mode, iteration
+count, and item count with exported benchmark results.
 
 Report median and tail frame times, missed or overrun frames, max memory usage, and run-to-run variance. Establish a baseline before adding regression thresholds.
 

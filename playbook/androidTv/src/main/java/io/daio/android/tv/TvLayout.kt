@@ -3,17 +3,24 @@
 package io.daio.android.tv
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.BringIntoViewSpec
+import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,6 +45,7 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
+import kotlin.math.abs
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
 
 private const val GRID_ROWS = 20
@@ -248,6 +256,7 @@ internal fun BenchmarkSourcePathItem(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OptionsGrid(
     variant: StyleVariant,
@@ -256,26 +265,59 @@ private fun OptionsGrid(
 ) {
     val config = remember { BenchmarkItemConfig() }
     val style = remember(config) { config.style }
+    // Center focused items under rapid DPAD so scroll stays aligned without fixed key delays.
+    val bringIntoViewSpec =
+        remember {
+            object : BringIntoViewSpec {
+                override fun calculateScrollDistance(
+                    offset: Float,
+                    size: Float,
+                    containerSize: Float,
+                ): Float {
+                    val trailingEdge = offset + size
+                    val sizeOfItem = abs(trailingEdge - offset)
+                    val childSmallerThanParent = sizeOfItem <= containerSize
+                    val initialTargetForLeadingEdge = containerSize / 2f - sizeOfItem / 2f
+                    val spaceAvailableToShowItem = containerSize - initialTargetForLeadingEdge
+                    val targetForLeadingEdge =
+                        if (childSmallerThanParent && spaceAvailableToShowItem < sizeOfItem) {
+                            containerSize - sizeOfItem
+                        } else {
+                            initialTargetForLeadingEdge
+                        }
+                    return offset - targetForLeadingEdge
+                }
+            }
+        }
 
-    LazyColumn(
-        modifier =
-            modifier
-                .background(Color.Black)
-                .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        items(GRID_ROWS, key = { it }) { row ->
-            LazyRow {
-                items(GRID_COLUMNS, key = { it }) { column ->
-                    BenchmarkItem(
-                        variant = variant,
-                        title = variant.benchmarkTitle,
-                        style = style,
-                        config = config,
-                        marker = "benchmark-item-$row-$column",
-                        recompositionDriver = recompositionDriver,
-                        onClick = { },
-                    )
+    CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
+        BoxWithConstraints(modifier = modifier.fillMaxSize().background(Color.Black)) {
+            val horizontalPadding = (maxWidth / 2) - (config.itemSize / 2)
+            val verticalPadding = (maxHeight / 2) - (config.itemSize / 2)
+            LazyColumn(
+                contentPadding =
+                    PaddingValues(vertical = verticalPadding.coerceAtLeast(0.dp)),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(GRID_ROWS, key = { it }) { row ->
+                    LazyRow(
+                        contentPadding =
+                            PaddingValues(horizontal = horizontalPadding.coerceAtLeast(0.dp)),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(GRID_COLUMNS, key = { it }) { column ->
+                            BenchmarkItem(
+                                variant = variant,
+                                title = variant.benchmarkTitle,
+                                style = style,
+                                config = config,
+                                marker = "benchmark-item-$row-$column",
+                                recompositionDriver = recompositionDriver,
+                                onClick = { },
+                            )
+                        }
+                    }
                 }
             }
         }
