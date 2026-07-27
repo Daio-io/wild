@@ -6,8 +6,10 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
@@ -17,6 +19,7 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.findNearestAncestor
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidatePlacement
+import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
@@ -27,9 +30,9 @@ import kotlinx.coroutines.launch
 /**
  * Applies scale and focus z-index for the traversable style chain.
  *
- * Z-index still uses layout [placeWithLayer]. Animated scale is applied at draw time so each
- * animation frame only [invalidateDraw]s — matching the THE-217 candidate and avoiding layout
- * work on every scale tick.
+ * Z-index still uses layout [placeWithLayer]. Animated scale is applied via a cached
+ * [GraphicsLayer] so animation frames update the layer transform without re-recording
+ * background/border/content drawing commands.
  */
 internal class ScaleLayoutElement(
     val zIndex: Float = 0f,
@@ -88,8 +91,17 @@ internal class ScaleLayoutModifier(
         get() = updateJob?.isActive == true
     private val animationRequestCoalescer = ScaleAnimationRequestCoalescer()
 
+    /** Cached display list for scaled content; transforms update without re-record. */
+    private var graphicsLayer: GraphicsLayer? = null
+    private var layerContentStale: Boolean = true
+    private var recordedSize: Size = Size.Unspecified
+
     override fun onAttach() {
         requestInitialStyleFromParent()
+    }
+
+    override fun onDetach() {
+        releaseGraphicsLayer()
     }
 
     override fun onReset() {
@@ -100,6 +112,17 @@ internal class ScaleLayoutModifier(
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
+        releaseGraphicsLayer()
+    }
+
+    private fun releaseGraphicsLayer() {
+        val layer = graphicsLayer ?: return
+        graphicsLayer = null
+        layerContentStale = true
+        recordedSize = Size.Unspecified
+        if (isAttached && !layer.isReleased) {
+            requireGraphicsContext().releaseGraphicsLayer(layer)
+        }
     }
 
     fun updateScale(
@@ -166,6 +189,7 @@ internal class ScaleLayoutModifier(
                         targetValue = scale,
                         animationSpec = effectiveAnimationSpec,
                     ) {
+                        // Transform-only: keep the recorded layer, just invalidate draw.
                         invalidateDraw()
                     }
                 } finally {
@@ -190,20 +214,33 @@ internal class ScaleLayoutModifier(
 
     override fun ContentDrawScope.draw() {
         val s = scaleState.value
-        if (needsDrawScale(s)) {
-            val contentDrawScope = this
-            scale(s, s) {
-                with(contentDrawScope) {
-                    drawContent()
-                }
-            }
-        } else {
+        if (!needsDrawScale(s)) {
             drawContent()
+            return
         }
+
+        val layer =
+            graphicsLayer
+                ?: requireGraphicsContext().createGraphicsLayer().also { graphicsLayer = it }
+
+        if (layerContentStale || size != recordedSize) {
+            val contentDrawScope = this
+            layer.record {
+                contentDrawScope.drawContent()
+            }
+            layerContentStale = false
+            recordedSize = size
+        }
+
+        layer.scaleX = s
+        layer.scaleY = s
+        drawLayer(layer)
     }
 
     override fun updateStyle(styleScope: StyleScope) {
         if (!isAttached) return
+        // Sibling style nodes (bg/border) may have new drawing commands — re-record once.
+        layerContentStale = true
         customAnimationSpec = styleScope.scaleAnimationSpec
         updateScale(
             scale = styleScope.scale,
@@ -213,6 +250,7 @@ internal class ScaleLayoutModifier(
             hovered = styleScope.hovered,
             animationSpec = styleScope.scaleAnimationSpec,
         )
+        invalidateDraw()
     }
 }
 
