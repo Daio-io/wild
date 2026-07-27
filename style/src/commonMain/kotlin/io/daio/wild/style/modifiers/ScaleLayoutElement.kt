@@ -6,10 +6,8 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
@@ -19,7 +17,6 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.findNearestAncestor
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.invalidatePlacement
-import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Constraints
 import io.daio.wild.style.StyleScope
@@ -30,9 +27,9 @@ import kotlinx.coroutines.launch
 /**
  * Applies scale and focus z-index for the traversable style chain.
  *
- * Z-index still uses layout [placeWithLayer]. Animated scale is applied via a cached
- * [GraphicsLayer] so animation frames update the layer transform without re-recording
- * background/border/content drawing commands.
+ * Descendant content is cached in Compose's owned [placeWithLayer], while scale remains a draw
+ * transform so it does not affect descendant coordinates. Animation frames replay the owned layer
+ * without re-recording its content.
  */
 internal class ScaleLayoutElement(
     val zIndex: Float = 0f,
@@ -79,6 +76,7 @@ internal class ScaleLayoutModifier(
     private var scaleState = AnimationState(initialValue = scale)
     internal val animatedScale: Float
         get() = scaleState.value
+    private var scaleLayerActive = needsDrawScale(scale)
 
     /**
      * Invalidation is handled by [updateScale] / animation frames.
@@ -91,17 +89,8 @@ internal class ScaleLayoutModifier(
         get() = updateJob?.isActive == true
     private val animationRequestCoalescer = ScaleAnimationRequestCoalescer()
 
-    /** Cached display list for scaled content; transforms update without re-record. */
-    private var graphicsLayer: GraphicsLayer? = null
-    private var layerContentStale: Boolean = true
-    private var recordedSize: Size = Size.Unspecified
-
     override fun onAttach() {
         requestInitialStyleFromParent()
-    }
-
-    override fun onDetach() {
-        releaseGraphicsLayer()
     }
 
     override fun onReset() {
@@ -109,20 +98,10 @@ internal class ScaleLayoutModifier(
         updateJob = null
         animationRequestCoalescer.reset()
         scaleState = AnimationState(initialValue = 1f)
+        scaleLayerActive = false
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
-        releaseGraphicsLayer()
-    }
-
-    private fun releaseGraphicsLayer() {
-        val layer = graphicsLayer ?: return
-        graphicsLayer = null
-        layerContentStale = true
-        recordedSize = Size.Unspecified
-        if (isAttached && !layer.isReleased) {
-            requireGraphicsContext().releaseGraphicsLayer(layer)
-        }
     }
 
     fun updateScale(
@@ -160,6 +139,10 @@ internal class ScaleLayoutModifier(
             this.zIndex = zIndex
             invalidatePlacement()
         }
+        if (!scaleLayerActive && needsDrawScale(scale)) {
+            scaleLayerActive = true
+            invalidatePlacement()
+        }
 
         if (
             !animationRequestCoalescer.shouldAnimate(
@@ -189,10 +172,17 @@ internal class ScaleLayoutModifier(
                         targetValue = scale,
                         animationSpec = effectiveAnimationSpec,
                     ) {
-                        // Transform-only: keep the recorded layer, just invalidate draw.
                         invalidateDraw()
                     }
                 } finally {
+                    if (
+                        scaleLayerActive &&
+                        !needsDrawScale(this@ScaleLayoutModifier.scale) &&
+                        !needsDrawScale(scaleState.value)
+                    ) {
+                        scaleLayerActive = false
+                        invalidatePlacement()
+                    }
                     invalidateDraw()
                 }
             }
@@ -204,7 +194,7 @@ internal class ScaleLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            if (needsZIndexLayer(zIndex)) {
+            if (scaleLayerActive || needsZIndexLayer(zIndex)) {
                 placeable.placeWithLayer(0, 0, zIndex = zIndex) {}
             } else {
                 placeable.place(0, 0)
@@ -213,34 +203,21 @@ internal class ScaleLayoutModifier(
     }
 
     override fun ContentDrawScope.draw() {
-        val s = scaleState.value
-        if (!needsDrawScale(s)) {
-            drawContent()
-            return
-        }
-
-        val layer =
-            graphicsLayer
-                ?: requireGraphicsContext().createGraphicsLayer().also { graphicsLayer = it }
-
-        if (layerContentStale || size != recordedSize) {
+        val animatedScale = scaleState.value
+        if (needsDrawScale(animatedScale)) {
             val contentDrawScope = this
-            layer.record {
-                contentDrawScope.drawContent()
+            scale(animatedScale, animatedScale) {
+                with(contentDrawScope) {
+                    drawContent()
+                }
             }
-            layerContentStale = false
-            recordedSize = size
+        } else {
+            drawContent()
         }
-
-        layer.scaleX = s
-        layer.scaleY = s
-        drawLayer(layer)
     }
 
     override fun updateStyle(styleScope: StyleScope) {
         if (!isAttached) return
-        // Sibling style nodes (bg/border) may have new drawing commands — re-record once.
-        layerContentStale = true
         customAnimationSpec = styleScope.scaleAnimationSpec
         updateScale(
             scale = styleScope.scale,
@@ -250,7 +227,6 @@ internal class ScaleLayoutModifier(
             hovered = styleScope.hovered,
             animationSpec = styleScope.scaleAnimationSpec,
         )
-        invalidateDraw()
     }
 }
 
@@ -259,15 +235,6 @@ internal fun needsZIndexLayer(zIndex: Float): Boolean = zIndex != 0f
 
 /** True when draw must apply a non-identity scale. */
 internal fun needsDrawScale(animatedScale: Float): Boolean = animatedScale != 1f
-
-/**
- * Legacy helper: true when either draw scale or z-index layer is required.
- * Prefer [needsDrawScale] / [needsZIndexLayer] for new call sites.
- */
-internal fun needsScaleLayer(
-    animatedScale: Float,
-    zIndex: Float,
-): Boolean = needsDrawScale(animatedScale) || needsZIndexLayer(zIndex)
 
 internal enum class ScaleDefaultAnimationSpecKind {
     Pressed,
