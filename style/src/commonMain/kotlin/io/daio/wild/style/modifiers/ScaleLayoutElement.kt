@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 /**
  * Applies scale and focus z-index for the traversable style chain.
  *
- * Z-index still uses layout [placeWithLayer]. Animated scale is applied at draw time so each
- * animation frame only [invalidateDraw]s — matching the THE-217 candidate and avoiding layout
- * work on every scale tick.
+ * Descendant content is cached in Compose's owned [placeWithLayer], while scale remains a draw
+ * transform so it does not affect descendant coordinates. Animation frames replay the owned layer
+ * without re-recording its content.
  */
 internal class ScaleLayoutElement(
     val zIndex: Float = 0f,
@@ -76,6 +76,7 @@ internal class ScaleLayoutModifier(
     private var scaleState = AnimationState(initialValue = scale)
     internal val animatedScale: Float
         get() = scaleState.value
+    private var scaleLayerActive = needsDrawScale(scale)
 
     /**
      * Invalidation is handled by [updateScale] / animation frames.
@@ -97,6 +98,7 @@ internal class ScaleLayoutModifier(
         updateJob = null
         animationRequestCoalescer.reset()
         scaleState = AnimationState(initialValue = 1f)
+        scaleLayerActive = false
         scale = 1f
         zIndex = 0f
         customAnimationSpec = null
@@ -137,6 +139,10 @@ internal class ScaleLayoutModifier(
             this.zIndex = zIndex
             invalidatePlacement()
         }
+        if (!scaleLayerActive && needsDrawScale(scale)) {
+            scaleLayerActive = true
+            invalidatePlacement()
+        }
 
         if (
             !animationRequestCoalescer.shouldAnimate(
@@ -169,6 +175,14 @@ internal class ScaleLayoutModifier(
                         invalidateDraw()
                     }
                 } finally {
+                    if (
+                        scaleLayerActive &&
+                        !needsDrawScale(this@ScaleLayoutModifier.scale) &&
+                        !needsDrawScale(scaleState.value)
+                    ) {
+                        scaleLayerActive = false
+                        invalidatePlacement()
+                    }
                     invalidateDraw()
                 }
             }
@@ -180,7 +194,7 @@ internal class ScaleLayoutModifier(
     ): MeasureResult {
         val placeable = measurable.measure(constraints)
         return layout(placeable.width, placeable.height) {
-            if (needsZIndexLayer(zIndex)) {
+            if (scaleLayerActive || needsZIndexLayer(zIndex)) {
                 placeable.placeWithLayer(0, 0, zIndex = zIndex) {}
             } else {
                 placeable.place(0, 0)
@@ -189,10 +203,10 @@ internal class ScaleLayoutModifier(
     }
 
     override fun ContentDrawScope.draw() {
-        val s = scaleState.value
-        if (needsDrawScale(s)) {
+        val animatedScale = scaleState.value
+        if (needsDrawScale(animatedScale)) {
             val contentDrawScope = this
-            scale(s, s) {
+            scale(animatedScale, animatedScale) {
                 with(contentDrawScope) {
                     drawContent()
                 }
@@ -221,15 +235,6 @@ internal fun needsZIndexLayer(zIndex: Float): Boolean = zIndex != 0f
 
 /** True when draw must apply a non-identity scale. */
 internal fun needsDrawScale(animatedScale: Float): Boolean = animatedScale != 1f
-
-/**
- * Legacy helper: true when either draw scale or z-index layer is required.
- * Prefer [needsDrawScale] / [needsZIndexLayer] for new call sites.
- */
-internal fun needsScaleLayer(
-    animatedScale: Float,
-    zIndex: Float,
-): Boolean = needsDrawScale(animatedScale) || needsZIndexLayer(zIndex)
 
 internal enum class ScaleDefaultAnimationSpecKind {
     Pressed,

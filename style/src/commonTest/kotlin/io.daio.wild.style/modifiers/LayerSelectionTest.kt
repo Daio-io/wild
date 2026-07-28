@@ -17,15 +17,12 @@ import kotlin.test.assertTrue
 class LayerSelectionTest {
     @Test
     fun scaleLayerIsSkippedForDefaultValues() {
-        assertFalse(needsScaleLayer(animatedScale = 1f, zIndex = 0f))
         assertFalse(needsDrawScale(animatedScale = 1f))
         assertFalse(needsZIndexLayer(zIndex = 0f))
     }
 
     @Test
     fun scaleLayerIsUsedForScaleOrZIndex() {
-        assertTrue(needsScaleLayer(animatedScale = 1.01f, zIndex = 0f))
-        assertTrue(needsScaleLayer(animatedScale = 1f, zIndex = 0.5f))
         assertTrue(needsDrawScale(animatedScale = 1.01f))
         assertTrue(needsZIndexLayer(zIndex = 0.5f))
     }

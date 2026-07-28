@@ -5,6 +5,7 @@ package io.daio.wild.style.modifiers
 import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -28,7 +29,9 @@ import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -223,6 +226,80 @@ class StyleLayerRenderingTest {
                 interactionSource.emit(PressInteraction.Release(press))
                 interactionSource.emit(FocusInteraction.Unfocus(focus))
             }
+        }
+
+    @Test
+    fun scaledLayerReflectsDescendantDrawChanges() =
+        runComposeUiTest {
+            var contentColor by mutableStateOf(Color.Red)
+
+            setContent {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(SurfaceSize)
+                            .background(Color.Blue)
+                            .testTag("scaled-content"),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier
+                            .size(24.dp)
+                            .interactionStyle(null) {
+                                scale = 0.75f
+                                scaleAnimationSpec = snap()
+                            }
+                            .background(contentColor),
+                    )
+                }
+            }
+            waitForIdle()
+
+            onNodeWithTag("scaled-content").captureToImage().centerColor().assertCloseTo(Color.Red)
+
+            runOnIdle { contentColor = Color.Green }
+            waitForIdle()
+
+            onNodeWithTag("scaled-content").captureToImage().centerColor().assertCloseTo(Color.Green)
+        }
+
+    @Test
+    fun scaleDoesNotExpandDescendantHitBounds() =
+        runComposeUiTest {
+            var clicks = 0
+
+            setContent {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(120.dp)
+                            .testTag("scaled-hit-root"),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier
+                            .size(60.dp)
+                            .interactionStyle(null) {
+                                scale = 2f
+                                scaleAnimationSpec = snap()
+                            },
+                    ) {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .clickable { clicks++ },
+                        )
+                    }
+                }
+            }
+            waitForIdle()
+
+            onNodeWithTag("scaled-hit-root").performTouchInput {
+                click(Offset(x = 10f, y = center.y))
+            }
+            waitForIdle()
+
+            assertEquals(0, clicks)
         }
 
     @Test
