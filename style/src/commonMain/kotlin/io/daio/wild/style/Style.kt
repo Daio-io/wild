@@ -331,9 +331,15 @@ fun Modifier.interactionStyle(
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    this.interactionSourceNode(
-        interactionSource = interactionSource,
-        childTraversalKey = StyleParentTraversalKey,
+    (
+        if (interactionSource != null) {
+            this.interactionSourceNode(
+                interactionSource = interactionSource,
+                childTraversalKey = StyleParentTraversalKey,
+            )
+        } else {
+            this
+        }
     ) then
         StyleScopeParentElement(
             enabled = enabled,
