@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.benchmark
 
+import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.ExperimentalMetricApi
@@ -18,17 +19,29 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Confirmation / release profile. For faster local iteration, temporarily lower
+ * [DEFAULT_ITERATIONS], switch [BENCHMARK_COMPILATION_MODE] to [CompilationMode.None], and/or
+ * shorten [SCROLL_GRID_FOCUS_SEQUENCE]. Restore this profile before release claims.
+ */
 private const val DEFAULT_ITERATIONS = 20
 private const val APP_PACKAGE = "io.daio.wild.playbook.tv"
 private const val MODE_EXTRA = "MODE"
 private const val ITEMS_EXTRA = "ITEMS"
 private const val RECOMPOSITION_DRIVER_EXTRA = "RECOMPOSITION_DRIVER"
 private const val GRID_MODE = "grid"
+private const val FOCUS_FLIP_MODE = "focus_flip"
 private const val FIRST_FOCUS_TARGET = "benchmark-item-0-0"
-private const val TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
+private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
+private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
-private const val FOCUS_TARGET_TIMEOUT_MS = 5_000L
-private const val INPUT_PACE_MS = 80L
+private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
+
+/**
+ * Fixed delay between DPAD keys. Prefer this over [UiDevice.waitForIdle] alone so bursty focus
+ * moves stay paced across devices; compare runs only when they share the same pace.
+ */
+private const val INPUT_FRAME_PACE_MS = 50L
 private val BENCHMARK_COMPILATION_MODE = CompilationMode.Partial()
 
 private enum class StyleVariant(val extraValue: String) {
@@ -39,14 +52,34 @@ private enum class StyleVariant(val extraValue: String) {
     MaterialSurface("material_surface"),
 }
 
-private val DETERMINISTIC_FOCUS_SEQUENCE =
-    listOf(
-        KeyEvent.KEYCODE_DPAD_RIGHT to 15,
-        KeyEvent.KEYCODE_DPAD_DOWN to 10,
-        KeyEvent.KEYCODE_DPAD_RIGHT to 15,
-        KeyEvent.KEYCODE_DPAD_LEFT to 10,
-        KeyEvent.KEYCODE_DPAD_UP to 5,
-    ).flatMap { (keyCode, count) -> List(count) { keyCode } }
+/**
+ * Full scroll/focus path for confirmation runs. Nested [LazyRow]s reset column on DOWN, so the
+ * sequence re-scrolls horizontally after each vertical move. The playbook grid centers focused
+ * items via [androidx.compose.foundation.gestures.BringIntoViewSpec].
+ *
+ * For local optimization loops, shorten this path (for example end at `benchmark-item-2-10`) and
+ * temporarily lower [DEFAULT_ITERATIONS] / use [CompilationMode.None].
+ */
+private val SCROLL_GRID_FOCUS_SEQUENCE =
+    buildList {
+        repeat(20) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+        repeat(5) {
+            add(KeyEvent.KEYCODE_DPAD_DOWN)
+            repeat(20) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+        }
+        repeat(5) { add(KeyEvent.KEYCODE_DPAD_LEFT) }
+        repeat(5) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+    }
+
+/** Alternates focus between two stationary items, then ends on the second item. */
+private val FOCUS_FLIP_SEQUENCE =
+    buildList {
+        repeat(15) {
+            add(KeyEvent.KEYCODE_DPAD_RIGHT)
+            add(KeyEvent.KEYCODE_DPAD_LEFT)
+        }
+        add(KeyEvent.KEYCODE_DPAD_RIGHT)
+    }
 
 @RunWith(AndroidJUnit4::class)
 class TvBenchmarkTest {
@@ -55,23 +88,57 @@ class TvBenchmarkTest {
 
     @Test
     fun scrollGridWithCurrentTraversal() {
-        benchmarkRule.measureStyleVariant(StyleVariant.CurrentTraversal)
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.CurrentTraversal,
+            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
+            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+        )
     }
 
     @Test
     fun scrollGridWithCandidateComposite() {
-        benchmarkRule.measureStyleVariant(StyleVariant.CandidateComposite)
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.CandidateComposite,
+            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
+            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+        )
+    }
+
+    @Test
+    fun focusFlipWithCurrentTraversal() {
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.CurrentTraversal,
+            mode = FOCUS_FLIP_MODE,
+            focusSequence = FOCUS_FLIP_SEQUENCE,
+            terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
+        )
+    }
+
+    @Test
+    fun focusFlipWithCandidateComposite() {
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.CandidateComposite,
+            mode = FOCUS_FLIP_MODE,
+            focusSequence = FOCUS_FLIP_SEQUENCE,
+            terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
+        )
     }
 
     @Test
     fun scrollGridWithMaterialSurface() {
-        benchmarkRule.measureStyleVariant(StyleVariant.MaterialSurface)
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.MaterialSurface,
+            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
+            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+        )
     }
 
     @Test
     fun recomposeUnchangedGridWithExplicitSourceFastPath() {
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.ExplicitSourceFastPath,
+            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
+            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
             enableRecompositionDriver = true,
         )
     }
@@ -80,6 +147,8 @@ class TvBenchmarkTest {
     fun recomposeUnchangedGridWithNullSourceCompatibility() {
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.NullSourceCompatibility,
+            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
+            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
             enableRecompositionDriver = true,
         )
     }
@@ -87,6 +156,9 @@ class TvBenchmarkTest {
 
 private fun MacrobenchmarkRule.measureStyleVariant(
     variant: StyleVariant,
+    mode: String = GRID_MODE,
+    focusSequence: List<Int>,
+    terminalFocusTarget: String,
     enableRecompositionDriver: Boolean = false,
 ) {
     measureRepeated(
@@ -97,12 +169,17 @@ private fun MacrobenchmarkRule.measureStyleVariant(
         iterations = DEFAULT_ITERATIONS,
         setupBlock = {
             startActivityAndWait {
-                it.putExtra(MODE_EXTRA, GRID_MODE)
+                it.putExtra(MODE_EXTRA, mode)
                 it.putExtra(ITEMS_EXTRA, variant.extraValue)
                 it.putExtra(RECOMPOSITION_DRIVER_EXTRA, enableRecompositionDriver)
             }
             device.waitForIdle()
-            check(device.wait(Until.hasObject(By.desc(FIRST_FOCUS_TARGET)), FOCUS_TARGET_TIMEOUT_MS)) {
+            check(
+                device.wait(
+                    Until.hasObject(By.desc(FIRST_FOCUS_TARGET).focused(true)),
+                    FOCUS_TARGET_TIMEOUT_MS,
+                ),
+            ) {
                 "Timed out waiting for first benchmark focus target $FIRST_FOCUS_TARGET"
             }
             if (enableRecompositionDriver) {
@@ -112,7 +189,11 @@ private fun MacrobenchmarkRule.measureStyleVariant(
             }
         },
     ) {
-        device.runDeterministicFocusSequence(enableRecompositionDriver)
+        device.runDeterministicFocusSequence(
+            focusSequence = focusSequence,
+            terminalFocusTarget = terminalFocusTarget,
+            enableRecompositionDriver = enableRecompositionDriver,
+        )
     }
 }
 
@@ -123,31 +204,34 @@ private fun styleMetrics(): List<Metric> =
         MemoryUsageMetric(MemoryUsageMetric.Mode.Max),
     )
 
-private fun UiDevice.runDeterministicFocusSequence(enableRecompositionDriver: Boolean) {
+private fun UiDevice.runDeterministicFocusSequence(
+    focusSequence: List<Int>,
+    terminalFocusTarget: String,
+    enableRecompositionDriver: Boolean,
+) {
     var recompositionGeneration = 0
 
-    pressKeyCode(KeyEvent.KEYCODE_DPAD_RIGHT)
-    waitForIdle()
-    if (enableRecompositionDriver) {
-        requestUnchangedRecomposition(++recompositionGeneration)
-    }
-
-    DETERMINISTIC_FOCUS_SEQUENCE.forEach { keyCode ->
-        pressKeyCode(keyCode)
-        waitForIdle(INPUT_PACE_MS)
+    focusSequence.forEach { keyCode ->
+        check(pressKeyCode(keyCode)) { "Failed to inject DPAD key $keyCode" }
+        SystemClock.sleep(INPUT_FRAME_PACE_MS)
         if (enableRecompositionDriver) {
             requestUnchangedRecomposition(++recompositionGeneration)
         }
     }
 
-    check(wait(Until.hasObject(By.desc(TERMINAL_FOCUS_TARGET)), FOCUS_TARGET_TIMEOUT_MS)) {
-        "Timed out waiting for terminal benchmark focus target $TERMINAL_FOCUS_TARGET"
+    check(
+        wait(
+            Until.hasObject(By.desc(terminalFocusTarget).focused(true)),
+            FOCUS_TARGET_TIMEOUT_MS,
+        ),
+    ) {
+        "Timed out waiting for terminal benchmark focus target $terminalFocusTarget"
     }
 }
 
 private fun UiDevice.requestUnchangedRecomposition(generation: Int) {
     check(pressKeyCode(KeyEvent.KEYCODE_R)) { "Failed to inject recomposition key" }
-    waitForIdle(INPUT_PACE_MS)
+    SystemClock.sleep(INPUT_FRAME_PACE_MS)
 
     val marker = recompositionMarker(generation)
     check(wait(Until.hasObject(By.desc(marker)), FOCUS_TARGET_TIMEOUT_MS)) {

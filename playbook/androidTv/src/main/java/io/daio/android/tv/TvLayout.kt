@@ -3,23 +3,34 @@
 package io.daio.android.tv
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.BringIntoViewSpec
+import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -44,6 +55,7 @@ private const val GRID_ROWS = 20
 private const val GRID_COLUMNS = 100
 private const val LIST_ITEMS = 100
 private const val SOURCE_PATH_BENCHMARK_TITLE = "styled_clickable_source_path"
+private const val FOCUS_FLIP_BENCHMARK_TITLE = "style_focus_flip"
 
 internal enum class BenchmarkItemImplementation {
     StyledClickable,
@@ -222,6 +234,7 @@ private fun BenchmarkLayout(
     when (mode) {
         "list" -> OptionsList(variant, modifier, recompositionDriver)
         "grid" -> OptionsGrid(variant, modifier, recompositionDriver)
+        "focus_flip" -> OptionsFocusFlip(variant, modifier, recompositionDriver)
     }
 }
 
@@ -248,6 +261,7 @@ internal fun BenchmarkSourcePathItem(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OptionsGrid(
     variant: StyleVariant,
@@ -256,29 +270,88 @@ private fun OptionsGrid(
 ) {
     val config = remember { BenchmarkItemConfig() }
     val style = remember(config) { config.style }
+    // Center focused items under rapid DPAD so scroll stays aligned without fixed key delays.
+    val bringIntoViewSpec =
+        remember {
+            object : BringIntoViewSpec {
+                override fun calculateScrollDistance(
+                    offset: Float,
+                    size: Float,
+                    containerSize: Float,
+                ): Float = offset + (size - containerSize) / 2f
+            }
+        }
 
-    LazyColumn(
-        modifier =
-            modifier
-                .background(Color.Black)
-                .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        items(GRID_ROWS, key = { it }) { row ->
-            LazyRow {
-                items(GRID_COLUMNS, key = { it }) { column ->
-                    BenchmarkItem(
-                        variant = variant,
-                        title = variant.benchmarkTitle,
-                        style = style,
-                        config = config,
-                        marker = "benchmark-item-$row-$column",
-                        recompositionDriver = recompositionDriver,
-                        onClick = { },
-                    )
+    CompositionLocalProvider(LocalBringIntoViewSpec provides bringIntoViewSpec) {
+        BoxWithConstraints(modifier = modifier.fillMaxSize().background(Color.Black)) {
+            val horizontalPadding = (maxWidth / 2) - (config.itemSize / 2)
+            val verticalPadding = (maxHeight / 2) - (config.itemSize / 2)
+            LazyColumn(
+                contentPadding =
+                    PaddingValues(vertical = verticalPadding.coerceAtLeast(0.dp)),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(GRID_ROWS, key = { it }) { row ->
+                    LazyRow(
+                        contentPadding =
+                            PaddingValues(horizontal = horizontalPadding.coerceAtLeast(0.dp)),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(GRID_COLUMNS, key = { it }) { column ->
+                            BenchmarkItem(
+                                variant = variant,
+                                title = variant.benchmarkTitle,
+                                style = style,
+                                config = config,
+                                marker = "benchmark-item-$row-$column",
+                                recompositionDriver = recompositionDriver,
+                                onClick = { },
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OptionsFocusFlip(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+    recompositionDriver: BenchmarkRecompositionDriver? = null,
+) {
+    val config = remember { BenchmarkItemConfig() }
+    val style = remember(config) { config.style }
+    val firstItemFocusRequester = remember { FocusRequester() }
+
+    Row(
+        modifier = modifier.fillMaxSize().background(Color.Black),
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(2) { column ->
+            BenchmarkItem(
+                variant = variant,
+                title = FOCUS_FLIP_BENCHMARK_TITLE,
+                style = style,
+                config = config,
+                marker = "benchmark-item-0-$column",
+                recompositionDriver = recompositionDriver,
+                onClick = { },
+                modifier =
+                    if (column == 0) {
+                        Modifier.focusRequester(firstItemFocusRequester)
+                    } else {
+                        Modifier
+                    },
+            )
+        }
+    }
+
+    LaunchedEffect(firstItemFocusRequester) {
+        firstItemFocusRequester.requestFocus()
     }
 }
 
