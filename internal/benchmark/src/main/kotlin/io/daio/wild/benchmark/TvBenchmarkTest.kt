@@ -30,9 +30,10 @@ private const val MODE_EXTRA = "MODE"
 private const val ITEMS_EXTRA = "ITEMS"
 private const val RECOMPOSITION_DRIVER_EXTRA = "RECOMPOSITION_DRIVER"
 private const val GRID_MODE = "grid"
+private const val FOCUS_FLIP_MODE = "focus_flip"
 private const val FIRST_FOCUS_TARGET = "benchmark-item-0-0"
 private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
-private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-15"
+private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
 private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
 
@@ -70,12 +71,14 @@ private val SCROLL_GRID_FOCUS_SEQUENCE =
         repeat(5) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
     }
 
-/** Horizontal focus flips — isolates style update cost vs deep grid scroll. */
+/** Alternates focus between two stationary items, then ends on the second item. */
 private val FOCUS_FLIP_SEQUENCE =
     buildList {
-        repeat(15) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
-        repeat(15) { add(KeyEvent.KEYCODE_DPAD_LEFT) }
-        repeat(15) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+        repeat(15) {
+            add(KeyEvent.KEYCODE_DPAD_RIGHT)
+            add(KeyEvent.KEYCODE_DPAD_LEFT)
+        }
+        add(KeyEvent.KEYCODE_DPAD_RIGHT)
     }
 
 @RunWith(AndroidJUnit4::class)
@@ -105,6 +108,7 @@ class TvBenchmarkTest {
     fun focusFlipWithCurrentTraversal() {
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.CurrentTraversal,
+            mode = FOCUS_FLIP_MODE,
             focusSequence = FOCUS_FLIP_SEQUENCE,
             terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
         )
@@ -114,6 +118,7 @@ class TvBenchmarkTest {
     fun focusFlipWithCandidateComposite() {
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.CandidateComposite,
+            mode = FOCUS_FLIP_MODE,
             focusSequence = FOCUS_FLIP_SEQUENCE,
             terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
         )
@@ -151,6 +156,7 @@ class TvBenchmarkTest {
 
 private fun MacrobenchmarkRule.measureStyleVariant(
     variant: StyleVariant,
+    mode: String = GRID_MODE,
     focusSequence: List<Int>,
     terminalFocusTarget: String,
     enableRecompositionDriver: Boolean = false,
@@ -163,12 +169,17 @@ private fun MacrobenchmarkRule.measureStyleVariant(
         iterations = DEFAULT_ITERATIONS,
         setupBlock = {
             startActivityAndWait {
-                it.putExtra(MODE_EXTRA, GRID_MODE)
+                it.putExtra(MODE_EXTRA, mode)
                 it.putExtra(ITEMS_EXTRA, variant.extraValue)
                 it.putExtra(RECOMPOSITION_DRIVER_EXTRA, enableRecompositionDriver)
             }
             device.waitForIdle()
-            check(device.wait(Until.hasObject(By.desc(FIRST_FOCUS_TARGET)), FOCUS_TARGET_TIMEOUT_MS)) {
+            check(
+                device.wait(
+                    Until.hasObject(By.desc(FIRST_FOCUS_TARGET).focused(true)),
+                    FOCUS_TARGET_TIMEOUT_MS,
+                ),
+            ) {
                 "Timed out waiting for first benchmark focus target $FIRST_FOCUS_TARGET"
             }
             if (enableRecompositionDriver) {
@@ -201,14 +212,19 @@ private fun UiDevice.runDeterministicFocusSequence(
     var recompositionGeneration = 0
 
     focusSequence.forEach { keyCode ->
-        pressKeyCode(keyCode)
+        check(pressKeyCode(keyCode)) { "Failed to inject DPAD key $keyCode" }
         SystemClock.sleep(INPUT_FRAME_PACE_MS)
         if (enableRecompositionDriver) {
             requestUnchangedRecomposition(++recompositionGeneration)
         }
     }
 
-    check(wait(Until.hasObject(By.desc(terminalFocusTarget)), FOCUS_TARGET_TIMEOUT_MS)) {
+    check(
+        wait(
+            Until.hasObject(By.desc(terminalFocusTarget).focused(true)),
+            FOCUS_TARGET_TIMEOUT_MS,
+        ),
+    ) {
         "Timed out waiting for terminal benchmark focus target $terminalFocusTarget"
     }
 }

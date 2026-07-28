@@ -4,8 +4,15 @@ package io.daio.android.tv
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.performKeyInput
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
@@ -55,6 +62,61 @@ class TvBenchmarkScenarioTest {
             BenchmarkItemImplementation.MaterialSurface,
             benchmarkStyleVariant("material_surface").implementation,
         )
+    }
+
+    @Test
+    fun focusFlipScenarioAlternatesBetweenTwoStationaryTargets() {
+        composeRule.setContent {
+            TvLayout(
+                mode = "focus_flip",
+                itemsType = "current_traversal",
+            )
+        }
+
+        val firstTarget =
+            composeRule
+                .onNodeWithContentDescription("benchmark-item-0-0")
+                .assertIsFocused()
+        val secondTarget =
+            composeRule.onNodeWithContentDescription("benchmark-item-0-1")
+        composeRule
+            .onNodeWithContentDescription("benchmark-item-0-2")
+            .assertDoesNotExist()
+
+        firstTarget.performKeyInput {
+            keyDown(Key.DirectionRight)
+            keyUp(Key.DirectionRight)
+        }
+        secondTarget.assertIsFocused()
+
+        secondTarget.performKeyInput {
+            keyDown(Key.DirectionLeft)
+            keyUp(Key.DirectionLeft)
+        }
+        firstTarget.assertIsFocused()
+    }
+
+    @Test
+    fun focusFlipVariantsRenderIdenticalContent() {
+        val itemsType = mutableStateOf("current_traversal")
+        composeRule.setContent {
+            TvLayout(
+                mode = "focus_flip",
+                itemsType = itemsType.value,
+            )
+        }
+
+        composeRule
+            .onAllNodesWithText("style_focus_flip")
+            .assertCountEquals(2)
+
+        composeRule.runOnIdle {
+            itemsType.value = "candidate_composite"
+        }
+
+        composeRule
+            .onAllNodesWithText("style_focus_flip")
+            .assertCountEquals(2)
     }
 
     @Test

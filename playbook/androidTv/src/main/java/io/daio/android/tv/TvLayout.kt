@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +22,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -45,13 +49,13 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.clickable
-import kotlin.math.abs
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
 
 private const val GRID_ROWS = 20
 private const val GRID_COLUMNS = 100
 private const val LIST_ITEMS = 100
 private const val SOURCE_PATH_BENCHMARK_TITLE = "styled_clickable_source_path"
+private const val FOCUS_FLIP_BENCHMARK_TITLE = "style_focus_flip"
 
 internal enum class BenchmarkItemImplementation {
     StyledClickable,
@@ -230,6 +234,7 @@ private fun BenchmarkLayout(
     when (mode) {
         "list" -> OptionsList(variant, modifier, recompositionDriver)
         "grid" -> OptionsGrid(variant, modifier, recompositionDriver)
+        "focus_flip" -> OptionsFocusFlip(variant, modifier, recompositionDriver)
     }
 }
 
@@ -273,20 +278,7 @@ private fun OptionsGrid(
                     offset: Float,
                     size: Float,
                     containerSize: Float,
-                ): Float {
-                    val trailingEdge = offset + size
-                    val sizeOfItem = abs(trailingEdge - offset)
-                    val childSmallerThanParent = sizeOfItem <= containerSize
-                    val initialTargetForLeadingEdge = containerSize / 2f - sizeOfItem / 2f
-                    val spaceAvailableToShowItem = containerSize - initialTargetForLeadingEdge
-                    val targetForLeadingEdge =
-                        if (childSmallerThanParent && spaceAvailableToShowItem < sizeOfItem) {
-                            containerSize - sizeOfItem
-                        } else {
-                            initialTargetForLeadingEdge
-                        }
-                    return offset - targetForLeadingEdge
-                }
+                ): Float = offset + (size - containerSize) / 2f
             }
         }
 
@@ -321,6 +313,45 @@ private fun OptionsGrid(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OptionsFocusFlip(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+    recompositionDriver: BenchmarkRecompositionDriver? = null,
+) {
+    val config = remember { BenchmarkItemConfig() }
+    val style = remember(config) { config.style }
+    val firstItemFocusRequester = remember { FocusRequester() }
+
+    Row(
+        modifier = modifier.fillMaxSize().background(Color.Black),
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(2) { column ->
+            BenchmarkItem(
+                variant = variant,
+                title = FOCUS_FLIP_BENCHMARK_TITLE,
+                style = style,
+                config = config,
+                marker = "benchmark-item-0-$column",
+                recompositionDriver = recompositionDriver,
+                onClick = { },
+                modifier =
+                    if (column == 0) {
+                        Modifier.focusRequester(firstItemFocusRequester)
+                    } else {
+                        Modifier
+                    },
+            )
+        }
+    }
+
+    LaunchedEffect(firstItemFocusRequester) {
+        firstItemFocusRequester.requestFocus()
     }
 }
 

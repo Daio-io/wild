@@ -49,7 +49,7 @@ Run at least two invocations and compare variance before making performance conc
 ./gradlew :internal:benchmark:connectedCheck
 ```
 
-To isolate style-update cost without deep grid scroll, run the horizontal focus-flip pair:
+To isolate style-update cost without lazy scrolling, run the two-item focus-flip pair:
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck \
@@ -60,10 +60,11 @@ To isolate style-update cost without deep grid scroll, run the horizontal focus-
 
 **Confirmation / release profile (default in `TvBenchmarkTest`):** warm startup, 20 measured
 iterations, `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, plus
-`focusFlip*` cases. Keys use a fixed ~50ms `SystemClock.sleep` pace (not only `waitForIdle`) so
-bursty DPAD input stays comparable across devices. Nested `LazyRow` grids reset column on vertical
-moves, so scroll sequences re-scroll horizontally after each `DOWN`. The playbook grid centers
-focused items with `BringIntoViewSpec` so scroll stays aligned under rapid focus moves.
+`focusFlip*` cases that alternate between two stationary items. Keys use a fixed ~50ms
+`SystemClock.sleep` pace (not only `waitForIdle`) so bursty DPAD input stays comparable across
+devices. Nested `LazyRow` grids reset column on vertical moves, so scroll sequences re-scroll
+horizontally after each `DOWN`. The playbook grid centers focused items with `BringIntoViewSpec` so
+scroll stays aligned under rapid focus moves.
 `FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`.
 
 **Local optimization profile:** temporarily lower iteration count, use `CompilationMode.None()`,
