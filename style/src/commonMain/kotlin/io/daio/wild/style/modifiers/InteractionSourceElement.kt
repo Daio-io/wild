@@ -35,6 +35,8 @@ fun Modifier.interactionSourceNode(
 
 object DefaultInteractionSourceChildTraversalKey
 
+internal object InteractionSourceTraversalKey
+
 @Immutable
 data class Interactions(
     val focused: Boolean,
@@ -209,8 +211,6 @@ internal class InteractionSourceNode(
     }
 
     private companion object {
-        object InteractionSourceParentKey
-
         const val STATE_NONE = 0
         const val STATE_PRESSED = 1 shl 0
         const val STATE_HOVERED = 1 shl 1
@@ -229,5 +229,17 @@ internal class InteractionSourceNode(
     }
 
     override val traverseKey: Any
-        get() = InteractionSourceParentKey
+        get() = InteractionSourceTraversalKey
+}
+
+internal fun Modifier.staticStyleBoundary(): Modifier = this then StaticStyleBoundaryElement
+
+private data object StaticStyleBoundaryElement : ModifierNodeElement<StaticStyleBoundaryNode>() {
+    override fun create() = StaticStyleBoundaryNode()
+
+    override fun update(node: StaticStyleBoundaryNode) = Unit
+}
+
+internal class StaticStyleBoundaryNode : Modifier.Node(), TraversableNode {
+    override val traverseKey: Any = InteractionSourceTraversalKey
 }

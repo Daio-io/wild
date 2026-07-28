@@ -21,6 +21,7 @@ import io.daio.wild.style.modifiers.StyleResolver
 import io.daio.wild.style.modifiers.StyleScopeParentElement
 import io.daio.wild.style.modifiers.border
 import io.daio.wild.style.modifiers.interactionSourceNode
+import io.daio.wild.style.modifiers.staticStyleBoundary
 
 /**
  * Style class for components.
@@ -352,7 +353,7 @@ fun Modifier.interactionStyle(
  * @since 0.7.0
  */
 fun Modifier.staticStyle(style: Style): Modifier =
-    this then
+    this.staticStyleBoundary() then
         StyleScopeParentElement(
             resolver = StyleResolver.Value(style),
         ) then

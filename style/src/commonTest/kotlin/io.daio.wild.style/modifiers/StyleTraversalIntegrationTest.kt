@@ -28,6 +28,7 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.interactionStyle
+import io.daio.wild.style.staticStyle
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -801,6 +802,42 @@ class StyleTraversalIntegrationTest {
                             .interactionStyle(interactionSource = null, style = innerStyle)
                             .recordStyle(inner),
                     )
+                }
+            }
+            waitForIdle()
+            val innerUpdates = inner.snapshots.size
+            assertEquals(Color.Blue, inner.last.color)
+
+            runBlocking {
+                outerSource.emit(FocusInteraction.Focus())
+            }
+            waitForIdle()
+
+            assertEquals(innerUpdates, inner.snapshots.size)
+            assertEquals(Color.Blue, inner.last.color)
+        }
+
+    @Test
+    fun staticStyleDoesNotObserveAncestorInteractions() =
+        runComposeUiTest {
+            val outerSource = MutableInteractionSource()
+            val inner = StyleRecorder()
+            val innerStyle =
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = Color.Blue,
+                            focusedBackgroundColor = Color.Red,
+                        ),
+                )
+
+            setContent {
+                Box(
+                    Modifier
+                        .size(1.dp)
+                        .interactionStyle(outerSource) { if (focused) color = Color.Red },
+                ) {
+                    Box(Modifier.size(1.dp).staticStyle(innerStyle).recordStyle(inner))
                 }
             }
             waitForIdle()
