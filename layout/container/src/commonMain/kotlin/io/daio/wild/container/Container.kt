@@ -27,7 +27,7 @@ import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.interactable
-import io.daio.wild.style.interactionStyle
+import io.daio.wild.style.staticStyle
 
 /**
  * [Container] is a building block component that can be used for any static element or as an
@@ -53,7 +53,7 @@ fun Container(
 ) {
     Box(
         modifier =
-            modifier.interactionStyle(
+            modifier.staticStyle(
                 style =
                     StyleDefaults.style(
                         colors =
@@ -64,8 +64,6 @@ fun Container(
                         shapes = StyleDefaults.shapes(shape = shape),
                         borders = StyleDefaults.borders(border = border),
                     ),
-                interactionSource = null,
-                enabled = true,
             ),
         propagateMinConstraints = true,
         content = {

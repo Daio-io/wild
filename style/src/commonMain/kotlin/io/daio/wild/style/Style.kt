@@ -21,6 +21,7 @@ import io.daio.wild.style.modifiers.StyleResolver
 import io.daio.wild.style.modifiers.StyleScopeParentElement
 import io.daio.wild.style.modifiers.border
 import io.daio.wild.style.modifiers.interactionSourceNode
+import io.daio.wild.style.modifiers.staticStyleBoundary
 
 /**
  * Style class for components.
@@ -338,6 +339,22 @@ fun Modifier.interactionStyle(
         StyleScopeParentElement(
             enabled = enabled,
             selected = selected,
+            resolver = StyleResolver.Value(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
+
+/**
+ * Sets a non-interactive [Style] on the element.
+ *
+ * @param style The [Style] to apply to the element.
+ * @since 0.7.0
+ */
+fun Modifier.staticStyle(style: Style): Modifier =
+    this.staticStyleBoundary() then
+        StyleScopeParentElement(
             resolver = StyleResolver.Value(style),
         ) then
         ScaleLayoutElement() then
