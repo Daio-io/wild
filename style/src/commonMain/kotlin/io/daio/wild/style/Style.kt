@@ -331,19 +331,29 @@ fun Modifier.interactionStyle(
     selected: Boolean = false,
     style: Style,
 ): Modifier =
-    (
-        if (interactionSource != null) {
-            this.interactionSourceNode(
-                interactionSource = interactionSource,
-                childTraversalKey = StyleParentTraversalKey,
-            )
-        } else {
-            this
-        }
+    this.interactionSourceNode(
+        interactionSource = interactionSource,
+        childTraversalKey = StyleParentTraversalKey,
     ) then
         StyleScopeParentElement(
             enabled = enabled,
             selected = selected,
+            resolver = StyleResolver.Value(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
+
+/**
+ * Sets a non-interactive [Style] on the element.
+ *
+ * @param style The [Style] to apply to the element.
+ * @since 0.7.0
+ */
+fun Modifier.staticStyle(style: Style): Modifier =
+    this then
+        StyleScopeParentElement(
             resolver = StyleResolver.Value(style),
         ) then
         ScaleLayoutElement() then

@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class StaticContainerModifierTest {
     @Test
-    fun doesNotInstallAnInteractionSourceElement() =
+    fun installsStaticStyleWithoutAnInteractionSourceElement() =
         runComposeUiTest {
             setContent {
                 Container(
@@ -31,9 +31,23 @@ class StaticContainerModifierTest {
                     .layoutInfo
                     .modifierInfos()
                     .flatMap { info -> info.modifier().elements() }
+            val elementNames = elements.map { element -> element::class.simpleName }
 
             assertTrue(
-                elements.none { element -> element::class.simpleName == "InteractionSourceElement" },
+                elementNames.containsAll(
+                    listOf(
+                        "StyleScopeParentElement",
+                        "ScaleLayoutElement",
+                        "BorderElement",
+                        "BackgroundElement",
+                        "ShapeLayoutElement",
+                    ),
+                ),
+                elements.toString(),
+            )
+
+            assertTrue(
+                elementNames.none { element -> element == "InteractionSourceElement" },
                 elements.toString(),
             )
         }

@@ -387,6 +387,7 @@ package io.daio.wild.style {
     method @Deprecated public static androidx.compose.ui.Modifier experimentalInteractionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, io.daio.wild.style.Style style);
     method public static androidx.compose.ui.Modifier interactionStyle(androidx.compose.ui.Modifier, androidx.compose.foundation.interaction.InteractionSource? interactionSource, optional boolean enabled, optional boolean selected, kotlin.jvm.functions.Function1<? super io.daio.wild.style.StyleScope,kotlin.Unit> block);
+    method public static androidx.compose.ui.Modifier staticStyle(androidx.compose.ui.Modifier, io.daio.wild.style.Style style);
   }
 
   @io.daio.wild.style.StyleScopeDslMarker public interface StyleScope extends io.daio.wild.foundation.InteractionState {
