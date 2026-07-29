@@ -53,10 +53,10 @@ private data class BenchmarkProfile(
 )
 
 private enum class StyleVariant(val extraValue: String) {
-    CurrentTraversal("current_traversal"),
+    WildClickable("wild_clickable"),
     ExplicitSourceFastPath("explicit_source_fast_path"),
     NullSourceCompatibility("null_source_compatibility"),
-    CandidateComposite("candidate_composite"),
+    WildContainer("wild_container"),
     MaterialSurface("material_surface"),
 }
 
@@ -119,10 +119,10 @@ class TvBenchmarkTest {
     val benchmarkRule: MacrobenchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun scrollGridWithCurrentTraversal() {
+    fun scrollGridWithWildClickable() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CurrentTraversal,
+            variant = StyleVariant.WildClickable,
             iterations = profile.iterations,
             focusSequence = profile.scrollFocusSequence,
             terminalFocusTarget = profile.scrollTerminalTarget,
@@ -130,10 +130,10 @@ class TvBenchmarkTest {
     }
 
     @Test
-    fun scrollGridWithCandidateComposite() {
+    fun scrollGridWithWildContainer() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CandidateComposite,
+            variant = StyleVariant.WildContainer,
             iterations = profile.iterations,
             focusSequence = profile.scrollFocusSequence,
             terminalFocusTarget = profile.scrollTerminalTarget,
@@ -141,10 +141,10 @@ class TvBenchmarkTest {
     }
 
     @Test
-    fun focusFlipWithCurrentTraversal() {
+    fun focusFlipWithWildClickable() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CurrentTraversal,
+            variant = StyleVariant.WildClickable,
             mode = FOCUS_FLIP_MODE,
             iterations = profile.iterations,
             focusSequence = FOCUS_FLIP_SEQUENCE,
@@ -153,10 +153,10 @@ class TvBenchmarkTest {
     }
 
     @Test
-    fun focusFlipWithCandidateComposite() {
+    fun focusFlipWithWildContainer() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CandidateComposite,
+            variant = StyleVariant.WildContainer,
             mode = FOCUS_FLIP_MODE,
             iterations = profile.iterations,
             focusSequence = FOCUS_FLIP_SEQUENCE,

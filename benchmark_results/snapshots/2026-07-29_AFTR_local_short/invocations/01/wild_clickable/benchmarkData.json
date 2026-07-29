@@ -24,7 +24,7 @@
     },
     "benchmarks": [
         {
-            "name": "scrollGridWithCurrentTraversal",
+            "name": "scrollGridWithWildClickable",
             "params": {},
             "className": "io.daio.wild.benchmark.TvBenchmarkTest",
             "totalRunTimeNs": 233781638819,
@@ -4225,27 +4225,27 @@
                 {
                     "type": "PerfettoTrace",
                     "label": "Trace Iteration 0",
-                    "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter000_2026-07-29-21-33-29.perfetto-trace"
+                    "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter000_2026-07-29-21-33-29.perfetto-trace"
                 },
                 {
                     "type": "PerfettoTrace",
                     "label": "Trace Iteration 1",
-                    "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter001_2026-07-29-21-34-05.perfetto-trace"
+                    "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter001_2026-07-29-21-34-05.perfetto-trace"
                 },
                 {
                     "type": "PerfettoTrace",
                     "label": "Trace Iteration 2",
-                    "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter002_2026-07-29-21-34-41.perfetto-trace"
+                    "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter002_2026-07-29-21-34-41.perfetto-trace"
                 },
                 {
                     "type": "PerfettoTrace",
                     "label": "Trace Iteration 3",
-                    "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter003_2026-07-29-21-35-17.perfetto-trace"
+                    "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter003_2026-07-29-21-35-17.perfetto-trace"
                 },
                 {
                     "type": "PerfettoTrace",
                     "label": "Trace Iteration 4",
-                    "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter004_2026-07-29-21-35-53.perfetto-trace"
+                    "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter004_2026-07-29-21-35-53.perfetto-trace"
                 }
             ]
         }

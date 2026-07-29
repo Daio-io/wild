@@ -2,13 +2,13 @@
 
 The TV macrobenchmark suite compares equivalent grid items across explicit style variants:
 
-- `current_traversal`: production Wild `Modifier.clickable(style = ...)` traversable-node chain.
+- `wild_clickable`: production Wild `Modifier.clickable(style = ...)` traversable-node chain.
 - `explicit_source_fast_path`: production Wild styled clickable with one remembered, non-null
   `MutableInteractionSource`, exercising the ordinary modifier path.
 - `null_source_compatibility`: the same styled clickable and item configuration with a null source,
   exercising the compatibility `composed` path.
-- `candidate_composite`: Wild `Container(...)` candidate path using the same shared item
-  configuration as the other variants.
+- `wild_container`: Wild `Container(...)` using the same shared item configuration as the other
+  variants.
 - `material_surface`: Android TV Material `Surface` baseline using matching size, colors, shape,
   border, scale target, item count, and deterministic focus input.
 
@@ -42,7 +42,7 @@ Android TV or matching device profile. Emulator runs are useful for harness debu
 
 Useful flags:
 
-- `--variants current,container,material` — subset of the release comparison set
+- `--variants clickable,container,material` — subset of the release comparison set
 - `--serial <adb-serial>` — required when more than one device is connected
 - `--invocations N` — repeat the selected set for run-to-run variance
 
@@ -50,8 +50,8 @@ Alias mapping:
 
 | Alias | Variant folder | Test method |
 |-------|----------------|-------------|
-| `current` | `current_traversal` | `scrollGridWithCurrentTraversal` |
-| `container` | `candidate_composite` | `scrollGridWithCandidateComposite` |
+| `clickable` | `wild_clickable` | `scrollGridWithWildClickable` |
+| `container` | `wild_container` | `scrollGridWithWildContainer` |
 | `material` | `material_surface` | `scrollGridWithMaterialSurface` |
 
 Each session archives raw JSON, optional message text, perfetto traces, `session.json`, and
@@ -105,9 +105,9 @@ Two-item focus-flip pair:
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck \
-  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithCurrentTraversal"
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithWildClickable"
 ./gradlew :internal:benchmark:connectedCheck \
-  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithCandidateComposite"
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithWildContainer"
 ```
 
 Optional short profile for a single deep-dive method:

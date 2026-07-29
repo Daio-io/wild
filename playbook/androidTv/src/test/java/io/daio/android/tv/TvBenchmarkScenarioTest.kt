@@ -48,15 +48,15 @@ class TvBenchmarkScenarioTest {
     fun existingBenchmarkVariantsRemainAvailable() {
         assertEquals(
             BenchmarkItemImplementation.StyledClickable,
-            benchmarkStyleVariant("current_traversal").implementation,
+            benchmarkStyleVariant("wild_clickable").implementation,
         )
         assertEquals(
             BenchmarkInteractionSourceStrategy.Explicit,
-            benchmarkStyleVariant("current_traversal").interactionSourceStrategy,
+            benchmarkStyleVariant("wild_clickable").interactionSourceStrategy,
         )
         assertEquals(
-            BenchmarkItemImplementation.CandidateComposite,
-            benchmarkStyleVariant("candidate_composite").implementation,
+            BenchmarkItemImplementation.WildContainer,
+            benchmarkStyleVariant("wild_container").implementation,
         )
         assertEquals(
             BenchmarkItemImplementation.MaterialSurface,
@@ -69,7 +69,7 @@ class TvBenchmarkScenarioTest {
         composeRule.setContent {
             TvLayout(
                 mode = "focus_flip",
-                itemsType = "current_traversal",
+                itemsType = "wild_clickable",
             )
         }
 
@@ -98,7 +98,7 @@ class TvBenchmarkScenarioTest {
 
     @Test
     fun focusFlipVariantsRenderIdenticalContent() {
-        val itemsType = mutableStateOf("current_traversal")
+        val itemsType = mutableStateOf("wild_clickable")
         composeRule.setContent {
             TvLayout(
                 mode = "focus_flip",
@@ -111,7 +111,7 @@ class TvBenchmarkScenarioTest {
             .assertCountEquals(2)
 
         composeRule.runOnIdle {
-            itemsType.value = "candidate_composite"
+            itemsType.value = "wild_container"
         }
 
         composeRule

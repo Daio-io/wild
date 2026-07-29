@@ -24,7 +24,7 @@
   },
   "benchmarks": [
     {
-      "name": "scrollGridWithCurrentTraversal",
+      "name": "scrollGridWithWildClickable",
       "params": {},
       "className": "io.daio.wild.benchmark.TvBenchmarkTest",
       "totalRunTimeNs": 250024797869,
@@ -4264,27 +4264,27 @@
         {
           "type": "PerfettoTrace",
           "label": "Trace Iteration 0",
-          "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter000_2026-07-28-09-04-25.perfetto-trace"
+          "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter000_2026-07-28-09-04-25.perfetto-trace"
         },
         {
           "type": "PerfettoTrace",
           "label": "Trace Iteration 1",
-          "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter001_2026-07-28-09-05-03.perfetto-trace"
+          "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter001_2026-07-28-09-05-03.perfetto-trace"
         },
         {
           "type": "PerfettoTrace",
           "label": "Trace Iteration 2",
-          "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter002_2026-07-28-09-05-43.perfetto-trace"
+          "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter002_2026-07-28-09-05-43.perfetto-trace"
         },
         {
           "type": "PerfettoTrace",
           "label": "Trace Iteration 3",
-          "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter003_2026-07-28-09-06-21.perfetto-trace"
+          "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter003_2026-07-28-09-06-21.perfetto-trace"
         },
         {
           "type": "PerfettoTrace",
           "label": "Trace Iteration 4",
-          "filename": "TvBenchmarkTest_scrollGridWithCurrentTraversal_iter004_2026-07-28-09-07-00.perfetto-trace"
+          "filename": "TvBenchmarkTest_scrollGridWithWildClickable_iter004_2026-07-28-09-07-00.perfetto-trace"
         }
       ]
     }

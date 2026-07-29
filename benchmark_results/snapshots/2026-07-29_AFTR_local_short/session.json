@@ -7,21 +7,21 @@
   "gitSha": "813fb73",
   "composeVersion": "1.11.1",
   "variants": [
-    "current_traversal",
-    "candidate_composite",
+    "wild_clickable",
+    "wild_container",
     "material_surface"
   ],
   "commands": [
-    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithCurrentTraversal -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
-    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithCandidateComposite -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
+    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithWildClickable -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
+    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithWildContainer -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
     "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithMaterialSurface -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short"
   ],
   "invocations": [
     {
       "index": 1,
       "results": {
-        "current_traversal": {
-          "name": "scrollGridWithCurrentTraversal",
+        "wild_clickable": {
+          "name": "scrollGridWithWildClickable",
           "frameCount": {
             "minimum": 816.0,
             "maximum": 830.0,
@@ -82,8 +82,8 @@
           },
           "totalRunTimeNs": 233781638819
         },
-        "candidate_composite": {
-          "name": "scrollGridWithCandidateComposite",
+        "wild_container": {
+          "name": "scrollGridWithWildContainer",
           "frameCount": {
             "minimum": 826.0,
             "maximum": 830.0,

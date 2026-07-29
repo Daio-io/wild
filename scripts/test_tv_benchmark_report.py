@@ -16,7 +16,7 @@ FIXTURE = Path(__file__).parent / "testdata" / "aftr_sample_benchmarkData.json"
 
 class TvBenchmarkReportTest(unittest.TestCase):
     def test_extract_variant_metrics_reads_frame_and_memory(self):
-        metrics = extract_variant_metrics(FIXTURE, benchmark_name="scrollGridWithCurrentTraversal")
+        metrics = extract_variant_metrics(FIXTURE, benchmark_name="scrollGridWithWildClickable")
         self.assertEqual(metrics["frameCount"]["median"], 831.0)
         self.assertAlmostEqual(metrics["frameDurationCpuMs"]["P50"], 5.902167, places=5)
         self.assertEqual(metrics["memoryHeapSizeMaxKb"]["median"], 9288.0)
@@ -32,15 +32,15 @@ class TvBenchmarkReportTest(unittest.TestCase):
             "device": {"model": "AFTR", "androidVersion": "9"},
             "gitSha": "abc1234",
             "composeVersion": "1.11.1",
-            "variants": ["current_traversal", "candidate_composite", "material_surface"],
+            "variants": ["wild_clickable", "wild_container", "material_surface"],
             "invocations": [
                 {
                     "index": 1,
                     "results": {
-                        "current_traversal": extract_variant_metrics(
-                            FIXTURE, "scrollGridWithCurrentTraversal"
+                        "wild_clickable": extract_variant_metrics(
+                            FIXTURE, "scrollGridWithWildClickable"
                         ),
-                        "candidate_composite": {
+                        "wild_container": {
                             "frameCount": {"median": 828.0},
                             "frameDurationCpuMs": {
                                 "P50": 5.92,
@@ -70,7 +70,7 @@ class TvBenchmarkReportTest(unittest.TestCase):
         self.assertIn("AFTR", summary)
         self.assertNotIn("192.168.", summary)
         self.assertIn("material_surface", summary)
-        self.assertIn("candidate_composite", summary)
+        self.assertIn("wild_container", summary)
         self.assertIn("human-reviewed", summary.lower())
         self.assertIn("P99", summary)
 

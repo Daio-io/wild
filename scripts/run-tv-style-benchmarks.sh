@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROFILE="confirmation"
 SERIAL=""
-VARIANTS="current,container,material"
+VARIANTS="clickable,container,material"
 INVOCATIONS=1
 
 usage() {
@@ -14,7 +14,7 @@ Usage: ./scripts/run-tv-style-benchmarks.sh [options]
 Options:
   --profile confirmation|local_short   Benchmark profile (default: confirmation)
   --serial <adb-serial>                Required if multiple devices are connected
-  --variants current,container,material
+  --variants clickable,container,material
   --invocations <N>                    Repeat the selected set N times (default: 1)
   -h, --help                           Show help
 EOF
@@ -62,8 +62,8 @@ fi
 
 alias_to_folder() {
   case "$1" in
-    current) echo "current_traversal" ;;
-    container) echo "candidate_composite" ;;
+    clickable) echo "wild_clickable" ;;
+    container) echo "wild_container" ;;
     material) echo "material_surface" ;;
     *)
       echo "Unknown variant alias: $1" >&2
@@ -74,8 +74,8 @@ alias_to_folder() {
 
 alias_to_method() {
   case "$1" in
-    current) echo "scrollGridWithCurrentTraversal" ;;
-    container) echo "scrollGridWithCandidateComposite" ;;
+    clickable) echo "scrollGridWithWildClickable" ;;
+    container) echo "scrollGridWithWildContainer" ;;
     material) echo "scrollGridWithMaterialSurface" ;;
     *)
       echo "Unknown variant alias: $1" >&2
@@ -249,8 +249,8 @@ sys.path.insert(0, str(root / "scripts"))
 from tv_benchmark_report import extract_variant_metrics, write_session_artifacts
 
 alias_to_folder = {
-    "current": "current_traversal",
-    "container": "candidate_composite",
+    "clickable": "wild_clickable",
+    "container": "wild_container",
     "material": "material_surface",
 }
 
