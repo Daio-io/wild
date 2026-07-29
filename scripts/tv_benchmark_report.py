@@ -34,10 +34,16 @@ def percent_delta(value: float | None, baseline: float | None) -> float | None:
     return ((value - baseline) / baseline) * 100.0
 
 
-def _fmt_ms(value: float | None) -> str:
+def _fmt_number(value: float | None, digits: int = 2) -> str:
     if value is None:
         return "—"
-    return f"{value:.2f}"
+    if float(value).is_integer():
+        return str(int(value))
+    return f"{value:.{digits}f}"
+
+
+def _fmt_ms(value: float | None) -> str:
+    return _fmt_number(value, digits=2)
 
 
 def _fmt_delta(value: float | None) -> str:
@@ -102,12 +108,12 @@ def build_session_summary(session: dict[str, Any]) -> str:
         lines.append(
             "| {variant} | {fc} | {p50} | {p90} | {p95} | {p99} | {heap} | {rt} |".format(
                 variant=variant,
-                fc=_fmt_ms(_median_or_none(metrics.get("frameCount"))),
+                fc=_fmt_number(_median_or_none(metrics.get("frameCount")), digits=0),
                 p50=_fmt_ms(cpu.get("P50")),
                 p90=_fmt_ms(cpu.get("P90")),
                 p95=_fmt_ms(cpu.get("P95")),
                 p99=_fmt_ms(cpu.get("P99")),
-                heap=_fmt_ms(_median_or_none(metrics.get("memoryHeapSizeMaxKb"))),
+                heap=_fmt_number(_median_or_none(metrics.get("memoryHeapSizeMaxKb")), digits=0),
                 rt=_fmt_ms(_runtime_s(metrics.get("totalRunTimeNs"))),
             )
         )
