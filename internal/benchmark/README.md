@@ -7,8 +7,10 @@ The TV macrobenchmark suite compares equivalent grid items across explicit style
   `MutableInteractionSource`, exercising the ordinary modifier path.
 - `null_source_compatibility`: the same styled clickable and item configuration with a null source,
   exercising the compatibility `composed` path.
-- `candidate_composite`: benchmark-only candidate path that routes the same shared item configuration through `Container` so it can be replaced by a unified-node prototype without changing scenario setup.
-- `material_surface`: Android TV Material `Surface` baseline using matching size, colors, shape, border, scale target, item count, and deterministic focus input.
+- `candidate_composite`: Wild `Container(...)` candidate path using the same shared item
+  configuration as the other variants.
+- `material_surface`: Android TV Material `Surface` baseline using matching size, colors, shape,
+  border, scale target, item count, and deterministic focus input.
 
 The benchmark hoists the shared Wild `Style` out of lazy item bodies for the Wild variants. This keeps style construction out of the scroll measurement; add a separate microbenchmark if style construction or node creation cost is the target.
 
@@ -25,15 +27,62 @@ lookup/null branch in each driven item. Both measured variants pay that same min
 detailed composition records and their marker strings are created only when the test observer is
 present.
 
-## Reproduction
+## Release workflow (preferred)
 
-Run the suite on the same physical Android TV or matching device profile for every comparison. Emulator runs are useful for development only.
+Use the single-device release runner for comparable Wild vs Material claims. Prefer one physical
+Android TV or matching device profile. Emulator runs are useful for harness debugging only.
+
+```bash
+# Release claims (confirmation profile)
+./scripts/run-tv-style-benchmarks.sh --profile confirmation
+
+# Local exploration on a physical device
+./scripts/run-tv-style-benchmarks.sh --profile local_short --invocations 1
+```
+
+Useful flags:
+
+- `--variants current,container,material` — subset of the release comparison set
+- `--serial <adb-serial>` — required when more than one device is connected
+- `--invocations N` — repeat the selected set for run-to-run variance
+
+Alias mapping:
+
+| Alias | Variant folder | Test method |
+|-------|----------------|-------------|
+| `current` | `current_traversal` | `scrollGridWithCurrentTraversal` |
+| `container` | `candidate_composite` | `scrollGridWithCandidateComposite` |
+| `material` | `material_surface` | `scrollGridWithMaterialSurface` |
+
+Each session archives raw JSON, optional message text, perfetto traces, `session.json`, and
+`summary.md` under:
+
+```text
+benchmark_results/sessions/<yyyy-mm-dd_HH-mm-ss>_<device>_<profile>/
+```
+
+**Confirmation / release profile (default):** warm startup, 20 measured iterations,
+`CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, fixed ~50ms key pace,
+`FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`. This is the only profile valid for release
+claims in docs or PRs.
+
+**Local short profile:** same compilation mode and metrics, 5 iterations, shortened scroll path
+ending at `benchmark-item-2-10`. Use for device bring-up and harness debugging only — not for
+release claims.
+
+The runner installs `:playbook:androidTv` before measuring, runs each selected variant in isolation,
+and copies outputs before the next Gradle run overwrites them. Summaries are report-only: no
+automatic pass/fail thresholds.
+
+## Deep-dive Gradle commands
+
+Raw Gradle remains available for source-path and focus-flip investigations.
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck
 ```
 
-To run only the directly comparable unchanged-recomposition cases:
+Directly comparable unchanged-recomposition cases:
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck \
@@ -42,14 +91,7 @@ To run only the directly comparable unchanged-recomposition cases:
   -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#recomposeUnchangedGridWithNullSourceCompatibility"
 ```
 
-Run at least two invocations and compare variance before making performance conclusions:
-
-```bash
-./gradlew :internal:benchmark:connectedCheck
-./gradlew :internal:benchmark:connectedCheck
-```
-
-To isolate style-update cost without lazy scrolling, run the two-item focus-flip pair:
+Two-item focus-flip pair:
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck \
@@ -58,25 +100,25 @@ To isolate style-update cost without lazy scrolling, run the two-item focus-flip
   -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithCandidateComposite"
 ```
 
-**Confirmation / release profile (default in `TvBenchmarkTest`):** warm startup, 20 measured
-iterations, `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, plus
-`focusFlip*` cases that alternate between two stationary items. Keys use a fixed ~50ms
-`SystemClock.sleep` pace (not only `waitForIdle`) so bursty DPAD input stays comparable across
-devices. Nested `LazyRow` grids reset column on vertical moves, so scroll sequences re-scroll
-horizontally after each `DOWN`. The playbook grid centers focused items with `BringIntoViewSpec` so
-scroll stays aligned under rapid focus moves.
-`FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`.
+Optional short profile for a single deep-dive method:
 
-**Local optimization profile:** temporarily lower iteration count, use `CompilationMode.None()`,
-and/or shorten the scroll sequence (for example end at `benchmark-item-2-10`). Restore the
-confirmation profile before release claims. Compare runs only when they share the same input pace,
-path, compilation mode, and iteration count.
+```bash
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithMaterialSurface" \
+  -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short
+```
+
+Nested `LazyRow` grids reset column on vertical moves, so scroll sequences re-scroll horizontally
+after each `DOWN`. The playbook grid centers focused items with `BringIntoViewSpec` so scroll stays
+aligned under rapid focus moves.
 
 Record the device model, Android version, build type, Compose version, compilation mode, iteration
-count, and item count with exported benchmark results.
+count, and item count with exported benchmark results. Prefer the archived `session.json` /
+`summary.md` from the release runner when making claims.
 
-Report median and tail frame times, missed or overrun frames, max memory usage, and run-to-run variance. Establish a baseline before adding regression thresholds.
+Report median and tail frame times, max memory usage, and run-to-run variance. Establish a baseline
+before adding regression thresholds.
 
 Peak memory supports a relative allocation-pressure comparison but is not an exact allocation count.
-Use the captured traces or Android Studio's memory profiler when object-level allocation attribution is
-required; do not infer exact allocation counts from `MemoryUsageMetric` alone.
+Use the captured traces or Android Studio's memory profiler when object-level allocation attribution
+is required; do not infer exact allocation counts from `MemoryUsageMetric` alone.
