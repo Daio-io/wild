@@ -3,7 +3,7 @@
 First dated release-runner snapshot on the trusted AFTR Fire TV.
 
 - Profile: `local_short` (exploration; not a confirmation claim)
-- Device: AFTR / Android 9 / `192.168.1.187:5555`
+- Device: AFTR / Android 9
 - Git SHA at run time: `813fb73` (pre-rebase worktree SHA; branch later rebased onto `origin/main`)
 - Variants: `current_traversal`, `candidate_composite` (Wild Container), `material_surface`
 - Included: `session.json`, `summary.md`, per-variant `benchmarkData.json` + `message.txt`

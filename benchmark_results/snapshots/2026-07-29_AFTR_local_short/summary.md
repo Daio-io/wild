@@ -1,7 +1,7 @@
 # TV style benchmark session
 
 - Profile: `local_short`
-- Device: AFTR (192.168.1.187:5555)
+- Device: AFTR
 - Android: 9
 - Git SHA: `813fb73`
 - Compose: 1.11.1

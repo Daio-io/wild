@@ -143,7 +143,6 @@ manifest = {
     "profile": "$PROFILE",
     "device": {
         "model": "$MODEL",
-        "serial": "$SERIAL",
         "androidVersion": "$ANDROID_VERSION",
     },
     "gitSha": "$GIT_SHA",

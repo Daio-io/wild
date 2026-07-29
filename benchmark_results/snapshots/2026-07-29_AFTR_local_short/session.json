@@ -2,7 +2,6 @@
   "profile": "local_short",
   "device": {
     "model": "AFTR",
-    "serial": "192.168.1.187:5555",
     "androidVersion": "9"
   },
   "gitSha": "813fb73",

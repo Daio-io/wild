@@ -73,7 +73,7 @@ def build_session_summary(session: dict[str, Any]) -> str:
         "# TV style benchmark session",
         "",
         f"- Profile: `{session.get('profile', 'unknown')}`",
-        f"- Device: {device.get('model', 'unknown')} ({device.get('serial', 'unknown')})",
+        f"- Device: {device.get('model', 'unknown')}",
         f"- Android: {device.get('androidVersion', 'unknown')}",
         f"- Git SHA: `{session.get('gitSha', 'unknown')}`",
         f"- Compose: {session.get('composeVersion', 'unknown')}",

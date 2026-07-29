@@ -29,7 +29,7 @@ class TvBenchmarkReportTest(unittest.TestCase):
     def test_summary_includes_deltas_and_human_verdict_note(self):
         session = {
             "profile": "local_short",
-            "device": {"model": "AFTR", "serial": "192.168.1.187:5555", "androidVersion": "9"},
+            "device": {"model": "AFTR", "androidVersion": "9"},
             "gitSha": "abc1234",
             "composeVersion": "1.11.1",
             "variants": ["current_traversal", "candidate_composite", "material_surface"],
@@ -68,6 +68,7 @@ class TvBenchmarkReportTest(unittest.TestCase):
         }
         summary = build_session_summary(session)
         self.assertIn("AFTR", summary)
+        self.assertNotIn("192.168.", summary)
         self.assertIn("material_surface", summary)
         self.assertIn("candidate_composite", summary)
         self.assertIn("human-reviewed", summary.lower())
@@ -76,7 +77,7 @@ class TvBenchmarkReportTest(unittest.TestCase):
     def test_write_session_artifacts_emits_json_and_markdown(self):
         session = {
             "profile": "confirmation",
-            "device": {"model": "AFTR", "serial": "serial", "androidVersion": "9"},
+            "device": {"model": "AFTR", "androidVersion": "9"},
             "gitSha": "deadbeef",
             "composeVersion": "1.11.1",
             "variants": ["material_surface"],
