@@ -36,6 +36,7 @@ private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
 private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
 private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
+private const val FOCUS_POLL_INTERVAL_MS = 50L
 private const val BENCHMARK_PROFILE_ARGUMENT = "benchmarkProfile"
 private const val LOCAL_SHORT_PROFILE = "local_short"
 
@@ -221,8 +222,8 @@ private fun MacrobenchmarkRule.measureStyleVariant(
                 it.putExtra(RECOMPOSITION_DRIVER_EXTRA, enableRecompositionDriver)
             }
             device.waitForIdle()
-            check(device.wait(Until.hasObject(By.desc(FIRST_FOCUS_TARGET)), FOCUS_TARGET_TIMEOUT_MS)) {
-                "Timed out waiting for first benchmark marker $FIRST_FOCUS_TARGET"
+            check(device.waitUntilFocusedMarker(FIRST_FOCUS_TARGET, FOCUS_TARGET_TIMEOUT_MS)) {
+                "Timed out waiting for first focused benchmark marker $FIRST_FOCUS_TARGET"
             }
             if (enableRecompositionDriver) {
                 check(device.wait(Until.hasObject(By.desc(recompositionMarker(0))), FOCUS_TARGET_TIMEOUT_MS)) {
@@ -261,9 +262,32 @@ private fun UiDevice.runDeterministicFocusSequence(
         }
     }
 
-    check(wait(Until.hasObject(By.desc(terminalFocusTarget)), FOCUS_TARGET_TIMEOUT_MS)) {
-        "Timed out waiting for terminal benchmark marker $terminalFocusTarget"
+    check(waitUntilFocusedMarker(terminalFocusTarget, FOCUS_TARGET_TIMEOUT_MS)) {
+        "Timed out waiting for terminal focused benchmark marker $terminalFocusTarget"
     }
+}
+
+/**
+ * Waits until [marker] is present and either focused itself or has a focused ancestor.
+ *
+ * On Fire TV / Compose, [Modifier.clickable] focus often lands on a parent node while
+ * contentDescription stays on a child Text. Matching `By.desc(marker).focused(true)` alone
+ * therefore times out even when focus traversal succeeded.
+ */
+private fun UiDevice.waitUntilFocusedMarker(
+    marker: String,
+    timeoutMs: Long,
+): Boolean {
+    val deadline = SystemClock.uptimeMillis() + timeoutMs
+    val markerFocused = By.desc(marker).focused(true)
+    val markerUnderFocusedAncestor = By.desc(marker).hasAncestor(By.focused(true))
+    while (SystemClock.uptimeMillis() < deadline) {
+        if (hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)) {
+            return true
+        }
+        SystemClock.sleep(FOCUS_POLL_INTERVAL_MS)
+    }
+    return hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)
 }
 
 private fun UiDevice.requestUnchangedRecomposition(generation: Int) {

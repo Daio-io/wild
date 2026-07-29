@@ -73,6 +73,9 @@ class TvBenchmarkReportTest(unittest.TestCase):
         self.assertIn("wild_container", summary)
         self.assertIn("human-reviewed", summary.lower())
         self.assertIn("P99", summary)
+        self.assertIn("harness wall time", summary.lower())
+        self.assertNotIn("| Runtime |", summary)
+        self.assertNotIn("Runtime (s)", summary)
 
     def test_write_session_artifacts_emits_json_and_markdown(self):
         session = {

@@ -61,12 +61,6 @@ def _median_or_none(metric: Any) -> float | None:
     return None
 
 
-def _runtime_s(ns: Any) -> float | None:
-    if ns is None:
-        return None
-    return float(ns) / 1_000_000_000.0
-
-
 def build_session_summary(session: dict[str, Any]) -> str:
     device = session.get("device", {})
     lines: list[str] = [
@@ -79,6 +73,9 @@ def build_session_summary(session: dict[str, Any]) -> str:
         f"- Compose: {session.get('composeVersion', 'unknown')}",
         "",
         "Verdict is human-reviewed; this report does not apply automatic pass/fail thresholds.",
+        "",
+        "Frame timing and heap are product metrics. `totalRunTimeNs` is retained in "
+        "`session.json` as harness wall time only and is omitted from deltas.",
         "",
     ]
 
@@ -95,8 +92,8 @@ def build_session_summary(session: dict[str, Any]) -> str:
         [
             "## Results",
             "",
-            "| Variant | Frame count | P50 (ms) | P90 (ms) | P95 (ms) | P99 (ms) | Heap max (KB) | Runtime (s) |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|",
+            "| Variant | Frame count | P50 (ms) | P90 (ms) | P95 (ms) | P99 (ms) | Heap max (KB) |",
+            "|---|---:|---:|---:|---:|---:|---:|",
         ]
     )
 
@@ -106,7 +103,7 @@ def build_session_summary(session: dict[str, Any]) -> str:
             continue
         cpu = metrics.get("frameDurationCpuMs", {})
         lines.append(
-            "| {variant} | {fc} | {p50} | {p90} | {p95} | {p99} | {heap} | {rt} |".format(
+            "| {variant} | {fc} | {p50} | {p90} | {p95} | {p99} | {heap} |".format(
                 variant=variant,
                 fc=_fmt_number(_median_or_none(metrics.get("frameCount")), digits=0),
                 p50=_fmt_ms(cpu.get("P50")),
@@ -114,15 +111,14 @@ def build_session_summary(session: dict[str, Any]) -> str:
                 p95=_fmt_ms(cpu.get("P95")),
                 p99=_fmt_ms(cpu.get("P99")),
                 heap=_fmt_number(_median_or_none(metrics.get("memoryHeapSizeMaxKb")), digits=0),
-                rt=_fmt_ms(_runtime_s(metrics.get("totalRunTimeNs"))),
             )
         )
 
     material = results.get("material_surface")
     if material:
         lines.extend(["", "## Deltas vs material_surface", ""])
-        lines.append("| Variant | P50 | P90 | P95 | P99 | Runtime |")
-        lines.append("|---|---:|---:|---:|---:|---:|")
+        lines.append("| Variant | P50 | P90 | P95 | P99 |")
+        lines.append("|---|---:|---:|---:|---:|")
         material_cpu = material.get("frameDurationCpuMs", {})
         for variant in variant_order:
             if variant == "material_surface":
@@ -132,18 +128,12 @@ def build_session_summary(session: dict[str, Any]) -> str:
                 continue
             cpu = metrics.get("frameDurationCpuMs", {})
             lines.append(
-                "| {variant} | {p50} | {p90} | {p95} | {p99} | {rt} |".format(
+                "| {variant} | {p50} | {p90} | {p95} | {p99} |".format(
                     variant=variant,
                     p50=_fmt_delta(percent_delta(cpu.get("P50"), material_cpu.get("P50"))),
                     p90=_fmt_delta(percent_delta(cpu.get("P90"), material_cpu.get("P90"))),
                     p95=_fmt_delta(percent_delta(cpu.get("P95"), material_cpu.get("P95"))),
                     p99=_fmt_delta(percent_delta(cpu.get("P99"), material_cpu.get("P99"))),
-                    rt=_fmt_delta(
-                        percent_delta(
-                            _runtime_s(metrics.get("totalRunTimeNs")) or 0.0,
-                            _runtime_s(material.get("totalRunTimeNs")) or 0.0,
-                        )
-                    ),
                 )
             )
 
