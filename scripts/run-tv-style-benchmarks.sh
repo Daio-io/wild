@@ -22,26 +22,11 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --profile)
-      PROFILE="${2:-}"
-      shift 2
-      ;;
-    --serial)
-      SERIAL="${2:-}"
-      shift 2
-      ;;
-    --variants)
-      VARIANTS="${2:-}"
-      shift 2
-      ;;
-    --invocations)
-      INVOCATIONS="${2:-}"
-      shift 2
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
+    --profile) PROFILE="${2:-}"; shift 2 ;;
+    --serial) SERIAL="${2:-}"; shift 2 ;;
+    --variants) VARIANTS="${2:-}"; shift 2 ;;
+    --invocations) INVOCATIONS="${2:-}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
     *)
       echo "Unknown option: $1" >&2
       usage >&2
@@ -60,23 +45,12 @@ if ! [[ "$INVOCATIONS" =~ ^[1-9][0-9]*$ ]]; then
   exit 1
 fi
 
-alias_to_folder() {
+# Prints: <folder> <method>
+variant_info() {
   case "$1" in
-    clickable) echo "wild_clickable" ;;
-    container) echo "wild_container" ;;
-    material) echo "material_surface" ;;
-    *)
-      echo "Unknown variant alias: $1" >&2
-      exit 1
-      ;;
-  esac
-}
-
-alias_to_method() {
-  case "$1" in
-    clickable) echo "scrollGridWithWildClickable" ;;
-    container) echo "scrollGridWithWildContainer" ;;
-    material) echo "scrollGridWithMaterialSurface" ;;
+    clickable) echo "wild_clickable scrollGridWithWildClickable" ;;
+    container) echo "wild_container scrollGridWithWildContainer" ;;
+    material) echo "material_surface scrollGridWithMaterialSurface" ;;
     *)
       echo "Unknown variant alias: $1" >&2
       exit 1
@@ -85,9 +59,8 @@ alias_to_method() {
 }
 
 resolve_serial() {
-  local devices
+  local devices count
   devices="$(adb devices | awk 'NR>1 && $2=="device" {print $1}')"
-  local count
   count="$(printf '%s\n' "$devices" | awk 'NF' | wc -l | tr -d ' ')"
   if [[ -n "$SERIAL" ]]; then
     adb -s "$SERIAL" get-state >/dev/null
@@ -103,11 +76,13 @@ resolve_serial() {
 
 IFS=',' read -r -a VARIANT_ALIASES <<<"$VARIANTS"
 SELECTED_ALIASES=()
+SELECTED_FOLDERS=()
 for alias in "${VARIANT_ALIASES[@]}"; do
   alias="$(echo "$alias" | tr -d '[:space:]')"
   [[ -z "$alias" ]] && continue
+  read -r folder _ <<<"$(variant_info "$alias")"
   SELECTED_ALIASES+=("$alias")
-  alias_to_folder "$alias" >/dev/null
+  SELECTED_FOLDERS+=("$folder")
 done
 
 if [[ ${#SELECTED_ALIASES[@]} -eq 0 ]]; then
@@ -126,7 +101,6 @@ MODEL_SAFE="$(printf '%s' "$MODEL" | tr ' /' '__')"
 STAMP="$(date +%Y-%m-%d_%H-%M-%S)"
 SESSION_DIR="$ROOT_DIR/benchmark_results/sessions/${STAMP}_${MODEL_SAFE}_${PROFILE}"
 CONNECTED_OUTPUT_ROOT="$ROOT_DIR/internal/benchmark/build/outputs/connected_android_test_additional_output/debug/connected"
-MANIFEST_JSON="$SESSION_DIR/manifest.json"
 
 mkdir -p "$SESSION_DIR"
 
@@ -136,57 +110,11 @@ echo "Installing TV playbook on $SERIAL ($MODEL)..."
   ./gradlew :playbook:androidTv:installDebug
 )
 
-python3 - <<PY
-import json
-from pathlib import Path
-manifest = {
-    "profile": "$PROFILE",
-    "device": {
-        "model": "$MODEL",
-        "androidVersion": "$ANDROID_VERSION",
-    },
-    "gitSha": "$GIT_SHA",
-    "composeVersion": "$COMPOSE_VERSION",
-    "aliases": $(printf '%s\n' "${SELECTED_ALIASES[@]}" | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))'),
-    "invocations": $INVOCATIONS,
-    "commands": [],
-    "runs": [],
-}
-Path("$MANIFEST_JSON").write_text(json.dumps(manifest, indent=2) + "\n")
-PY
-
-append_run() {
-  local invocation_index="$1"
-  local alias="$2"
-  local folder="$3"
-  local method="$4"
-  local command="$5"
-  local variant_dir="$6"
-  python3 - <<PY
-import json
-from pathlib import Path
-path = Path("$MANIFEST_JSON")
-manifest = json.loads(path.read_text())
-manifest["commands"].append("""$command""")
-manifest["runs"].append(
-    {
-        "invocation": $invocation_index,
-        "alias": "$alias",
-        "folder": "$folder",
-        "method": "$method",
-        "benchmarkData": str(Path("$variant_dir") / "benchmarkData.json"),
-    }
-)
-path.write_text(json.dumps(manifest, indent=2) + "\n")
-PY
-}
-
 run_variant() {
   local invocation_index="$1"
   local alias="$2"
   local folder method invocation_dir variant_dir connected_dir json_src message_src
-  folder="$(alias_to_folder "$alias")"
-  method="$(alias_to_method "$alias")"
+  read -r folder method <<<"$(variant_info "$alias")"
   invocation_dir="$SESSION_DIR/invocations/$(printf '%02d' "$invocation_index")"
   variant_dir="$invocation_dir/$folder"
   mkdir -p "$variant_dir/traces"
@@ -199,7 +127,6 @@ run_variant() {
     gradle_args+=("-Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short")
   fi
 
-  local command="./gradlew ${gradle_args[*]}"
   echo "Running $folder (invocation $invocation_index)..."
   (
     cd "$ROOT_DIR"
@@ -225,7 +152,6 @@ run_variant() {
   fi
 
   find "$connected_dir" -maxdepth 1 -type f -name "TvBenchmarkTest_${method}_*.perfetto-trace" -exec cp {} "$variant_dir/traces/" \;
-  append_run "$invocation_index" "$alias" "$folder" "$method" "$command" "$variant_dir"
 }
 
 for ((i = 1; i <= INVOCATIONS; i++)); do
@@ -234,7 +160,7 @@ for ((i = 1; i <= INVOCATIONS; i++)); do
   done
 done
 
-python3 - "$ROOT_DIR" "$SESSION_DIR" "$MANIFEST_JSON" <<'PY'
+python3 - "$ROOT_DIR" "$SESSION_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$GIT_SHA" "$COMPOSE_VERSION" "${SELECTED_FOLDERS[@]}" <<'PY'
 from __future__ import annotations
 
 import json
@@ -243,49 +169,37 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 session_dir = Path(sys.argv[2])
-manifest = json.loads(Path(sys.argv[3]).read_text())
+profile, model, android, git_sha, compose = sys.argv[3:8]
+folders = sys.argv[8:]
 
 sys.path.insert(0, str(root / "scripts"))
 from tv_benchmark_report import extract_variant_metrics, write_session_artifacts
 
-alias_to_folder = {
-    "clickable": "wild_clickable",
-    "container": "wild_container",
-    "material": "material_surface",
+FOLDER_TO_METHOD = {
+    "wild_clickable": "scrollGridWithWildClickable",
+    "wild_container": "scrollGridWithWildContainer",
+    "material_surface": "scrollGridWithMaterialSurface",
 }
 
-folders = [alias_to_folder[alias] for alias in manifest["aliases"]]
 session = {
-    "profile": manifest["profile"],
-    "device": manifest["device"],
-    "gitSha": manifest["gitSha"],
-    "composeVersion": manifest["composeVersion"],
+    "profile": profile,
+    "device": {"model": model, "androidVersion": android},
+    "gitSha": git_sha,
+    "composeVersion": compose,
     "variants": folders,
-    "commands": manifest["commands"],
     "invocations": [],
 }
 
-by_invocation: dict[int, dict] = {}
-for run in manifest["runs"]:
-    invocation = int(run["invocation"])
-    by_invocation.setdefault(invocation, {})
-    by_invocation[invocation][run["folder"]] = extract_variant_metrics(
-        Path(run["benchmarkData"]),
-        run["method"],
-    )
-
-for invocation in sorted(by_invocation):
-    session["invocations"].append(
-        {
-            "index": invocation,
-            "results": by_invocation[invocation],
-        }
-    )
+for inv_dir in sorted(session_dir.glob("invocations/*")):
+    results = {}
+    for folder in folders:
+        data = inv_dir / folder / "benchmarkData.json"
+        results[folder] = extract_variant_metrics(data, FOLDER_TO_METHOD[folder])
+    session["invocations"].append({"index": int(inv_dir.name), "results": results})
 
 write_session_artifacts(session_dir, session)
 print(session_dir / "summary.md")
 PY
 
-rm -f "$MANIFEST_JSON"
 echo "Session archived at: $SESSION_DIR"
 echo "Summary: $SESSION_DIR/summary.md"

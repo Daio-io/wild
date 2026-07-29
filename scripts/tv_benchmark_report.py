@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -22,8 +21,6 @@ def extract_variant_metrics(path: Path, benchmark_name: str) -> dict[str, Any]:
             "P99": sampled["P99"],
         },
         "memoryHeapSizeMaxKb": metrics.get("memoryHeapSizeMaxKb"),
-        "memoryRssAnonMaxKb": metrics.get("memoryRssAnonMaxKb"),
-        "memoryRssFileMaxKb": metrics.get("memoryRssFileMaxKb"),
         "totalRunTimeNs": match["totalRunTimeNs"],
     }
 
@@ -40,10 +37,6 @@ def _fmt_number(value: float | None, digits: int = 2) -> str:
     if float(value).is_integer():
         return str(int(value))
     return f"{value:.{digits}f}"
-
-
-def _fmt_ms(value: float | None) -> str:
-    return _fmt_number(value, digits=2)
 
 
 def _fmt_delta(value: float | None) -> str:
@@ -74,8 +67,7 @@ def build_session_summary(session: dict[str, Any]) -> str:
         "",
         "Verdict is human-reviewed; this report does not apply automatic pass/fail thresholds.",
         "",
-        "Frame timing and heap are product metrics. `totalRunTimeNs` is retained in "
-        "`session.json` as harness wall time only and is omitted from deltas.",
+        "`totalRunTimeNs` stays in `session.json` as harness wall time only — omitted from deltas.",
         "",
     ]
 
@@ -106,10 +98,10 @@ def build_session_summary(session: dict[str, Any]) -> str:
             "| {variant} | {fc} | {p50} | {p90} | {p95} | {p99} | {heap} |".format(
                 variant=variant,
                 fc=_fmt_number(_median_or_none(metrics.get("frameCount")), digits=0),
-                p50=_fmt_ms(cpu.get("P50")),
-                p90=_fmt_ms(cpu.get("P90")),
-                p95=_fmt_ms(cpu.get("P95")),
-                p99=_fmt_ms(cpu.get("P99")),
+                p50=_fmt_number(cpu.get("P50")),
+                p90=_fmt_number(cpu.get("P90")),
+                p95=_fmt_number(cpu.get("P95")),
+                p99=_fmt_number(cpu.get("P99")),
                 heap=_fmt_number(_median_or_none(metrics.get("memoryHeapSizeMaxKb")), digits=0),
             )
         )
@@ -149,7 +141,7 @@ def build_session_summary(session: dict[str, Any]) -> str:
                     continue
                 p99 = metrics.get("frameDurationCpuMs", {}).get("P99")
                 if p99 is not None:
-                    values.append(_fmt_ms(p99))
+                    values.append(_fmt_number(p99))
             if values:
                 lines.append(f"| {variant} | {', '.join(values)} |")
 
@@ -160,16 +152,3 @@ def write_session_artifacts(session_dir: Path, session: dict[str, Any]) -> None:
     session_dir.mkdir(parents=True, exist_ok=True)
     (session_dir / "session.json").write_text(json.dumps(session, indent=2) + "\n")
     (session_dir / "summary.md").write_text(build_session_summary(session) + "\n")
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Write TV benchmark session summary artifacts")
-    parser.add_argument("--session-json", type=Path, required=True)
-    parser.add_argument("--out-dir", type=Path, required=True)
-    args = parser.parse_args()
-    session = json.loads(args.session_json.read_text())
-    write_session_artifacts(args.out_dir, session)
-
-
-if __name__ == "__main__":
-    main()

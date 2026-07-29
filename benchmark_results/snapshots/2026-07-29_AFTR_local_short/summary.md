@@ -8,7 +8,7 @@
 
 Verdict is human-reviewed; this report does not apply automatic pass/fail thresholds.
 
-Frame timing and heap are product metrics. `totalRunTimeNs` is retained in `session.json` as harness wall time only and is omitted from deltas.
+`totalRunTimeNs` stays in `session.json` as harness wall time only — omitted from deltas.
 
 ## Results
 

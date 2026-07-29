@@ -11,11 +11,6 @@
     "wild_container",
     "material_surface"
   ],
-  "commands": [
-    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithWildClickable -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
-    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithWildContainer -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
-    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithMaterialSurface -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short"
-  ],
   "invocations": [
     {
       "index": 1,
@@ -54,32 +49,6 @@
               9695.0
             ]
           },
-          "memoryRssAnonMaxKb": {
-            "minimum": 26748.0,
-            "maximum": 29576.0,
-            "median": 27096.0,
-            "coefficientOfVariation": 0.04240315651961127,
-            "runs": [
-              28260.0,
-              29576.0,
-              27036.0,
-              26748.0,
-              27096.0
-            ]
-          },
-          "memoryRssFileMaxKb": {
-            "minimum": 130168.0,
-            "maximum": 130768.0,
-            "median": 130544.0,
-            "coefficientOfVariation": 0.001803089822085309,
-            "runs": [
-              130168.0,
-              130484.0,
-              130544.0,
-              130708.0,
-              130768.0
-            ]
-          },
           "totalRunTimeNs": 233781638819
         },
         "wild_container": {
@@ -116,32 +85,6 @@
               10408.0
             ]
           },
-          "memoryRssAnonMaxKb": {
-            "minimum": 26636.0,
-            "maximum": 29484.0,
-            "median": 27928.0,
-            "coefficientOfVariation": 0.03868359706504055,
-            "runs": [
-              27312.0,
-              27928.0,
-              26636.0,
-              28384.0,
-              29484.0
-            ]
-          },
-          "memoryRssFileMaxKb": {
-            "minimum": 130008.0,
-            "maximum": 130640.0,
-            "median": 130328.0,
-            "coefficientOfVariation": 0.0017577389410825394,
-            "runs": [
-              130008.0,
-              130216.0,
-              130336.0,
-              130640.0,
-              130328.0
-            ]
-          },
           "totalRunTimeNs": 236766976280
         },
         "material_surface": {
@@ -176,32 +119,6 @@
               10556.0,
               11696.0,
               11834.0
-            ]
-          },
-          "memoryRssAnonMaxKb": {
-            "minimum": 27392.0,
-            "maximum": 30420.0,
-            "median": 28820.0,
-            "coefficientOfVariation": 0.039271113900429075,
-            "runs": [
-              28820.0,
-              28820.0,
-              27392.0,
-              30420.0,
-              29736.0
-            ]
-          },
-          "memoryRssFileMaxKb": {
-            "minimum": 129852.0,
-            "maximum": 130244.0,
-            "median": 130180.0,
-            "coefficientOfVariation": 0.0011799478487261655,
-            "runs": [
-              129852.0,
-              130120.0,
-              130180.0,
-              130180.0,
-              130244.0
             ]
           },
           "totalRunTimeNs": 143093044569

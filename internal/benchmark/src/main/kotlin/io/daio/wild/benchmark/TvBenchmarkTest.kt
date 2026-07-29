@@ -36,7 +36,6 @@ private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
 private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
 private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
-private const val FOCUS_POLL_INTERVAL_MS = 50L
 private const val BENCHMARK_PROFILE_ARGUMENT = "benchmarkProfile"
 private const val LOCAL_SHORT_PROFILE = "local_short"
 
@@ -267,13 +266,7 @@ private fun UiDevice.runDeterministicFocusSequence(
     }
 }
 
-/**
- * Waits until [marker] is present and either focused itself or has a focused ancestor.
- *
- * On Fire TV / Compose, [Modifier.clickable] focus often lands on a parent node while
- * contentDescription stays on a child Text. Matching `By.desc(marker).focused(true)` alone
- * therefore times out even when focus traversal succeeded.
- */
+/** Marker focused, or under a focused ancestor (Fire TV: focus on parent, desc on child). */
 private fun UiDevice.waitUntilFocusedMarker(
     marker: String,
     timeoutMs: Long,
@@ -285,7 +278,7 @@ private fun UiDevice.waitUntilFocusedMarker(
         if (hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)) {
             return true
         }
-        SystemClock.sleep(FOCUS_POLL_INTERVAL_MS)
+        SystemClock.sleep(INPUT_FRAME_PACE_MS)
     }
     return hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)
 }
