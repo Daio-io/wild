@@ -1,0 +1,213 @@
+{
+  "profile": "local_short",
+  "device": {
+    "model": "AFTR",
+    "serial": "192.168.1.187:5555",
+    "androidVersion": "9"
+  },
+  "gitSha": "813fb73",
+  "composeVersion": "1.11.1",
+  "variants": [
+    "current_traversal",
+    "candidate_composite",
+    "material_surface"
+  ],
+  "commands": [
+    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithCurrentTraversal -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
+    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithCandidateComposite -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short",
+    "./gradlew :internal:benchmark:connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=io.daio.wild.benchmark.TvBenchmarkTest#scrollGridWithMaterialSurface -Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short"
+  ],
+  "invocations": [
+    {
+      "index": 1,
+      "results": {
+        "current_traversal": {
+          "name": "scrollGridWithCurrentTraversal",
+          "frameCount": {
+            "minimum": 816.0,
+            "maximum": 830.0,
+            "median": 824.0,
+            "coefficientOfVariation": 0.00694653957992993,
+            "runs": [
+              824.0,
+              830.0,
+              819.0,
+              816.0,
+              827.0
+            ]
+          },
+          "frameDurationCpuMs": {
+            "P50": 4.6347085,
+            "P90": 5.525042,
+            "P95": 6.032062,
+            "P99": 6.82898295
+          },
+          "memoryHeapSizeMaxKb": {
+            "minimum": 8847.0,
+            "maximum": 9923.0,
+            "median": 9475.0,
+            "coefficientOfVariation": 0.05102515940398678,
+            "runs": [
+              9475.0,
+              9923.0,
+              8903.0,
+              8847.0,
+              9695.0
+            ]
+          },
+          "memoryRssAnonMaxKb": {
+            "minimum": 26748.0,
+            "maximum": 29576.0,
+            "median": 27096.0,
+            "coefficientOfVariation": 0.04240315651961127,
+            "runs": [
+              28260.0,
+              29576.0,
+              27036.0,
+              26748.0,
+              27096.0
+            ]
+          },
+          "memoryRssFileMaxKb": {
+            "minimum": 130168.0,
+            "maximum": 130768.0,
+            "median": 130544.0,
+            "coefficientOfVariation": 0.001803089822085309,
+            "runs": [
+              130168.0,
+              130484.0,
+              130544.0,
+              130708.0,
+              130768.0
+            ]
+          },
+          "totalRunTimeNs": 233781638819
+        },
+        "candidate_composite": {
+          "name": "scrollGridWithCandidateComposite",
+          "frameCount": {
+            "minimum": 826.0,
+            "maximum": 830.0,
+            "median": 829.0,
+            "coefficientOfVariation": 0.001984022787388914,
+            "runs": [
+              829.0,
+              830.0,
+              829.0,
+              826.0,
+              827.0
+            ]
+          },
+          "frameDurationCpuMs": {
+            "P50": 4.572166,
+            "P90": 5.644292,
+            "P95": 6.522375,
+            "P99": 7.5956502000000015
+          },
+          "memoryHeapSizeMaxKb": {
+            "minimum": 9002.0,
+            "maximum": 10408.0,
+            "median": 10305.0,
+            "coefficientOfVariation": 0.0694841130148894,
+            "runs": [
+              10305.0,
+              9002.0,
+              10312.0,
+              9201.0,
+              10408.0
+            ]
+          },
+          "memoryRssAnonMaxKb": {
+            "minimum": 26636.0,
+            "maximum": 29484.0,
+            "median": 27928.0,
+            "coefficientOfVariation": 0.03868359706504055,
+            "runs": [
+              27312.0,
+              27928.0,
+              26636.0,
+              28384.0,
+              29484.0
+            ]
+          },
+          "memoryRssFileMaxKb": {
+            "minimum": 130008.0,
+            "maximum": 130640.0,
+            "median": 130328.0,
+            "coefficientOfVariation": 0.0017577389410825394,
+            "runs": [
+              130008.0,
+              130216.0,
+              130336.0,
+              130640.0,
+              130328.0
+            ]
+          },
+          "totalRunTimeNs": 236766976280
+        },
+        "material_surface": {
+          "name": "scrollGridWithMaterialSurface",
+          "frameCount": {
+            "minimum": 484.0,
+            "maximum": 540.0,
+            "median": 506.0,
+            "coefficientOfVariation": 0.046749027628711,
+            "runs": [
+              540.0,
+              484.0,
+              535.0,
+              506.0,
+              499.0
+            ]
+          },
+          "frameDurationCpuMs": {
+            "P50": 4.894625,
+            "P90": 6.718408700000001,
+            "P95": 7.92795445,
+            "P99": 10.085856209999998
+          },
+          "memoryHeapSizeMaxKb": {
+            "minimum": 10556.0,
+            "maximum": 11834.0,
+            "median": 11304.0,
+            "coefficientOfVariation": 0.044104706756836067,
+            "runs": [
+              11304.0,
+              11229.0,
+              10556.0,
+              11696.0,
+              11834.0
+            ]
+          },
+          "memoryRssAnonMaxKb": {
+            "minimum": 27392.0,
+            "maximum": 30420.0,
+            "median": 28820.0,
+            "coefficientOfVariation": 0.039271113900429075,
+            "runs": [
+              28820.0,
+              28820.0,
+              27392.0,
+              30420.0,
+              29736.0
+            ]
+          },
+          "memoryRssFileMaxKb": {
+            "minimum": 129852.0,
+            "maximum": 130244.0,
+            "median": 130180.0,
+            "coefficientOfVariation": 0.0011799478487261655,
+            "runs": [
+              129852.0,
+              130120.0,
+              130180.0,
+              130180.0,
+              130244.0
+            ]
+          },
+          "totalRunTimeNs": 143093044569
+        }
+      }
+    }
+  ]
+}

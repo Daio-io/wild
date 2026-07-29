@@ -1,0 +1,17 @@
+NOTE: Your device is running a version of ART where method tracing is known to
+affect performance measurement after trace capture, so method tracing is
+off by default.
+
+To use method tracing, either flash this device, use a different device, or
+enable method tracing with MicrobenchmarkConfig / instrumentation argument, and
+only run one test at a time.
+
+For more information, see https://issuetracker.google.com/issues/316174880
+
+TvBenchmarkTest_scrollGridWithCandidateComposite
+frameCount            [min     826.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter003_2026-07-29-21-40-53.perfetto-trace),   [median     829.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace),   [max     830.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter001_2026-07-29-21-39-39.perfetto-trace)
+memoryHeapSizeMaxKb   [min   9,002.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter001_2026-07-29-21-39-39.perfetto-trace),   [median  10,305.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace),   [max  10,408.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter004_2026-07-29-21-41-29.perfetto-trace)
+memoryRssAnonMaxKb    [min  26,636.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace),   [median  27,928.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace),   [max  29,484.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter004_2026-07-29-21-41-29.perfetto-trace)
+memoryRssFileMaxKb    [min 130,008.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter000_2026-07-29-21-39-02.perfetto-trace),   [median 130,328.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace),   [max 130,640.0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter003_2026-07-29-21-40-53.perfetto-trace)
+frameDurationCpuMs    P50        4.6,   P90        5.6,   P95        6.5,   P99        7.6
+Traces: Iteration [0](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter000_2026-07-29-21-39-02.perfetto-trace) [1](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter001_2026-07-29-21-39-39.perfetto-trace) [2](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter002_2026-07-29-21-40-16.perfetto-trace) [3](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter003_2026-07-29-21-40-53.perfetto-trace) [4](file://TvBenchmarkTest_scrollGridWithCandidateComposite_iter004_2026-07-29-21-41-29.perfetto-trace)

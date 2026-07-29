@@ -61,6 +61,16 @@ Each session archives raw JSON, optional message text, perfetto traces, `session
 benchmark_results/sessions/<yyyy-mm-dd_HH-mm-ss>_<device>_<profile>/
 ```
 
+Full session directories (including traces) stay local and are gitignored. Lean dated baselines for
+human comparison live under:
+
+```text
+benchmark_results/snapshots/<yyyy-mm-dd>_<device>_<profile>/
+```
+
+Those snapshots keep `session.json`, `summary.md`, and per-variant `benchmarkData.json` /
+`message.txt`, but omit Perfetto traces.
+
 **Confirmation / release profile (default):** warm startup, 20 measured iterations,
 `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, fixed ~50ms key pace,
 `FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`. This is the only profile valid for release
