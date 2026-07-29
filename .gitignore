@@ -66,3 +66,6 @@ local.properties
 .worktrees/
 ### Benchmark outputs ###
 benchmark_results/sessions/
+
+**/__pycache__/
+*.pyc
