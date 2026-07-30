@@ -72,7 +72,9 @@ benchmark_results/snapshots/<yyyy-mm-dd>_<device>_<profile>/
 ```
 
 Those snapshots keep `session.json`, `summary.md`, and per-variant `benchmarkData.json` /
-`message.txt`, but omit Perfetto traces.
+`message.txt`, but omit Perfetto traces. Do not treat
+`benchmark_results/snapshots/2026-07-29_AFTR_local_short/` as a baseline — it predates
+focused-marker validation; capture a new dated snapshot after harness changes.
 
 **Confirmation / release profile (default):** warm startup, 20 measured iterations,
 `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, fixed ~50ms key pace,
