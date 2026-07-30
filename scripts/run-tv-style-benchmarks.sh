@@ -6,6 +6,7 @@ PROFILE="confirmation"
 SERIAL=""
 VARIANTS="clickable,container,material"
 INVOCATIONS=1
+ALLOW_DIRTY=0
 
 usage() {
   cat <<'EOF'
@@ -16,7 +17,11 @@ Options:
   --serial <adb-serial>                Required if multiple devices are connected
   --variants clickable,container,material
   --invocations <N>                    Repeat the selected set N times (default: 1)
+  --allow-dirty                        Allow uncommitted changes; session records gitDirty=true
   -h, --help                           Show help
+
+Variant order rotates left by (invocation - 1) so multi-invocation runs counterbalance
+thermal / position bias. Prefer --invocations equal to the variant count for release claims.
 EOF
 }
 
@@ -26,6 +31,7 @@ while [[ $# -gt 0 ]]; do
     --serial) SERIAL="${2:-}"; shift 2 ;;
     --variants) VARIANTS="${2:-}"; shift 2 ;;
     --invocations) INVOCATIONS="${2:-}"; shift 2 ;;
+    --allow-dirty) ALLOW_DIRTY=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *)
       echo "Unknown option: $1" >&2
@@ -43,6 +49,17 @@ fi
 if ! [[ "$INVOCATIONS" =~ ^[1-9][0-9]*$ ]]; then
   echo "--invocations must be a positive integer" >&2
   exit 1
+fi
+
+GIT_DIRTY=false
+if [[ -n "$(git -C "$ROOT_DIR" status --porcelain)" ]]; then
+  if [[ "$ALLOW_DIRTY" -eq 1 ]]; then
+    GIT_DIRTY=true
+    echo "Warning: dirty worktree; session will record gitDirty=true" >&2
+  else
+    echo "Refusing dirty worktree; commit/stash or pass --allow-dirty so gitSha matches the measured APK." >&2
+    exit 1
+  fi
 fi
 
 # Prints: <folder> <method>
@@ -118,6 +135,7 @@ run_variant() {
   invocation_dir="$SESSION_DIR/invocations/$(printf '%02d' "$invocation_index")"
   variant_dir="$invocation_dir/$folder"
   mkdir -p "$variant_dir/traces"
+  echo "$folder" >>"$invocation_dir/order.txt"
 
   local gradle_args=(
     :internal:benchmark:connectedCheck
@@ -154,23 +172,25 @@ run_variant() {
   find "$connected_dir" -maxdepth 1 -type f -name "TvBenchmarkTest_${method}_*.perfetto-trace" -exec cp {} "$variant_dir/traces/" \;
 }
 
+variant_count=${#SELECTED_ALIASES[@]}
 for ((i = 1; i <= INVOCATIONS; i++)); do
-  for alias in "${SELECTED_ALIASES[@]}"; do
-    run_variant "$i" "$alias"
+  offset=$(( (i - 1) % variant_count ))
+  for ((j = 0; j < variant_count; j++)); do
+    run_variant "$i" "${SELECTED_ALIASES[$(( (j + offset) % variant_count ))]}"
   done
 done
 
-python3 - "$ROOT_DIR" "$SESSION_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$GIT_SHA" "$COMPOSE_VERSION" "${SELECTED_FOLDERS[@]}" <<'PY'
+python3 - "$ROOT_DIR" "$SESSION_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$GIT_SHA" "$COMPOSE_VERSION" "$GIT_DIRTY" "${SELECTED_FOLDERS[@]}" <<'PY'
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
 root = Path(sys.argv[1])
 session_dir = Path(sys.argv[2])
 profile, model, android, git_sha, compose = sys.argv[3:8]
-folders = sys.argv[8:]
+git_dirty = sys.argv[8].lower() == "true"
+folders = sys.argv[9:]
 
 sys.path.insert(0, str(root / "scripts"))
 from tv_benchmark_report import extract_variant_metrics, write_session_artifacts
@@ -185,17 +205,26 @@ session = {
     "profile": profile,
     "device": {"model": model, "androidVersion": android},
     "gitSha": git_sha,
+    "gitDirty": git_dirty,
     "composeVersion": compose,
     "variants": folders,
     "invocations": [],
 }
 
 for inv_dir in sorted(session_dir.glob("invocations/*")):
+    order_path = inv_dir / "order.txt"
+    order = [line.strip() for line in order_path.read_text().splitlines() if line.strip()] if order_path.exists() else list(folders)
     results = {}
     for folder in folders:
         data = inv_dir / folder / "benchmarkData.json"
         results[folder] = extract_variant_metrics(data, FOLDER_TO_METHOD[folder])
-    session["invocations"].append({"index": int(inv_dir.name), "results": results})
+    session["invocations"].append(
+        {
+            "index": int(inv_dir.name),
+            "order": order,
+            "results": results,
+        }
+    )
 
 write_session_artifacts(session_dir, session)
 print(session_dir / "summary.md")
