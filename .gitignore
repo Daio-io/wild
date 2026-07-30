@@ -64,3 +64,8 @@ local.properties
 
 ### Git worktrees ###
 .worktrees/
+### Benchmark outputs ###
+benchmark_results/sessions/
+
+**/__pycache__/
+*.pyc

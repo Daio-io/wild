@@ -1,0 +1,20 @@
+{
+  "benchmarks": [
+    {
+      "name": "scrollGridWithWildClickable",
+      "totalRunTimeNs": 250024797869,
+      "metrics": {
+        "frameCount": { "median": 831.0 },
+        "memoryHeapSizeMaxKb": { "median": 9288.0 }
+      },
+      "sampledMetrics": {
+        "frameDurationCpuMs": {
+          "P50": 5.902167,
+          "P90": 7.404271,
+          "P95": 8.050458,
+          "P99": 9.439125
+        }
+      }
+    }
+  ]
+}

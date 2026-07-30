@@ -59,7 +59,7 @@ private const val FOCUS_FLIP_BENCHMARK_TITLE = "style_focus_flip"
 
 internal enum class BenchmarkItemImplementation {
     StyledClickable,
-    CandidateComposite,
+    WildContainer,
     MaterialSurface,
 }
 
@@ -74,8 +74,8 @@ internal enum class StyleVariant(
     val interactionSourceStrategy: BenchmarkInteractionSourceStrategy? = null,
     val benchmarkTitle: String = extraValue,
 ) {
-    CurrentTraversal(
-        "current_traversal",
+    WildClickable(
+        "wild_clickable",
         BenchmarkItemImplementation.StyledClickable,
         BenchmarkInteractionSourceStrategy.Explicit,
     ),
@@ -91,9 +91,9 @@ internal enum class StyleVariant(
         BenchmarkInteractionSourceStrategy.NullCompatibility,
         SOURCE_PATH_BENCHMARK_TITLE,
     ),
-    CandidateComposite("candidate_composite", BenchmarkItemImplementation.CandidateComposite),
+    WildContainer("wild_container", BenchmarkItemImplementation.WildContainer),
     MaterialSurface("material_surface", BenchmarkItemImplementation.MaterialSurface),
-    Container("container", BenchmarkItemImplementation.CandidateComposite),
+    Container("container", BenchmarkItemImplementation.WildContainer),
 }
 
 internal fun benchmarkStyleVariant(extraValue: String): StyleVariant =
@@ -413,8 +413,8 @@ private fun BenchmarkItem(
                 recompositionDriver = recompositionDriver,
                 modifier = itemModifier,
             )
-        BenchmarkItemImplementation.CandidateComposite ->
-            CandidateCompositeItem(title, onClick, style, itemModifier)
+        BenchmarkItemImplementation.WildContainer ->
+            WildContainerItem(title, onClick, style, itemModifier)
         BenchmarkItemImplementation.MaterialSurface ->
             MaterialSurfaceItem(title, onClick, config, itemModifier)
     }
@@ -481,7 +481,7 @@ private fun StyledClickableItem(
 }
 
 @Composable
-private fun CandidateCompositeItem(
+private fun WildContainerItem(
     title: String,
     onClick: () -> Unit,
     style: Style,

@@ -12,6 +12,7 @@ import androidx.benchmark.macro.Metric
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -20,11 +21,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Confirmation / release profile. For faster local iteration, temporarily lower
- * [DEFAULT_ITERATIONS], switch [BENCHMARK_COMPILATION_MODE] to [CompilationMode.None], and/or
- * shorten [SCROLL_GRID_FOCUS_SEQUENCE]. Restore this profile before release claims.
+ * Confirmation / release profile remains the default. Pass
+ * `-Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short` for a shorter,
+ * still-like-for-like local device pass.
  */
-private const val DEFAULT_ITERATIONS = 20
 private const val APP_PACKAGE = "io.daio.wild.playbook.tv"
 private const val MODE_EXTRA = "MODE"
 private const val ITEMS_EXTRA = "ITEMS"
@@ -36,6 +36,8 @@ private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
 private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
 private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
 private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
+private const val BENCHMARK_PROFILE_ARGUMENT = "benchmarkProfile"
+private const val LOCAL_SHORT_PROFILE = "local_short"
 
 /**
  * Fixed delay between DPAD keys. Prefer this over [UiDevice.waitForIdle] alone so bursty focus
@@ -44,11 +46,17 @@ private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
 private const val INPUT_FRAME_PACE_MS = 50L
 private val BENCHMARK_COMPILATION_MODE = CompilationMode.Partial()
 
+private data class BenchmarkProfile(
+    val iterations: Int,
+    val scrollFocusSequence: List<Int>,
+    val scrollTerminalTarget: String,
+)
+
 private enum class StyleVariant(val extraValue: String) {
-    CurrentTraversal("current_traversal"),
+    WildClickable("wild_clickable"),
     ExplicitSourceFastPath("explicit_source_fast_path"),
     NullSourceCompatibility("null_source_compatibility"),
-    CandidateComposite("candidate_composite"),
+    WildContainer("wild_container"),
     MaterialSurface("material_surface"),
 }
 
@@ -57,10 +65,11 @@ private enum class StyleVariant(val extraValue: String) {
  * sequence re-scrolls horizontally after each vertical move. The playbook grid centers focused
  * items via [androidx.compose.foundation.gestures.BringIntoViewSpec].
  *
- * For local optimization loops, shorten this path (for example end at `benchmark-item-2-10`) and
- * temporarily lower [DEFAULT_ITERATIONS] / use [CompilationMode.None].
+ * For local exploration, pass
+ * `-Pandroid.testInstrumentationRunnerArguments.benchmarkProfile=local_short` (or use
+ * `./scripts/run-tv-style-benchmarks.sh --profile local_short`) instead of editing this path.
  */
-private val SCROLL_GRID_FOCUS_SEQUENCE =
+private fun confirmationScrollGridFocusSequence(): List<Int> =
     buildList {
         repeat(20) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
         repeat(5) {
@@ -69,6 +78,29 @@ private val SCROLL_GRID_FOCUS_SEQUENCE =
         }
         repeat(5) { add(KeyEvent.KEYCODE_DPAD_LEFT) }
         repeat(5) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+    }
+
+private fun activeBenchmarkProfile(): BenchmarkProfile =
+    when (InstrumentationRegistry.getArguments().getString(BENCHMARK_PROFILE_ARGUMENT)?.lowercase()) {
+        LOCAL_SHORT_PROFILE ->
+            BenchmarkProfile(
+                iterations = 5,
+                scrollFocusSequence =
+                    buildList {
+                        repeat(10) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+                        repeat(2) {
+                            add(KeyEvent.KEYCODE_DPAD_DOWN)
+                            repeat(10) { add(KeyEvent.KEYCODE_DPAD_RIGHT) }
+                        }
+                    },
+                scrollTerminalTarget = "benchmark-item-2-10",
+            )
+        else ->
+            BenchmarkProfile(
+                iterations = 20,
+                scrollFocusSequence = confirmationScrollGridFocusSequence(),
+                scrollTerminalTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            )
     }
 
 /** Alternates focus between two stationary items, then ends on the second item. */
@@ -87,38 +119,46 @@ class TvBenchmarkTest {
     val benchmarkRule: MacrobenchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun scrollGridWithCurrentTraversal() {
+    fun scrollGridWithWildClickable() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CurrentTraversal,
-            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
-            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            variant = StyleVariant.WildClickable,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
         )
     }
 
     @Test
-    fun scrollGridWithCandidateComposite() {
+    fun scrollGridWithWildContainer() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CandidateComposite,
-            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
-            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            variant = StyleVariant.WildContainer,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
         )
     }
 
     @Test
-    fun focusFlipWithCurrentTraversal() {
+    fun focusFlipWithWildClickable() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CurrentTraversal,
+            variant = StyleVariant.WildClickable,
             mode = FOCUS_FLIP_MODE,
+            iterations = profile.iterations,
             focusSequence = FOCUS_FLIP_SEQUENCE,
             terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
         )
     }
 
     @Test
-    fun focusFlipWithCandidateComposite() {
+    fun focusFlipWithWildContainer() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
-            variant = StyleVariant.CandidateComposite,
+            variant = StyleVariant.WildContainer,
             mode = FOCUS_FLIP_MODE,
+            iterations = profile.iterations,
             focusSequence = FOCUS_FLIP_SEQUENCE,
             terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
         )
@@ -126,29 +166,35 @@ class TvBenchmarkTest {
 
     @Test
     fun scrollGridWithMaterialSurface() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.MaterialSurface,
-            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
-            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
         )
     }
 
     @Test
     fun recomposeUnchangedGridWithExplicitSourceFastPath() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.ExplicitSourceFastPath,
-            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
-            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
             enableRecompositionDriver = true,
         )
     }
 
     @Test
     fun recomposeUnchangedGridWithNullSourceCompatibility() {
+        val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.NullSourceCompatibility,
-            focusSequence = SCROLL_GRID_FOCUS_SEQUENCE,
-            terminalFocusTarget = SCROLL_TERMINAL_FOCUS_TARGET,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
             enableRecompositionDriver = true,
         )
     }
@@ -157,6 +203,7 @@ class TvBenchmarkTest {
 private fun MacrobenchmarkRule.measureStyleVariant(
     variant: StyleVariant,
     mode: String = GRID_MODE,
+    iterations: Int,
     focusSequence: List<Int>,
     terminalFocusTarget: String,
     enableRecompositionDriver: Boolean = false,
@@ -166,7 +213,7 @@ private fun MacrobenchmarkRule.measureStyleVariant(
         metrics = styleMetrics(),
         compilationMode = BENCHMARK_COMPILATION_MODE,
         startupMode = StartupMode.WARM,
-        iterations = DEFAULT_ITERATIONS,
+        iterations = iterations,
         setupBlock = {
             startActivityAndWait {
                 it.putExtra(MODE_EXTRA, mode)
@@ -174,13 +221,8 @@ private fun MacrobenchmarkRule.measureStyleVariant(
                 it.putExtra(RECOMPOSITION_DRIVER_EXTRA, enableRecompositionDriver)
             }
             device.waitForIdle()
-            check(
-                device.wait(
-                    Until.hasObject(By.desc(FIRST_FOCUS_TARGET).focused(true)),
-                    FOCUS_TARGET_TIMEOUT_MS,
-                ),
-            ) {
-                "Timed out waiting for first benchmark focus target $FIRST_FOCUS_TARGET"
+            check(device.waitUntilFocusedMarker(FIRST_FOCUS_TARGET, FOCUS_TARGET_TIMEOUT_MS)) {
+                "Timed out waiting for first focused benchmark marker $FIRST_FOCUS_TARGET"
             }
             if (enableRecompositionDriver) {
                 check(device.wait(Until.hasObject(By.desc(recompositionMarker(0))), FOCUS_TARGET_TIMEOUT_MS)) {
@@ -219,14 +261,26 @@ private fun UiDevice.runDeterministicFocusSequence(
         }
     }
 
-    check(
-        wait(
-            Until.hasObject(By.desc(terminalFocusTarget).focused(true)),
-            FOCUS_TARGET_TIMEOUT_MS,
-        ),
-    ) {
-        "Timed out waiting for terminal benchmark focus target $terminalFocusTarget"
+    check(waitUntilFocusedMarker(terminalFocusTarget, FOCUS_TARGET_TIMEOUT_MS)) {
+        "Timed out waiting for terminal focused benchmark marker $terminalFocusTarget"
     }
+}
+
+/** Marker focused, or under a focused ancestor (Fire TV: focus on parent, desc on child). */
+private fun UiDevice.waitUntilFocusedMarker(
+    marker: String,
+    timeoutMs: Long,
+): Boolean {
+    val deadline = SystemClock.uptimeMillis() + timeoutMs
+    val markerFocused = By.desc(marker).focused(true)
+    val markerUnderFocusedAncestor = By.desc(marker).hasAncestor(By.focused(true))
+    while (SystemClock.uptimeMillis() < deadline) {
+        if (hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)) {
+            return true
+        }
+        SystemClock.sleep(INPUT_FRAME_PACE_MS)
+    }
+    return hasObject(markerFocused) || hasObject(markerUnderFocusedAncestor)
 }
 
 private fun UiDevice.requestUnchangedRecomposition(generation: Int) {
