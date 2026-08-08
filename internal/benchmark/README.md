@@ -44,7 +44,10 @@ Useful flags:
 
 - `--variants clickable,container,material` — subset of the release comparison set
 - `--serial <adb-serial>` — required when more than one device is connected
-- `--invocations N` — repeat the selected set for run-to-run variance
+- `--invocations N` — repeat the selected set; order rotates left each invocation to
+  counterbalance thermal / position bias (prefer `N` equal to the variant count)
+- `--allow-dirty` — permit uncommitted changes; session records `gitDirty: true`. Without
+  this flag the runner refuses a dirty worktree so `gitSha` matches the measured APK.
 
 Alias mapping:
 
@@ -69,7 +72,9 @@ benchmark_results/snapshots/<yyyy-mm-dd>_<device>_<profile>/
 ```
 
 Those snapshots keep `session.json`, `summary.md`, and per-variant `benchmarkData.json` /
-`message.txt`, but omit Perfetto traces.
+`message.txt`, but omit Perfetto traces. Do not treat
+`benchmark_results/snapshots/2026-07-29_AFTR_local_short/` as a baseline — it predates
+focused-marker validation; capture a new dated snapshot after harness changes.
 
 **Confirmation / release profile (default):** warm startup, 20 measured iterations,
 `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, fixed ~50ms key pace,
@@ -80,9 +85,10 @@ claims in docs or PRs.
 ending at `benchmark-item-2-10`. Use for device bring-up and harness debugging only — not for
 release claims.
 
-The runner installs `:playbook:androidTv` before measuring, runs each selected variant in isolation,
-and copies outputs before the next Gradle run overwrites them. Summaries are report-only: no
-automatic pass/fail thresholds.
+The runner installs `:playbook:androidTv` before measuring, runs each selected variant in isolation
+(with per-invocation order rotation), and copies outputs before the next Gradle run overwrites them.
+Each invocation records its run `order` in `session.json`. Summaries are report-only: no automatic
+pass/fail thresholds.
 
 ## Deep-dive Gradle commands
 
