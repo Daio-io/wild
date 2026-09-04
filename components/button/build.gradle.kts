@@ -11,6 +11,8 @@ plugins {
 kotlin {
     sourceSets {
         val commonMain by getting {
+            kotlin.exclude("**/*.doc.kt", "**/*.samples.kt")
+
             dependencies {
                 implementation(compose.foundation)
                 implementation(projects.layout.container)
