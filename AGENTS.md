@@ -107,8 +107,8 @@ actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 
 ## Key Technologies
 
-- **Compose Multiplatform**: 1.9.3, compiler 1.5.7.1
-- **Kotlin**: 2.2.21
+- **Compose Multiplatform**: 1.12.0, compiler aligned with Kotlin 2.4.20
+- **Kotlin**: 2.4.20
 - **Gradle**: Custom plugins, version catalog (`gradle/libs.versions.toml`)
 - **Metalava**: API signature tracking
 - **MkDocs**: Material theme, GitHub Pages deployment
