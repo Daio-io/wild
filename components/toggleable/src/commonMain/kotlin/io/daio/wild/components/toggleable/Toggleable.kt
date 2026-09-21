@@ -29,6 +29,9 @@ import io.daio.wild.style.StyleDefaults
  *
  * The [checked] state maps to the `selected` interaction state, allowing different visuals
  * for checked vs unchecked via [Style.colors], [Style.borders], etc.
+ * The Boolean overload maps `true` to [ToggleableState.On] and `false` to
+ * [ToggleableState.Off]. Use the [ToggleableState] overload when an indeterminate state is
+ * required.
  *
  * Consumers build specific controls by wrapping this with:
  * - A semantic role via `Modifier.semantics { role = Role.Switch }` etc.
@@ -90,14 +93,89 @@ fun Toggleable(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Container(
+    ToggleableImpl(
+        state = ToggleableState(checked),
         onClick = { onCheckedChange(!checked) },
-        modifier =
-            modifier.semantics {
-                toggleableState = ToggleableState(checked)
-            },
+        modifier = modifier,
         enabled = enabled,
-        selected = checked,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
+ * Base toggleable component that supports on, off, and indeterminate states.
+ *
+ * The caller owns the state transition policy: [onClick] is invoked once for an enabled
+ * interaction, and this overload does not cycle [state] automatically. The [state] is exposed
+ * through `toggleableState`, while [ToggleableState.On] and [ToggleableState.Indeterminate] both
+ * use the selected [Style] branch. A disabled [Container] suppresses [onClick].
+ *
+ * @param state The current on, off, or indeterminate state.
+ * @param onClick Callback invoked when the enabled control is clicked.
+ * @param modifier Modifier to apply to the toggleable.
+ * @param enabled Whether the control is enabled.
+ * @param style The [Style] for interaction states. Use `selected` variants for on and
+ *     indeterminate states.
+ * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
+ * @param content Visual content of the control.
+ *
+ * @since 0.6.0
+ *
+ * Example - building a caller-controlled tri-state checkbox:
+ * ```
+ * var state by remember { mutableStateOf(ToggleableState.Off) }
+ * Toggleable(
+ *     state = state,
+ *     onClick = {
+ *         state = when (state) {
+ *             ToggleableState.Off -> ToggleableState.On
+ *             ToggleableState.On -> ToggleableState.Indeterminate
+ *             ToggleableState.Indeterminate -> ToggleableState.Off
+ *         }
+ *     },
+ * ) {
+ *     // Render a distinct mark for ToggleableState.Indeterminate.
+ * }
+ * ```
+ */
+@Composable
+fun Toggleable(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    style: Style = ToggleableDefaults.style(),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ToggleableImpl(
+        state = state,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+@Composable
+private fun ToggleableImpl(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    style: Style,
+    interactionSource: MutableInteractionSource?,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier = modifier.semantics { toggleableState = state },
+        enabled = enabled,
+        selected = state != ToggleableState.Off,
         style = style,
         interactionSource = interactionSource,
         content = content,

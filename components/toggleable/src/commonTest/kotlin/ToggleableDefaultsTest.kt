@@ -113,26 +113,36 @@ class SelectableDefaultsTest {
     }
 }
 
+/**
+ * Pure Boolean → [ToggleableState] mapping (`ToggleableState(checked)`).
+ *
+ * Spec THE-477 §4: this class owns the state-mapping assertions. Boolean-overload
+ * *delegation* (routing through `ToggleableState(checked)` / the shared impl) and
+ * Indeterminate → selected style-branch coverage live in [ToggleableTest]
+ * (`toggleableAppliesToggleableStateSemantics`, `toggleableUncheckedHasOffState`,
+ * `indeterminateTriStateToggleableUsesSelectedStyle`).
+ */
 class ToggleableStateTest {
     @Test
-    fun checkedMapsToToggleableStateOn() {
+    fun booleanTrueMapsToOn() {
         assertEquals(ToggleableState.On, ToggleableState(true))
     }
 
     @Test
-    fun uncheckedMapsToToggleableStateOff() {
+    fun booleanFalseMapsToOff() {
         assertEquals(ToggleableState.Off, ToggleableState(false))
     }
 
     @Test
-    fun toggleableStatesAreDistinct() {
+    fun booleanMappedStatesAreDistinct() {
         assertNotEquals(ToggleableState(true), ToggleableState(false))
     }
 
     @Test
-    fun indeterminateStateExists() {
-        // Ensure Indeterminate is a valid state (relevant for future tri-state checkbox support)
+    fun indeterminateStateIsDistinctFromBooleanMappedStates() {
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.On)
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.Off)
+        assertNotEquals(ToggleableState.Indeterminate, ToggleableState(true))
+        assertNotEquals(ToggleableState.Indeterminate, ToggleableState(false))
     }
 }

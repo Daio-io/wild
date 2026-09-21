@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -20,6 +21,8 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
+import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -121,6 +124,100 @@ class ToggleableTest {
             onNode(hasTestTag("toggle")).assert(
                 hasToggleableState(ToggleableState.Off),
             )
+        }
+
+    @Test
+    fun triStateToggleableExposesIndeterminateSemantics() =
+        runComposeUiTest {
+            setContent {
+                Toggleable(
+                    state = ToggleableState.Indeterminate,
+                    onClick = {},
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).assert(
+                hasToggleableState(ToggleableState.Indeterminate),
+            )
+        }
+
+    @Test
+    fun triStateToggleableExposesOnAndOffSemantics() =
+        runComposeUiTest {
+            var state by mutableStateOf(ToggleableState.Off)
+
+            setContent {
+                Toggleable(
+                    state = state,
+                    onClick = {},
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).assert(hasToggleableState(ToggleableState.Off))
+            runOnIdle { state = ToggleableState.On }
+            onNode(hasTestTag("toggle")).assert(hasToggleableState(ToggleableState.On))
+        }
+
+    @Test
+    fun triStateToggleableInvokesOnClickOnce() =
+        runComposeUiTest {
+            var clickCount = 0
+
+            setContent {
+                Toggleable(
+                    state = ToggleableState.Indeterminate,
+                    onClick = { clickCount++ },
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).performClick()
+            assertEquals(1, clickCount)
+        }
+
+    @Test
+    fun disabledTriStateToggleableDoesNotInvokeOnClick() =
+        runComposeUiTest {
+            var clickCount = 0
+
+            setContent {
+                Toggleable(
+                    state = ToggleableState.Indeterminate,
+                    onClick = { clickCount++ },
+                    enabled = false,
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) {}
+            }
+
+            onNode(hasTestTag("toggle")).performClick()
+            assertEquals(0, clickCount)
+        }
+
+    @Test
+    fun indeterminateTriStateToggleableUsesSelectedStyle() =
+        runComposeUiTest {
+            var contentColor = Color.Unspecified
+            val style =
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            contentColor = Color.Red,
+                            selectedContentColor = Color.Green,
+                        ),
+                )
+
+            setContent {
+                Toggleable(
+                    state = ToggleableState.Indeterminate,
+                    onClick = {},
+                    style = style,
+                    modifier = Modifier.testTag("toggle").size(48.dp),
+                ) { contentColor = LocalContentColor.current }
+            }
+
+            runOnIdle { assertEquals(Color.Green, contentColor) }
         }
 
     @Test

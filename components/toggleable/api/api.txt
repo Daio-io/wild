@@ -13,6 +13,7 @@ package io.daio.wild.components.toggleable {
 
   public final class ToggleableKt {
     method @KotlinOnly @androidx.compose.runtime.Composable public static void Selectable(boolean selected, kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void Toggleable(androidx.compose.ui.state.ToggleableState state, kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
     method @KotlinOnly @androidx.compose.runtime.Composable public static void Toggleable(boolean checked, kotlin.jvm.functions.Function1<java.lang.Boolean,kotlin.Unit> onCheckedChange, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
   }
 

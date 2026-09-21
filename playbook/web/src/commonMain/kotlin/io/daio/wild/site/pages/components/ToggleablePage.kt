@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.components.toggleable.Selectable
@@ -40,12 +41,21 @@ fun ToggleablePage(
 object ToggleablePageDefaults {
     private val selectableLabels = listOf("Small", "Medium", "Large")
 
+    private fun nextToggleableState(state: ToggleableState): ToggleableState =
+        when (state) {
+            ToggleableState.Off -> ToggleableState.On
+            ToggleableState.On -> ToggleableState.Indeterminate
+            ToggleableState.Indeterminate -> ToggleableState.Off
+        }
+
     val data =
         ComponentPageData(
             name = "Toggleable",
             description =
                 "Primitives for building checkboxes, switches, and radio buttons. " +
-                    "Toggleable manages its own boolean state; Selectable defers to parent-managed single selection.",
+                    "Toggleable offers a Boolean overload that flips checked state and a " +
+                    "ToggleableState overload where the caller owns Off/On/Indeterminate cycling; " +
+                    "Selectable defers to parent-managed single selection.",
             module = "io.daio.wild:toggleable",
             demos =
                 listOf(
@@ -94,6 +104,33 @@ object ToggleablePageDefaults {
                                         shapes = StyleDefaults.shapes(shape = RoundedCornerShape(8.dp)),
                                     ),
                             ) {}
+                        }
+                    },
+                    Demo("Tri-state Toggleable", "The caller owns the cycle between off, on, and indeterminate.") {
+                        var state by remember { mutableStateOf(ToggleableState.Off) }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Toggleable(
+                                state = state,
+                                onClick = { state = nextToggleableState(state) },
+                                modifier = Modifier.size(56.dp),
+                                style =
+                                    StyleDefaults.style(
+                                        colors =
+                                            StyleDefaults.colors(
+                                                backgroundColor = SiteTheme.colors.surface,
+                                                contentColor = SiteTheme.colors.textPrimary,
+                                                selectedBackgroundColor = SiteTheme.colors.accent,
+                                                selectedContentColor = SiteTheme.colors.background,
+                                            ),
+                                        shapes = StyleDefaults.shapes(shape = RoundedCornerShape(8.dp)),
+                                    ),
+                            ) {
+                                Text(text = state.name, modifier = Modifier.align(Alignment.Center))
+                            }
+                            Text(text = state.name)
                         }
                     },
                     Demo("Selectable", "Radio-button style - only one selected at a time.") {
@@ -148,11 +185,29 @@ object ToggleablePageDefaults {
                 ) {
                     Text("Option")
                 }
+
+                // Tri-state Toggleable (the caller owns the cycle)
+                fun nextToggleableState(state: ToggleableState): ToggleableState =
+                    when (state) {
+                        ToggleableState.Off -> ToggleableState.On
+                        ToggleableState.On -> ToggleableState.Indeterminate
+                        ToggleableState.Indeterminate -> ToggleableState.Off
+                    }
+
+                var state by remember { mutableStateOf(ToggleableState.Off) }
+                Toggleable(
+                    state = state,
+                    onClick = { state = nextToggleableState(state) },
+                ) {
+                    Text(state.name)
+                }
                 """.trimIndent(),
             props =
                 listOf(
-                    Prop("checked", "Boolean", required = true),
-                    Prop("onCheckedChange", "(Boolean) -> Unit", required = true),
+                    Prop("checked (Boolean overload)", "Boolean", required = true),
+                    Prop("onCheckedChange (Boolean overload)", "(Boolean) -> Unit", required = true),
+                    Prop("state (tri-state overload)", "ToggleableState", required = true),
+                    Prop("onClick (tri-state overload)", "() -> Unit", required = true),
                     Prop("modifier", "Modifier", default = "Modifier"),
                     Prop("enabled", "Boolean", default = "true"),
                     Prop("style", "Style", default = "ToggleableDefaults.style()"),
