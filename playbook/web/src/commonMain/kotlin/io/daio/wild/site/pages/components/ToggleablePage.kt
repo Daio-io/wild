@@ -194,8 +194,10 @@ object ToggleablePageDefaults {
                 """.trimIndent(),
             props =
                 listOf(
-                    Prop("checked", "Boolean", required = true),
-                    Prop("onCheckedChange", "(Boolean) -> Unit", required = true),
+                    Prop("checked (Boolean overload)", "Boolean", required = true),
+                    Prop("onCheckedChange (Boolean overload)", "(Boolean) -> Unit", required = true),
+                    Prop("state (tri-state overload)", "ToggleableState", required = true),
+                    Prop("onClick (tri-state overload)", "() -> Unit", required = true),
                     Prop("modifier", "Modifier", default = "Modifier"),
                     Prop("enabled", "Boolean", default = "true"),
                     Prop("style", "Style", default = "ToggleableDefaults.style()"),
