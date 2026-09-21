@@ -12,7 +12,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(compose.foundation)
+                api(compose.foundation)
                 api(projects.contentColor)
                 api(projects.components.text)
             }
