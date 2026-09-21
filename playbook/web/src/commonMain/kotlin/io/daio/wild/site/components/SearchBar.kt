@@ -17,12 +17,10 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -37,7 +35,6 @@ import io.daio.wild.container.Container
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SearchBar(
@@ -46,16 +43,10 @@ fun SearchBar(
     modifier: Modifier = Modifier,
 ) {
     val state = rememberTextFieldState()
-    var showResults by remember { mutableStateOf(false) }
+    var dismissedQuery by remember { mutableStateOf<String?>(null) }
     val query = state.text.toString()
     val currentResults = remember(query) { results(query) }
-
-    LaunchedEffect(state) {
-        snapshotFlow { state.text.toString() }
-            .collectLatest { text ->
-                showResults = text.isNotBlank()
-            }
-    }
+    val showResults = query.isNotBlank() && query != dismissedQuery
 
     Box(modifier = modifier.width(220.dp).height(36.dp)) {
         Container(
@@ -108,9 +99,9 @@ fun SearchBar(
                 onResultSelected = { result ->
                     onResultSelected(result)
                     state.clearText()
-                    showResults = false
+                    dismissedQuery = null
                 },
-                onDismiss = { showResults = false },
+                onDismiss = { dismissedQuery = query },
             )
         }
     }

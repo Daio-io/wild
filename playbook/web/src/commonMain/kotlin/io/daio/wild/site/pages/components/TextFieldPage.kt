@@ -195,6 +195,8 @@ object TextFieldPageDefaults {
                     Prop("keyboardOptions", "KeyboardOptions", default = "KeyboardOptions.Default"),
                     Prop("onKeyboardAction", "KeyboardActionHandler?", default = "null"),
                     Prop("lineLimits", "TextFieldLineLimits", default = "TextFieldLineLimits.Default"),
+                    Prop("onTextLayout", "(Density.(()->TextLayoutResult?)->Unit)?", default = "null"),
+                    Prop("scrollState", "ScrollState", default = "rememberScrollState()"),
                     Prop("cursorBrush", "Brush", default = "SolidColor(LocalContentColor.current)"),
                     Prop("interactionSource", "MutableInteractionSource?", default = "null"),
                     Prop("decorator", "TextFieldDecorator?", default = "null"),

@@ -179,8 +179,8 @@ class TextFieldTest {
             onNodeWithTag("decorator", useUnmergedTree = true).assertIsDisplayed()
             onNodeWithTag("text-field").assertTextEquals("Decorated")
             runOnIdle {
-                assertTrue(decoratorCompositions >= 1)
-                assertEquals(decoratorCompositions, innerCompositions)
+                assertEquals(1, decoratorCompositions)
+                assertEquals(1, innerCompositions)
             }
         }
 
