@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -27,10 +32,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import io.daio.wild.components.text.Text
+import io.daio.wild.components.textfield.TextField
 import io.daio.wild.container.Container
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SearchBar(
@@ -38,9 +45,17 @@ fun SearchBar(
     results: (query: String) -> List<SearchResult>,
     modifier: Modifier = Modifier,
 ) {
-    var query by remember { mutableStateOf("") }
+    val state = rememberTextFieldState()
     var showResults by remember { mutableStateOf(false) }
+    val query = state.text.toString()
     val currentResults = remember(query) { results(query) }
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.text.toString() }
+            .collectLatest { text ->
+                showResults = text.isNotBlank()
+            }
+    }
 
     Box(modifier = modifier.width(220.dp).height(36.dp)) {
         Container(
@@ -53,12 +68,8 @@ fun SearchBar(
                     shape = RoundedCornerShape(SiteTheme.spacing.s),
                 ),
         ) {
-            BasicTextField(
-                value = query,
-                onValueChange = {
-                    query = it
-                    showResults = it.isNotBlank()
-                },
+            TextField(
+                state = state,
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -69,24 +80,25 @@ fun SearchBar(
                         color = SiteTheme.colors.textPrimary,
                     ),
                 cursorBrush = SolidColor(SiteTheme.colors.accent),
-                singleLine = true,
-                decorationBox = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxHeight(),
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            if (query.isEmpty()) {
-                                Text(
-                                    text = "Search pages...",
-                                    style = SiteTheme.typography.body,
-                                    color = SiteTheme.colors.textSecondary,
-                                )
+                lineLimits = TextFieldLineLimits.SingleLine,
+                decorator =
+                    TextFieldDecorator { innerTextField ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxHeight(),
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                if (state.text.isEmpty()) {
+                                    Text(
+                                        text = "Search pages...",
+                                        style = SiteTheme.typography.body,
+                                        color = SiteTheme.colors.textSecondary,
+                                    )
+                                }
+                                innerTextField()
                             }
-                            innerTextField()
                         }
-                    }
-                },
+                    },
             )
         }
 
@@ -95,7 +107,7 @@ fun SearchBar(
                 results = currentResults,
                 onResultSelected = { result ->
                     onResultSelected(result)
-                    query = ""
+                    state.clearText()
                     showResults = false
                 },
                 onDismiss = { showResults = false },
