@@ -113,25 +113,32 @@ class SelectableDefaultsTest {
     }
 }
 
+/**
+ * Pure Boolean → [ToggleableState] mapping used by the Boolean [Toggleable] overload
+ * (`ToggleableState(checked)`). Composition-level Boolean overload semantics and
+ * Indeterminate → selected style-branch coverage live in ToggleableTest.
+ */
 class ToggleableStateTest {
     @Test
-    fun checkedMapsToToggleableStateOn() {
+    fun booleanTrueDelegatesToToggleableStateOn() {
         assertEquals(ToggleableState.On, ToggleableState(true))
     }
 
     @Test
-    fun uncheckedMapsToToggleableStateOff() {
+    fun booleanFalseDelegatesToToggleableStateOff() {
         assertEquals(ToggleableState.Off, ToggleableState(false))
     }
 
     @Test
-    fun toggleableStatesAreDistinct() {
+    fun booleanMappedStatesAreDistinct() {
         assertNotEquals(ToggleableState(true), ToggleableState(false))
     }
 
     @Test
-    fun indeterminateStateIsDistinctFromBooleanStates() {
+    fun indeterminateStateIsDistinctFromBooleanMappedStates() {
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.On)
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.Off)
+        assertNotEquals(ToggleableState.Indeterminate, ToggleableState(true))
+        assertNotEquals(ToggleableState.Indeterminate, ToggleableState(false))
     }
 }

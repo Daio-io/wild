@@ -185,9 +185,17 @@ object ToggleablePageDefaults {
                 }
 
                 // Tri-state Toggleable (the caller owns the cycle)
+                var state by remember { mutableStateOf(ToggleableState.Off) }
                 Toggleable(
                     state = state,
-                    onClick = { state = nextState(state) },
+                    onClick = {
+                        state =
+                            when (state) {
+                                ToggleableState.Off -> ToggleableState.On
+                                ToggleableState.On -> ToggleableState.Indeterminate
+                                ToggleableState.Indeterminate -> ToggleableState.Off
+                            }
+                    },
                 ) {
                     Text(state.name)
                 }
