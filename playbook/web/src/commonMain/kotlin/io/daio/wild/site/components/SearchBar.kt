@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,12 @@ fun SearchBar(
     val query = state.text.toString()
     val currentResults = remember(query) { results(query) }
     val showResults = query.isNotBlank() && query != dismissedQuery
+
+    LaunchedEffect(query) {
+        if (query != dismissedQuery) {
+            dismissedQuery = null
+        }
+    }
 
     Box(modifier = modifier.width(220.dp).height(36.dp)) {
         Container(
