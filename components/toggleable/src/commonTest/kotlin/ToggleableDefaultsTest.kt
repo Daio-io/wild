@@ -114,9 +114,13 @@ class SelectableDefaultsTest {
 }
 
 /**
- * Pure Boolean → [ToggleableState] mapping used by the Boolean [Toggleable] overload
- * (`ToggleableState(checked)`). Composition-level Boolean overload semantics and
- * Indeterminate → selected style-branch coverage live in ToggleableTest.
+ * Pure Boolean → [ToggleableState] mapping (`ToggleableState(checked)`).
+ *
+ * Spec THE-477 §4: this class owns the state-mapping assertions. Boolean-overload
+ * *delegation* (routing through `ToggleableState(checked)` / the shared impl) and
+ * Indeterminate → selected style-branch coverage live in [ToggleableTest]
+ * (`toggleableAppliesToggleableStateSemantics`, `toggleableUncheckedHasOffState`,
+ * `indeterminateTriStateToggleableUsesSelectedStyle`).
  */
 class ToggleableStateTest {
     @Test

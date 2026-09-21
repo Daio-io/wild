@@ -41,7 +41,7 @@ fun ToggleablePage(
 object ToggleablePageDefaults {
     private val selectableLabels = listOf("Small", "Medium", "Large")
 
-    fun nextToggleableState(state: ToggleableState): ToggleableState =
+    private fun nextToggleableState(state: ToggleableState): ToggleableState =
         when (state) {
             ToggleableState.Off -> ToggleableState.On
             ToggleableState.On -> ToggleableState.Indeterminate
