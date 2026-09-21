@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.components.toggleable.Selectable
@@ -96,6 +97,40 @@ object ToggleablePageDefaults {
                             ) {}
                         }
                     },
+                    Demo("Tri-state Toggleable", "The caller owns the cycle between off, on, and indeterminate.") {
+                        var state by remember { mutableStateOf(ToggleableState.Off) }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Toggleable(
+                                state = state,
+                                onClick = {
+                                    state =
+                                        when (state) {
+                                            ToggleableState.Off -> ToggleableState.On
+                                            ToggleableState.On -> ToggleableState.Indeterminate
+                                            ToggleableState.Indeterminate -> ToggleableState.Off
+                                        }
+                                },
+                                modifier = Modifier.size(56.dp),
+                                style =
+                                    StyleDefaults.style(
+                                        colors =
+                                            StyleDefaults.colors(
+                                                backgroundColor = SiteTheme.colors.surface,
+                                                contentColor = SiteTheme.colors.textPrimary,
+                                                selectedBackgroundColor = SiteTheme.colors.accent,
+                                                selectedContentColor = SiteTheme.colors.background,
+                                            ),
+                                        shapes = StyleDefaults.shapes(shape = RoundedCornerShape(8.dp)),
+                                    ),
+                            ) {
+                                Text(text = state.name, modifier = Modifier.align(Alignment.Center))
+                            }
+                            Text(text = state.name)
+                        }
+                    },
                     Demo("Selectable", "Radio-button style - only one selected at a time.") {
                         var selected by remember { mutableStateOf(0) }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -147,6 +182,14 @@ object ToggleablePageDefaults {
                     onClick = { onSelect() },
                 ) {
                     Text("Option")
+                }
+
+                // Tri-state Toggleable (the caller owns the cycle)
+                Toggleable(
+                    state = state,
+                    onClick = { state = nextState(state) },
+                ) {
+                    Text(state.name)
                 }
                 """.trimIndent(),
             props =

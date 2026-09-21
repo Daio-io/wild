@@ -130,8 +130,7 @@ class ToggleableStateTest {
     }
 
     @Test
-    fun indeterminateStateExists() {
-        // Ensure Indeterminate is a valid state (relevant for future tri-state checkbox support)
+    fun indeterminateStateIsDistinctFromBooleanStates() {
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.On)
         assertNotEquals(ToggleableState.Indeterminate, ToggleableState.Off)
     }
