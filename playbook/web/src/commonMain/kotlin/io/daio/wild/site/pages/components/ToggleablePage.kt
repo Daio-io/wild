@@ -41,12 +41,21 @@ fun ToggleablePage(
 object ToggleablePageDefaults {
     private val selectableLabels = listOf("Small", "Medium", "Large")
 
+    fun nextToggleableState(state: ToggleableState): ToggleableState =
+        when (state) {
+            ToggleableState.Off -> ToggleableState.On
+            ToggleableState.On -> ToggleableState.Indeterminate
+            ToggleableState.Indeterminate -> ToggleableState.Off
+        }
+
     val data =
         ComponentPageData(
             name = "Toggleable",
             description =
                 "Primitives for building checkboxes, switches, and radio buttons. " +
-                    "Toggleable manages its own boolean state; Selectable defers to parent-managed single selection.",
+                    "Toggleable offers a Boolean overload that flips checked state and a " +
+                    "ToggleableState overload where the caller owns Off/On/Indeterminate cycling; " +
+                    "Selectable defers to parent-managed single selection.",
             module = "io.daio.wild:toggleable",
             demos =
                 listOf(
@@ -105,14 +114,7 @@ object ToggleablePageDefaults {
                         ) {
                             Toggleable(
                                 state = state,
-                                onClick = {
-                                    state =
-                                        when (state) {
-                                            ToggleableState.Off -> ToggleableState.On
-                                            ToggleableState.On -> ToggleableState.Indeterminate
-                                            ToggleableState.Indeterminate -> ToggleableState.Off
-                                        }
-                                },
+                                onClick = { state = nextToggleableState(state) },
                                 modifier = Modifier.size(56.dp),
                                 style =
                                     StyleDefaults.style(
@@ -185,17 +187,17 @@ object ToggleablePageDefaults {
                 }
 
                 // Tri-state Toggleable (the caller owns the cycle)
+                fun nextToggleableState(state: ToggleableState): ToggleableState =
+                    when (state) {
+                        ToggleableState.Off -> ToggleableState.On
+                        ToggleableState.On -> ToggleableState.Indeterminate
+                        ToggleableState.Indeterminate -> ToggleableState.Off
+                    }
+
                 var state by remember { mutableStateOf(ToggleableState.Off) }
                 Toggleable(
                     state = state,
-                    onClick = {
-                        state =
-                            when (state) {
-                                ToggleableState.Off -> ToggleableState.On
-                                ToggleableState.On -> ToggleableState.Indeterminate
-                                ToggleableState.Indeterminate -> ToggleableState.Off
-                            }
-                    },
+                    onClick = { state = nextToggleableState(state) },
                 ) {
                     Text(state.name)
                 }

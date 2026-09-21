@@ -120,12 +120,12 @@ class SelectableDefaultsTest {
  */
 class ToggleableStateTest {
     @Test
-    fun booleanTrueDelegatesToToggleableStateOn() {
+    fun booleanTrueMapsToOn() {
         assertEquals(ToggleableState.On, ToggleableState(true))
     }
 
     @Test
-    fun booleanFalseDelegatesToToggleableStateOff() {
+    fun booleanFalseMapsToOff() {
         assertEquals(ToggleableState.Off, ToggleableState(false))
     }
 
