@@ -128,9 +128,6 @@ fun TextField(
  * ```
  *
  * @param state The state that owns the area's text, selection, and composition.
- * @param minLines Minimum number of visible text lines. Must be at least 1.
- * @param maxLines Maximum number of visible text lines. Must be greater than or equal to
- *   [minLines].
  * @param modifier Modifier to apply to the area.
  * @param enabled Whether the area accepts focus and user input.
  * @param readOnly Whether the area can be focused and selected without accepting edits.
@@ -139,6 +136,9 @@ fun TextField(
  * @param outputTransformation Transformation applied when the area is rendered.
  * @param keyboardOptions Options for the software keyboard.
  * @param onKeyboardAction Callback for software keyboard actions.
+ * @param minLines Minimum number of visible text lines. Must be at least 1.
+ * @param maxLines Maximum number of visible text lines. Must be greater than or equal to
+ *   [minLines].
  * @param onTextLayout Callback invoked when text layout is calculated.
  * @param scrollState Scroll state used by the area.
  * @param cursorBrush Brush used to draw the cursor.
@@ -151,8 +151,6 @@ fun TextField(
 @Composable
 fun TextArea(
     state: TextFieldState,
-    minLines: Int = TextFieldDefaults.textAreaMinLines,
-    maxLines: Int = Int.MAX_VALUE,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -161,6 +159,8 @@ fun TextArea(
     outputTransformation: OutputTransformation? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onKeyboardAction: KeyboardActionHandler? = null,
+    minLines: Int = TextFieldDefaults.textAreaMinLines,
+    maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
     scrollState: ScrollState = rememberScrollState(),
     cursorBrush: Brush = SolidColor(LocalContentColor.current),
