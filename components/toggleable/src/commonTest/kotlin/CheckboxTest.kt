@@ -40,7 +40,7 @@ class CheckboxTest {
                     checked = false,
                     onCheckedChange = { checked = it },
                     modifier = Modifier.testTag("checkbox").size(48.dp),
-                ) { }
+                )
             }
 
             onNode(hasTestTag("checkbox")).assert(hasRole(Role.Checkbox))
@@ -80,7 +80,7 @@ class CheckboxTest {
                     state = ToggleableState.Indeterminate,
                     onClick = { clickCount++ },
                     modifier = Modifier.testTag("checkbox").size(48.dp),
-                ) { state -> indicatorState = state }
+                ) { received -> indicatorState = received }
             }
 
             onNode(hasTestTag("checkbox")).assert(hasRole(Role.Checkbox))

@@ -83,12 +83,12 @@ object CheckboxPageDefaults {
             name = "Checkbox",
             description =
                 "Unstyled, controlled Boolean and tri-state checkbox primitives. Wild owns " +
-                    "interaction and semantics while callers provide indicator artwork and " +
-                    "tri-state cycling policy.",
+                    "interaction, semantics, and a basic default indicator; callers own " +
+                    "tri-state cycling policy and may replace the indicator artwork.",
             module = "io.daio.wild.components:toggleable",
             demos =
                 listOf(
-                    Demo("States", "Every indicator below is supplied by the caller.") {
+                    Demo("States", "Default indicator for Boolean, tri-state, and disabled.") {
                         var checked by remember { mutableStateOf(false) }
                         var state by remember { mutableStateOf(ToggleableState.Indeterminate) }
                         val style = checkboxStyle()
@@ -102,12 +102,7 @@ object CheckboxPageDefaults {
                                     checked = checked,
                                     onCheckedChange = { checked = it },
                                     style = style,
-                                ) {
-                                    CheckboxIndicator(
-                                        mark = if (it) "✓" else "",
-                                        color = if (it) SiteTheme.colors.accent else SiteTheme.colors.surface,
-                                    )
-                                }
+                                )
                                 Text(
                                     text = if (checked) "Checked" else "Unchecked",
                                     modifier = Modifier.padding(end = SiteTheme.spacing.m),
@@ -116,24 +111,7 @@ object CheckboxPageDefaults {
                                     state = state,
                                     onClick = { state = nextState(state) },
                                     style = style,
-                                ) {
-                                    CheckboxIndicator(
-                                        mark =
-                                            if (it == ToggleableState.Indeterminate) {
-                                                "−"
-                                            } else if (it == ToggleableState.On) {
-                                                "✓"
-                                            } else {
-                                                ""
-                                            },
-                                        color =
-                                            if (it == ToggleableState.Off) {
-                                                SiteTheme.colors.surface
-                                            } else {
-                                                SiteTheme.colors.accent
-                                            },
-                                    )
-                                }
+                                )
                                 Text(text = state.name)
                             }
                             Row(
@@ -145,14 +123,29 @@ object CheckboxPageDefaults {
                                     onCheckedChange = {},
                                     enabled = false,
                                     style = style,
-                                ) {
-                                    CheckboxIndicator(
-                                        mark = "✓",
-                                        color = SiteTheme.colors.surface,
-                                    )
-                                }
+                                )
                                 Text(text = "Disabled")
                             }
+                        }
+                    },
+                    Demo("Custom indicator", "Replace the default mark with caller artwork.") {
+                        var checked by remember { mutableStateOf(true) }
+                        val style = checkboxStyle()
+
+                        Checkbox(
+                            checked = checked,
+                            onCheckedChange = { checked = it },
+                            style = style,
+                        ) {
+                            CheckboxIndicator(
+                                mark = if (it) "✓" else "",
+                                color =
+                                    if (it) {
+                                        SiteTheme.colors.accent
+                                    } else {
+                                        SiteTheme.colors.surface
+                                    },
+                            )
                         }
                     },
                 ),
@@ -161,15 +154,18 @@ object CheckboxPageDefaults {
                 Checkbox(
                     checked = checked,
                     onCheckedChange = { checked = it },
-                ) { isChecked ->
-                    // Draw the indicator using isChecked.
-                }
+                )
 
                 TriStateCheckbox(
                     state = state,
                     onClick = { state = nextState(state) },
-                ) { currentState ->
-                    // Draw Off, On, and Indeterminate distinctly.
+                )
+
+                Checkbox(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                ) { isChecked ->
+                    // Replace the default indicator.
                 }
                 """.trimIndent(),
             props =
@@ -185,12 +181,12 @@ object CheckboxPageDefaults {
                     Prop(
                         "indicator (Boolean overload)",
                         "@Composable BoxScope.(checked: Boolean) -> Unit",
-                        required = true,
+                        default = "CheckboxDefaults.Indicator",
                     ),
                     Prop(
                         "indicator (tri-state overload)",
                         "@Composable BoxScope.(state: ToggleableState) -> Unit",
-                        required = true,
+                        default = "CheckboxDefaults.Indicator",
                     ),
                 ),
             platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
