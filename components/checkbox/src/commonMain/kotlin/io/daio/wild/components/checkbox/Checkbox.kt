@@ -46,7 +46,7 @@ import io.daio.wild.style.StyleDefaults
  *     modifier = Modifier.size(20.dp),
  * ) { checked ->
  *     if (checked) {
- *         Icon(Icons.Default.Check, contentDescription = null)
+ *         Box(modifier = Modifier.size(8.dp))
  *     }
  * }
  * ```

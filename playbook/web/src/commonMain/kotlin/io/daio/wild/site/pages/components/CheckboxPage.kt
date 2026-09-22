@@ -85,7 +85,7 @@ object CheckboxPageDefaults {
                 "Unstyled, controlled Boolean and tri-state checkbox primitives. Wild owns " +
                     "interaction and semantics while callers provide indicator artwork and " +
                     "tri-state cycling policy.",
-            module = "io.daio.wild:checkbox",
+            module = "io.daio.wild.components:checkbox",
             demos =
                 listOf(
                     Demo("States", "Every indicator below is supplied by the caller.") {
@@ -174,15 +174,24 @@ object CheckboxPageDefaults {
                 """.trimIndent(),
             props =
                 listOf(
-                    Prop("checked", "Boolean", required = true),
-                    Prop("onCheckedChange", "(Boolean) -> Unit", required = true),
-                    Prop("state", "ToggleableState", required = true),
-                    Prop("onClick", "() -> Unit", required = true),
+                    Prop("checked (Boolean overload)", "Boolean", required = true),
+                    Prop("onCheckedChange (Boolean overload)", "(Boolean) -> Unit", required = true),
+                    Prop("state (tri-state overload)", "ToggleableState", required = true),
+                    Prop("onClick (tri-state overload)", "() -> Unit", required = true),
                     Prop("modifier", "Modifier", default = "Modifier"),
                     Prop("enabled", "Boolean", default = "true"),
                     Prop("style", "Style", default = "CheckboxDefaults.style()"),
                     Prop("interactionSource", "MutableInteractionSource?", default = "null"),
-                    Prop("indicator", "@Composable BoxScope.(state) -> Unit", required = true),
+                    Prop(
+                        "indicator (Boolean overload)",
+                        "@Composable BoxScope.(checked: Boolean) -> Unit",
+                        required = true,
+                    ),
+                    Prop(
+                        "indicator (tri-state overload)",
+                        "@Composable BoxScope.(state: ToggleableState) -> Unit",
+                        required = true,
+                    ),
                 ),
             platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
         )
