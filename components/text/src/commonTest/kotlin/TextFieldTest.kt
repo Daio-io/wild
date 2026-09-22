@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.textfield
+package io.daio.wild.components.text
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.FocusInteraction
@@ -32,7 +32,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import io.daio.wild.components.text.LocalTextStyle
 import io.daio.wild.content.LocalContentColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

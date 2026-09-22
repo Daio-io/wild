@@ -26,7 +26,6 @@ dependencies {
     dokka(projects.components.button)
     dokka(projects.components.icon)
     dokka(projects.components.text)
-    dokka(projects.components.textField)
     dokka(projects.components.toggleable)
     dokka(projects.components.listItem)
     dokka(projects.layout.container)

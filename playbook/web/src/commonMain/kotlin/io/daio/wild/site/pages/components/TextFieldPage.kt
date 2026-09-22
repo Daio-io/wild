@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
-import io.daio.wild.components.textfield.TextArea
-import io.daio.wild.components.textfield.TextField
+import io.daio.wild.components.text.TextArea
+import io.daio.wild.components.text.TextField
 import io.daio.wild.container.Container
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
@@ -51,7 +51,7 @@ object TextFieldPageDefaults {
                 "An unstyled, state-based text input primitive built on Compose Foundation. " +
                     "TextArea is the same editor configured for multiline input. Supply visuals " +
                     "through a decorator — Wild does not impose Material chrome.",
-            module = "io.daio.wild.components:text-field",
+            module = "io.daio.wild.components:text",
             demos =
                 listOf(
                     Demo("Plain", "Bare TextField with programmatic state.") {
