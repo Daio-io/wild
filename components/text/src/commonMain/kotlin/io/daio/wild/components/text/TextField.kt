@@ -67,7 +67,7 @@ import io.daio.wild.content.LocalContentColor
  *   a second source is not created for decoration.
  * @param decorator Optional visual decoration around the inner field.
  *
- * @since 0.6.0
+ * @since 0.7.0
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -144,7 +144,7 @@ fun TextField(
  * @param interactionSource Optional source for focus and press interactions.
  * @param decorator Optional visual decoration around the inner field.
  *
- * @since 0.6.0
+ * @since 0.7.0
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -195,7 +195,7 @@ fun TextArea(
 /**
  * Default values used by [TextField] and [TextArea].
  *
- * @since 0.6.0
+ * @since 0.7.0
  */
 object TextFieldDefaults {
     /** The default minimum number of visible lines in a [TextArea]. */
