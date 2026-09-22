@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
+import io.daio.wild.components.text.Text
 import io.daio.wild.components.toggleable.Checkbox
 import io.daio.wild.components.toggleable.TriStateCheckbox
-import io.daio.wild.components.text.Text
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
 import io.daio.wild.site.components.Demo
