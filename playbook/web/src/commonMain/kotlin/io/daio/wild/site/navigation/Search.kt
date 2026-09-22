@@ -21,6 +21,11 @@ val searchIndex =
             listOf("click", "press", "interactive", "action"),
         ),
         SearchEntry(
+            "Checkbox",
+            Route.Component.Checkbox,
+            listOf("check", "checked", "unchecked", "indeterminate", "tri-state", "form"),
+        ),
+        SearchEntry(
             "Container",
             Route.Component.Container,
             listOf("box", "layout", "surface", "card"),

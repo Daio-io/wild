@@ -29,6 +29,7 @@ import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.GettingStartedPage
 import io.daio.wild.site.pages.components.ButtonPage
+import io.daio.wild.site.pages.components.CheckboxPage
 import io.daio.wild.site.pages.components.ContainerPage
 import io.daio.wild.site.pages.components.DividerPage
 import io.daio.wild.site.pages.components.IconPage
@@ -117,6 +118,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Button.path) {
                         ButtonPage()
+                    }
+                    composable(Route.Component.Checkbox.path) {
+                        CheckboxPage()
                     }
                     composable(Route.Component.Container.path) {
                         ContainerPage()

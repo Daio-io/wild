@@ -1,0 +1,189 @@
+// Copyright 2024, Dai Williams
+// SPDX-License-Identifier: Apache-2.0
+package io.daio.wild.site.pages.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.unit.dp
+import io.daio.wild.components.checkbox.Checkbox
+import io.daio.wild.components.checkbox.TriStateCheckbox
+import io.daio.wild.components.text.Text
+import io.daio.wild.site.components.ComponentPage
+import io.daio.wild.site.components.ComponentPageData
+import io.daio.wild.site.components.Demo
+import io.daio.wild.site.components.Platform
+import io.daio.wild.site.components.Prop
+import io.daio.wild.site.theme.SiteTheme
+import io.daio.wild.style.StyleDefaults
+
+@Composable
+fun CheckboxPage(
+    modifier: Modifier = Modifier,
+    data: ComponentPageData = CheckboxPageDefaults.data,
+) {
+    ComponentPage(
+        modifier = modifier,
+        data = data,
+    )
+}
+
+object CheckboxPageDefaults {
+    private fun nextState(state: ToggleableState): ToggleableState =
+        when (state) {
+            ToggleableState.Off -> ToggleableState.On
+            ToggleableState.On -> ToggleableState.Indeterminate
+            ToggleableState.Indeterminate -> ToggleableState.Off
+        }
+
+    @Composable
+    private fun checkboxStyle() =
+        StyleDefaults.style(
+            colors =
+                StyleDefaults.colors(
+                    backgroundColor = SiteTheme.colors.surface,
+                    contentColor = SiteTheme.colors.textSecondary,
+                    selectedBackgroundColor = SiteTheme.colors.accentSubtle,
+                    selectedContentColor = SiteTheme.colors.accent,
+                    disabledBackgroundColor = SiteTheme.colors.surface,
+                    disabledContentColor = SiteTheme.colors.textSecondary,
+                ),
+            shapes = StyleDefaults.shapes(shape = RoundedCornerShape(6.dp)),
+        )
+
+    @Composable
+    private fun CheckboxIndicator(
+        mark: String,
+        color: Color,
+    ) {
+        Box(
+            modifier = Modifier.size(28.dp).background(color, RoundedCornerShape(6.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(text = mark, color = SiteTheme.colors.textPrimary)
+        }
+    }
+
+    val data =
+        ComponentPageData(
+            name = "Checkbox",
+            description =
+                "Unstyled, controlled Boolean and tri-state checkbox primitives. Wild owns " +
+                    "interaction and semantics while callers provide indicator artwork and " +
+                    "tri-state cycling policy.",
+            module = "io.daio.wild:checkbox",
+            demos =
+                listOf(
+                    Demo("States", "Every indicator below is supplied by the caller.") {
+                        var checked by remember { mutableStateOf(false) }
+                        var state by remember { mutableStateOf(ToggleableState.Indeterminate) }
+                        val style = checkboxStyle()
+
+                        Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(
+                                    checked = checked,
+                                    onCheckedChange = { checked = it },
+                                    style = style,
+                                ) {
+                                    CheckboxIndicator(
+                                        mark = if (it) "✓" else "",
+                                        color = if (it) SiteTheme.colors.accent else SiteTheme.colors.surface,
+                                    )
+                                }
+                                Text(
+                                    text = if (checked) "Checked" else "Unchecked",
+                                    modifier = Modifier.padding(end = SiteTheme.spacing.m),
+                                )
+                                TriStateCheckbox(
+                                    state = state,
+                                    onClick = { state = nextState(state) },
+                                    style = style,
+                                ) {
+                                    CheckboxIndicator(
+                                        mark =
+                                            if (it == ToggleableState.Indeterminate) {
+                                                "−"
+                                            } else if (it == ToggleableState.On) {
+                                                "✓"
+                                            } else {
+                                                ""
+                                            },
+                                        color =
+                                            if (it == ToggleableState.Off) {
+                                                SiteTheme.colors.surface
+                                            } else {
+                                                SiteTheme.colors.accent
+                                            },
+                                    )
+                                }
+                                Text(text = state.name)
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(
+                                    checked = true,
+                                    onCheckedChange = {},
+                                    enabled = false,
+                                    style = style,
+                                ) {
+                                    CheckboxIndicator(
+                                        mark = "✓",
+                                        color = SiteTheme.colors.surface,
+                                    )
+                                }
+                                Text(text = "Disabled")
+                            }
+                        }
+                    },
+                ),
+            usage =
+                """
+                Checkbox(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                ) { isChecked ->
+                    // Draw the indicator using isChecked.
+                }
+
+                TriStateCheckbox(
+                    state = state,
+                    onClick = { state = nextState(state) },
+                ) { currentState ->
+                    // Draw Off, On, and Indeterminate distinctly.
+                }
+                """.trimIndent(),
+            props =
+                listOf(
+                    Prop("checked", "Boolean", required = true),
+                    Prop("onCheckedChange", "(Boolean) -> Unit", required = true),
+                    Prop("state", "ToggleableState", required = true),
+                    Prop("onClick", "() -> Unit", required = true),
+                    Prop("modifier", "Modifier", default = "Modifier"),
+                    Prop("enabled", "Boolean", default = "true"),
+                    Prop("style", "Style", default = "CheckboxDefaults.style()"),
+                    Prop("interactionSource", "MutableInteractionSource?", default = "null"),
+                    Prop("indicator", "@Composable BoxScope.(state) -> Unit", required = true),
+                ),
+            platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
+        )
+}

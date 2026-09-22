@@ -177,6 +177,7 @@ fun sidebarGroupsForSection(section: Section): List<SidebarGroup> =
                     items =
                         listOf(
                             SidebarItem("Button", Route.Component.Button),
+                            SidebarItem("Checkbox", Route.Component.Checkbox),
                             SidebarItem("Toggleable", Route.Component.Toggleable),
                         ),
                 ),
