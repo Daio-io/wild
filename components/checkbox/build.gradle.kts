@@ -16,7 +16,7 @@ kotlin {
 
                 api(projects.foundations)
                 api(projects.style)
-                api(projects.components.toggleable)
+                implementation(projects.components.toggleable)
             }
         }
         commonTest {
