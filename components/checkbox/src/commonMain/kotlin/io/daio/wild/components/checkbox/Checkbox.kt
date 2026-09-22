@@ -37,6 +37,19 @@ import io.daio.wild.style.StyleDefaults
  * @param indicator Content used to render the indicator in the checkbox's [BoxScope].
  *
  * @since 0.6.0
+ *
+ * Example:
+ * ```
+ * Checkbox(
+ *     checked = isChecked,
+ *     onCheckedChange = { isChecked = it },
+ *     modifier = Modifier.size(20.dp),
+ * ) { checked ->
+ *     if (checked) {
+ *         Icon(Icons.Default.Check, contentDescription = null)
+ *     }
+ * }
+ * ```
  */
 @Composable
 fun Checkbox(
@@ -76,6 +89,22 @@ fun Checkbox(
  * @param indicator Content used to render the indicator in the checkbox's [BoxScope].
  *
  * @since 0.6.0
+ *
+ * Example:
+ * ```
+ * TriStateCheckbox(
+ *     state = state,
+ *     onClick = {
+ *         state = when (state) {
+ *             ToggleableState.Off -> ToggleableState.On
+ *             ToggleableState.On -> ToggleableState.Indeterminate
+ *             ToggleableState.Indeterminate -> ToggleableState.Off
+ *         }
+ *     },
+ * ) { currentState ->
+ *     // Render a distinct mark for ToggleableState.Indeterminate.
+ * }
+ * ```
  */
 @Composable
 fun TriStateCheckbox(
@@ -102,6 +131,16 @@ fun TriStateCheckbox(
  * Contains the default values used by [Checkbox] and [TriStateCheckbox].
  *
  * @since 0.6.0
+ *
+ * Example:
+ * ```
+ * val style = CheckboxDefaults.style(
+ *     colors = StyleDefaults.colors(
+ *         backgroundColor = Color.White,
+ *         selectedBackgroundColor = Color.Green,
+ *     ),
+ * )
+ * ```
  */
 object CheckboxDefaults {
     /**
