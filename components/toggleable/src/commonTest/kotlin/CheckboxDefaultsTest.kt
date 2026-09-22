@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.checkbox
+package io.daio.wild.components.toggleable
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape

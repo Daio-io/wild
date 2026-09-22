@@ -31,7 +31,6 @@ include(
     "style",
     "modifier",
     ":components:button",
-    ":components:checkbox",
     ":components:icon",
     ":components:text",
     ":components:toggleable",

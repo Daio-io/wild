@@ -23,7 +23,6 @@ kotlin {
                 api(projects.layout.divider)
                 api(projects.components.text)
                 api(projects.components.button)
-                api(projects.components.checkbox)
                 api(projects.components.listItem)
                 api(projects.components.toggleable)
                 api(projects.components.icon)

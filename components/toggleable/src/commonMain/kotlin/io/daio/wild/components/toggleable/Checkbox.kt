@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.checkbox
+package io.daio.wild.components.toggleable
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,7 +11,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.state.ToggleableState
-import io.daio.wild.components.toggleable.Toggleable
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors

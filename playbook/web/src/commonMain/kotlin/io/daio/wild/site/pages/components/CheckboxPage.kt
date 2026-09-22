@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
-import io.daio.wild.components.checkbox.Checkbox
-import io.daio.wild.components.checkbox.TriStateCheckbox
+import io.daio.wild.components.toggleable.Checkbox
+import io.daio.wild.components.toggleable.TriStateCheckbox
 import io.daio.wild.components.text.Text
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
@@ -85,7 +85,7 @@ object CheckboxPageDefaults {
                 "Unstyled, controlled Boolean and tri-state checkbox primitives. Wild owns " +
                     "interaction and semantics while callers provide indicator artwork and " +
                     "tri-state cycling policy.",
-            module = "io.daio.wild.components:checkbox",
+            module = "io.daio.wild.components:toggleable",
             demos =
                 listOf(
                     Demo("States", "Every indicator below is supplied by the caller.") {
