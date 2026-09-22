@@ -36,7 +36,7 @@ import io.daio.wild.style.StyleDefaults
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param indicator Content used to render the indicator in the checkbox's [BoxScope].
  *
- * @since 0.6.0
+ * @since 0.7.0
  *
  * Example:
  * ```
@@ -88,7 +88,7 @@ fun Checkbox(
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param indicator Content used to render the indicator in the checkbox's [BoxScope].
  *
- * @since 0.6.0
+ * @since 0.7.0
  *
  * Example:
  * ```
@@ -130,7 +130,7 @@ fun TriStateCheckbox(
 /**
  * Contains the default values used by [Checkbox] and [TriStateCheckbox].
  *
- * @since 0.6.0
+ * @since 0.7.0
  *
  * Example:
  * ```
@@ -152,7 +152,7 @@ object CheckboxDefaults {
      * @param shapes The shapes for the checkbox interaction states.
      * @param alpha The alpha for the checkbox interaction states.
      *
-     * @since 0.6.0
+     * @since 0.7.0
      */
     fun style(
         colors: Colors = StyleDefaults.colors(),
