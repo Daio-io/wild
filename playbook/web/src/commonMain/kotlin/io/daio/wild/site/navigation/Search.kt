@@ -31,6 +31,11 @@ val searchIndex =
             listOf("label", "string", "typography", "font"),
         ),
         SearchEntry(
+            "TextField",
+            Route.Component.TextField,
+            listOf("input", "edit", "textarea", "form", "type"),
+        ),
+        SearchEntry(
             "Icon",
             Route.Component.Icon,
             listOf("image", "vector", "symbol", "glyph"),

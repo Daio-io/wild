@@ -33,6 +33,7 @@ import io.daio.wild.site.pages.components.ContainerPage
 import io.daio.wild.site.pages.components.DividerPage
 import io.daio.wild.site.pages.components.IconPage
 import io.daio.wild.site.pages.components.ListItemPage
+import io.daio.wild.site.pages.components.TextFieldPage
 import io.daio.wild.site.pages.components.TextPage
 import io.daio.wild.site.pages.components.ToggleablePage
 import io.daio.wild.site.pages.foundations.ContentColorPage
@@ -122,6 +123,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Text.path) {
                         TextPage()
+                    }
+                    composable(Route.Component.TextField.path) {
+                        TextFieldPage()
                     }
                     composable(Route.Component.Icon.path) {
                         IconPage()

@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldDecorator
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +31,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import io.daio.wild.components.text.Text
+import io.daio.wild.components.text.TextField
 import io.daio.wild.container.Container
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.Border
@@ -38,9 +43,17 @@ fun SearchBar(
     results: (query: String) -> List<SearchResult>,
     modifier: Modifier = Modifier,
 ) {
-    var query by remember { mutableStateOf("") }
-    var showResults by remember { mutableStateOf(false) }
+    val state = rememberTextFieldState()
+    var dismissedQuery by remember { mutableStateOf<String?>(null) }
+    val query = state.text.toString()
     val currentResults = remember(query) { results(query) }
+    val showResults = query.isNotBlank() && query != dismissedQuery
+
+    LaunchedEffect(query) {
+        if (query != dismissedQuery) {
+            dismissedQuery = null
+        }
+    }
 
     Box(modifier = modifier.width(220.dp).height(36.dp)) {
         Container(
@@ -53,12 +66,8 @@ fun SearchBar(
                     shape = RoundedCornerShape(SiteTheme.spacing.s),
                 ),
         ) {
-            BasicTextField(
-                value = query,
-                onValueChange = {
-                    query = it
-                    showResults = it.isNotBlank()
-                },
+            TextField(
+                state = state,
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -69,24 +78,25 @@ fun SearchBar(
                         color = SiteTheme.colors.textPrimary,
                     ),
                 cursorBrush = SolidColor(SiteTheme.colors.accent),
-                singleLine = true,
-                decorationBox = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxHeight(),
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            if (query.isEmpty()) {
-                                Text(
-                                    text = "Search pages...",
-                                    style = SiteTheme.typography.body,
-                                    color = SiteTheme.colors.textSecondary,
-                                )
+                lineLimits = TextFieldLineLimits.SingleLine,
+                decorator =
+                    TextFieldDecorator { innerTextField ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxHeight(),
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                if (state.text.isEmpty()) {
+                                    Text(
+                                        text = "Search pages...",
+                                        style = SiteTheme.typography.body,
+                                        color = SiteTheme.colors.textSecondary,
+                                    )
+                                }
+                                innerTextField()
                             }
-                            innerTextField()
                         }
-                    }
-                },
+                    },
             )
         }
 
@@ -95,10 +105,10 @@ fun SearchBar(
                 results = currentResults,
                 onResultSelected = { result ->
                     onResultSelected(result)
-                    query = ""
-                    showResults = false
+                    state.clearText()
+                    dismissedQuery = null
                 },
-                onDismiss = { showResults = false },
+                onDismiss = { dismissedQuery = query },
             )
         }
     }

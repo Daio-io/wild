@@ -185,6 +185,7 @@ fun sidebarGroupsForSection(section: Section): List<SidebarGroup> =
                     items =
                         listOf(
                             SidebarItem("Text", Route.Component.Text),
+                            SidebarItem("TextField", Route.Component.TextField),
                             SidebarItem("Icon", Route.Component.Icon),
                         ),
                 ),

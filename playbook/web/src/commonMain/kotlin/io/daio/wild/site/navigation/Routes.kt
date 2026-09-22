@@ -22,6 +22,10 @@ sealed interface Route {
             override val path = "components/text"
         }
 
+        data object TextField : Component {
+            override val path = "components/text-field"
+        }
+
         data object Icon : Component {
             override val path = "components/icon"
         }
@@ -70,6 +74,7 @@ private val routesByPath: Map<String, Route> by lazy {
         put(Route.Component.Button.path, Route.Component.Button)
         put(Route.Component.Container.path, Route.Component.Container)
         put(Route.Component.Text.path, Route.Component.Text)
+        put(Route.Component.TextField.path, Route.Component.TextField)
         put(Route.Component.Icon.path, Route.Component.Icon)
         put(Route.Component.ListItem.path, Route.Component.ListItem)
         put(Route.Component.Toggleable.path, Route.Component.Toggleable)
