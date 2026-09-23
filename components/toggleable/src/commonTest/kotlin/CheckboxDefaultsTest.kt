@@ -16,12 +16,13 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 @OptIn(ExperimentalTestApi::class)
 class CheckboxDefaultsTest {
     @Test
     fun defaultStyleMatchesStyleDefaultsNone() {
-        assertEquals(StyleDefaults.None, CheckboxDefaults.style())
+        assertSame(StyleDefaults.None, CheckboxDefaults.style())
     }
 
     @Test

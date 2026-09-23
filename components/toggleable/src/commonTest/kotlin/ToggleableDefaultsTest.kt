@@ -11,11 +11,12 @@ import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertSame
 
 class ToggleableDefaultsTest {
     @Test
     fun defaultStyleMatchesStyleDefaultsNone() {
-        assertEquals(StyleDefaults.None, ToggleableDefaults.style())
+        assertSame(StyleDefaults.None, ToggleableDefaults.style())
     }
 
     @Test
@@ -96,7 +97,7 @@ class ToggleableDefaultsTest {
 class SelectableDefaultsTest {
     @Test
     fun defaultStyleMatchesStyleDefaultsNone() {
-        assertEquals(StyleDefaults.None, SelectableDefaults.style())
+        assertSame(StyleDefaults.None, SelectableDefaults.style())
     }
 
     @Test
@@ -107,9 +108,8 @@ class SelectableDefaultsTest {
     }
 
     @Test
-    fun selectableDefaultsAreIndependentFromToggleableDefaults() {
-        // They currently produce the same result, but are separate objects
-        assertEquals(ToggleableDefaults.style(), SelectableDefaults.style())
+    fun selectableAndToggleableDefaultsShareCachedStyle() {
+        assertSame(ToggleableDefaults.style(), SelectableDefaults.style())
     }
 }
 

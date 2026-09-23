@@ -357,11 +357,11 @@ object ContainerDefaults {
      * @since 0.5.0
      */
     fun style(
-        colors: Colors = StyleDefaults.colors(),
-        borders: Borders = StyleDefaults.borders(),
-        scale: Scale = StyleDefaults.scale(),
-        shapes: Shapes = StyleDefaults.shapes(),
-        alpha: Alpha = StyleDefaults.alpha(),
+        colors: Colors = StyleDefaults.None.colors,
+        borders: Borders = StyleDefaults.None.borders,
+        scale: Scale = StyleDefaults.None.scale,
+        shapes: Shapes = StyleDefaults.None.shapes,
+        alpha: Alpha = StyleDefaults.None.alpha,
     ): Style =
         StyleDefaults.style(
             colors = colors,
