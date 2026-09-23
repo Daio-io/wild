@@ -34,6 +34,7 @@ import io.daio.wild.site.pages.components.ContainerPage
 import io.daio.wild.site.pages.components.DividerPage
 import io.daio.wild.site.pages.components.IconPage
 import io.daio.wild.site.pages.components.ListItemPage
+import io.daio.wild.site.pages.components.RadioPage
 import io.daio.wild.site.pages.components.TextFieldPage
 import io.daio.wild.site.pages.components.TextPage
 import io.daio.wild.site.pages.components.ToggleablePage
@@ -121,6 +122,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Checkbox.path) {
                         CheckboxPage()
+                    }
+                    composable(Route.Component.Radio.path) {
+                        RadioPage()
                     }
                     composable(Route.Component.Container.path) {
                         ContainerPage()
