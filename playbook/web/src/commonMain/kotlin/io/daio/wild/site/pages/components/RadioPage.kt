@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.radio.RadioButton
 import io.daio.wild.components.radio.RadioGroup
@@ -99,6 +101,10 @@ object RadioPageDefaults {
                                         RadioButton(
                                             selected = selected == option,
                                             onClick = { selected = option },
+                                            modifier =
+                                                Modifier.semantics {
+                                                    contentDescription = option
+                                                },
                                             style = radioStyle(),
                                             indicator = { isSelected ->
                                                 Indicator(selected = isSelected)
@@ -121,6 +127,10 @@ object RadioPageDefaults {
                                     RadioButton(
                                         selected = selected == option,
                                         onClick = { selected = option },
+                                        modifier =
+                                            Modifier.semantics {
+                                                contentDescription = option
+                                            },
                                         style = radioStyle(),
                                         indicator = { isSelected ->
                                             Indicator(selected = isSelected)
@@ -139,6 +149,10 @@ object RadioPageDefaults {
                                         selected = selected == option,
                                         onClick = { selected = option },
                                         enabled = index != 1,
+                                        modifier =
+                                            Modifier.semantics {
+                                                contentDescription = option
+                                            },
                                         style = radioStyle(),
                                         indicator = { isSelected ->
                                             Indicator(selected = isSelected, disabled = index == 1)
