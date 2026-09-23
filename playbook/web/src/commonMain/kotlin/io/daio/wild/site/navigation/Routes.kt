@@ -14,6 +14,10 @@ sealed interface Route {
             override val path = "components/button"
         }
 
+        data object Checkbox : Component {
+            override val path = "components/checkbox"
+        }
+
         data object Container : Component {
             override val path = "components/container"
         }
@@ -72,6 +76,7 @@ private val routesByPath: Map<String, Route> by lazy {
     buildMap {
         put(Route.GettingStarted.path, Route.GettingStarted)
         put(Route.Component.Button.path, Route.Component.Button)
+        put(Route.Component.Checkbox.path, Route.Component.Checkbox)
         put(Route.Component.Container.path, Route.Component.Container)
         put(Route.Component.Text.path, Route.Component.Text)
         put(Route.Component.TextField.path, Route.Component.TextField)
