@@ -182,8 +182,8 @@ object RadioPageDefaults {
                     Prop("enabled", "Boolean", default = "true"),
                     Prop("style", "Style", default = "RadioButtonDefaults.style()"),
                     Prop("interactionSource", "MutableInteractionSource?", default = "null"),
-                    Prop("indicator", "@Composable BoxScope.(Boolean) -> Unit", required = true),
-                    Prop("group content", "@Composable BoxScope.() -> Unit", required = true),
+                    Prop("indicator (RadioButton)", "@Composable BoxScope.(Boolean) -> Unit", required = true),
+                    Prop("content (RadioGroup)", "@Composable BoxScope.() -> Unit", required = true),
                 ),
             platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
         )

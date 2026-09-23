@@ -11,9 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -23,12 +21,6 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
-private fun hasRole(role: Role): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, role)
-
-private fun hasSelectedState(selected: Boolean): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Selected, selected)
-
-private fun isSelectableGroup(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.SelectableGroup, Unit)
 
 @OptIn(ExperimentalTestApi::class)
 class RadioButtonTest {
