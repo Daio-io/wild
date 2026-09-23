@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import io.daio.wild.components.text.Text
 import io.daio.wild.components.toggleable.RadioButton
 import io.daio.wild.components.toggleable.RadioGroup
-import io.daio.wild.components.text.Text
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
 import io.daio.wild.site.components.Demo
