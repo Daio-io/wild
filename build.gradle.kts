@@ -28,6 +28,7 @@ dependencies {
     dokka(projects.components.text)
     dokka(projects.components.toggleable)
     dokka(projects.components.listItem)
+    dokka(projects.components.radio)
     dokka(projects.layout.container)
     dokka(projects.layout.divider)
 }

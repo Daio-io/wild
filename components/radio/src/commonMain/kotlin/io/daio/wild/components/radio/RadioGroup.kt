@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 /**
  * Provides group semantics for caller-laid-out radio buttons.
  *
- * [RadioGroup] does not own the selected value, rewrite child callbacks, choose a [Row] or
- * [Column] layout, or implement directional navigation. Callers enforce single selection and
+ * [RadioGroup] does not own the selected value, rewrite child callbacks, choose a Row or
+ * Column layout, or implement directional navigation. Callers enforce single selection and
  * choose the layout themselves, for example:
  *
  * ```

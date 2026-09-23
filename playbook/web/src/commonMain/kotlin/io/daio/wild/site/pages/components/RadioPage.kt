@@ -82,6 +82,35 @@ object RadioPageDefaults {
         }
     }
 
+    @Composable
+    private fun RadioOptions(
+        selected: String,
+        onSelected: (String) -> Unit,
+        enabled: (Int) -> Boolean = { true },
+        layout: @Composable (@Composable () -> Unit) -> Unit,
+    ) {
+        layout {
+            options.forEachIndexed { index, option ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = selected == option,
+                        onClick = { onSelected(option) },
+                        enabled = enabled(index),
+                        modifier = Modifier.semantics { contentDescription = option },
+                        style = radioStyle(),
+                        indicator = { isSelected ->
+                            Indicator(selected = isSelected, disabled = !enabled(index))
+                        },
+                    )
+                    Text(
+                        text = option,
+                        modifier = Modifier.padding(start = SiteTheme.spacing.s),
+                    )
+                }
+            }
+        }
+    }
+
     val data =
         ComponentPageData(
             name = "RadioButton and RadioGroup",
@@ -95,26 +124,9 @@ object RadioPageDefaults {
                     Demo("Vertical layout", "The caller owns the value and chooses a Column layout.") {
                         var selected by remember { mutableStateOf(options.first()) }
                         RadioGroup {
-                            Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s)) {
-                                options.forEach { option ->
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        RadioButton(
-                                            selected = selected == option,
-                                            onClick = { selected = option },
-                                            modifier =
-                                                Modifier.semantics {
-                                                    contentDescription = option
-                                                },
-                                            style = radioStyle(),
-                                            indicator = { isSelected ->
-                                                Indicator(selected = isSelected)
-                                            },
-                                        )
-                                        Text(
-                                            text = option,
-                                            modifier = Modifier.padding(start = SiteTheme.spacing.s),
-                                        )
-                                    }
+                            RadioOptions(selected = selected, onSelected = { selected = it }) { content ->
+                                Column(verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.s)) {
+                                    content()
                                 }
                             }
                         }
@@ -122,20 +134,9 @@ object RadioPageDefaults {
                     Demo("Horizontal layout", "RadioGroup does not impose Row or Column arrangement.") {
                         var selected by remember { mutableStateOf(options[1]) }
                         RadioGroup {
-                            Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
-                                options.forEach { option ->
-                                    RadioButton(
-                                        selected = selected == option,
-                                        onClick = { selected = option },
-                                        modifier =
-                                            Modifier.semantics {
-                                                contentDescription = option
-                                            },
-                                        style = radioStyle(),
-                                        indicator = { isSelected ->
-                                            Indicator(selected = isSelected)
-                                        },
-                                    )
+                            RadioOptions(selected = selected, onSelected = { selected = it }) { content ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
+                                    content()
                                 }
                             }
                         }
@@ -143,21 +144,13 @@ object RadioPageDefaults {
                     Demo("Disabled and custom indicators", "Disabled items preserve selection semantics and suppress clicks.") {
                         var selected by remember { mutableStateOf(options.first()) }
                         RadioGroup {
-                            Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
-                                options.forEachIndexed { index, option ->
-                                    RadioButton(
-                                        selected = selected == option,
-                                        onClick = { selected = option },
-                                        enabled = index != 1,
-                                        modifier =
-                                            Modifier.semantics {
-                                                contentDescription = option
-                                            },
-                                        style = radioStyle(),
-                                        indicator = { isSelected ->
-                                            Indicator(selected = isSelected, disabled = index == 1)
-                                        },
-                                    )
+                            RadioOptions(
+                                selected = selected,
+                                onSelected = { selected = it },
+                                enabled = { index -> index != 1 },
+                            ) { content ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
+                                    content()
                                 }
                             }
                         }
