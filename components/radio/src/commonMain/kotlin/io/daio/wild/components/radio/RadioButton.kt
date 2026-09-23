@@ -73,6 +73,17 @@ fun RadioButton(
  * Contains the default values used by [RadioButton].
  *
  * @since 0.8.0
+ *
+ * Example:
+ * ```
+ * RadioButton(
+ *     selected = isSelected,
+ *     onClick = onClick,
+ *     style = RadioButtonDefaults.style(),
+ * ) { isSelected ->
+ *     // Draw the indicator using the caller-owned selection value.
+ * }
+ * ```
  */
 object RadioButtonDefaults {
     /**

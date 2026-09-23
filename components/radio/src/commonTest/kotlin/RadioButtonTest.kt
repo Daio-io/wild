@@ -25,6 +25,23 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalTestApi::class)
 class RadioButtonTest {
     @Test
+    fun unselectedRadioButtonExposesUnselectedSemanticsAndRole() =
+        runComposeUiTest {
+            setContent {
+                RadioButton(
+                    selected = false,
+                    onClick = {},
+                    modifier = Modifier.testTag("radio").size(48.dp),
+                    indicator = {},
+                )
+            }
+
+            onNode(hasTestTag("radio"))
+                .assert(hasSelectedState(false))
+                .assert(hasRole(Role.RadioButton))
+        }
+
+    @Test
     fun selectedRadioButtonExposesSemanticsAndInvokesCallerCallback() =
         runComposeUiTest {
             val clickCount = mutableStateOf(0)
