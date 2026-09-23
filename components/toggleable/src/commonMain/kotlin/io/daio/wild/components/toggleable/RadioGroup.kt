@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.radio
+package io.daio.wild.components.toggleable
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope

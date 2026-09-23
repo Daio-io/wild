@@ -34,7 +34,6 @@ include(
     ":components:icon",
     ":components:text",
     ":components:toggleable",
-    ":components:radio",
     ":components:list-item",
     ":layout:container",
     ":layout:divider",

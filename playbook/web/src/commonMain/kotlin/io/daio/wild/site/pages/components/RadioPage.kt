@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import io.daio.wild.components.radio.RadioButton
-import io.daio.wild.components.radio.RadioGroup
+import io.daio.wild.components.toggleable.RadioButton
+import io.daio.wild.components.toggleable.RadioGroup
 import io.daio.wild.components.text.Text
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
@@ -118,7 +118,7 @@ object RadioPageDefaults {
                 "Unstyled, controlled radio primitives. RadioButton delegates interaction and " +
                     "semantics to Selectable, while RadioGroup adds group semantics without " +
                     "owning selection or layout.",
-            module = "io.daio.wild.components:radio",
+            module = "io.daio.wild.components:toggleable",
             demos =
                 listOf(
                     Demo("Vertical layout", "The caller owns the value and chooses a Column layout.") {
