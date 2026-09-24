@@ -154,18 +154,18 @@ object StyleDefaults {
 
     @Stable
     fun style(
-        colors: Colors = DefaultColors,
-        borders: Borders = DefaultBorders,
-        scale: Scale = DefaultScale,
-        shapes: Shapes = DefaultShapes,
-        alpha: Alpha = DefaultAlpha,
+        colors: Colors = None.colors,
+        borders: Borders = None.borders,
+        scale: Scale = None.scale,
+        shapes: Shapes = None.shapes,
+        alpha: Alpha = None.alpha,
     ): Style =
         if (
-            colors === DefaultColors &&
-            borders === DefaultBorders &&
-            scale === DefaultScale &&
-            shapes === DefaultShapes &&
-            alpha === DefaultAlpha
+            colors === None.colors &&
+            borders === None.borders &&
+            scale === None.scale &&
+            shapes === None.shapes &&
+            alpha === None.alpha
         ) {
             None
         } else {

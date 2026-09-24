@@ -20,6 +20,16 @@ class StyleDefaultsTest {
         assertSame(StyleDefaults.None.shapes, StyleDefaults.shapes())
         assertSame(StyleDefaults.None.alpha, StyleDefaults.alpha())
         assertSame(StyleDefaults.None, StyleDefaults.style())
+        assertSame(
+            StyleDefaults.None,
+            StyleDefaults.style(
+                colors = StyleDefaults.None.colors,
+                borders = StyleDefaults.None.borders,
+                scale = StyleDefaults.None.scale,
+                shapes = StyleDefaults.None.shapes,
+                alpha = StyleDefaults.None.alpha,
+            ),
+        )
     }
 
     @Test
