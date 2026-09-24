@@ -15,7 +15,6 @@ kotlin {
                 implementation(compose.foundation)
                 api(projects.foundations)
                 api(projects.style)
-                api(projects.contentColor)
                 api(projects.components.toggleable)
             }
         }
