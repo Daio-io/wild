@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.switch
+package io.daio.wild.components.toggleable
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
@@ -9,10 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasTestTag
@@ -134,8 +132,3 @@ class SwitchTest {
             runOnIdle { assertEquals(true, slotChecked) }
         }
 }
-
-private fun hasRole(role: Role): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, role)
-
-private fun hasToggleableState(state: ToggleableState): SemanticsMatcher =
-    SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, state)
