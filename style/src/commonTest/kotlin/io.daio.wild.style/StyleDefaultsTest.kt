@@ -23,11 +23,11 @@ class StyleDefaultsTest {
         assertSame(
             StyleDefaults.None,
             StyleDefaults.style(
-                colors = StyleDefaults.None.colors,
-                borders = StyleDefaults.None.borders,
-                scale = StyleDefaults.None.scale,
-                shapes = StyleDefaults.None.shapes,
-                alpha = StyleDefaults.None.alpha,
+                colors = StyleDefaults.colors(),
+                borders = StyleDefaults.borders(),
+                scale = StyleDefaults.scale(),
+                shapes = StyleDefaults.shapes(),
+                alpha = StyleDefaults.alpha(),
             ),
         )
     }
