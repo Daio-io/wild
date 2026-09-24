@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.daio.wild.components.text.Text
 import io.daio.wild.components.switch.Switch
+import io.daio.wild.components.text.Text
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
 import io.daio.wild.site.components.Demo
