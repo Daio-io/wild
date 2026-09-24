@@ -50,30 +50,140 @@ data class Style(
 )
 
 object StyleDefaults {
-    val None: Style = style()
+    private val DefaultColors =
+        Colors(
+            backgroundColor = Color.Black,
+            focusedBackgroundColor = Color.Black,
+            pressedBackgroundColor = Color.Black,
+            hoveredBackgroundColor = Color.Black,
+            selectedBackgroundColor = Color.Black,
+            disabledBackgroundColor = Color.Black,
+            focusedSelectedBackgroundColor = Color.Black,
+            pressedSelectedBackgroundColor = Color.Black,
+            hoveredSelectedBackgroundColor = Color.Black,
+            focusedDisabledBackgroundColor = Color.Black,
+            pressedDisabledBackgroundColor = Color.Black,
+            hoveredDisabledBackgroundColor = Color.Black,
+            contentColor = Color.White,
+            focusedContentColor = Color.White,
+            hoveredContentColor = Color.White,
+            pressedContentColor = Color.White,
+            selectedContentColor = Color.White,
+            focusedSelectedContentColor = Color.White,
+            pressedSelectedContentColor = Color.White,
+            hoveredSelectedContentColor = Color.White,
+            disabledContentColor = Color.White,
+            focusedDisabledContentColor = Color.White,
+            pressedDisabledContentColor = Color.White,
+            hoveredDisabledContentColor = Color.White,
+        )
+
+    private val DefaultBorders =
+        Borders(
+            border = BorderDefaults.None,
+            focusedBorder = BorderDefaults.None,
+            hoveredBorder = BorderDefaults.None,
+            pressedBorder = BorderDefaults.None,
+            selectedBorder = BorderDefaults.None,
+            disabledBorder = BorderDefaults.None,
+            focusedSelectedBorder = BorderDefaults.None,
+            pressedSelectedBorder = BorderDefaults.None,
+            hoveredSelectedBorder = BorderDefaults.None,
+            focusedDisabledBorder = BorderDefaults.None,
+            pressedDisabledBorder = BorderDefaults.None,
+            hoveredDisabledBorder = BorderDefaults.None,
+        )
+
+    private val DefaultScale =
+        Scale(
+            scale = 1f,
+            focusedScale = 1f,
+            hoveredScale = 1f,
+            pressedScale = 1f,
+            selectedScale = 1f,
+            disabledScale = 1f,
+            focusedSelectedScale = 1f,
+            pressedSelectedScale = 1f,
+            hoveredSelectedScale = 1f,
+            focusedDisabledScale = 1f,
+            pressedDisabledScale = 1f,
+            hoveredDisabledScale = 1f,
+            animationSpec = null,
+        )
+
+    private val DefaultShapes =
+        Shapes(
+            shape = RectangleShape,
+            focusedShape = RectangleShape,
+            hoveredShape = RectangleShape,
+            pressedShape = RectangleShape,
+            selectedShape = RectangleShape,
+            disabledShape = RectangleShape,
+            focusedSelectedShape = RectangleShape,
+            pressedSelectedShape = RectangleShape,
+            hoveredSelectedShape = RectangleShape,
+            focusedDisabledShape = RectangleShape,
+            pressedDisabledShape = RectangleShape,
+            hoveredDisabledShape = RectangleShape,
+        )
+
+    private val DefaultAlpha =
+        Alpha(
+            alpha = 1f,
+            focusedAlpha = 1f,
+            hoveredAlpha = 1f,
+            pressedAlpha = 1f,
+            selectedAlpha = 1f,
+            disabledAlpha = .6f,
+            focusedSelectedAlpha = 1f,
+            pressedSelectedAlpha = 1f,
+            hoveredSelectedAlpha = 1f,
+            focusedDisabledAlpha = .6f,
+            pressedDisabledAlpha = .6f,
+            hoveredDisabledAlpha = .6f,
+        )
+
+    val None =
+        Style(
+            colors = DefaultColors,
+            borders = DefaultBorders,
+            scale = DefaultScale,
+            shapes = DefaultShapes,
+            alpha = DefaultAlpha,
+        )
 
     @Stable
     fun style(
-        colors: Colors = colors(),
-        borders: Borders = borders(),
-        scale: Scale = scale(),
-        shapes: Shapes = shapes(),
-        alpha: Alpha = alpha(),
+        colors: Colors = DefaultColors,
+        borders: Borders = DefaultBorders,
+        scale: Scale = DefaultScale,
+        shapes: Shapes = DefaultShapes,
+        alpha: Alpha = DefaultAlpha,
     ): Style =
-        Style(
-            colors = colors,
-            borders = borders,
-            scale = scale,
-            shapes = shapes,
-            alpha = alpha,
-        )
+        if (
+            colors === DefaultColors &&
+            borders === DefaultBorders &&
+            scale === DefaultScale &&
+            shapes === DefaultShapes &&
+            alpha === DefaultAlpha
+        ) {
+            None
+        } else {
+            Style(
+                colors = colors,
+                borders = borders,
+                scale = scale,
+                shapes = shapes,
+                alpha = alpha,
+            )
+        }
 
     @Stable
     fun colors(
         /**
          * Background Colors.
          */
-        backgroundColor: Color = Color.Black,
+        backgroundColor: Color = DefaultColors.backgroundColor,
         focusedBackgroundColor: Color = backgroundColor,
         pressedBackgroundColor: Color = backgroundColor,
         hoveredBackgroundColor: Color = backgroundColor,
@@ -88,7 +198,7 @@ object StyleDefaults {
         /**
          * Content Colors.
          */
-        contentColor: Color = Color.White,
+        contentColor: Color = DefaultColors.contentColor,
         focusedContentColor: Color = contentColor,
         pressedContentColor: Color = contentColor,
         hoveredContentColor: Color = contentColor,
@@ -101,32 +211,63 @@ object StyleDefaults {
         focusedDisabledContentColor: Color = disabledContentColor,
         hoveredDisabledContentColor: Color = disabledContentColor,
     ): Colors =
-        Colors(
-            backgroundColor = backgroundColor,
-            focusedBackgroundColor = focusedBackgroundColor,
-            pressedBackgroundColor = pressedBackgroundColor,
-            disabledBackgroundColor = disabledBackgroundColor,
-            selectedBackgroundColor = selectedBackgroundColor,
-            focusedDisabledBackgroundColor = focusedDisabledBackgroundColor,
-            focusedSelectedBackgroundColor = focusedSelectedBackgroundColor,
-            hoveredBackgroundColor = hoveredBackgroundColor,
-            hoveredDisabledBackgroundColor = hoveredDisabledBackgroundColor,
-            hoveredSelectedBackgroundColor = hoveredSelectedBackgroundColor,
-            pressedDisabledBackgroundColor = pressedDisabledBackgroundColor,
-            pressedSelectedBackgroundColor = pressedSelectedBackgroundColor,
-            contentColor = contentColor,
-            focusedContentColor = focusedContentColor,
-            pressedContentColor = pressedContentColor,
-            disabledContentColor = disabledContentColor,
-            selectedContentColor = selectedContentColor,
-            hoveredContentColor = hoveredContentColor,
-            focusedSelectedContentColor = focusedSelectedContentColor,
-            hoveredSelectedContentColor = hoveredSelectedContentColor,
-            pressedSelectedContentColor = pressedSelectedContentColor,
-            pressedDisabledContentColor = pressedDisabledContentColor,
-            hoveredDisabledContentColor = hoveredDisabledContentColor,
-            focusedDisabledContentColor = focusedDisabledContentColor,
-        )
+        if (
+            isDefaultColors(
+                backgroundColor,
+                focusedBackgroundColor,
+                pressedBackgroundColor,
+                hoveredBackgroundColor,
+                disabledBackgroundColor,
+                selectedBackgroundColor,
+                focusedSelectedBackgroundColor,
+                pressedSelectedBackgroundColor,
+                hoveredSelectedBackgroundColor,
+                focusedDisabledBackgroundColor,
+                pressedDisabledBackgroundColor,
+                hoveredDisabledBackgroundColor,
+                contentColor,
+                focusedContentColor,
+                pressedContentColor,
+                hoveredContentColor,
+                disabledContentColor,
+                selectedContentColor,
+                focusedSelectedContentColor,
+                pressedSelectedContentColor,
+                hoveredSelectedContentColor,
+                pressedDisabledContentColor,
+                focusedDisabledContentColor,
+                hoveredDisabledContentColor,
+            )
+        ) {
+            DefaultColors
+        } else {
+            Colors(
+                backgroundColor = backgroundColor,
+                focusedBackgroundColor = focusedBackgroundColor,
+                pressedBackgroundColor = pressedBackgroundColor,
+                disabledBackgroundColor = disabledBackgroundColor,
+                selectedBackgroundColor = selectedBackgroundColor,
+                focusedDisabledBackgroundColor = focusedDisabledBackgroundColor,
+                focusedSelectedBackgroundColor = focusedSelectedBackgroundColor,
+                hoveredBackgroundColor = hoveredBackgroundColor,
+                hoveredDisabledBackgroundColor = hoveredDisabledBackgroundColor,
+                hoveredSelectedBackgroundColor = hoveredSelectedBackgroundColor,
+                pressedDisabledBackgroundColor = pressedDisabledBackgroundColor,
+                pressedSelectedBackgroundColor = pressedSelectedBackgroundColor,
+                contentColor = contentColor,
+                focusedContentColor = focusedContentColor,
+                pressedContentColor = pressedContentColor,
+                disabledContentColor = disabledContentColor,
+                selectedContentColor = selectedContentColor,
+                hoveredContentColor = hoveredContentColor,
+                focusedSelectedContentColor = focusedSelectedContentColor,
+                hoveredSelectedContentColor = hoveredSelectedContentColor,
+                pressedSelectedContentColor = pressedSelectedContentColor,
+                pressedDisabledContentColor = pressedDisabledContentColor,
+                hoveredDisabledContentColor = hoveredDisabledContentColor,
+                focusedDisabledContentColor = focusedDisabledContentColor,
+            )
+        }
 
     /**
      * Creates a [Shapes] instance with configurable shapes for different interaction states.
@@ -146,7 +287,7 @@ object StyleDefaults {
      */
     @Stable
     fun shapes(
-        shape: Shape = RectangleShape,
+        shape: Shape = DefaultShapes.shape,
         focusedShape: Shape = shape,
         hoveredShape: Shape = focusedShape,
         pressedShape: Shape = focusedShape,
@@ -159,20 +300,39 @@ object StyleDefaults {
         pressedDisabledShape: Shape = disabledShape,
         hoveredDisabledShape: Shape = disabledShape,
     ): Shapes =
-        Shapes(
-            shape = shape,
-            focusedShape = focusedShape,
-            hoveredShape = hoveredShape,
-            pressedShape = pressedShape,
-            selectedShape = selectedShape,
-            disabledShape = disabledShape,
-            focusedSelectedShape = focusedSelectedShape,
-            pressedSelectedShape = pressedSelectedShape,
-            hoveredSelectedShape = hoveredSelectedShape,
-            focusedDisabledShape = focusedDisabledShape,
-            pressedDisabledShape = pressedDisabledShape,
-            hoveredDisabledShape = hoveredDisabledShape,
-        )
+        if (
+            isDefaultShapes(
+                shape,
+                focusedShape,
+                hoveredShape,
+                pressedShape,
+                selectedShape,
+                disabledShape,
+                focusedSelectedShape,
+                pressedSelectedShape,
+                hoveredSelectedShape,
+                focusedDisabledShape,
+                pressedDisabledShape,
+                hoveredDisabledShape,
+            )
+        ) {
+            DefaultShapes
+        } else {
+            Shapes(
+                shape = shape,
+                focusedShape = focusedShape,
+                hoveredShape = hoveredShape,
+                pressedShape = pressedShape,
+                selectedShape = selectedShape,
+                disabledShape = disabledShape,
+                focusedSelectedShape = focusedSelectedShape,
+                pressedSelectedShape = pressedSelectedShape,
+                hoveredSelectedShape = hoveredSelectedShape,
+                focusedDisabledShape = focusedDisabledShape,
+                pressedDisabledShape = pressedDisabledShape,
+                hoveredDisabledShape = hoveredDisabledShape,
+            )
+        }
 
     /**
      * Creates a [Scale] instance with configurable scale values for different interaction states.
@@ -192,7 +352,7 @@ object StyleDefaults {
      */
     @Stable
     fun scale(
-        scale: Float = 1f,
+        scale: Float = DefaultScale.scale,
         focusedScale: Float = scale,
         hoveredScale: Float = focusedScale,
         pressedScale: Float = focusedScale,
@@ -204,23 +364,43 @@ object StyleDefaults {
         focusedDisabledScale: Float = disabledScale,
         pressedDisabledScale: Float = disabledScale,
         hoveredDisabledScale: Float = disabledScale,
-        animationSpec: AnimationSpec<Float>? = null,
+        animationSpec: AnimationSpec<Float>? = DefaultScale.animationSpec,
     ): Scale =
-        Scale(
-            scale = scale,
-            focusedScale = focusedScale,
-            hoveredScale = hoveredScale,
-            pressedScale = pressedScale,
-            selectedScale = selectedScale,
-            disabledScale = disabledScale,
-            focusedSelectedScale = focusedSelectedScale,
-            pressedSelectedScale = pressedSelectedScale,
-            hoveredSelectedScale = hoveredSelectedScale,
-            focusedDisabledScale = focusedDisabledScale,
-            pressedDisabledScale = pressedDisabledScale,
-            hoveredDisabledScale = hoveredDisabledScale,
-            animationSpec = animationSpec,
-        )
+        if (
+            isDefaultScale(
+                scale,
+                focusedScale,
+                hoveredScale,
+                pressedScale,
+                selectedScale,
+                disabledScale,
+                focusedSelectedScale,
+                pressedSelectedScale,
+                hoveredSelectedScale,
+                focusedDisabledScale,
+                pressedDisabledScale,
+                hoveredDisabledScale,
+                animationSpec,
+            )
+        ) {
+            DefaultScale
+        } else {
+            Scale(
+                scale = scale,
+                focusedScale = focusedScale,
+                hoveredScale = hoveredScale,
+                pressedScale = pressedScale,
+                selectedScale = selectedScale,
+                disabledScale = disabledScale,
+                focusedSelectedScale = focusedSelectedScale,
+                pressedSelectedScale = pressedSelectedScale,
+                hoveredSelectedScale = hoveredSelectedScale,
+                focusedDisabledScale = focusedDisabledScale,
+                pressedDisabledScale = pressedDisabledScale,
+                hoveredDisabledScale = hoveredDisabledScale,
+                animationSpec = animationSpec,
+            )
+        }
 
     /**
      * Creates a [Borders] instance with configurable borders for different interaction states.
@@ -240,7 +420,7 @@ object StyleDefaults {
      */
     @Stable
     fun borders(
-        border: Border = BorderDefaults.None,
+        border: Border = DefaultBorders.border,
         focusedBorder: Border = border,
         hoveredBorder: Border = focusedBorder,
         pressedBorder: Border = focusedBorder,
@@ -253,20 +433,39 @@ object StyleDefaults {
         pressedDisabledBorder: Border = disabledBorder,
         hoveredDisabledBorder: Border = disabledBorder,
     ): Borders =
-        Borders(
-            border = border,
-            focusedBorder = focusedBorder,
-            hoveredBorder = hoveredBorder,
-            pressedBorder = pressedBorder,
-            selectedBorder = selectedBorder,
-            disabledBorder = disabledBorder,
-            focusedSelectedBorder = focusedSelectedBorder,
-            pressedSelectedBorder = pressedSelectedBorder,
-            hoveredSelectedBorder = hoveredSelectedBorder,
-            focusedDisabledBorder = focusedDisabledBorder,
-            pressedDisabledBorder = pressedDisabledBorder,
-            hoveredDisabledBorder = hoveredDisabledBorder,
-        )
+        if (
+            isDefaultBorders(
+                border,
+                focusedBorder,
+                hoveredBorder,
+                pressedBorder,
+                selectedBorder,
+                disabledBorder,
+                focusedSelectedBorder,
+                pressedSelectedBorder,
+                hoveredSelectedBorder,
+                focusedDisabledBorder,
+                pressedDisabledBorder,
+                hoveredDisabledBorder,
+            )
+        ) {
+            DefaultBorders
+        } else {
+            Borders(
+                border = border,
+                focusedBorder = focusedBorder,
+                hoveredBorder = hoveredBorder,
+                pressedBorder = pressedBorder,
+                selectedBorder = selectedBorder,
+                disabledBorder = disabledBorder,
+                focusedSelectedBorder = focusedSelectedBorder,
+                pressedSelectedBorder = pressedSelectedBorder,
+                hoveredSelectedBorder = hoveredSelectedBorder,
+                focusedDisabledBorder = focusedDisabledBorder,
+                pressedDisabledBorder = pressedDisabledBorder,
+                hoveredDisabledBorder = hoveredDisabledBorder,
+            )
+        }
 
     /**
      * Creates an [Alpha] instance with configurable alpha values for different interaction states.
@@ -286,12 +485,12 @@ object StyleDefaults {
      */
     @Stable
     fun alpha(
-        alpha: Float = 1f,
+        alpha: Float = DefaultAlpha.alpha,
         focusedAlpha: Float = alpha,
         hoveredAlpha: Float = alpha,
         pressedAlpha: Float = alpha,
         selectedAlpha: Float = alpha,
-        disabledAlpha: Float = .6f,
+        disabledAlpha: Float = DefaultAlpha.disabledAlpha,
         focusedSelectedAlpha: Float = focusedAlpha,
         pressedSelectedAlpha: Float = pressedAlpha,
         hoveredSelectedAlpha: Float = hoveredAlpha,
@@ -299,20 +498,200 @@ object StyleDefaults {
         pressedDisabledAlpha: Float = disabledAlpha,
         hoveredDisabledAlpha: Float = disabledAlpha,
     ): Alpha =
-        Alpha(
-            alpha = alpha,
-            focusedAlpha = focusedAlpha,
-            hoveredAlpha = hoveredAlpha,
-            pressedAlpha = pressedAlpha,
-            selectedAlpha = selectedAlpha,
-            disabledAlpha = disabledAlpha,
-            focusedSelectedAlpha = focusedSelectedAlpha,
-            pressedSelectedAlpha = pressedSelectedAlpha,
-            hoveredSelectedAlpha = hoveredSelectedAlpha,
-            focusedDisabledAlpha = focusedDisabledAlpha,
-            pressedDisabledAlpha = pressedDisabledAlpha,
-            hoveredDisabledAlpha = hoveredDisabledAlpha,
-        )
+        if (
+            isDefaultAlpha(
+                alpha,
+                focusedAlpha,
+                hoveredAlpha,
+                pressedAlpha,
+                selectedAlpha,
+                disabledAlpha,
+                focusedSelectedAlpha,
+                pressedSelectedAlpha,
+                hoveredSelectedAlpha,
+                focusedDisabledAlpha,
+                pressedDisabledAlpha,
+                hoveredDisabledAlpha,
+            )
+        ) {
+            DefaultAlpha
+        } else {
+            Alpha(
+                alpha = alpha,
+                focusedAlpha = focusedAlpha,
+                hoveredAlpha = hoveredAlpha,
+                pressedAlpha = pressedAlpha,
+                selectedAlpha = selectedAlpha,
+                disabledAlpha = disabledAlpha,
+                focusedSelectedAlpha = focusedSelectedAlpha,
+                pressedSelectedAlpha = pressedSelectedAlpha,
+                hoveredSelectedAlpha = hoveredSelectedAlpha,
+                focusedDisabledAlpha = focusedDisabledAlpha,
+                pressedDisabledAlpha = pressedDisabledAlpha,
+                hoveredDisabledAlpha = hoveredDisabledAlpha,
+            )
+        }
+
+    private fun isDefaultColors(
+        backgroundColor: Color,
+        focusedBackgroundColor: Color,
+        pressedBackgroundColor: Color,
+        hoveredBackgroundColor: Color,
+        disabledBackgroundColor: Color,
+        selectedBackgroundColor: Color,
+        focusedSelectedBackgroundColor: Color,
+        pressedSelectedBackgroundColor: Color,
+        hoveredSelectedBackgroundColor: Color,
+        focusedDisabledBackgroundColor: Color,
+        pressedDisabledBackgroundColor: Color,
+        hoveredDisabledBackgroundColor: Color,
+        contentColor: Color,
+        focusedContentColor: Color,
+        pressedContentColor: Color,
+        hoveredContentColor: Color,
+        disabledContentColor: Color,
+        selectedContentColor: Color,
+        focusedSelectedContentColor: Color,
+        pressedSelectedContentColor: Color,
+        hoveredSelectedContentColor: Color,
+        pressedDisabledContentColor: Color,
+        focusedDisabledContentColor: Color,
+        hoveredDisabledContentColor: Color,
+    ): Boolean =
+        backgroundColor == DefaultColors.backgroundColor &&
+            focusedBackgroundColor == DefaultColors.focusedBackgroundColor &&
+            pressedBackgroundColor == DefaultColors.pressedBackgroundColor &&
+            hoveredBackgroundColor == DefaultColors.hoveredBackgroundColor &&
+            disabledBackgroundColor == DefaultColors.disabledBackgroundColor &&
+            selectedBackgroundColor == DefaultColors.selectedBackgroundColor &&
+            focusedSelectedBackgroundColor == DefaultColors.focusedSelectedBackgroundColor &&
+            pressedSelectedBackgroundColor == DefaultColors.pressedSelectedBackgroundColor &&
+            hoveredSelectedBackgroundColor == DefaultColors.hoveredSelectedBackgroundColor &&
+            focusedDisabledBackgroundColor == DefaultColors.focusedDisabledBackgroundColor &&
+            pressedDisabledBackgroundColor == DefaultColors.pressedDisabledBackgroundColor &&
+            hoveredDisabledBackgroundColor == DefaultColors.hoveredDisabledBackgroundColor &&
+            contentColor == DefaultColors.contentColor &&
+            focusedContentColor == DefaultColors.focusedContentColor &&
+            pressedContentColor == DefaultColors.pressedContentColor &&
+            hoveredContentColor == DefaultColors.hoveredContentColor &&
+            disabledContentColor == DefaultColors.disabledContentColor &&
+            selectedContentColor == DefaultColors.selectedContentColor &&
+            focusedSelectedContentColor == DefaultColors.focusedSelectedContentColor &&
+            pressedSelectedContentColor == DefaultColors.pressedSelectedContentColor &&
+            hoveredSelectedContentColor == DefaultColors.hoveredSelectedContentColor &&
+            pressedDisabledContentColor == DefaultColors.pressedDisabledContentColor &&
+            focusedDisabledContentColor == DefaultColors.focusedDisabledContentColor &&
+            hoveredDisabledContentColor == DefaultColors.hoveredDisabledContentColor
+
+    private fun isDefaultBorders(
+        border: Border,
+        focusedBorder: Border,
+        hoveredBorder: Border,
+        pressedBorder: Border,
+        selectedBorder: Border,
+        disabledBorder: Border,
+        focusedSelectedBorder: Border,
+        pressedSelectedBorder: Border,
+        hoveredSelectedBorder: Border,
+        focusedDisabledBorder: Border,
+        pressedDisabledBorder: Border,
+        hoveredDisabledBorder: Border,
+    ): Boolean =
+        border == DefaultBorders.border &&
+            focusedBorder == DefaultBorders.focusedBorder &&
+            hoveredBorder == DefaultBorders.hoveredBorder &&
+            pressedBorder == DefaultBorders.pressedBorder &&
+            selectedBorder == DefaultBorders.selectedBorder &&
+            disabledBorder == DefaultBorders.disabledBorder &&
+            focusedSelectedBorder == DefaultBorders.focusedSelectedBorder &&
+            pressedSelectedBorder == DefaultBorders.pressedSelectedBorder &&
+            hoveredSelectedBorder == DefaultBorders.hoveredSelectedBorder &&
+            focusedDisabledBorder == DefaultBorders.focusedDisabledBorder &&
+            pressedDisabledBorder == DefaultBorders.pressedDisabledBorder &&
+            hoveredDisabledBorder == DefaultBorders.hoveredDisabledBorder
+
+    private fun isDefaultScale(
+        scale: Float,
+        focusedScale: Float,
+        hoveredScale: Float,
+        pressedScale: Float,
+        selectedScale: Float,
+        disabledScale: Float,
+        focusedSelectedScale: Float,
+        pressedSelectedScale: Float,
+        hoveredSelectedScale: Float,
+        focusedDisabledScale: Float,
+        pressedDisabledScale: Float,
+        hoveredDisabledScale: Float,
+        animationSpec: AnimationSpec<Float>?,
+    ): Boolean =
+        scale == DefaultScale.scale &&
+            focusedScale == DefaultScale.focusedScale &&
+            hoveredScale == DefaultScale.hoveredScale &&
+            pressedScale == DefaultScale.pressedScale &&
+            selectedScale == DefaultScale.selectedScale &&
+            disabledScale == DefaultScale.disabledScale &&
+            focusedSelectedScale == DefaultScale.focusedSelectedScale &&
+            pressedSelectedScale == DefaultScale.pressedSelectedScale &&
+            hoveredSelectedScale == DefaultScale.hoveredSelectedScale &&
+            focusedDisabledScale == DefaultScale.focusedDisabledScale &&
+            pressedDisabledScale == DefaultScale.pressedDisabledScale &&
+            hoveredDisabledScale == DefaultScale.hoveredDisabledScale &&
+            animationSpec == DefaultScale.animationSpec
+
+    private fun isDefaultShapes(
+        shape: Shape,
+        focusedShape: Shape,
+        hoveredShape: Shape,
+        pressedShape: Shape,
+        selectedShape: Shape,
+        disabledShape: Shape,
+        focusedSelectedShape: Shape,
+        pressedSelectedShape: Shape,
+        hoveredSelectedShape: Shape,
+        focusedDisabledShape: Shape,
+        pressedDisabledShape: Shape,
+        hoveredDisabledShape: Shape,
+    ): Boolean =
+        shape == DefaultShapes.shape &&
+            focusedShape == DefaultShapes.focusedShape &&
+            hoveredShape == DefaultShapes.hoveredShape &&
+            pressedShape == DefaultShapes.pressedShape &&
+            selectedShape == DefaultShapes.selectedShape &&
+            disabledShape == DefaultShapes.disabledShape &&
+            focusedSelectedShape == DefaultShapes.focusedSelectedShape &&
+            pressedSelectedShape == DefaultShapes.pressedSelectedShape &&
+            hoveredSelectedShape == DefaultShapes.hoveredSelectedShape &&
+            focusedDisabledShape == DefaultShapes.focusedDisabledShape &&
+            pressedDisabledShape == DefaultShapes.pressedDisabledShape &&
+            hoveredDisabledShape == DefaultShapes.hoveredDisabledShape
+
+    private fun isDefaultAlpha(
+        alpha: Float,
+        focusedAlpha: Float,
+        hoveredAlpha: Float,
+        pressedAlpha: Float,
+        selectedAlpha: Float,
+        disabledAlpha: Float,
+        focusedSelectedAlpha: Float,
+        pressedSelectedAlpha: Float,
+        hoveredSelectedAlpha: Float,
+        focusedDisabledAlpha: Float,
+        pressedDisabledAlpha: Float,
+        hoveredDisabledAlpha: Float,
+    ): Boolean =
+        alpha == DefaultAlpha.alpha &&
+            focusedAlpha == DefaultAlpha.focusedAlpha &&
+            hoveredAlpha == DefaultAlpha.hoveredAlpha &&
+            pressedAlpha == DefaultAlpha.pressedAlpha &&
+            selectedAlpha == DefaultAlpha.selectedAlpha &&
+            disabledAlpha == DefaultAlpha.disabledAlpha &&
+            focusedSelectedAlpha == DefaultAlpha.focusedSelectedAlpha &&
+            pressedSelectedAlpha == DefaultAlpha.pressedSelectedAlpha &&
+            hoveredSelectedAlpha == DefaultAlpha.hoveredSelectedAlpha &&
+            focusedDisabledAlpha == DefaultAlpha.focusedDisabledAlpha &&
+            pressedDisabledAlpha == DefaultAlpha.pressedDisabledAlpha &&
+            hoveredDisabledAlpha == DefaultAlpha.hoveredDisabledAlpha
 }
 
 /**
