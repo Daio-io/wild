@@ -183,7 +183,7 @@ object StyleDefaults {
         /**
          * Background Colors.
          */
-        backgroundColor: Color = Color.Black,
+        backgroundColor: Color = DefaultColors.backgroundColor,
         focusedBackgroundColor: Color = backgroundColor,
         pressedBackgroundColor: Color = backgroundColor,
         hoveredBackgroundColor: Color = backgroundColor,
@@ -198,7 +198,7 @@ object StyleDefaults {
         /**
          * Content Colors.
          */
-        contentColor: Color = Color.White,
+        contentColor: Color = DefaultColors.contentColor,
         focusedContentColor: Color = contentColor,
         pressedContentColor: Color = contentColor,
         hoveredContentColor: Color = contentColor,
