@@ -72,6 +72,17 @@ fun Switch(
  * Contains the default values used by [Switch].
  *
  * @since 0.7.0
+ *
+ * Example:
+ * ```
+ * Switch(
+ *     checked = isOn,
+ *     onCheckedChange = { isOn = it },
+ *     style = SwitchDefaults.style(),
+ * ) { isChecked ->
+ *     // Render a track and thumb for isChecked.
+ * }
+ * ```
  */
 object SwitchDefaults {
     /**
