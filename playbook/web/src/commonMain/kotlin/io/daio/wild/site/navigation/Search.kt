@@ -26,6 +26,11 @@ val searchIndex =
             listOf("check", "checked", "unchecked", "indeterminate", "tri-state", "form"),
         ),
         SearchEntry(
+            "Radio",
+            Route.Component.Radio,
+            listOf("radio", "select", "selected", "group", "form"),
+        ),
+        SearchEntry(
             "Container",
             Route.Component.Container,
             listOf("box", "layout", "surface", "card"),

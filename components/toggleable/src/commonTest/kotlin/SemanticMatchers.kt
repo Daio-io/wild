@@ -21,3 +21,8 @@ fun hasSelectedState(selected: Boolean): SemanticsMatcher = SemanticsMatcher.exp
  * Matches nodes with the given [Role].
  */
 fun hasRole(role: Role): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, role)
+
+/**
+ * Matches nodes that expose selectable-group semantics.
+ */
+fun isSelectableGroup(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.SelectableGroup, Unit)
