@@ -352,7 +352,7 @@ object StyleDefaults {
      */
     @Stable
     fun scale(
-        scale: Float = 1f,
+        scale: Float = DefaultScale.scale,
         focusedScale: Float = scale,
         hoveredScale: Float = focusedScale,
         pressedScale: Float = focusedScale,
@@ -364,7 +364,7 @@ object StyleDefaults {
         focusedDisabledScale: Float = disabledScale,
         pressedDisabledScale: Float = disabledScale,
         hoveredDisabledScale: Float = disabledScale,
-        animationSpec: AnimationSpec<Float>? = null,
+        animationSpec: AnimationSpec<Float>? = DefaultScale.animationSpec,
     ): Scale =
         if (
             isDefaultScale(
@@ -420,7 +420,7 @@ object StyleDefaults {
      */
     @Stable
     fun borders(
-        border: Border = BorderDefaults.None,
+        border: Border = DefaultBorders.border,
         focusedBorder: Border = border,
         hoveredBorder: Border = focusedBorder,
         pressedBorder: Border = focusedBorder,
@@ -485,12 +485,12 @@ object StyleDefaults {
      */
     @Stable
     fun alpha(
-        alpha: Float = 1f,
+        alpha: Float = DefaultAlpha.alpha,
         focusedAlpha: Float = alpha,
         hoveredAlpha: Float = alpha,
         pressedAlpha: Float = alpha,
         selectedAlpha: Float = alpha,
-        disabledAlpha: Float = .6f,
+        disabledAlpha: Float = DefaultAlpha.disabledAlpha,
         focusedSelectedAlpha: Float = focusedAlpha,
         pressedSelectedAlpha: Float = pressedAlpha,
         hoveredSelectedAlpha: Float = hoveredAlpha,
