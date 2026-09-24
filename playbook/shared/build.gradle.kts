@@ -25,6 +25,7 @@ kotlin {
                 api(projects.components.button)
                 api(projects.components.listItem)
                 api(projects.components.toggleable)
+                api(projects.components.switch)
                 api(projects.components.icon)
             }
         }
