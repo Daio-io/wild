@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.toggleable
+package io.daio.wild.components.switch
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +17,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.components.toggleable.Toggleable
 
 /**
  * An unstyled, caller-controlled binary switch.
@@ -35,7 +36,7 @@ import io.daio.wild.style.StyleDefaults
  * @param interactionSource Optional [MutableInteractionSource] for observing [Interaction]s.
  * @param content Content used to render the track and thumb in the switch's [BoxScope].
  *
- * @since 0.7.0
+ * @since 0.8.0
  *
  * Example:
  * ```
@@ -71,7 +72,7 @@ fun Switch(
 /**
  * Contains the default values used by [Switch].
  *
- * @since 0.7.0
+ * @since 0.8.0
  *
  * Example:
  * ```
@@ -94,7 +95,7 @@ object SwitchDefaults {
      * @param shapes The shapes for the switch interaction states.
      * @param alpha The alpha for the switch interaction states.
      *
-     * @since 0.7.0
+     * @since 0.8.0
      */
     fun style(
         colors: Colors = StyleDefaults.colors(),

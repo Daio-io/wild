@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.toggleable
+package io.daio.wild.components.switch
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
