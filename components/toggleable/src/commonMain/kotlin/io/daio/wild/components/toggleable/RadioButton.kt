@@ -2,14 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.toggleable
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
@@ -24,7 +30,9 @@ import io.daio.wild.style.StyleDefaults
  * The radio button does not store or toggle selection state. It invokes [onClick] for every
  * enabled click, including clicks on an already-selected item, while a disabled radio button
  * suppresses the callback. Callers enforce single selection by updating their own value and
- * passing that value to each button.
+ * passing that value to each button. The [indicator] slot receives the current selected value
+ * in the interactive container's [BoxScope]. By default it draws [RadioButtonDefaults.Indicator];
+ * callers can replace it with custom artwork.
  *
  * @param selected Whether this radio button is currently selected.
  * @param onClick Callback invoked when the radio button is clicked.
@@ -42,9 +50,7 @@ import io.daio.wild.style.StyleDefaults
  * RadioButton(
  *     selected = selected == "small",
  *     onClick = { selected = "small" },
- * ) { isSelected ->
- *     // Draw the indicator using the caller-owned selection value.
- * }
+ * )
  * ```
  */
 @Composable
@@ -55,7 +61,9 @@ fun RadioButton(
     enabled: Boolean = true,
     style: Style = RadioButtonDefaults.style(),
     interactionSource: MutableInteractionSource? = null,
-    indicator: @Composable BoxScope.(selected: Boolean) -> Unit,
+    indicator: @Composable BoxScope.(selected: Boolean) -> Unit = {
+        RadioButtonDefaults.Indicator(selected = it)
+    },
 ) {
     Selectable(
         selected = selected,
@@ -79,12 +87,45 @@ fun RadioButton(
  *     selected = isSelected,
  *     onClick = onClick,
  *     style = RadioButtonDefaults.style(),
- * ) { isSelected ->
- *     // Draw the indicator using the caller-owned selection value.
- * }
+ * )
  * ```
  */
 object RadioButtonDefaults {
+    /**
+     * Default size used by [Indicator].
+     *
+     * @since 0.8.0
+     */
+    val indicatorSize: Dp = 20.dp
+
+    /**
+     * Basic radio indicator that draws a filled circle when [selected] is true.
+     *
+     * Uses [LocalContentColor] by default so the mark adapts inside styled containers.
+     * Unselected state leaves the canvas empty while preserving [indicatorSize] layout.
+     *
+     * @param selected Whether the indicator should show the selected mark.
+     * @param modifier Modifier applied to the indicator canvas.
+     * @param color Fill color for the mark. Defaults to [LocalContentColor].
+     *
+     * @since 0.8.0
+     */
+    @Composable
+    fun Indicator(
+        selected: Boolean,
+        modifier: Modifier = Modifier,
+        color: Color = LocalContentColor.current,
+    ) {
+        Canvas(modifier = modifier.size(indicatorSize)) {
+            if (selected) {
+                drawCircle(
+                    color = color,
+                    radius = size.minDimension * 0.25f,
+                )
+            }
+        }
+    }
+
     /**
      * Creates an unstyled default [Style] for radio buttons.
      *

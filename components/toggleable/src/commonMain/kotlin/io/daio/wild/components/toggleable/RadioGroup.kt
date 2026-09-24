@@ -23,9 +23,6 @@ import androidx.compose.ui.Modifier
  *             RadioButton(
  *                 selected = selected == value,
  *                 onClick = { selected = value },
- *                 indicator = { isSelected ->
- *                     // Draw an indicator from the caller-owned value.
- *                 },
  *             )
  *         }
  *     }

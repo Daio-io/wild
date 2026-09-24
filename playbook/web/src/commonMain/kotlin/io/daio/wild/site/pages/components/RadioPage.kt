@@ -60,29 +60,6 @@ object RadioPageDefaults {
         )
 
     @Composable
-    private fun Indicator(
-        selected: Boolean,
-        disabled: Boolean = false,
-    ) {
-        val color =
-            when {
-                disabled -> SiteTheme.colors.textSecondary
-                selected -> SiteTheme.colors.accent
-                else -> SiteTheme.colors.border
-            }
-        Box(
-            modifier = Modifier.size(20.dp).background(color, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (selected) {
-                Box(
-                    modifier = Modifier.size(8.dp).background(SiteTheme.colors.background, CircleShape),
-                )
-            }
-        }
-    }
-
-    @Composable
     private fun RadioOptions(
         selected: String,
         onSelected: (String) -> Unit,
@@ -98,9 +75,6 @@ object RadioPageDefaults {
                         enabled = enabled(index),
                         modifier = Modifier.semantics { contentDescription = option },
                         style = radioStyle(),
-                        indicator = { isSelected ->
-                            Indicator(selected = isSelected, disabled = !enabled(index))
-                        },
                     )
                     Text(
                         text = option,
@@ -115,13 +89,13 @@ object RadioPageDefaults {
         ComponentPageData(
             name = "RadioButton and RadioGroup",
             description =
-                "Unstyled, controlled radio primitives. RadioButton delegates interaction and " +
-                    "semantics to Selectable, while RadioGroup adds group semantics without " +
-                    "owning selection or layout.",
+                "Unstyled, controlled radio primitives. RadioButton delegates interaction, " +
+                    "semantics, and a basic default indicator; RadioGroup adds group semantics " +
+                    "without owning selection or layout. Callers may replace the indicator artwork.",
             module = "io.daio.wild.components:toggleable",
             demos =
                 listOf(
-                    Demo("Vertical layout", "The caller owns the value and chooses a Column layout.") {
+                    Demo("Vertical layout", "Default indicator with caller-owned Column layout.") {
                         var selected by remember { mutableStateOf(options.first()) }
                         RadioGroup {
                             RadioOptions(selected = selected, onSelected = { selected = it }) { content ->
@@ -141,7 +115,7 @@ object RadioPageDefaults {
                             }
                         }
                     },
-                    Demo("Disabled and custom indicators", "Disabled items preserve selection semantics and suppress clicks.") {
+                    Demo("Disabled", "Disabled items preserve selection semantics and suppress clicks.") {
                         var selected by remember { mutableStateOf(options.first()) }
                         RadioGroup {
                             RadioOptions(
@@ -151,6 +125,54 @@ object RadioPageDefaults {
                             ) { content ->
                                 Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
                                     content()
+                                }
+                            }
+                        }
+                    },
+                    Demo("Custom indicator", "Replace the default mark with caller artwork.") {
+                        var selected by remember { mutableStateOf(options.first()) }
+                        RadioGroup {
+                            Row(horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m)) {
+                                options.forEach { option ->
+                                    val isSelected = selected == option
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        RadioButton(
+                                            selected = isSelected,
+                                            onClick = { selected = option },
+                                            modifier = Modifier.semantics { contentDescription = option },
+                                            style = radioStyle(),
+                                        ) {
+                                            val color =
+                                                if (it) {
+                                                    SiteTheme.colors.accent
+                                                } else {
+                                                    SiteTheme.colors.border
+                                                }
+                                            Box(
+                                                modifier =
+                                                    Modifier
+                                                        .size(20.dp)
+                                                        .background(color, CircleShape),
+                                                contentAlignment = Alignment.Center,
+                                            ) {
+                                                if (it) {
+                                                    Box(
+                                                        modifier =
+                                                            Modifier
+                                                                .size(8.dp)
+                                                                .background(
+                                                                    SiteTheme.colors.background,
+                                                                    CircleShape,
+                                                                ),
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        Text(
+                                            text = option,
+                                            modifier = Modifier.padding(start = SiteTheme.spacing.s),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -165,14 +187,18 @@ object RadioPageDefaults {
                             RadioButton(
                                 selected = selected == value,
                                 onClick = { selected = value },
-                                indicator = { isSelected ->
-                                    // Draw a custom indicator from the caller-owned value.
-                                },
                             )
                         }
                     }
                 }
                 // Callers enforce single selection; RadioGroup owns no selection state.
+
+                RadioButton(
+                    selected = selected == "small",
+                    onClick = { selected = "small" },
+                ) { isSelected ->
+                    // Replace the default indicator.
+                }
                 """.trimIndent(),
             props =
                 listOf(
@@ -182,7 +208,11 @@ object RadioPageDefaults {
                     Prop("enabled", "Boolean", default = "true"),
                     Prop("style", "Style", default = "RadioButtonDefaults.style()"),
                     Prop("interactionSource", "MutableInteractionSource?", default = "null"),
-                    Prop("indicator (RadioButton)", "@Composable BoxScope.(Boolean) -> Unit", required = true),
+                    Prop(
+                        "indicator (RadioButton)",
+                        "@Composable BoxScope.(Boolean) -> Unit",
+                        default = "RadioButtonDefaults.Indicator",
+                    ),
                     Prop("content (RadioGroup)", "@Composable BoxScope.() -> Unit", required = true),
                 ),
             platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
