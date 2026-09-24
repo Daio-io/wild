@@ -287,7 +287,7 @@ object StyleDefaults {
      */
     @Stable
     fun shapes(
-        shape: Shape = RectangleShape,
+        shape: Shape = DefaultShapes.shape,
         focusedShape: Shape = shape,
         hoveredShape: Shape = focusedShape,
         pressedShape: Shape = focusedShape,
