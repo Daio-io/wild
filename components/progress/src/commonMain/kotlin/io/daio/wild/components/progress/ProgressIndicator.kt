@@ -19,6 +19,13 @@ import androidx.compose.ui.Modifier
  * @param modifier Modifier applied to the indicator container.
  * @param content Caller-rendered content receiving the normalized progress value.
  * @since 0.7.0
+ *
+ * Example:
+ * ```
+ * LinearProgressIndicator(progress = { 0.65f }) { progress ->
+ *     // Draw linear progress using [progress].
+ * }
+ * ```
  */
 @Composable
 fun LinearProgressIndicator(
@@ -42,6 +49,13 @@ fun LinearProgressIndicator(
  * @param modifier Modifier applied to the indicator container.
  * @param content Caller-rendered content.
  * @since 0.7.0
+ *
+ * Example:
+ * ```
+ * LinearProgressIndicator {
+ *     // Draw caller-owned indeterminate linear progress.
+ * }
+ * ```
  */
 @Composable
 fun LinearProgressIndicator(
@@ -66,6 +80,13 @@ fun LinearProgressIndicator(
  * @param modifier Modifier applied to the indicator container.
  * @param content Caller-rendered content receiving the normalized progress value.
  * @since 0.7.0
+ *
+ * Example:
+ * ```
+ * CircularProgressIndicator(progress = { 0.7f }) { progress ->
+ *     // Draw circular progress using [progress].
+ * }
+ * ```
  */
 @Composable
 fun CircularProgressIndicator(
@@ -89,6 +110,13 @@ fun CircularProgressIndicator(
  * @param modifier Modifier applied to the indicator container.
  * @param content Caller-rendered content.
  * @since 0.7.0
+ *
+ * Example:
+ * ```
+ * CircularProgressIndicator {
+ *     // Draw caller-owned indeterminate circular progress.
+ * }
+ * ```
  */
 @Composable
 fun CircularProgressIndicator(
