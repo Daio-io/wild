@@ -61,6 +61,11 @@ val searchIndex =
             listOf("checkbox", "switch", "toggle", "select", "radio"),
         ),
         SearchEntry(
+            "Switch",
+            Route.Component.Switch,
+            listOf("toggle", "on", "off", "checked", "disabled", "form"),
+        ),
+        SearchEntry(
             "Divider",
             Route.Component.Divider,
             listOf("separator", "line", "horizontal", "vertical"),

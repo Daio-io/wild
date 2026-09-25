@@ -34,6 +34,15 @@ package io.daio.wild.components.toggleable {
     field public static final io.daio.wild.components.toggleable.SelectableDefaults INSTANCE;
   }
 
+  public final class SwitchDefaults {
+    method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    field public static final io.daio.wild.components.toggleable.SwitchDefaults INSTANCE;
+  }
+
+  public final class SwitchKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void Switch(boolean checked, kotlin.jvm.functions.Function1<java.lang.Boolean,kotlin.Unit> onCheckedChange, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function2<androidx.compose.foundation.layout.BoxScope,java.lang.Boolean,kotlin.Unit> content);
+  }
+
   public final class ToggleableDefaults {
     method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
     field public static final io.daio.wild.components.toggleable.ToggleableDefaults INSTANCE;

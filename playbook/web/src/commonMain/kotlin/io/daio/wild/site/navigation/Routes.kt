@@ -46,6 +46,10 @@ sealed interface Route {
             override val path = "components/toggleable"
         }
 
+        data object Switch : Component {
+            override val path = "components/switch"
+        }
+
         data object Divider : Component {
             override val path = "components/divider"
         }
@@ -88,6 +92,7 @@ private val routesByPath: Map<String, Route> by lazy {
         put(Route.Component.Icon.path, Route.Component.Icon)
         put(Route.Component.ListItem.path, Route.Component.ListItem)
         put(Route.Component.Toggleable.path, Route.Component.Toggleable)
+        put(Route.Component.Switch.path, Route.Component.Switch)
         put(Route.Component.Divider.path, Route.Component.Divider)
         put(Route.Foundation.Style.path, Route.Foundation.Style)
         put(Route.Foundation.ContentColor.path, Route.Foundation.ContentColor)
