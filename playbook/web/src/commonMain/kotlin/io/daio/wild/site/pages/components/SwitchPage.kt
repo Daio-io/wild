@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.daio.wild.components.switch.Switch
 import io.daio.wild.components.text.Text
+import io.daio.wild.components.toggleable.Switch
 import io.daio.wild.site.components.ComponentPage
 import io.daio.wild.site.components.ComponentPageData
 import io.daio.wild.site.components.Demo
@@ -82,7 +82,7 @@ object SwitchPageDefaults {
             description =
                 "An unstyled, controlled binary switch primitive. Wild owns click interaction " +
                     "and switch semantics; callers own the track, thumb, dimensions, and artwork.",
-            module = "io.daio.wild.components:switch",
+            module = "io.daio.wild.components:toggleable",
             demos =
                 listOf(
                     Demo("On and off", "The caller controls the Boolean state and renders both states.") {

@@ -1,6 +1,6 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.components.switch
+package io.daio.wild.components.toggleable
 
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -24,7 +24,7 @@ class SwitchInteractionSourceTest {
     @Test
     fun switchEmitsFocusToSuppliedInteractionSource() =
         runComposeUiTest {
-            val source = RecordingInteractionSource()
+            val source = SwitchRecordingInteractionSource()
 
             setContent {
                 Switch(
@@ -46,7 +46,7 @@ class SwitchInteractionSourceTest {
         }
 }
 
-private class RecordingInteractionSource : MutableInteractionSource {
+private class SwitchRecordingInteractionSource : MutableInteractionSource {
     private val delegate = MutableInteractionSource()
 
     val emittedInteractions = mutableListOf<Interaction>()
