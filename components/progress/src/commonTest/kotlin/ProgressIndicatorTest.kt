@@ -87,12 +87,10 @@ class ProgressIndicatorTest {
         }
 
     @Test
-    fun indicatorModifierRemainsOnSingleSemanticNode_linear() =
-        runSingleSemanticNodeTest(::LinearProgressIndicator)
+    fun indicatorModifierRemainsOnSingleSemanticNode_linear() = runSingleSemanticNodeTest(::LinearProgressIndicator)
 
     @Test
-    fun indicatorModifierRemainsOnSingleSemanticNode_circular() =
-        runSingleSemanticNodeTest(::CircularProgressIndicator)
+    fun indicatorModifierRemainsOnSingleSemanticNode_circular() = runSingleSemanticNodeTest(::CircularProgressIndicator)
 
     private fun runDeterminateCoercionAndRecompositionTest(
         indicator: @Composable (
