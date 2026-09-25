@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.components.progress
 
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -50,36 +53,12 @@ class ProgressIndicatorTest {
         }
 
     @Test
-    fun determinateProgressCoercesBoundsAndNaNAndRecomposesFromState() =
-        runComposeUiTest {
-            var progress by mutableStateOf(-1f)
-            var contentProgress = Float.NaN
+    fun determinateProgressCoercesBoundsAndNaNAndRecomposesFromState_linear() =
+        runDeterminateCoercionAndRecompositionTest(::LinearProgressIndicator)
 
-            setContent {
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier.testTag("progress"),
-                ) { contentProgress = it }
-            }
-
-            fun assertProgress(expected: Float) {
-                assertEquals(
-                    ProgressBarRangeInfo(expected, 0f..1f),
-                    onNode(hasTestTag("progress")).fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo],
-                )
-                assertEquals(expected, contentProgress)
-            }
-
-            assertProgress(0f)
-            runOnIdle { progress = 0f }
-            assertProgress(0f)
-            runOnIdle { progress = 1f }
-            assertProgress(1f)
-            runOnIdle { progress = 2f }
-            assertProgress(1f)
-            runOnIdle { progress = Float.NaN }
-            assertProgress(0f)
-        }
+    @Test
+    fun determinateProgressCoercesBoundsAndNaNAndRecomposesFromState_circular() =
+        runDeterminateCoercionAndRecompositionTest(::CircularProgressIndicator)
 
     @Test
     fun circularIndicatorsExposeDeterminateAndIndeterminateSemantics() =
@@ -87,7 +66,7 @@ class ProgressIndicatorTest {
             var circularContentProgress = Float.NaN
 
             setContent {
-                androidx.compose.foundation.layout.Column {
+                Column {
                     CircularProgressIndicator(
                         progress = { 0.25f },
                         modifier = Modifier.testTag("determinate"),
@@ -108,15 +87,63 @@ class ProgressIndicatorTest {
         }
 
     @Test
-    fun indicatorModifierRemainsOnSingleSemanticNode() =
-        runComposeUiTest {
-            setContent {
-                LinearProgressIndicator(
-                    progress = { 0.5f },
-                    modifier = Modifier.testTag("progress"),
-                ) {}
-            }
+    fun indicatorModifierRemainsOnSingleSemanticNode_linear() =
+        runSingleSemanticNodeTest(::LinearProgressIndicator)
 
-            assertEquals(1, onAllNodes(hasTestTag("progress")).fetchSemanticsNodes().size)
+    @Test
+    fun indicatorModifierRemainsOnSingleSemanticNode_circular() =
+        runSingleSemanticNodeTest(::CircularProgressIndicator)
+
+    private fun runDeterminateCoercionAndRecompositionTest(
+        indicator: @Composable (
+            progress: () -> Float,
+            modifier: Modifier,
+            content: @Composable BoxScope.(Float) -> Unit,
+        ) -> Unit,
+    ) = runComposeUiTest {
+        var progress by mutableStateOf(-1f)
+        var contentProgress = Float.NaN
+
+        setContent {
+            indicator(
+                { progress },
+                Modifier.testTag("progress"),
+            ) { contentProgress = it }
         }
+
+        fun assertProgress(expected: Float) {
+            assertEquals(
+                ProgressBarRangeInfo(expected, 0f..1f),
+                onNode(hasTestTag("progress")).fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo],
+            )
+            assertEquals(expected, contentProgress)
+        }
+
+        assertProgress(0f)
+        runOnIdle { progress = 0f }
+        assertProgress(0f)
+        runOnIdle { progress = 1f }
+        assertProgress(1f)
+        runOnIdle { progress = 2f }
+        assertProgress(1f)
+        runOnIdle { progress = Float.NaN }
+        assertProgress(0f)
+    }
+
+    private fun runSingleSemanticNodeTest(
+        indicator: @Composable (
+            progress: () -> Float,
+            modifier: Modifier,
+            content: @Composable BoxScope.(Float) -> Unit,
+        ) -> Unit,
+    ) = runComposeUiTest {
+        setContent {
+            indicator(
+                { 0.5f },
+                Modifier.testTag("progress"),
+            ) {}
+        }
+
+        assertEquals(1, onAllNodes(hasTestTag("progress")).fetchSemanticsNodes().size)
+    }
 }

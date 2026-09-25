@@ -209,8 +209,17 @@ object ProgressPageDefaults {
             props =
                 listOf(
                     Prop("progress (determinate overload)", "() -> Float", required = true),
+                    Prop(
+                        "content (determinate overload)",
+                        "@Composable BoxScope.(Float) -> Unit",
+                        required = true,
+                    ),
+                    Prop(
+                        "content (indeterminate overload)",
+                        "@Composable BoxScope.() -> Unit",
+                        required = true,
+                    ),
                     Prop("modifier", "Modifier", default = "Modifier"),
-                    Prop("content", "@Composable BoxScope.(Float) -> Unit", required = true),
                 ),
             platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
         )
