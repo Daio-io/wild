@@ -53,6 +53,10 @@ sealed interface Route {
         data object Divider : Component {
             override val path = "components/divider"
         }
+
+        data object Progress : Component {
+            override val path = "components/progress"
+        }
     }
 
     sealed interface Foundation : Route {
@@ -94,6 +98,7 @@ private val routesByPath: Map<String, Route> by lazy {
         put(Route.Component.Toggleable.path, Route.Component.Toggleable)
         put(Route.Component.Switch.path, Route.Component.Switch)
         put(Route.Component.Divider.path, Route.Component.Divider)
+        put(Route.Component.Progress.path, Route.Component.Progress)
         put(Route.Foundation.Style.path, Route.Foundation.Style)
         put(Route.Foundation.ContentColor.path, Route.Foundation.ContentColor)
         put(Route.Foundation.Modifier.path, Route.Foundation.Modifier)

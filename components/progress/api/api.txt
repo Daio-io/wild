@@ -1,0 +1,33 @@
+// Signature format: 4.0
+package io.daio.wild.components.progress {
+
+  public final class ProgressIndicatorDefaults {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void CircularIndeterminateIndicator(optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Color trackColor, optional androidx.compose.ui.unit.Dp strokeWidth, optional androidx.compose.ui.graphics.StrokeCap strokeCap, optional androidx.compose.animation.core.DurationBasedAnimationSpec<java.lang.Float> animationSpec);
+    method @KotlinOnly @androidx.compose.runtime.Composable public void CircularIndicator(float progress, optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Color trackColor, optional androidx.compose.ui.unit.Dp strokeWidth, optional androidx.compose.ui.graphics.StrokeCap strokeCap);
+    method @KotlinOnly @androidx.compose.runtime.Composable public void LinearIndeterminateIndicator(optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Color trackColor, optional androidx.compose.ui.unit.Dp strokeHeight, optional androidx.compose.ui.graphics.StrokeCap strokeCap, optional androidx.compose.animation.core.DurationBasedAnimationSpec<java.lang.Float> animationSpec);
+    method @KotlinOnly @androidx.compose.runtime.Composable public void LinearIndicator(float progress, optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Color trackColor, optional androidx.compose.ui.unit.Dp strokeHeight, optional androidx.compose.ui.graphics.StrokeCap strokeCap);
+    method @InaccessibleFromKotlin public float getCircularIndeterminateSweepDegrees();
+    method @InaccessibleFromKotlin public int getIndeterminateAnimationDurationMillis();
+    method @InaccessibleFromKotlin public float getLinearIndeterminateSegmentFraction();
+    method @InaccessibleFromKotlin public float getTrackAlpha();
+    method public androidx.compose.animation.core.DurationBasedAnimationSpec<java.lang.Float> indeterminateAnimationSpec(optional int durationMillis);
+    property public float CircularIndeterminateSweepDegrees;
+    property public androidx.compose.ui.unit.Dp CircularSize;
+    property public androidx.compose.ui.unit.Dp CircularStrokeWidth;
+    property public androidx.compose.ui.graphics.StrokeCap DefaultStrokeCap;
+    property public int IndeterminateAnimationDurationMillis;
+    property public float LinearIndeterminateSegmentFraction;
+    property public androidx.compose.ui.unit.Dp LinearTrackHeight;
+    property public float TrackAlpha;
+    field public static final io.daio.wild.components.progress.ProgressIndicatorDefaults INSTANCE;
+  }
+
+  public final class ProgressIndicatorKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void CircularProgressIndicator(optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void CircularProgressIndicator(kotlin.jvm.functions.Function0<java.lang.Float> progress, optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function2<androidx.compose.foundation.layout.BoxScope,java.lang.Float,kotlin.Unit> content);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void LinearProgressIndicator(optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void LinearProgressIndicator(kotlin.jvm.functions.Function0<java.lang.Float> progress, optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function2<androidx.compose.foundation.layout.BoxScope,java.lang.Float,kotlin.Unit> content);
+  }
+
+}
+

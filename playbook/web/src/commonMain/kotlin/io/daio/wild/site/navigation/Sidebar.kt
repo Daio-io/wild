@@ -199,6 +199,7 @@ fun sidebarGroupsForSection(section: Section): List<SidebarGroup> =
                             SidebarItem("Container", Route.Component.Container),
                             SidebarItem("ListItem", Route.Component.ListItem),
                             SidebarItem("Divider", Route.Component.Divider),
+                            SidebarItem("Progress", Route.Component.Progress),
                         ),
                 ),
             )
