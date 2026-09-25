@@ -35,6 +35,7 @@ include(
     ":components:text",
     ":components:toggleable",
     ":components:list-item",
+    ":components:progress",
     ":layout:container",
     ":layout:divider",
 )

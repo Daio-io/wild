@@ -21,6 +21,14 @@ kotlin {
         binaries.executable()
     }
 
+    sourceSets {
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(npm("terser-webpack-plugin", "5.3.14"))
+            }
+        }
+    }
+
     @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     sourceSets {
         commonMain.dependencies {

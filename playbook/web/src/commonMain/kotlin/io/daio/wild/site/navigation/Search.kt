@@ -66,6 +66,11 @@ val searchIndex =
             listOf("separator", "line", "horizontal", "vertical"),
         ),
         SearchEntry(
+            "Progress",
+            Route.Component.Progress,
+            listOf("indicator", "loading", "linear", "circular", "determinate", "indeterminate"),
+        ),
+        SearchEntry(
             "Style",
             Route.Foundation.Style,
             listOf("theme", "color", "border", "scale", "alpha"),

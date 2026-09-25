@@ -34,6 +34,7 @@ import io.daio.wild.site.pages.components.ContainerPage
 import io.daio.wild.site.pages.components.DividerPage
 import io.daio.wild.site.pages.components.IconPage
 import io.daio.wild.site.pages.components.ListItemPage
+import io.daio.wild.site.pages.components.ProgressPage
 import io.daio.wild.site.pages.components.RadioPage
 import io.daio.wild.site.pages.components.TextFieldPage
 import io.daio.wild.site.pages.components.TextPage
@@ -146,6 +147,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Divider.path) {
                         DividerPage()
+                    }
+                    composable(Route.Component.Progress.path) {
+                        ProgressPage()
                     }
                     composable(Route.Foundation.Style.path) {
                         StylePage()
