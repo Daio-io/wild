@@ -9,21 +9,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /**
- * A caller-rendered determinate linear progress indicator.
+ * A determinate linear progress indicator.
  *
- * This primitive provides progress semantics and passes the normalized progress value to
- * [content]. It does not choose dimensions, colors, animation, or drawing. A [progress] value
- * outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.
+ * Provides progress semantics and passes the normalized progress value to [content]. By default
+ * [content] draws [ProgressIndicatorDefaults.LinearIndicator]; replace the slot for fully custom
+ * artwork. A [progress] value outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.
  *
  * @param progress Current progress from `0f` to `1f`.
  * @param modifier Modifier applied to the indicator container.
- * @param content Caller-rendered content receiving the normalized progress value.
+ * @param content Content receiving the normalized progress value. Defaults to
+ *   [ProgressIndicatorDefaults.LinearIndicator].
  * @since 0.7.0
  *
  * Example:
  * ```
+ * LinearProgressIndicator(progress = { 0.65f })
+ *
  * LinearProgressIndicator(progress = { 0.65f }) { progress ->
- *     // Draw linear progress using [progress].
+ *     ProgressIndicatorDefaults.LinearIndicator(
+ *         progress = progress,
+ *         strokeHeight = 6.dp,
+ *     )
  * }
  * ```
  */
@@ -31,7 +37,9 @@ import androidx.compose.ui.Modifier
 fun LinearProgressIndicator(
     progress: () -> Float,
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.(progress: Float) -> Unit,
+    content: @Composable BoxScope.(progress: Float) -> Unit = {
+        ProgressIndicatorDefaults.LinearIndicator(progress = it)
+    },
 ) {
     ProgressIndicator(
         progress = progress,
@@ -41,26 +49,31 @@ fun LinearProgressIndicator(
 }
 
 /**
- * A caller-rendered indeterminate linear progress indicator.
+ * An indeterminate linear progress indicator.
  *
- * This primitive provides indeterminate progress semantics and does not choose dimensions,
- * colors, animation, or drawing.
+ * Provides indeterminate progress semantics. By default [content] draws
+ * [ProgressIndicatorDefaults.LinearIndeterminateIndicator]; replace the slot for fully custom
+ * artwork and animation.
  *
  * @param modifier Modifier applied to the indicator container.
- * @param content Caller-rendered content.
+ * @param content Indicator content. Defaults to [ProgressIndicatorDefaults.LinearIndeterminateIndicator].
  * @since 0.7.0
  *
  * Example:
  * ```
+ * LinearProgressIndicator()
+ *
  * LinearProgressIndicator {
- *     // Draw caller-owned indeterminate linear progress.
+ *     ProgressIndicatorDefaults.LinearIndeterminateIndicator(strokeHeight = 6.dp)
  * }
  * ```
  */
 @Composable
 fun LinearProgressIndicator(
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
+    content: @Composable BoxScope.() -> Unit = {
+        ProgressIndicatorDefaults.LinearIndeterminateIndicator()
+    },
 ) {
     ProgressIndicator(
         progress = null,
@@ -70,21 +83,27 @@ fun LinearProgressIndicator(
 }
 
 /**
- * A caller-rendered determinate circular progress indicator.
+ * A determinate circular progress indicator.
  *
- * This primitive provides progress semantics and passes the normalized progress value to
- * [content]. It does not choose dimensions, colors, animation, or drawing. A [progress] value
- * outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.
+ * Provides progress semantics and passes the normalized progress value to [content]. By default
+ * [content] draws [ProgressIndicatorDefaults.CircularIndicator]; replace the slot for fully custom
+ * artwork. A [progress] value outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.
  *
  * @param progress Current progress from `0f` to `1f`.
  * @param modifier Modifier applied to the indicator container.
- * @param content Caller-rendered content receiving the normalized progress value.
+ * @param content Content receiving the normalized progress value. Defaults to
+ *   [ProgressIndicatorDefaults.CircularIndicator].
  * @since 0.7.0
  *
  * Example:
  * ```
+ * CircularProgressIndicator(progress = { 0.7f })
+ *
  * CircularProgressIndicator(progress = { 0.7f }) { progress ->
- *     // Draw circular progress using [progress].
+ *     ProgressIndicatorDefaults.CircularIndicator(
+ *         progress = progress,
+ *         strokeWidth = 8.dp,
+ *     )
  * }
  * ```
  */
@@ -92,7 +111,9 @@ fun LinearProgressIndicator(
 fun CircularProgressIndicator(
     progress: () -> Float,
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.(progress: Float) -> Unit,
+    content: @Composable BoxScope.(progress: Float) -> Unit = {
+        ProgressIndicatorDefaults.CircularIndicator(progress = it)
+    },
 ) {
     ProgressIndicator(
         progress = progress,
@@ -102,26 +123,32 @@ fun CircularProgressIndicator(
 }
 
 /**
- * A caller-rendered indeterminate circular progress indicator.
+ * An indeterminate circular progress indicator.
  *
- * This primitive provides indeterminate progress semantics and does not choose dimensions,
- * colors, animation, or drawing.
+ * Provides indeterminate progress semantics. By default [content] draws
+ * [ProgressIndicatorDefaults.CircularIndeterminateIndicator]; replace the slot for fully custom
+ * artwork and animation.
  *
  * @param modifier Modifier applied to the indicator container.
- * @param content Caller-rendered content.
+ * @param content Indicator content. Defaults to
+ *   [ProgressIndicatorDefaults.CircularIndeterminateIndicator].
  * @since 0.7.0
  *
  * Example:
  * ```
+ * CircularProgressIndicator()
+ *
  * CircularProgressIndicator {
- *     // Draw caller-owned indeterminate circular progress.
+ *     ProgressIndicatorDefaults.CircularIndeterminateIndicator(strokeWidth = 8.dp)
  * }
  * ```
  */
 @Composable
 fun CircularProgressIndicator(
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
+    content: @Composable BoxScope.() -> Unit = {
+        ProgressIndicatorDefaults.CircularIndeterminateIndicator()
+    },
 ) {
     ProgressIndicator(
         progress = null,

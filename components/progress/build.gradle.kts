@@ -13,6 +13,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.foundation)
+                implementation(compose.animation)
+                api(projects.contentColor)
             }
         }
         commonTest {

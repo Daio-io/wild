@@ -53,6 +53,37 @@ class ProgressIndicatorTest {
         }
 
     @Test
+    fun determinateLinearIndicatorUsesDefaultContentWhenOmitted() =
+        runComposeUiTest {
+            setContent {
+                LinearProgressIndicator(
+                    progress = { 0.4f },
+                    modifier = Modifier.testTag("progress"),
+                )
+            }
+
+            assertEquals(
+                ProgressBarRangeInfo(0.4f, 0f..1f),
+                onNode(hasTestTag("progress")).fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo],
+            )
+            onNode(hasTestTag("progress")).assertExists()
+        }
+
+    @Test
+    fun indeterminateCircularIndicatorUsesDefaultContentWhenOmitted() =
+        runComposeUiTest {
+            setContent {
+                CircularProgressIndicator(modifier = Modifier.testTag("progress"))
+            }
+
+            assertEquals(
+                ProgressBarRangeInfo.Indeterminate,
+                onNode(hasTestTag("progress")).fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo],
+            )
+            onNode(hasTestTag("progress")).assertExists()
+        }
+
+    @Test
     fun determinateProgressCoercesBoundsAndNaNAndRecomposesFromState_linear() =
         runDeterminateCoercionAndRecompositionTest(::LinearProgressIndicator)
 
