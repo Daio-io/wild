@@ -28,6 +28,8 @@ dependencies {
     dokka(projects.components.text)
     dokka(projects.components.toggleable)
     dokka(projects.components.listItem)
+    dokka(projects.components.progress)
+    dokka(projects.components.slider)
     dokka(projects.layout.container)
     dokka(projects.layout.divider)
 }
