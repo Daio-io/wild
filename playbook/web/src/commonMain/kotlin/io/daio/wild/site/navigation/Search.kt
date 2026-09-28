@@ -76,6 +76,11 @@ val searchIndex =
             listOf("indicator", "loading", "linear", "circular", "determinate", "indeterminate"),
         ),
         SearchEntry(
+            "Slider",
+            Route.Component.Slider,
+            listOf("range", "thumb", "track", "steps", "input"),
+        ),
+        SearchEntry(
             "Style",
             Route.Foundation.Style,
             listOf("theme", "color", "border", "scale", "alpha"),

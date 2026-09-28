@@ -1,0 +1,79 @@
+// Signature format: 4.0
+package io.daio.wild.components.slider {
+
+  public final class RangeSliderKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void RangeSlider(kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> value, kotlin.jvm.functions.Function1<kotlin.ranges.ClosedFloatingPointRange<java.lang.Float>,kotlin.Unit> onValueChange, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished, optional androidx.compose.foundation.interaction.MutableInteractionSource? startInteractionSource, optional androidx.compose.foundation.interaction.MutableInteractionSource? endInteractionSource, kotlin.jvm.functions.Function1<io.daio.wild.components.slider.RangeSliderScope,kotlin.Unit> startThumb, kotlin.jvm.functions.Function1<io.daio.wild.components.slider.RangeSliderScope,kotlin.Unit> endThumb, kotlin.jvm.functions.Function1<io.daio.wild.components.slider.RangeSliderScope,kotlin.Unit> track);
+  }
+
+  @androidx.compose.runtime.Stable public interface RangeSliderScope {
+    method @InaccessibleFromKotlin public boolean getEnabled();
+    method @InaccessibleFromKotlin public float getEndFraction();
+    method @InaccessibleFromKotlin public float getStartFraction();
+    method @InaccessibleFromKotlin public int getSteps();
+    method @InaccessibleFromKotlin public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> getValue();
+    property public abstract boolean enabled;
+    property public abstract float endFraction;
+    property public abstract float startFraction;
+    property public abstract int steps;
+    property public abstract kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> value;
+  }
+
+  @androidx.compose.runtime.Stable public final class RangeSliderState {
+    ctor public RangeSliderState(kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> value, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished);
+    method @InaccessibleFromKotlin public float getEndFraction();
+    method @InaccessibleFromKotlin public kotlin.jvm.functions.Function0<kotlin.Unit>? getOnValueChangeFinished();
+    method @InaccessibleFromKotlin public float getStartFraction();
+    method @InaccessibleFromKotlin public int getSteps();
+    method @InaccessibleFromKotlin public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> getValue();
+    method @InaccessibleFromKotlin public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> getValueRange();
+    property public float endFraction;
+    property public kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished;
+    property public float startFraction;
+    property public int steps;
+    property public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> value;
+    property public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange;
+  }
+
+  public final class SliderDefaults {
+    property public androidx.compose.ui.unit.Dp minHeight;
+    property public androidx.compose.ui.unit.Dp minWidth;
+    field public static final io.daio.wild.components.slider.SliderDefaults INSTANCE;
+  }
+
+  public final class SliderKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void Slider(float value, kotlin.jvm.functions.Function1<java.lang.Float,kotlin.Unit> onValueChange, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<io.daio.wild.components.slider.SliderScope,kotlin.Unit> thumb, kotlin.jvm.functions.Function1<io.daio.wild.components.slider.SliderScope,kotlin.Unit> track);
+  }
+
+  @androidx.compose.runtime.Stable public interface SliderScope {
+    method @InaccessibleFromKotlin public boolean getEnabled();
+    method @InaccessibleFromKotlin public float getFraction();
+    method @InaccessibleFromKotlin public int getSteps();
+    method @InaccessibleFromKotlin public float getValue();
+    property public abstract boolean enabled;
+    property public abstract float fraction;
+    property public abstract int steps;
+    property public abstract float value;
+  }
+
+  @androidx.compose.runtime.Stable public final class SliderState {
+    ctor public SliderState(float value, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished);
+    method @InaccessibleFromKotlin public float getFraction();
+    method @InaccessibleFromKotlin public kotlin.jvm.functions.Function0<kotlin.Unit>? getOnValueChangeFinished();
+    method @InaccessibleFromKotlin public int getSteps();
+    method @InaccessibleFromKotlin public float getValue();
+    method @InaccessibleFromKotlin public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> getValueRange();
+    method public float snap(float value);
+    property public float fraction;
+    property public kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished;
+    property public int steps;
+    property public float value;
+    property public kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange;
+  }
+
+  public final class SliderStateKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static io.daio.wild.components.slider.RangeSliderState rememberRangeSliderState(kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> value, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static io.daio.wild.components.slider.SliderState rememberSliderState(float value, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float> valueRange, optional int steps, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onValueChangeFinished);
+  }
+
+}
+

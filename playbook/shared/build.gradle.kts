@@ -27,6 +27,7 @@ kotlin {
                 api(projects.components.toggleable)
                 api(projects.components.icon)
                 api(projects.components.progress)
+                api(projects.components.slider)
             }
         }
 

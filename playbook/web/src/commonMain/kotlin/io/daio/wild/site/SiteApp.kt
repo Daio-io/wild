@@ -36,6 +36,7 @@ import io.daio.wild.site.pages.components.IconPage
 import io.daio.wild.site.pages.components.ListItemPage
 import io.daio.wild.site.pages.components.ProgressPage
 import io.daio.wild.site.pages.components.RadioPage
+import io.daio.wild.site.pages.components.SliderPage
 import io.daio.wild.site.pages.components.SwitchPage
 import io.daio.wild.site.pages.components.TextFieldPage
 import io.daio.wild.site.pages.components.TextPage
@@ -154,6 +155,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Progress.path) {
                         ProgressPage()
+                    }
+                    composable(Route.Component.Slider.path) {
+                        SliderPage()
                     }
                     composable(Route.Foundation.Style.path) {
                         StylePage()
