@@ -99,11 +99,19 @@ fun RangeSlider(
         val fraction = if (width == 0) 0f else (x / width).coerceIn(0f, 1f)
         val startDistance = kotlin.math.abs(fraction - scope.startFraction)
         val endDistance = kotlin.math.abs(fraction - scope.endFraction)
-        if (startDistance < endDistance) 0 else 1
+        if (startDistance < endDistance) {
+            0
+        } else if (endDistance < startDistance) {
+            1
+        } else if (fraction < scope.startFraction) {
+            0
+        } else {
+            1
+        }
     }
     val interactionModifier =
         Modifier
-            .pointerInput(enabled, value, width) {
+            .pointerInput(enabled, width) {
                 detectTapGestures { offset ->
                     focusedThumb = chooseThumb(offset.x)
                     val next = fractionToValue(offset.x / width.coerceAtLeast(1), valueRange, rtl)
@@ -111,7 +119,7 @@ fun RangeSlider(
                     onValueChangeFinished?.invoke()
                 }
             }
-            .pointerInput(enabled, value, width) {
+            .pointerInput(enabled, width) {
                 var drag: DragInteraction.Start? = null
                 detectDragGestures(
                     onDragStart = { offset ->
@@ -158,6 +166,7 @@ fun RangeSlider(
                     Modifier.rangeThumbSemantics(
                         value = scope.value.start,
                         valueRange = valueRange,
+                        steps = steps,
                         enabled = enabled,
                         onValueChange = ::updateStart,
                         onValueChangeFinished = onValueChangeFinished,
@@ -181,6 +190,7 @@ fun RangeSlider(
                     Modifier.rangeThumbSemantics(
                         value = scope.value.endInclusive,
                         valueRange = valueRange,
+                        steps = steps,
                         enabled = enabled,
                         onValueChange = ::updateEnd,
                         onValueChangeFinished = onValueChangeFinished,
@@ -236,11 +246,12 @@ private fun Modifier.onRangeThumbKeyEvent(
 private fun Modifier.rangeThumbSemantics(
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
     enabled: Boolean,
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)?,
 ) = semantics {
-    progressBarRangeInfo = ProgressBarRangeInfo(value, valueRange)
+    progressBarRangeInfo = ProgressBarRangeInfo(value, valueRange, steps)
     if (!enabled) disabled()
     if (enabled) {
         setProgress {
@@ -270,8 +281,9 @@ private fun RangeSliderLayout(
         modifier = modifier,
     ) { measurables, constraints ->
         val trackPlaceable = measurables[0].measure(constraints)
-        val startPlaceable = measurables[1].measure(constraints)
-        val endPlaceable = measurables[2].measure(constraints)
+        val thumbConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+        val startPlaceable = measurables[1].measure(thumbConstraints)
+        val endPlaceable = measurables[2].measure(thumbConstraints)
         val width =
             constraints.maxWidth.coerceAtLeast(trackPlaceable.width).let {
                 if (it == androidx.compose.ui.unit.Constraints.Infinity) trackPlaceable.width else it

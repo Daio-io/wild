@@ -70,6 +70,28 @@ class SliderTest {
         }
 
     @Test
+    fun sliderReportsConfiguredDiscreteStepsInSemantics() =
+        runComposeUiTest {
+            setContent {
+                Slider(
+                    value = 0.25f,
+                    onValueChange = {},
+                    steps = 3,
+                    modifier = Modifier.testTag("slider").width(200.dp),
+                    thumb = { Box(Modifier.size(20.dp)) },
+                    track = { Box(Modifier.size(200.dp, 4.dp)) },
+                )
+            }
+
+            assertEquals(
+                ProgressBarRangeInfo(0.25f, 0f..1f, 3),
+                onNode(hasTestTag("slider")).fetchSemanticsNode().config[
+                    SemanticsProperties.ProgressBarRangeInfo,
+                ],
+            )
+        }
+
+    @Test
     fun disabledSliderSuppressesInput() =
         runComposeUiTest {
             var changes = 0
@@ -125,5 +147,24 @@ class SliderTest {
 
             onNode(hasTestTag("range-slider")).performTouchInput { click(Offset(190f, 24f)) }
             assertEquals(0.25f..0.95f, proposed)
+        }
+
+    @Test
+    fun collapsedRangeCanExpandTowardLowerValues() =
+        runComposeUiTest {
+            var proposed = 0.5f..0.5f
+            setContent {
+                RangeSlider(
+                    value = 0.5f..0.5f,
+                    onValueChange = { proposed = it },
+                    modifier = Modifier.testTag("range-slider").width(200.dp),
+                    startThumb = { Box(Modifier.size(20.dp)) },
+                    endThumb = { Box(Modifier.size(20.dp)) },
+                    track = { Box(Modifier.size(200.dp, 4.dp)) },
+                )
+            }
+
+            onNode(hasTestTag("range-slider")).performTouchInput { click(Offset(20f, 24f)) }
+            assertEquals(0.1f..0.5f, proposed)
         }
 }

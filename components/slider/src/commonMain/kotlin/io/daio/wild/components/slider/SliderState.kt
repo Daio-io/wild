@@ -4,7 +4,10 @@ package io.daio.wild.components.slider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 private const val RANGE_ERROR = "valueRange must be finite, ascending, and non-empty"
 
@@ -76,7 +79,7 @@ class SliderState(
         validateSteps(steps)
     }
 
-    var value: Float = coerceValue(value, valueRange)
+    var value: Float by mutableStateOf(coerceValue(value, valueRange))
         internal set
 
     /** Current value as a fraction of [valueRange]. */
@@ -106,7 +109,7 @@ class RangeSliderState(
         validateSteps(steps)
     }
 
-    var value: ClosedFloatingPointRange<Float> = coerceRange(value)
+    var value: ClosedFloatingPointRange<Float> by mutableStateOf(coerceRange(value))
         internal set
 
     val startFraction: Float
