@@ -21,9 +21,11 @@ abstract class DesktopScreenshotTest {
         val outputFile = File("screenshots/jvm/$name.png")
         outputFile.parentFile?.mkdirs()
         runDesktopComposeUiTest(width = 480, height = 480) {
-            setContent(content)
             if (advanceTimeByMillis != null) {
                 mainClock.autoAdvance = false
+            }
+            setContent(content)
+            if (advanceTimeByMillis != null) {
                 mainClock.advanceTimeBy(advanceTimeByMillis)
             }
             waitForIdle()

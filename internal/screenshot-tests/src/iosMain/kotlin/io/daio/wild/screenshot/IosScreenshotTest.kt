@@ -19,9 +19,11 @@ abstract class IosScreenshotTest {
         content: @androidx.compose.runtime.Composable () -> Unit,
     ) {
         runComposeUiTest {
-            setContent(content)
             if (advanceTimeByMillis != null) {
                 mainClock.autoAdvance = false
+            }
+            setContent(content)
+            if (advanceTimeByMillis != null) {
                 mainClock.advanceTimeBy(advanceTimeByMillis)
             }
             waitForIdle()

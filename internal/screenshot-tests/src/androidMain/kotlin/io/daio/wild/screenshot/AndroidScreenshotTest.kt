@@ -36,6 +36,9 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
+        if (advanceTimeByMillis != null) {
+            composeRule.mainClock.autoAdvance = false
+        }
         composeRule.setContent(content)
         capture(name, advanceTimeByMillis)
     }
@@ -45,6 +48,9 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         name: String,
         advanceTimeByMillis: Long? = null,
     ) {
+        if (advanceTimeByMillis != null) {
+            composeRule.mainClock.autoAdvance = false
+        }
         capture(name, advanceTimeByMillis)
     }
 
@@ -55,7 +61,6 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         val outputFile = File("screenshots/debug/$name.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
-            composeRule.mainClock.autoAdvance = false
             composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
         }
         composeRule.waitForIdle()
