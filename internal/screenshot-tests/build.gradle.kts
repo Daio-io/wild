@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "io.daio.wild.screenshots"
+    namespace = "io.daio.wild.screenshot"
 }
 
 kotlin {

@@ -29,7 +29,7 @@ abstract class IosScreenshotTest {
             waitForIdle()
             onRoot().captureRoboImage(
                 this,
-                filePath = "iosSimulatorArm64/$name.png",
+                filePath = "screenshots/iosSimulatorArm64/$name.png",
                 roborazziOptions =
                     RoborazziOptions(
                         compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0f),

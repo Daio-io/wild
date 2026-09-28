@@ -58,7 +58,7 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         name: String,
         advanceTimeByMillis: Long?,
     ) {
-        val outputFile = File("screenshots/debug/$name.png")
+        val outputFile = File("screenshots/android/$name.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)

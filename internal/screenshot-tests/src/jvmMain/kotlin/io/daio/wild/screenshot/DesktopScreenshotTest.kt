@@ -18,7 +18,7 @@ abstract class DesktopScreenshotTest {
         advanceTimeByMillis: Long? = null,
         content: @androidx.compose.runtime.Composable () -> Unit,
     ) {
-        val outputFile = File("screenshots/jvm/$name.png")
+        val outputFile = File("screenshots/desktop/$name.png")
         outputFile.parentFile?.mkdirs()
         runDesktopComposeUiTest(width = 480, height = 480) {
             if (advanceTimeByMillis != null) {

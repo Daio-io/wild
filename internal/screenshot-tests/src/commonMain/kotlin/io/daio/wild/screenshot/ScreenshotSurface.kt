@@ -15,6 +15,12 @@ import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
 import io.daio.wild.content.ProvidesContentColor
 
+/**
+ * Provides the fixed 480 dp screenshot surface and the default content color for a screenshot.
+ *
+ * @param content content rendered inside the screenshot surface
+ * @since 0.4.0
+ */
 @Composable
 fun ScreenshotSurface(content: @Composable BoxScope.() -> Unit) =
     ProvidesContentColor(Color.Black) {
