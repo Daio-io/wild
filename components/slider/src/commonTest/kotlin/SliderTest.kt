@@ -87,4 +87,43 @@ class SliderTest {
             onNode(hasTestTag("slider")).assertIsNotEnabled()
             assertEquals(0, changes)
         }
+
+    @Test
+    fun rangeSliderExposesBothThumbValues() =
+        runComposeUiTest {
+            var startValue = -1f
+            var endValue = -1f
+            setContent {
+                RangeSlider(
+                    value = 0.25f..0.75f,
+                    onValueChange = {},
+                    modifier = Modifier.testTag("range-slider"),
+                    startThumb = { startValue = value.start },
+                    endThumb = { endValue = value.endInclusive },
+                    track = {},
+                )
+            }
+
+            assertEquals(0.25f, startValue)
+            assertEquals(0.75f, endValue)
+        }
+
+    @Test
+    fun rangeSliderTapUpdatesNearestThumbWithoutCrossing() =
+        runComposeUiTest {
+            var proposed = 0f..1f
+            setContent {
+                RangeSlider(
+                    value = 0.25f..0.75f,
+                    onValueChange = { proposed = it },
+                    modifier = Modifier.testTag("range-slider").width(200.dp),
+                    startThumb = { Box(Modifier.size(20.dp)) },
+                    endThumb = { Box(Modifier.size(20.dp)) },
+                    track = { Box(Modifier.size(200.dp, 4.dp)) },
+                )
+            }
+
+            onNode(hasTestTag("range-slider")).performTouchInput { click(Offset(190f, 24f)) }
+            assertEquals(0.25f..0.95f, proposed)
+        }
 }
