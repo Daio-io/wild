@@ -43,6 +43,7 @@ include(
 // Test
 include(
     ":internal:benchmark",
+    ":internal:screenshot-tests",
 )
 
 // Playbook
