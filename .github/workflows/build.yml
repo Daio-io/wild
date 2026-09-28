@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Newer PR commits (and pushes) supersede in-flight runs so stale CI does not
+# keep burning macos runners or block the latest commit's checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-26
