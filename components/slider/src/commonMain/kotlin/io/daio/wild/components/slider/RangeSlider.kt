@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -153,6 +154,7 @@ fun RangeSlider(
         modifier =
             modifier
                 .fillMaxWidth()
+                .then(Modifier.widthIn(min = SliderDefaults.minWidth))
                 .requiredHeightIn(min = SliderDefaults.minHeight)
                 .wrapContentHeight(Alignment.CenterVertically)
                 .then(if (enabled) interactionModifier else Modifier),
@@ -220,7 +222,12 @@ private fun Modifier.onRangeThumbKeyEvent(
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)?,
 ) = onKeyEvent { event ->
-    if (!enabled || event.type != KeyEventType.KeyDown) return@onKeyEvent false
+    if (!enabled) return@onKeyEvent false
+    if (event.type == KeyEventType.KeyUp) {
+        onValueChangeFinished?.invoke()
+        return@onKeyEvent true
+    }
+    if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
     val increment =
         if (steps == 0) {
             (valueRange.endInclusive - valueRange.start) / 100f
@@ -232,6 +239,8 @@ private fun Modifier.onRangeThumbKeyEvent(
         when (event.key) {
             Key.DirectionLeft -> current + if (rtl) increment else -increment
             Key.DirectionRight -> current + if (rtl) -increment else increment
+            Key.DirectionUp -> current + increment
+            Key.DirectionDown -> current - increment
             Key.MoveHome -> valueRange.start
             Key.MoveEnd -> valueRange.endInclusive
             Key.PageUp -> current + increment * 10
@@ -239,7 +248,6 @@ private fun Modifier.onRangeThumbKeyEvent(
             else -> return@onKeyEvent false
         }
     onValueChange(next)
-    onValueChangeFinished?.invoke()
     true
 }
 

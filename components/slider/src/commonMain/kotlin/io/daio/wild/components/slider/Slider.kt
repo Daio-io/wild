@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -95,18 +96,31 @@ private fun SliderImpl(
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val scope = SliderScopeImpl(state.value, if (rtl) 1f - state.fraction else state.fraction, steps, enabled)
     var width by remember { mutableStateOf(0) }
+    var thumbWidth by remember { mutableStateOf(0) }
+    var keyboardAdjusting by remember { mutableStateOf(false) }
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val update: (Float) -> Unit = { proposed -> onValueChange(state.snap(proposed)) }
     val currentUpdate by rememberUpdatedState(update)
     val currentFinished by rememberUpdatedState(onValueChangeFinished)
     val keyboardModifier =
-        Modifier.onSliderKeyEvent(enabled, state.value, valueRange, steps, rtl, update, onValueChangeFinished)
+        Modifier.onSliderKeyEvent(
+            enabled,
+            state.value,
+            valueRange,
+            steps,
+            rtl,
+            update,
+            onValueChangeFinished,
+            isAdjusting = { keyboardAdjusting },
+        ) {
+            keyboardAdjusting = it
+        }
     val interactionModifier =
         Modifier
             .pointerInput(enabled, valueRange, steps, state.value) {
                 detectTapGestures { offset ->
                     if (width > 0) {
-                        currentUpdate(fractionToValue(offset.x / width, valueRange, rtl))
+                        currentUpdate(fractionToValue(pointerFraction(offset.x, width, thumbWidth), valueRange, rtl))
                         currentFinished?.invoke()
                     }
                 }
@@ -129,7 +143,11 @@ private fun SliderImpl(
                     },
                     onDrag = { change, _ ->
                         change.consume()
-                        if (width > 0) currentUpdate(fractionToValue(change.position.x / width, valueRange, rtl))
+                        if (width > 0) {
+                            currentUpdate(
+                                fractionToValue(pointerFraction(change.position.x, width, thumbWidth), valueRange, rtl),
+                            )
+                        }
                     },
                 )
             }
@@ -137,6 +155,7 @@ private fun SliderImpl(
         modifier =
             modifier
                 .fillMaxWidth()
+                .then(Modifier.widthIn(min = SliderDefaults.minWidth))
                 .requiredHeightIn(min = SliderDefaults.minHeight)
                 .wrapContentHeight(Alignment.CenterVertically)
                 .sliderSemantics(state.value, valueRange, steps, enabled, update, onValueChangeFinished)
@@ -144,7 +163,10 @@ private fun SliderImpl(
                 .focusable(enabled)
                 .then(keyboardModifier)
                 .then(if (enabled) interactionModifier else Modifier),
-        onMeasured = { width = it },
+        onMeasured = { measuredWidth, measuredThumbWidth ->
+            width = measuredWidth
+            thumbWidth = measuredThumbWidth
+        },
         thumbFraction = scope.fraction,
         track = { scope.track() },
         thumb = { scope.thumb() },
@@ -164,7 +186,9 @@ private fun SliderImpl(
  * @param interactionSource the optional source used for drag interactions.
  * @param thumb content for the thumb slot.
  * @param track content for the track slot.
- * @since 0.4.0
+ * Example: `Slider(value = value, onValueChange = { value = it }, thumb = { ... }, track = { ... })`
+ *
+ * @since 0.7.0
  */
 @Composable
 fun Slider(
@@ -186,7 +210,7 @@ fun Slider(
 @Composable
 private fun SliderLayout(
     modifier: Modifier,
-    onMeasured: (Int) -> Unit,
+    onMeasured: (Int, Int) -> Unit,
     thumbFraction: Float,
     track: @Composable BoxScope.() -> Unit,
     thumb: @Composable BoxScope.() -> Unit,
@@ -205,7 +229,7 @@ private fun SliderLayout(
                 if (it == Constraints.Infinity) trackPlaceable.width else it
             }
         val height = maxOf(trackPlaceable.height, thumbPlaceable.height)
-        onMeasured(width)
+        onMeasured(width, thumbPlaceable.width)
         layout(width, height) {
             trackPlaceable.place(0, (height - trackPlaceable.height) / 2)
             val x = ((width - thumbPlaceable.width) * thumbFraction).roundToInt()
@@ -222,9 +246,20 @@ private fun Modifier.onSliderKeyEvent(
     rtl: Boolean,
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)?,
+    isAdjusting: () -> Boolean,
+    onAdjustingChanged: (Boolean) -> Unit,
 ): Modifier =
     onKeyEvent { event ->
-        if (!enabled || event.type != KeyEventType.KeyDown) return@onKeyEvent false
+        if (!enabled) return@onKeyEvent false
+        if (event.type == KeyEventType.KeyUp) {
+            if (isAdjusting()) {
+                onAdjustingChanged(false)
+                onValueChangeFinished?.invoke()
+                return@onKeyEvent true
+            }
+            return@onKeyEvent false
+        }
+        if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
         val increment =
             if (steps == 0) {
                 (valueRange.endInclusive - valueRange.start) / 100f
@@ -235,6 +270,8 @@ private fun Modifier.onSliderKeyEvent(
             when (event.key) {
                 Key.DirectionLeft -> value + if (rtl) increment else -increment
                 Key.DirectionRight -> value + if (rtl) -increment else increment
+                Key.DirectionUp -> value + increment
+                Key.DirectionDown -> value - increment
                 Key.MoveHome -> valueRange.start
                 Key.MoveEnd -> valueRange.endInclusive
                 Key.PageUp -> value + increment * 10
@@ -242,6 +279,15 @@ private fun Modifier.onSliderKeyEvent(
                 else -> return@onKeyEvent false
             }
         onValueChange(next)
-        onValueChangeFinished?.invoke()
+        onAdjustingChanged(true)
         true
     }
+
+private fun pointerFraction(
+    x: Float,
+    width: Int,
+    thumbWidth: Int,
+): Float {
+    val travel = (width - thumbWidth).coerceAtLeast(0).toFloat()
+    return if (travel == 0f) 0.5f else ((x - thumbWidth / 2f) / travel).coerceIn(0f, 1f)
+}
