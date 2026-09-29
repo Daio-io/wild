@@ -26,6 +26,10 @@ private fun Project.configureRoborazzi() {
     tasks.withType<Test>().configureEach {
         systemProperty("robolectric.pixelCopyRenderMode", "hardware")
         systemProperty("roborazzi.record.namingStrategy", "testClassAndMethod")
+        // Robolectric hosts screenshot tests only; commonTest Compose UI suites stay on JVM/iOS.
+        if (name.endsWith("UnitTest")) {
+            filter { includeTestsMatching("*ScreenshotTest") }
+        }
     }
 }
 

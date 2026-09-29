@@ -12,14 +12,13 @@ import io.github.takahirom.roborazzi.captureRoboImage
 
 /** Base class for deterministic iOS screenshot tests. */
 abstract class IosScreenshotTest {
-    /** Captures the supplied composable. */
+    /** Captures the supplied composable to `screenshots/iosSimulatorArm64`. */
     @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
     fun captureScreenshot(
-        name: String? = null,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
-        val outputName = name ?: screenshotOutputName()
+        val outputName = screenshotOutputName()
         runComposeUiTest {
             if (advanceTimeByMillis != null) {
                 mainClock.autoAdvance = false

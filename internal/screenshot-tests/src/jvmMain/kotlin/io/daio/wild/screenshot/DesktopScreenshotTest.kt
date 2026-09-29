@@ -15,15 +15,13 @@ import java.io.File
 /** Base class for deterministic desktop screenshot tests. */
 @OptIn(ExperimentalTestApi::class)
 abstract class DesktopScreenshotTest {
-    /** Captures the supplied composable, using the named matrix path or legacy desktop path. */
+    /** Captures the supplied composable to `screenshots/desktop`. */
     @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
-        captureName: String? = null,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
-        val outputDirectory = if (captureName == null) "screenshots/desktop" else "screenshots/jvm"
-        val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
+        val outputFile = File("screenshots/desktop/${roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         runDesktopComposeUiTest(width = 480, height = 480) {
             if (advanceTimeByMillis != null) {

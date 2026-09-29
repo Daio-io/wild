@@ -33,12 +33,10 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
     val roborazziRule = RoborazziRule()
 
     /**
-     * Captures the supplied composable. Named captures are matrix cases written to `screenshots/debug`;
-     * unnamed captures preserve the legacy `screenshots/android` output. Do not combine this with
+     * Captures the supplied composable to `screenshots/android`. Do not combine this with
      * [captureActivityScreenshot].
      */
     fun captureScreenshot(
-        captureName: String? = null,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
@@ -46,7 +44,7 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
             composeRule.mainClock.autoAdvance = false
         }
         composeRule.setContent(content)
-        capture(captureName, advanceTimeByMillis)
+        capture(advanceTimeByMillis)
     }
 
     /** Captures the launched activity root. Do not combine this with [captureScreenshot]. */
@@ -54,16 +52,12 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.autoAdvance = false
         }
-        capture(null, advanceTimeByMillis)
+        capture(advanceTimeByMillis)
     }
 
     @OptIn(ExperimentalRoborazziApi::class)
-    private fun capture(
-        captureName: String?,
-        advanceTimeByMillis: Long?,
-    ) {
-        val outputDirectory = if (captureName == null) "screenshots/android" else "screenshots/debug"
-        val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
+    private fun capture(advanceTimeByMillis: Long?) {
+        val outputFile = File("screenshots/android/${roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
