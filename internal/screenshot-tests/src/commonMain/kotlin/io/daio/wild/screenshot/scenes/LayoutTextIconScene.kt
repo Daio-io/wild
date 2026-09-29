@@ -57,7 +57,7 @@ fun LayoutTextIconScene() {
             Row(Modifier.padding(top = 12.dp)) {
                 VerticalDivider(Modifier.height(40.dp), color = Color(0xFFE53935), thickness = 2.dp)
                 Icon(testVector, "test", tint = Color(0xFF43A047), modifier = Modifier.padding(start = 12.dp))
-                Icon(testBitmap, "bitmap", tint = Color.Unspecified, modifier = Modifier.padding(start = 12.dp))
+                Icon(testBitmap, "bitmap", tint = Color(0xFF8E44AD), modifier = Modifier.padding(start = 12.dp))
             }
         }
     }

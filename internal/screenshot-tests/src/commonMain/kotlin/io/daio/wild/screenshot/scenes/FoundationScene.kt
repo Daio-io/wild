@@ -22,7 +22,7 @@ private val Navy = Color(0xFF17324D)
 fun FoundationScene() {
     ScreenshotSurface {
         Column(Modifier.width(432.dp).padding(8.dp)) {
-            ProvidesContentColor(Color(0xFF17324D)) { Text("content color") }
+            ProvidesContentColor(Navy) { Text("content color") }
             Container(
                 color = Navy,
                 contentColor = Color.White,
