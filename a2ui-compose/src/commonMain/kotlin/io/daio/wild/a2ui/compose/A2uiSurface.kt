@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.A2uiSurfaceModel
 import io.daio.wild.a2ui.A2uiUserAction
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -31,7 +32,7 @@ fun A2uiSurface(
         error("catalog mismatch")
         return
     }
-    val scope = remember(surface) { DefaultA2uiComponentScope(surface, processor, onAction) }
+    val scope = remember(surface, processor, onAction) { DefaultA2uiComponentScope(surface, processor, onAction) }
     CompositionLocalProvider(LocalA2uiCatalog provides catalog, LocalA2uiScope provides scope) {
         A2uiComponent(scope.observeComponentState("root"), modifier, loading, error)
     }
@@ -50,11 +51,18 @@ fun A2uiComponent(
         A2uiComponentState.Loading -> loading()
         is A2uiComponentState.Error -> error(state.message)
         is A2uiComponentState.Success -> {
-            val type =
-                state.json["component"]?.jsonPrimitive?.contentOrNull
-                    ?: return error("missing component type")
+            val component = state.json["component"]
+            val componentData =
+                when (component) {
+                    is JsonObject ->
+                        component.entries.singleOrNull()?.let { entry ->
+                            (entry.value as? JsonObject)?.let { entry.key to it }
+                        }
+                    else -> component?.let { it.jsonPrimitive.contentOrNull to state.json }
+                } ?: return error("missing component type")
+            val (type, componentJson) = componentData
             val impl = catalog.components[type] ?: return error("Unknown component: $type")
-            val props = A2uiComponentProperties.from(state.json, state.id)
+            val props = A2uiComponentProperties.from(componentJson, state.id)
             if (!with(impl) { with(scope) { isReady(props) } }) {
                 loading()
                 return

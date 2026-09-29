@@ -45,6 +45,31 @@ class A2uiSurfaceTest {
         }
 
     @Test
+    fun renders_object_form_text_root() =
+        runComposeUiTest {
+            val processor = A2uiMessageProcessor()
+            processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"test"}}""")
+            processor.processJson(
+                """
+                {
+                  "version": "v0.9.1",
+                  "updateComponents": {
+                    "surfaceId": "main",
+                    "components": [{"id":"root","component":{"Text":{"text":"Hello"}}}]
+                  }
+                }
+                """.trimIndent(),
+            )
+            val catalog = A2uiCatalog("test", listOf(StubTextComponent))
+
+            setContent {
+                A2uiSurface(processor.surfaces.value.getValue("main"), catalog, processor)
+            }
+
+            onNodeWithText("Hello").assertTextEquals("Hello")
+        }
+
+    @Test
     fun missing_child_shows_loading() =
         runComposeUiTest {
             val processor = processorWithRoot("Container", """"children":["missing"]""")
