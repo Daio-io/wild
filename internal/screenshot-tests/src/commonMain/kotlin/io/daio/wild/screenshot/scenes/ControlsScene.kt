@@ -30,7 +30,7 @@ import io.daio.wild.components.toggleable.TriStateCheckbox
 import io.daio.wild.screenshot.ScreenshotSurface
 
 @Composable
-fun ControlsScene() {
+internal fun ControlsScene() {
     ScreenshotSurface {
         Column(Modifier.width(432.dp).padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

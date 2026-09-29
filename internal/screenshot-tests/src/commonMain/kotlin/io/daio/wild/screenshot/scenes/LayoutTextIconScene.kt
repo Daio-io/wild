@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.font.FontWeight
@@ -40,15 +42,18 @@ internal val testVector =
         }
     }.build()
 
-internal val testBitmap = ImageBitmap(8, 8)
+internal val testBitmap =
+    ImageBitmap(8, 8).also { bitmap ->
+        Canvas(bitmap).drawRect(0f, 0f, 8f, 8f, Paint().apply { color = Color.White })
+    }
 
 @Composable
-fun LayoutTextIconScene() {
+internal fun LayoutTextIconScene() {
     ScreenshotSurface {
         Column(Modifier.width(432.dp).padding(8.dp)) {
             Text("Wild regular", fontSize = 18.sp)
             Text(
-                "Wild bold clipped",
+                "Wild bold clipped text that exceeds the available width",
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

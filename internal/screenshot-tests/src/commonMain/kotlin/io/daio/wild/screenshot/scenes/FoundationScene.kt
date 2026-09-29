@@ -19,7 +19,7 @@ import io.daio.wild.style.Border
 private val Navy = Color(0xFF17324D)
 
 @Composable
-fun FoundationScene() {
+internal fun FoundationScene() {
     ScreenshotSurface {
         Column(Modifier.width(432.dp).padding(8.dp)) {
             ProvidesContentColor(Navy) { Text("content color") }

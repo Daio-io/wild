@@ -21,7 +21,7 @@ import io.daio.wild.components.text.TextField
 import io.daio.wild.screenshot.ScreenshotSurface
 
 @Composable
-fun InputProgressScene() {
+internal fun InputProgressScene() {
     val empty = remember { TextFieldState() }
     val populated = remember { TextFieldState("fixed text") }
     val area = remember { TextFieldState("line one\nline two\nline three") }
