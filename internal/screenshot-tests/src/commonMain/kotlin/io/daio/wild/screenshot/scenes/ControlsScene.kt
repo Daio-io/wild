@@ -28,6 +28,18 @@ import io.daio.wild.components.toggleable.RadioButton
 import io.daio.wild.components.toggleable.Switch
 import io.daio.wild.components.toggleable.TriStateCheckbox
 import io.daio.wild.screenshot.ScreenshotSurface
+import io.daio.wild.style.StyleDefaults
+
+internal val visualTestStyle =
+    StyleDefaults.style(
+        colors =
+            StyleDefaults.colors(
+                backgroundColor = Color(0xFF243447),
+                contentColor = Color.White,
+                selectedBackgroundColor = Color(0xFF2E7D32),
+                disabledBackgroundColor = Color(0xFF54606B),
+            ),
+    )
 
 @Composable
 fun ControlsScene() {
@@ -41,6 +53,7 @@ fun ControlsScene() {
                 onClick = {},
                 leadingContent = { Box(Modifier.size(24.dp).background(Color(0xFF2F80ED))) },
                 trailingContent = { Text("+") },
+                selected = true,
                 style = visualTestStyle,
             ) { Text("selected item") }
             ToggleRow("Checkbox") {

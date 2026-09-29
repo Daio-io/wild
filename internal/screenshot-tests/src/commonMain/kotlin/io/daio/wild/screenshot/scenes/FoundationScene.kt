@@ -15,7 +15,6 @@ import io.daio.wild.container.Container
 import io.daio.wild.content.ProvidesContentColor
 import io.daio.wild.screenshot.ScreenshotSurface
 import io.daio.wild.style.Border
-import io.daio.wild.style.StyleDefaults
 
 private val Navy = Color(0xFF17324D)
 
@@ -45,14 +44,3 @@ fun FoundationScene() {
         }
     }
 }
-
-internal val visualTestStyle =
-    StyleDefaults.style(
-        colors =
-            StyleDefaults.colors(
-                backgroundColor = Color(0xFF243447),
-                contentColor = Color.White,
-                selectedBackgroundColor = Color(0xFF2E7D32),
-                disabledBackgroundColor = Color(0xFF54606B),
-            ),
-    )

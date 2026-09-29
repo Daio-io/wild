@@ -22,7 +22,8 @@ abstract class DesktopScreenshotTest {
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
-        val outputFile = File("screenshots/jvm/${name ?: roboOutputName()}.png")
+        val outputDirectory = if (name == null) "screenshots/desktop" else "screenshots/jvm"
+        val outputFile = File("$outputDirectory/${name ?: roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         runDesktopComposeUiTest(width = 480, height = 480) {
             if (advanceTimeByMillis != null) {
