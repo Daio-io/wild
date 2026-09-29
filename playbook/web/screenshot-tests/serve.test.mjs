@@ -1,9 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
 import { request } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { resolveRequestPath, startStaticServer } from "./serve.mjs";
 
@@ -21,10 +23,7 @@ test("missing root rejects before listening", async () => {
 });
 
 test("rejects literal and percent-encoded traversal", async () => {
-  const root = await mkdtemp(join(tmpdir(), "screenshot-server-"));
-  await writeFile(join(root, "index.html"), "home");
-  const server = await startStaticServer(root, 0);
-  servers.push(server);
+  const { root, server } = await createServerFixture({ "index.html": "home" });
   const { port } = server.address();
 
   assert.throws(() => resolveRequestPath(root, "/../package.json"), { code: "TRAVERSAL" });
@@ -38,10 +37,7 @@ test("rejects literal and percent-encoded traversal", async () => {
 });
 
 test("falls back missing routes to index.html", async () => {
-  const root = await mkdtemp(join(tmpdir(), "screenshot-server-"));
-  await writeFile(join(root, "index.html"), "home");
-  const server = await startStaticServer(root, 0);
-  servers.push(server);
+  const { root, server } = await createServerFixture({ "index.html": "home" });
   const { port } = server.address();
 
   const response = await fetch(`http://127.0.0.1:${port}/missing-route`);
@@ -53,11 +49,10 @@ test("falls back missing routes to index.html", async () => {
 });
 
 test("serves JavaScript and Wasm with explicit MIME types", async () => {
-  const root = await mkdtemp(join(tmpdir(), "screenshot-server-"));
-  await writeFile(join(root, "app.js"), "console.log('app')");
-  await writeFile(join(root, "app.wasm"), "wasm");
-  const server = await startStaticServer(root, 0);
-  servers.push(server);
+  const { root, server } = await createServerFixture({
+    "app.js": "console.log('app')",
+    "app.wasm": "wasm",
+  });
   const { port } = server.address();
 
   const jsResponse = await fetch(`http://127.0.0.1:${port}/app.js`);
@@ -69,13 +64,14 @@ test("serves JavaScript and Wasm with explicit MIME types", async () => {
 });
 
 test("rejects startup when the port is occupied", async () => {
-  const root = await mkdtemp(join(tmpdir(), "screenshot-server-"));
-  await writeFile(join(root, "index.html"), "home");
-  const first = await startStaticServer(root, 0);
-  servers.push(first);
+  const { root, server: first } = await createServerFixture({ "index.html": "home" });
   const { port } = first.address();
 
   await assert.rejects(startStaticServer(root, port), { code: "EADDRINUSE" });
+
+  const result = await runCli(root, port);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /EADDRINUSE/);
 
   await rm(root, { recursive: true, force: true });
 });
@@ -85,4 +81,25 @@ function requestForTraversal(port, resolve, reject) {
     response.resume();
     response.once("end", () => resolve(response.statusCode));
   }).on("error", reject);
+}
+
+async function createServerFixture(files) {
+  const root = await mkdtemp(join(tmpdir(), "screenshot-server-"));
+  await Promise.all(Object.entries(files).map(([name, contents]) => writeFile(join(root, name), contents)));
+  const server = await startStaticServer(root, 0);
+  servers.push(server);
+  return { root, server };
+}
+
+function runCli(root, port) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [fileURLToPath(new URL("./serve.mjs", import.meta.url)), root, String(port)], {
+      encoding: "utf8",
+    });
+    let stderr = "";
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("close", (status) => resolve({ status, stderr }));
+  });
 }
