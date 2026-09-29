@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.a2ui
 
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 
 class A2uiMessageProcessorTest {
@@ -32,6 +34,29 @@ class A2uiMessageProcessorTest {
             "{\"id\":\"root\",\"component\":{\"Text\":{\"text\":\"Hello\"}}}",
             processor.surfaces.value["main"]?.components?.get("root")?.toString(),
         )
+    }
+
+    @Test
+    fun updates_publish_new_surface_snapshots() {
+        val processor = A2uiMessageProcessor()
+        processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}""")
+        val initial = processor.surfaces.value["main"]
+        processor.processJson("""{"version":"v0.9.1","updateComponents":{"surfaceId":"main","components":[{"id":"root"}]}}""")
+        val afterComponents = processor.surfaces.value["main"]
+        processor.processJson("""{"version":"v0.9.1","updateDataModel":{"surfaceId":"main","path":"/ready","value":null}}""")
+        assertNotSame(initial, afterComponents)
+        assertNotSame(afterComponents, processor.surfaces.value["main"])
+        assertEquals("null", processor.surfaces.value["main"]?.dataModel?.jsonObject?.get("ready")?.toString())
+    }
+
+    @Test
+    fun malformedComponentId_returnsFailure() {
+        val processor = A2uiMessageProcessor()
+        processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}""")
+        assertIs<A2uiProcessResult.Failure>(
+            processor.processJson("""{"version":"v0.9.1","updateComponents":{"surfaceId":"main","components":[{"id":{}}]}}"""),
+        )
+        assertTrue(processor.surfaces.value["main"]?.components?.isEmpty() == true)
     }
 
     @Test

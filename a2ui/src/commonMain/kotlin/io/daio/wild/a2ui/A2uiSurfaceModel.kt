@@ -5,8 +5,8 @@ package io.daio.wild.a2ui
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
 
+/** Read-only state for an A2UI surface. */
 interface A2uiSurfaceModel {
     val surfaceId: String
     val catalogId: String
@@ -23,14 +23,26 @@ internal class MutableA2uiSurface(
     override val theme: JsonObject?,
     override val sendDataModel: Boolean,
 ) : A2uiSurfaceModel {
+    internal constructor(message: CreateSurface) : this(message.surfaceId, message.catalogId, message.theme, message.sendDataModel)
+
     private val _components = mutableMapOf<String, JsonObject>()
     override val components: Map<String, JsonObject> get() = _components
     override var dataModel: JsonElement = JsonObject(emptyMap())
     override var error: String? = null
 
-    fun putComponents(items: List<JsonObject>) {
+    fun putComponents(items: List<JsonObject>): Boolean {
+        if (items.any { it["id"] !is kotlinx.serialization.json.JsonPrimitive }) return false
         items.forEach { item ->
-            item["id"]?.jsonPrimitive?.contentOrNull?.let { _components[it] = item }
+            val id = item["id"] as? kotlinx.serialization.json.JsonPrimitive
+            id?.contentOrNull?.let { _components[it] = item }
         }
+        return true
     }
+
+    fun snapshot(): MutableA2uiSurface =
+        MutableA2uiSurface(surfaceId, catalogId, theme, sendDataModel).also {
+            it._components.putAll(_components)
+            it.dataModel = dataModel
+            it.error = error
+        }
 }
