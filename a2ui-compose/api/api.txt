@@ -103,8 +103,6 @@ package io.daio.wild.a2ui.compose {
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.Boolean> bool(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.util.List<java.lang.String>> childList(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> componentId(String name, optional boolean required);
-    method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.Boolean> dynamicBool(String name, optional boolean required);
-    method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> dynamicString(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> string(String name, optional boolean required);
   }
 

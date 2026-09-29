@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.A2uiSurfaceModel
 import io.daio.wild.a2ui.A2uiUserAction
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -39,21 +38,6 @@ interface A2uiComponentScope {
 
     /** Creates an updater for [path]. @param path data-model path. @since 0.1.0 */
     fun bindUpdater(path: String): (JsonElement) -> Unit
-
-    /** Resolves a child-list property into IDs or a template error.
-     * @param el raw child-list property value.
-     * @since 0.1.0
-     */
-    fun resolveChildList(el: JsonElement?): A2uiChildList
-}
-
-/** Result of resolving an A2UI child-list property. @since 0.1.0 */
-sealed interface A2uiChildList {
-    /** Child component IDs. @param ids resolved IDs. @since 0.1.0 */
-    data class Ids(val ids: List<String>) : A2uiChildList
-
-    /** A child-list template, which this runtime does not support. @since 0.1.0 */
-    data object TemplatesUnsupported : A2uiChildList
 }
 
 internal class DefaultA2uiComponentScope(
@@ -85,12 +69,5 @@ internal class DefaultA2uiComponentScope(
     override fun bindUpdater(path: String): (JsonElement) -> Unit =
         { value ->
             processor.setPath(surface.surfaceId, path, value)
-        }
-
-    override fun resolveChildList(el: JsonElement?): A2uiChildList =
-        when (el) {
-            is JsonArray -> A2uiChildList.Ids(el.mapNotNull { it.jsonPrimitive.contentOrNull })
-            is JsonObject -> A2uiChildList.TemplatesUnsupported
-            else -> A2uiChildList.Ids(emptyList())
         }
 }
