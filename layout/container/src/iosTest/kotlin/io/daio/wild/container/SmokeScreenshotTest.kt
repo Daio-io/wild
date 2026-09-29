@@ -1,11 +1,11 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
-package io.daio.wild.screenshot
+package io.daio.wild.container
 
-import androidx.activity.ComponentActivity
+import io.daio.wild.screenshot.IosScreenshotTest
 import kotlin.test.Test
 
-class SmokeScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
+class SmokeScreenshotTest : IosScreenshotTest() {
     @Test
     fun smoke() = captureScreenshot(advanceTimeByMillis = 0) { SmokeScene() }
 }

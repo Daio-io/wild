@@ -4,7 +4,6 @@ plugins {
     id("io.daio.android.library")
     id("io.daio.compose")
     id("io.daio.kotlin.multiplatform")
-    id("io.daio.test.roborazzi")
 }
 
 android {
@@ -14,32 +13,26 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.foundation)
-            implementation(projects.contentColor)
-            implementation(projects.layout.container)
-            implementation(projects.components.text)
+            api(compose.foundation)
         }
         jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.roborazzi.core)
-            implementation(libs.roborazzi.compose.desktop)
+            api(compose.desktop.currentOs)
+            api(libs.roborazzi.core)
+            api(libs.roborazzi.compose.desktop)
         }
         iosMain.dependencies {
-            implementation(libs.roborazzi.compose.ios)
+            api(libs.roborazzi.compose.ios)
         }
         androidMain.dependencies {
-            implementation(libs.junit)
-            implementation(libs.activity.compose)
-            implementation(libs.ui.test.junit4)
-            implementation(libs.ui.test.manifest)
-            implementation(libs.robolectric)
-            implementation(libs.roborazzi.core)
-            implementation(libs.roborazzi.android)
-            implementation(libs.roborazzi.compose)
-            implementation(libs.roborazzi.junit)
-        }
-        commonTest.dependencies {
-            implementation(kotlin("test"))
+            api(libs.junit)
+            api(libs.activity.compose)
+            api(libs.ui.test.junit4)
+            api(libs.ui.test.manifest)
+            api(libs.robolectric)
+            api(libs.roborazzi.core)
+            api(libs.roborazzi.android)
+            api(libs.roborazzi.compose)
+            api(libs.roborazzi.junit)
         }
     }
 }
