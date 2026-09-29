@@ -5,7 +5,9 @@ package io.daio.wild.screenshot
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runDesktopComposeUiTest
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.roboOutputName
 import io.github.takahirom.roborazzi.captureRoboImage
 import java.io.File
 
@@ -13,12 +15,12 @@ import java.io.File
 @OptIn(ExperimentalTestApi::class)
 abstract class DesktopScreenshotTest {
     /** Captures the supplied composable. */
+    @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
-        name: String,
         advanceTimeByMillis: Long? = null,
         content: @androidx.compose.runtime.Composable () -> Unit,
     ) {
-        val outputFile = File("screenshots/desktop/$name.png")
+        val outputFile = File("screenshots/desktop/${roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         runDesktopComposeUiTest(width = 480, height = 480) {
             if (advanceTimeByMillis != null) {

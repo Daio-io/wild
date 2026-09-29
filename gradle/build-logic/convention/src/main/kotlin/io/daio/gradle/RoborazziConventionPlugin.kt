@@ -25,6 +25,7 @@ private fun Project.configureRoborazzi() {
     pluginManager.withPlugin("com.android.library") { configureAndroidRoborazzi() }
     tasks.withType<Test>().configureEach {
         systemProperty("robolectric.pixelCopyRenderMode", "hardware")
+        systemProperty("roborazzi.record.namingStrategy", "testClassAndMethod")
     }
 }
 

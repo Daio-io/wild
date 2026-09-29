@@ -8,10 +8,12 @@ import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.RoborazziRule
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.roboOutputName
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,7 +34,6 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
 
     /** Captures the supplied composable. Do not combine this with [captureActivityScreenshot]. */
     fun captureScreenshot(
-        name: String,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
@@ -40,25 +41,20 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
             composeRule.mainClock.autoAdvance = false
         }
         composeRule.setContent(content)
-        capture(name, advanceTimeByMillis)
+        capture(advanceTimeByMillis)
     }
 
     /** Captures the launched activity root. Do not combine this with [captureScreenshot]. */
-    fun captureActivityScreenshot(
-        name: String,
-        advanceTimeByMillis: Long? = null,
-    ) {
+    fun captureActivityScreenshot(advanceTimeByMillis: Long? = null) {
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.autoAdvance = false
         }
-        capture(name, advanceTimeByMillis)
+        capture(advanceTimeByMillis)
     }
 
-    private fun capture(
-        name: String,
-        advanceTimeByMillis: Long?,
-    ) {
-        val outputFile = File("screenshots/android/$name.png")
+    @OptIn(ExperimentalRoborazziApi::class)
+    private fun capture(advanceTimeByMillis: Long?) {
+        val outputFile = File("screenshots/android/${roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)

@@ -6,5 +6,5 @@ import kotlin.test.Test
 
 class SmokeScreenshotTest : IosScreenshotTest() {
     @Test
-    fun smoke() = captureScreenshot("smoke", advanceTimeByMillis = 0) { SmokeScene() }
+    fun smoke() = captureScreenshot(advanceTimeByMillis = 0) { SmokeScene() }
 }
