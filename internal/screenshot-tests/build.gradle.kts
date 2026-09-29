@@ -4,6 +4,7 @@ plugins {
     id("io.daio.android.library")
     id("io.daio.compose")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
 }
 
 android {
@@ -14,7 +15,21 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(compose.foundation)
+            implementation(projects.foundations)
+            implementation(projects.contentColor)
+            implementation(projects.style)
+            implementation(projects.modifier)
             api(projects.layout.container)
+            implementation(projects.layout.divider)
+            implementation(projects.components.button)
+            implementation(projects.components.icon)
+            implementation(projects.components.text)
+            implementation(projects.components.toggleable)
+            implementation(projects.components.listItem)
+            implementation(projects.components.progress)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
         jvmMain.dependencies {
             api(compose.desktop.currentOs)

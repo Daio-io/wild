@@ -15,10 +15,11 @@ abstract class IosScreenshotTest {
     /** Captures the supplied composable. */
     @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
     fun captureScreenshot(
+        name: String? = null,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
-        val outputName = screenshotOutputName()
+        val outputName = name ?: screenshotOutputName()
         runComposeUiTest {
             if (advanceTimeByMillis != null) {
                 mainClock.autoAdvance = false
