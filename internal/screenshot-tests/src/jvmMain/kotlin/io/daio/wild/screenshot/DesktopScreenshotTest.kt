@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.screenshot
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runDesktopComposeUiTest
@@ -18,7 +19,7 @@ abstract class DesktopScreenshotTest {
     @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
         advanceTimeByMillis: Long? = null,
-        content: @androidx.compose.runtime.Composable () -> Unit,
+        content: @Composable () -> Unit,
     ) {
         val outputFile = File("screenshots/desktop/${roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()

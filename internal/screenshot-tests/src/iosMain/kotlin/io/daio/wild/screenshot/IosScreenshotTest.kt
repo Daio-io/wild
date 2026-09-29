@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.screenshot
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runComposeUiTest
@@ -15,7 +16,7 @@ abstract class IosScreenshotTest {
     @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
     fun captureScreenshot(
         advanceTimeByMillis: Long? = null,
-        content: @androidx.compose.runtime.Composable () -> Unit,
+        content: @Composable () -> Unit,
     ) {
         val outputName = screenshotOutputName()
         runComposeUiTest {
