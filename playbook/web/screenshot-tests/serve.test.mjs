@@ -27,11 +27,8 @@ test("rejects literal and percent-encoded traversal", async () => {
   const { port } = server.address();
 
   assert.throws(() => resolveRequestPath(root, "/../package.json"), { code: "TRAVERSAL" });
-  const status = await new Promise((resolve, reject) => {
-    const request = requestForTraversal(port, resolve, reject);
-    request.end();
-  });
-  assert.equal(status, 403);
+  assert.equal(await requestStatus(port, "/../package.json"), 403);
+  assert.equal(await requestStatus(port, "/%2e%2e/package.json"), 403);
 
   await rm(root, { recursive: true, force: true });
 });
@@ -76,11 +73,13 @@ test("rejects startup when the port is occupied", async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-function requestForTraversal(port, resolve, reject) {
-  return request({ host: "127.0.0.1", port, path: "/%2e%2e/package.json" }, (response) => {
-    response.resume();
-    response.once("end", () => resolve(response.statusCode));
-  }).on("error", reject);
+function requestStatus(port, path) {
+  return new Promise((resolve, reject) => {
+    request({ host: "127.0.0.1", port, path }, (response) => {
+      response.resume();
+      response.once("end", () => resolve(response.statusCode));
+    }).on("error", reject).end();
+  });
 }
 
 async function createServerFixture(files) {
