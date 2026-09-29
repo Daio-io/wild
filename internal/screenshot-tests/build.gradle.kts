@@ -28,6 +28,9 @@ kotlin {
             implementation(projects.components.listItem)
             implementation(projects.components.progress)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
         jvmMain.dependencies {
             api(compose.desktop.currentOs)
             api(libs.roborazzi.core)
