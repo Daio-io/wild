@@ -44,6 +44,7 @@ include(
 // Test
 include(
     ":internal:benchmark",
+    ":internal:docs-cli",
 )
 
 // Playbook
