@@ -7,36 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.daio.wild.a2ui.compose.A2uiChildList
 import io.daio.wild.a2ui.compose.A2uiComponent
 import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
-import io.daio.wild.a2ui.compose.A2uiComponentState
 import io.daio.wild.a2ui.compose.A2uiProperty
-import io.daio.wild.components.progress.CircularProgressIndicator
-import io.daio.wild.components.text.Text
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
-
-@Composable
-internal fun A2uiComponentScope.RenderChild(
-    id: String,
-    modifier: Modifier = Modifier,
-) {
-    when (val child = observeComponentState(id)) {
-        A2uiComponentState.Loading -> CircularProgressIndicator(modifier)
-        is A2uiComponentState.Error -> Text(child.message, modifier)
-        is A2uiComponentState.Success -> io.daio.wild.a2ui.compose.A2uiComponent(child, modifier)
-    }
-}
-
-internal fun kotlinx.serialization.json.JsonElement?.childIds(): List<String> =
-    when (this) {
-        is JsonArray -> mapNotNull { it.jsonPrimitive.contentOrNull }
-        is JsonObject -> (this["explicitList"] as? JsonArray)?.mapNotNull { it.jsonPrimitive.contentOrNull } ?: emptyList()
-        else -> emptyList()
-    }
 
 /** Renders the A2UI Column component. @since 0.1.0 */
 object ColumnComponent : A2uiComponent {
@@ -44,8 +21,8 @@ object ColumnComponent : A2uiComponent {
     override val properties =
         listOf(
             A2uiProperty.childList("children", required = true),
-            A2uiProperty.string("distribution"),
-            A2uiProperty.string("alignment"),
+            A2uiProperty.string("justify"),
+            A2uiProperty.string("align"),
         )
 
     @Composable
@@ -54,7 +31,7 @@ object ColumnComponent : A2uiComponent {
         modifier: Modifier,
     ) {
         val vertical =
-            when (props.raw("distribution")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("justify")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Arrangement.Center
                 "end" -> Arrangement.Bottom
                 "spaceBetween" -> Arrangement.SpaceBetween
@@ -63,13 +40,16 @@ object ColumnComponent : A2uiComponent {
                 else -> Arrangement.Top
             }
         val horizontal =
-            when (props.raw("alignment")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("align")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Alignment.CenterHorizontally
                 "end" -> Alignment.End
                 else -> Alignment.Start
             }
         Column(modifier, verticalArrangement = vertical, horizontalAlignment = horizontal) {
-            props.raw("children").childIds().forEach { RenderChild(it) }
+            when (val children = resolveChildList(props.raw("children"))) {
+                is A2uiChildList.Ids -> children.ids.forEach { RenderChild(it) }
+                A2uiChildList.Invalid, A2uiChildList.TemplatesUnsupported -> Unit
+            }
         }
     }
 }

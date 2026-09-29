@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import io.daio.wild.a2ui.compose.A2uiChildList
 import io.daio.wild.a2ui.compose.A2uiComponent
 import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
@@ -20,8 +21,8 @@ object RowComponent : A2uiComponent {
     override val properties =
         listOf(
             A2uiProperty.childList("children", required = true),
-            A2uiProperty.string("distribution"),
-            A2uiProperty.string("alignment"),
+            A2uiProperty.string("justify"),
+            A2uiProperty.string("align"),
         )
 
     @Composable
@@ -30,7 +31,7 @@ object RowComponent : A2uiComponent {
         modifier: Modifier,
     ) {
         val horizontal =
-            when (props.raw("distribution")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("justify")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Arrangement.Center
                 "end" -> Arrangement.End
                 "spaceBetween" -> Arrangement.SpaceBetween
@@ -39,13 +40,16 @@ object RowComponent : A2uiComponent {
                 else -> Arrangement.Start
             }
         val vertical =
-            when (props.raw("alignment")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("align")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Alignment.CenterVertically
                 "end" -> Alignment.Bottom
                 else -> Alignment.Top
             }
         Row(modifier, horizontalArrangement = horizontal, verticalAlignment = vertical) {
-            props.raw("children").childIds().forEach { RenderChild(it) }
+            when (val children = resolveChildList(props.raw("children"))) {
+                is A2uiChildList.Ids -> children.ids.forEach { RenderChild(it) }
+                A2uiChildList.Invalid, A2uiChildList.TemplatesUnsupported -> Unit
+            }
         }
     }
 }

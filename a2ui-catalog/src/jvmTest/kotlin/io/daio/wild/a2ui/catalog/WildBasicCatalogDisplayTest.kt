@@ -74,8 +74,8 @@ class WildBasicCatalogDisplayTest {
         val catalog = wildA2uiBasicCatalogV1()
 
         assertEquals(listOf("text"), catalog.components.getValue("Text").properties.map { it.name })
-        assertEquals(listOf("children", "distribution", "alignment"), catalog.components.getValue("Column").properties.map { it.name })
-        assertEquals(listOf("children", "distribution", "alignment"), catalog.components.getValue("Row").properties.map { it.name })
+        assertEquals(listOf("children", "justify", "align"), catalog.components.getValue("Column").properties.map { it.name })
+        assertEquals(listOf("children", "justify", "align"), catalog.components.getValue("Row").properties.map { it.name })
         assertEquals(listOf("child"), catalog.components.getValue("Card").properties.map { it.name })
         assertEquals(listOf("axis"), catalog.components.getValue("Divider").properties.map { it.name })
         assertEquals(listOf("name"), catalog.components.getValue("Icon").properties.map { it.name })

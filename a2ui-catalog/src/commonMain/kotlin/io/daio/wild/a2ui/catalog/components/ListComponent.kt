@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import io.daio.wild.a2ui.compose.A2uiChildList
 import io.daio.wild.a2ui.compose.A2uiComponent
 import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
@@ -28,7 +29,11 @@ object ListComponent : A2uiComponent {
         props: A2uiComponentProperties,
         modifier: Modifier,
     ) {
-        val children = props.raw("children").childIds()
+        val children =
+            when (val result = resolveChildList(props.raw("children"))) {
+                is A2uiChildList.Ids -> result.ids
+                A2uiChildList.Invalid, A2uiChildList.TemplatesUnsupported -> emptyList()
+            }
         if (props.raw("direction")?.jsonPrimitive?.contentOrNull == "horizontal") {
             LazyRow(modifier) { items(children) { RenderChild(it) } }
         } else {
