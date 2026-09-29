@@ -19,5 +19,6 @@ sealed interface A2uiComponentState {
 
 /** Provides the catalog to descendant components. @since 0.1.0 */
 val LocalA2uiCatalog = staticCompositionLocalOf<A2uiCatalog> { error("LocalA2uiCatalog") }
+
 /** Provides the component scope to descendant components. @since 0.1.0 */
 val LocalA2uiScope = staticCompositionLocalOf<A2uiComponentScope> { error("LocalA2uiScope") }
