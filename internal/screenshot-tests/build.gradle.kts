@@ -14,6 +14,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(compose.foundation)
+            api(projects.layout.container)
         }
         jvmMain.dependencies {
             api(compose.desktop.currentOs)

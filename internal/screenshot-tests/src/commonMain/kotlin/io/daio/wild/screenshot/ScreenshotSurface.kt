@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.screenshot
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -11,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.daio.wild.container.Container
 
 /**
  * Provides the fixed 480 dp screenshot surface for a screenshot capture.
@@ -22,11 +21,9 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun ScreenshotSurface(content: @Composable BoxScope.() -> Unit) =
-    Box(
-        modifier =
-            Modifier
-                .width(480.dp)
-                .background(Color.Black)
-                .padding(24.dp),
+    Container(
+        modifier = Modifier.width(480.dp).padding(24.dp),
+        color = Color.Black,
+        contentColor = Color.White,
         content = content,
     )
