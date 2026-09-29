@@ -23,6 +23,8 @@ lifecycle-runtime-ktx = "2.11.0"
 metalava = "0.5.1"
 navigation-compose = "2.9.2"
 uiautomator = "2.4.0"
+kotlinx-serialization = "1.9.0"
+kotlinx-coroutines = "1.10.2"
 
 [libraries]
 # TV
@@ -46,6 +48,8 @@ compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version = "0
 tools-desugarjdklibs = "com.android.tools:desugar_jdk_libs:2.1.5"
 androidx-benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 
@@ -76,3 +80,4 @@ roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

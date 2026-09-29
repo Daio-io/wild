@@ -39,6 +39,7 @@ include(
     ":components:slider",
     ":layout:container",
     ":layout:divider",
+    ":a2ui",
 )
 
 // Test

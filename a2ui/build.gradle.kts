@@ -1,0 +1,29 @@
+// Copyright 2024, Dai Williams
+// SPDX-License-Identifier: Apache-2.0
+plugins {
+    id("io.daio.kotlin.multiplatform")
+    id("io.daio.publish")
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.metalava)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+kotlin {
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api(libs.kotlinx.serialization.json)
+                api(libs.kotlinx.coroutines.core)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
+    }
+}
+
+metalava {
+    filename.set("api/api.txt")
+}

@@ -1,0 +1,170 @@
+// Signature format: 4.0
+package io.daio.wild.a2ui {
+
+  public final class A2uiMessageProcessor {
+    ctor public A2uiMessageProcessor();
+    method public String dispatchAction(io.daio.wild.a2ui.A2uiUserAction action);
+    method @InaccessibleFromKotlin public kotlinx.coroutines.flow.StateFlow<java.util.Map<java.lang.String,io.daio.wild.a2ui.A2uiSurfaceModel>> getSurfaces();
+    method public io.daio.wild.a2ui.A2uiProcessResult processJson(String json);
+    method public java.util.List<io.daio.wild.a2ui.A2uiProcessResult> processJsonl(String text);
+    method public kotlinx.serialization.json.JsonElement? resolvePath(String surfaceId, String path);
+    method public io.daio.wild.a2ui.A2uiProcessResult setPath(String surfaceId, String path, kotlinx.serialization.json.JsonElement value);
+    property public kotlinx.coroutines.flow.StateFlow<java.util.Map<java.lang.String,io.daio.wild.a2ui.A2uiSurfaceModel>> surfaces;
+  }
+
+  public abstract sealed exhaustive class A2uiProcessResult {
+  }
+
+  public static final class A2uiProcessResult.Failure extends io.daio.wild.a2ui.A2uiProcessResult {
+    ctor public A2uiProcessResult.Failure(String message);
+    method public String component1();
+    method public io.daio.wild.a2ui.A2uiProcessResult.Failure copy(optional String message);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public String getMessage();
+    method public int hashCode();
+    method public String toString();
+    property public String message;
+  }
+
+  public static final class A2uiProcessResult.Success extends io.daio.wild.a2ui.A2uiProcessResult {
+    ctor public A2uiProcessResult.Success(String surfaceId);
+    method public String component1();
+    method public io.daio.wild.a2ui.A2uiProcessResult.Success copy(optional String surfaceId);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method public int hashCode();
+    method public String toString();
+    property public String surfaceId;
+  }
+
+  @kotlinx.serialization.Serializable public final class A2uiServerEnvelope {
+    ctor public A2uiServerEnvelope(String version, optional io.daio.wild.a2ui.CreateSurface? createSurface, optional io.daio.wild.a2ui.UpdateComponents? updateComponents, optional io.daio.wild.a2ui.UpdateDataModel? updateDataModel, optional io.daio.wild.a2ui.DeleteSurface? deleteSurface);
+    method public String component1();
+    method public io.daio.wild.a2ui.CreateSurface? component2();
+    method public io.daio.wild.a2ui.UpdateComponents? component3();
+    method public io.daio.wild.a2ui.UpdateDataModel? component4();
+    method public io.daio.wild.a2ui.DeleteSurface? component5();
+    method public io.daio.wild.a2ui.A2uiServerEnvelope copy(optional String version, optional io.daio.wild.a2ui.CreateSurface? createSurface, optional io.daio.wild.a2ui.UpdateComponents? updateComponents, optional io.daio.wild.a2ui.UpdateDataModel? updateDataModel, optional io.daio.wild.a2ui.DeleteSurface? deleteSurface);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public io.daio.wild.a2ui.CreateSurface? getCreateSurface();
+    method @InaccessibleFromKotlin public io.daio.wild.a2ui.DeleteSurface? getDeleteSurface();
+    method @InaccessibleFromKotlin public io.daio.wild.a2ui.UpdateComponents? getUpdateComponents();
+    method @InaccessibleFromKotlin public io.daio.wild.a2ui.UpdateDataModel? getUpdateDataModel();
+    method @InaccessibleFromKotlin public String getVersion();
+    method public int hashCode();
+    method public String toString();
+    property public io.daio.wild.a2ui.CreateSurface? createSurface;
+    property public io.daio.wild.a2ui.DeleteSurface? deleteSurface;
+    property public io.daio.wild.a2ui.UpdateComponents? updateComponents;
+    property public io.daio.wild.a2ui.UpdateDataModel? updateDataModel;
+    property public String version;
+  }
+
+  public interface A2uiSurfaceModel {
+    method @InaccessibleFromKotlin public String getCatalogId();
+    method @InaccessibleFromKotlin public java.util.Map<java.lang.String,kotlinx.serialization.json.JsonObject> getComponents();
+    method @InaccessibleFromKotlin public kotlinx.serialization.json.JsonElement getDataModel();
+    method @InaccessibleFromKotlin public String? getError();
+    method @InaccessibleFromKotlin public boolean getSendDataModel();
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method @InaccessibleFromKotlin public kotlinx.serialization.json.JsonObject? getTheme();
+    property public abstract String catalogId;
+    property public abstract java.util.Map<java.lang.String,kotlinx.serialization.json.JsonObject> components;
+    property public abstract kotlinx.serialization.json.JsonElement dataModel;
+    property public abstract String? error;
+    property public abstract boolean sendDataModel;
+    property public abstract String surfaceId;
+    property public abstract kotlinx.serialization.json.JsonObject? theme;
+  }
+
+  @kotlinx.serialization.Serializable public final class A2uiUserAction {
+    ctor public A2uiUserAction(String name, String surfaceId, optional String? sourceComponentId, optional kotlinx.serialization.json.JsonObject context);
+    method public String component1();
+    method public String component2();
+    method public String? component3();
+    method public kotlinx.serialization.json.JsonObject component4();
+    method public io.daio.wild.a2ui.A2uiUserAction copy(optional String name, optional String surfaceId, optional String? sourceComponentId, optional kotlinx.serialization.json.JsonObject context);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public kotlinx.serialization.json.JsonObject getContext();
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public String? getSourceComponentId();
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method public int hashCode();
+    method public String toString();
+    property public kotlinx.serialization.json.JsonObject context;
+    property public String name;
+    property public String? sourceComponentId;
+    property public String surfaceId;
+  }
+
+  public final class A2uiVersionKt {
+    property public static String A2UI_VERSION_0_9;
+    property public static String A2UI_VERSION_0_9_1;
+    field public static final String A2UI_VERSION_0_9 = "v0.9";
+    field public static final String A2UI_VERSION_0_9_1 = "v0.9.1";
+  }
+
+  @kotlinx.serialization.Serializable public final class CreateSurface {
+    ctor public CreateSurface(String surfaceId, String catalogId, optional kotlinx.serialization.json.JsonObject? theme, optional boolean sendDataModel);
+    method public String component1();
+    method public String component2();
+    method public kotlinx.serialization.json.JsonObject? component3();
+    method public boolean component4();
+    method public io.daio.wild.a2ui.CreateSurface copy(optional String surfaceId, optional String catalogId, optional kotlinx.serialization.json.JsonObject? theme, optional boolean sendDataModel);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public String getCatalogId();
+    method @InaccessibleFromKotlin public boolean getSendDataModel();
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method @InaccessibleFromKotlin public kotlinx.serialization.json.JsonObject? getTheme();
+    method public int hashCode();
+    method public String toString();
+    property public String catalogId;
+    property public boolean sendDataModel;
+    property public String surfaceId;
+    property public kotlinx.serialization.json.JsonObject? theme;
+  }
+
+  @kotlinx.serialization.Serializable public final class DeleteSurface {
+    ctor public DeleteSurface(String surfaceId);
+    method public String component1();
+    method public io.daio.wild.a2ui.DeleteSurface copy(optional String surfaceId);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method public int hashCode();
+    method public String toString();
+    property public String surfaceId;
+  }
+
+  @kotlinx.serialization.Serializable public final class UpdateComponents {
+    ctor public UpdateComponents(String surfaceId, java.util.List<kotlinx.serialization.json.JsonObject> components);
+    method public String component1();
+    method public java.util.List<kotlinx.serialization.json.JsonObject> component2();
+    method public io.daio.wild.a2ui.UpdateComponents copy(optional String surfaceId, optional java.util.List<kotlinx.serialization.json.JsonObject> components);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public java.util.List<kotlinx.serialization.json.JsonObject> getComponents();
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method public int hashCode();
+    method public String toString();
+    property public java.util.List<kotlinx.serialization.json.JsonObject> components;
+    property public String surfaceId;
+  }
+
+  @kotlinx.serialization.Serializable public final class UpdateDataModel {
+    ctor public UpdateDataModel(String surfaceId, optional String? path, optional kotlinx.serialization.json.JsonElement? value);
+    method public String component1();
+    method public String? component2();
+    method public kotlinx.serialization.json.JsonElement? component3();
+    method public io.daio.wild.a2ui.UpdateDataModel copy(optional String surfaceId, optional String? path, optional kotlinx.serialization.json.JsonElement? value);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public String? getPath();
+    method @InaccessibleFromKotlin public String getSurfaceId();
+    method @InaccessibleFromKotlin public kotlinx.serialization.json.JsonElement? getValue();
+    method public int hashCode();
+    method public String toString();
+    property public String? path;
+    property public String surfaceId;
+    property public kotlinx.serialization.json.JsonElement? value;
+  }
+
+}
+
