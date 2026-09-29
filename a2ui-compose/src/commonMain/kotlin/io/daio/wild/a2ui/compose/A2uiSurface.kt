@@ -14,6 +14,16 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
+/** Renders the root component on an A2UI surface.
+ * @param surface surface model to render.
+ * @param catalog component catalog matching the surface.
+ * @param processor message processor backing the surface.
+ * @param modifier modifier applied to the root component.
+ * @param onAction callback for user actions.
+ * @param loading content shown while data is unavailable.
+ * @param error content shown for render errors.
+ * @since 0.1.0
+ */
 @Composable
 fun A2uiSurface(
     surface: A2uiSurfaceModel,
@@ -38,6 +48,13 @@ fun A2uiSurface(
     }
 }
 
+/** Renders a component state from the current catalog and scope.
+ * @param state component state to render.
+ * @param modifier modifier applied to the component.
+ * @param loading content shown while data is unavailable.
+ * @param error content shown for render errors.
+ * @since 0.1.0
+ */
 @Composable
 fun A2uiComponent(
     state: A2uiComponentState,

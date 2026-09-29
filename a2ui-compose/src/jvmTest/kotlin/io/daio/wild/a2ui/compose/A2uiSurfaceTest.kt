@@ -14,11 +14,27 @@ import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.A2uiUserAction
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class A2uiSurfaceTest {
+    @Test
+    fun child_list_templates_show_error() {
+        val processor = A2uiMessageProcessor()
+        processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"test"}}""")
+        val scope = DefaultA2uiComponentScope(
+            surface = processor.surfaces.value.getValue("main"),
+            processor = processor,
+            onAction = {},
+        )
+
+        assertEquals(
+            A2uiChildList.TemplatesUnsupported,
+            scope.resolveChildList(Json.parseToJsonElement("{\"template\": \"item\"}")),
+        )
+    }
     @Test
     fun renders_literal_text_root() =
         runComposeUiTest {

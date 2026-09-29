@@ -7,24 +7,53 @@ import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.A2uiSurfaceModel
 import io.daio.wild.a2ui.A2uiUserAction
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
+/** Provides component data, bindings, and actions to an A2UI catalog component.
+ *
+ * Example: `bindString(props.raw("label"))` reads a literal or dynamic label,
+ * while `dispatchAction(action)` sends a user action to the host.
+ *
+ * @since 0.1.0
+ */
 interface A2uiComponentScope {
+    /** The surface currently being rendered. @since 0.1.0 */
     val surface: A2uiSurfaceModel
 
+    /** Dispatches [action] to the host and protocol processor. @param action action to dispatch. @since 0.1.0 */
     fun dispatchAction(action: A2uiUserAction)
 
+    /** Observes a component by [id]. @param id component identifier. @since 0.1.0 */
     @Composable fun observeComponentState(id: String): A2uiComponentState
 
+    /** Resolves a literal or dynamic string. @param el raw property value. @since 0.1.0 */
     fun bindString(el: JsonElement?): String?
 
+    /** Resolves a dynamic boolean at [path]. @param path data-model path. @since 0.1.0 */
     fun bindBoolean(path: String): Boolean
 
+    /** Creates an updater for [path]. @param path data-model path. @since 0.1.0 */
     fun bindUpdater(path: String): (JsonElement) -> Unit
+
+    /** Resolves a child-list property into IDs or a template error.
+     * @param el raw child-list property value.
+     * @since 0.1.0
+     */
+    fun resolveChildList(el: JsonElement?): A2uiChildList
+}
+
+/** Result of resolving an A2UI child-list property. @since 0.1.0 */
+sealed interface A2uiChildList {
+    /** Child component IDs. @param ids resolved IDs. @since 0.1.0 */
+    data class Ids(val ids: List<String>) : A2uiChildList
+
+    /** A child-list template, which this runtime does not support. @since 0.1.0 */
+    data object TemplatesUnsupported : A2uiChildList
 }
 
 internal class DefaultA2uiComponentScope(
@@ -56,5 +85,12 @@ internal class DefaultA2uiComponentScope(
     override fun bindUpdater(path: String): (JsonElement) -> Unit =
         { value ->
             processor.setPath(surface.surfaceId, path, value)
+        }
+
+    override fun resolveChildList(el: JsonElement?): A2uiChildList =
+        when (el) {
+            is JsonArray -> A2uiChildList.Ids(el.mapNotNull { it.jsonPrimitive.contentOrNull })
+            is JsonObject -> A2uiChildList.TemplatesUnsupported
+            else -> A2uiChildList.Ids(emptyList())
         }
 }
