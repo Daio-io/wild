@@ -17,7 +17,11 @@ import kotlinx.serialization.json.jsonPrimitive
 /** Renders the A2UI List component. @since 0.1.0 */
 object ListComponent : A2uiComponent {
     override val name = "List"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties =
+        listOf(
+            A2uiProperty.childList("children", required = true),
+            A2uiProperty.string("direction"),
+        )
 
     @Composable
     override fun A2uiComponentScope.Content(

@@ -17,7 +17,12 @@ import kotlinx.serialization.json.jsonPrimitive
 /** Renders the A2UI Row component. @since 0.1.0 */
 object RowComponent : A2uiComponent {
     override val name = "Row"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties =
+        listOf(
+            A2uiProperty.childList("children", required = true),
+            A2uiProperty.string("distribution"),
+            A2uiProperty.string("alignment"),
+        )
 
     @Composable
     override fun A2uiComponentScope.Content(
@@ -25,14 +30,16 @@ object RowComponent : A2uiComponent {
         modifier: Modifier,
     ) {
         val horizontal =
-            when (props.raw("justify")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("distribution")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Arrangement.Center
                 "end" -> Arrangement.End
                 "spaceBetween" -> Arrangement.SpaceBetween
+                "spaceAround" -> Arrangement.SpaceAround
+                "spaceEvenly" -> Arrangement.SpaceEvenly
                 else -> Arrangement.Start
             }
         val vertical =
-            when (props.raw("align")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("alignment")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Alignment.CenterVertically
                 "end" -> Alignment.Bottom
                 else -> Alignment.Top

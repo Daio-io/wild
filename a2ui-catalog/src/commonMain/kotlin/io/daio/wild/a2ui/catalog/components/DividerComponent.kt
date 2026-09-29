@@ -16,7 +16,7 @@ import kotlinx.serialization.json.jsonPrimitive
 /** Renders the A2UI Divider component. @since 0.1.0 */
 object DividerComponent : A2uiComponent {
     override val name = "Divider"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties = listOf(A2uiProperty.string("axis"))
 
     @Composable
     override fun A2uiComponentScope.Content(

@@ -15,6 +15,7 @@ import io.daio.wild.a2ui.compose.A2uiProperty
 import io.daio.wild.components.progress.CircularProgressIndicator
 import io.daio.wild.components.text.Text
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -31,12 +32,21 @@ internal fun A2uiComponentScope.RenderChild(
 }
 
 internal fun kotlinx.serialization.json.JsonElement?.childIds(): List<String> =
-    (this as? JsonArray)?.mapNotNull { it.jsonPrimitive.contentOrNull } ?: emptyList()
+    when (this) {
+        is JsonArray -> mapNotNull { it.jsonPrimitive.contentOrNull }
+        is JsonObject -> (this["explicitList"] as? JsonArray)?.mapNotNull { it.jsonPrimitive.contentOrNull } ?: emptyList()
+        else -> emptyList()
+    }
 
 /** Renders the A2UI Column component. @since 0.1.0 */
 object ColumnComponent : A2uiComponent {
     override val name = "Column"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties =
+        listOf(
+            A2uiProperty.childList("children", required = true),
+            A2uiProperty.string("distribution"),
+            A2uiProperty.string("alignment"),
+        )
 
     @Composable
     override fun A2uiComponentScope.Content(
@@ -44,14 +54,16 @@ object ColumnComponent : A2uiComponent {
         modifier: Modifier,
     ) {
         val vertical =
-            when (props.raw("justify")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("distribution")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Arrangement.Center
                 "end" -> Arrangement.Bottom
                 "spaceBetween" -> Arrangement.SpaceBetween
+                "spaceAround" -> Arrangement.SpaceAround
+                "spaceEvenly" -> Arrangement.SpaceEvenly
                 else -> Arrangement.Top
             }
         val horizontal =
-            when (props.raw("align")?.jsonPrimitive?.contentOrNull) {
+            when (props.raw("alignment")?.jsonPrimitive?.contentOrNull) {
                 "center" -> Alignment.CenterHorizontally
                 "end" -> Alignment.End
                 else -> Alignment.Start

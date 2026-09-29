@@ -17,7 +17,7 @@ import kotlinx.serialization.json.jsonPrimitive
 /** Renders the A2UI Card component. @since 0.1.0 */
 object CardComponent : A2uiComponent {
     override val name = "Card"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties = listOf(A2uiProperty.componentId("child", required = true))
 
     @Composable
     override fun A2uiComponentScope.Content(

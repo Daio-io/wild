@@ -70,6 +70,21 @@ class WildBasicCatalogDisplayTest {
         }
 
     @Test
+    fun catalog_components_describe_their_protocol_properties() {
+        val catalog = wildA2uiBasicCatalogV1()
+
+        assertEquals(listOf("text"), catalog.components.getValue("Text").properties.map { it.name })
+        assertEquals(listOf("children", "distribution", "alignment"), catalog.components.getValue("Column").properties.map { it.name })
+        assertEquals(listOf("children", "distribution", "alignment"), catalog.components.getValue("Row").properties.map { it.name })
+        assertEquals(listOf("child"), catalog.components.getValue("Card").properties.map { it.name })
+        assertEquals(listOf("axis"), catalog.components.getValue("Divider").properties.map { it.name })
+        assertEquals(listOf("name"), catalog.components.getValue("Icon").properties.map { it.name })
+        assertEquals(listOf("children", "direction"), catalog.components.getValue("List").properties.map { it.name })
+        assertEquals(true, catalog.components.getValue("Text").properties.single().required)
+        assertEquals(true, catalog.components.getValue("Column").properties.first().required)
+    }
+
+    @Test
     fun image_stub_is_unsupported() =
         runComposeUiTest {
             val processor =

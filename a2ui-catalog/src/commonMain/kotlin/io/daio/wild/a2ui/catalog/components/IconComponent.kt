@@ -13,7 +13,7 @@ import io.daio.wild.components.text.Text
 /** Renders an A2UI Icon name as a text fallback. @since 0.1.0 */
 object IconComponent : A2uiComponent {
     override val name = "Icon"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties = listOf(A2uiProperty.string("name", required = true))
 
     @Composable
     override fun A2uiComponentScope.Content(

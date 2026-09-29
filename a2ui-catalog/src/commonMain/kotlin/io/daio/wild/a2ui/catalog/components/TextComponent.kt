@@ -13,7 +13,7 @@ import io.daio.wild.components.text.Text
 /** Renders the A2UI Text component. @since 0.1.0 */
 object TextComponent : A2uiComponent {
     override val name = "Text"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties = listOf(A2uiProperty.dynamicString("text", required = true))
 
     @Composable
     override fun A2uiComponentScope.Content(
