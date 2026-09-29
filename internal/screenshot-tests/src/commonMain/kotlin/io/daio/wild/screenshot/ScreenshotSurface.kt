@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.screenshot
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
@@ -13,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
-import io.daio.wild.content.ProvidesContentColor
 
 /**
  * Provides the fixed 480 dp screenshot surface and the default content color for a screenshot.
@@ -23,18 +21,16 @@ import io.daio.wild.content.ProvidesContentColor
  */
 @Composable
 fun ScreenshotSurface(content: @Composable BoxScope.() -> Unit) =
-    ProvidesContentColor(Color.Black) {
-        Box(
-            Modifier
-                .width(480.dp)
-                .background(Color.White)
-                .padding(24.dp),
-            content = content,
-        )
+    Container(
+        modifier = Modifier.width(480.dp),
+        color = Color.Black,
+        contentColor = Color.White,
+    ) {
+        Box(Modifier.padding(24.dp), content = content)
     }
 
 @Composable
 internal fun SmokeScene() =
     ScreenshotSurface {
-        Container(color = Color(0xFF17324D), contentColor = Color.White) { Text("Wild") }
+        Text("Wild")
     }
