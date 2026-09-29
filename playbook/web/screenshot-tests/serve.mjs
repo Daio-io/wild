@@ -69,7 +69,7 @@ export async function startStaticServer(root, port) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [, , root, port] = process.argv;
-  startStaticServer(resolve(import.meta.dirname, root), Number(port)).catch((error) => {
+  startStaticServer(resolve(fileURLToPath(new URL(".", import.meta.url)), root), Number(port)).catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
   });
