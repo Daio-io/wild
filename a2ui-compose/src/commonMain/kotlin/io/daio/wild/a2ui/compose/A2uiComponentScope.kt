@@ -38,6 +38,24 @@ interface A2uiComponentScope {
 
     /** Creates an updater for [path]. @param path data-model path. @since 0.1.0 */
     fun bindUpdater(path: String): (JsonElement) -> Unit
+
+    /** Resolves a child list, reporting unsupported template objects.
+     * @param el raw child-list property value.
+     * @since 0.1.0
+     */
+    fun resolveChildList(el: JsonElement?): A2uiChildList
+}
+
+/** Result of resolving an A2UI child-list property. @since 0.1.0 */
+sealed interface A2uiChildList {
+    /** Resolved child component IDs. @param ids child IDs. @since 0.1.0 */
+    data class Ids(val ids: List<String>) : A2uiChildList
+
+    /** Indicates that template child lists are not supported. @since 0.1.0 */
+    data object TemplatesUnsupported : A2uiChildList
+
+    /** Indicates that the property was not a valid child list. @since 0.1.0 */
+    data object Invalid : A2uiChildList
 }
 
 internal class DefaultA2uiComponentScope(
@@ -69,5 +87,13 @@ internal class DefaultA2uiComponentScope(
     override fun bindUpdater(path: String): (JsonElement) -> Unit =
         { value ->
             processor.setPath(surface.surfaceId, path, value)
+        }
+
+    override fun resolveChildList(el: JsonElement?): A2uiChildList =
+        when (el) {
+            is kotlinx.serialization.json.JsonArray ->
+                A2uiChildList.Ids(el.mapNotNull { it.jsonPrimitive.contentOrNull })
+            is JsonObject -> A2uiChildList.TemplatesUnsupported
+            else -> A2uiChildList.Invalid
         }
 }

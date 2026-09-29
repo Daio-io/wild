@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.A2uiUserAction
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
@@ -19,6 +20,17 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class A2uiSurfaceTest {
+    @Test
+    fun child_list_templates_are_reported_as_unsupported() {
+        val processor = processorWithRoot("Container", """"children":{"template":"item"}""")
+        val scope = DefaultA2uiComponentScope(processor.surfaces.value.getValue("main"), processor, {})
+
+        assertEquals(
+            A2uiChildList.TemplatesUnsupported,
+            scope.resolveChildList(Json.parseToJsonElement("{\"template\":\"item\"}")),
+        )
+    }
+
     @Test
     fun renders_literal_text_root() =
         runComposeUiTest {

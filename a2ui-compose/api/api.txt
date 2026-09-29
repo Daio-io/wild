@@ -12,6 +12,34 @@ package io.daio.wild.a2ui.compose {
     method public static io.daio.wild.a2ui.compose.A2uiCatalog A2uiCatalog(String catalogId, java.util.List<? extends io.daio.wild.a2ui.compose.A2uiComponent> components);
   }
 
+  public sealed exhaustive interface A2uiChildList {
+  }
+
+  public static final class A2uiChildList.Ids implements io.daio.wild.a2ui.compose.A2uiChildList {
+    ctor public A2uiChildList.Ids(java.util.List<java.lang.String> ids);
+    method public java.util.List<java.lang.String> component1();
+    method public io.daio.wild.a2ui.compose.A2uiChildList.Ids copy(optional java.util.List<java.lang.String> ids);
+    method public boolean equals(Object? other);
+    method @InaccessibleFromKotlin public java.util.List<java.lang.String> getIds();
+    method public int hashCode();
+    method public String toString();
+    property public java.util.List<java.lang.String> ids;
+  }
+
+  public static final class A2uiChildList.Invalid implements io.daio.wild.a2ui.compose.A2uiChildList {
+    method public boolean equals(Object? other);
+    method public int hashCode();
+    method public String toString();
+    field public static final io.daio.wild.a2ui.compose.A2uiChildList.Invalid INSTANCE;
+  }
+
+  public static final class A2uiChildList.TemplatesUnsupported implements io.daio.wild.a2ui.compose.A2uiChildList {
+    method public boolean equals(Object? other);
+    method public int hashCode();
+    method public String toString();
+    field public static final io.daio.wild.a2ui.compose.A2uiChildList.TemplatesUnsupported INSTANCE;
+  }
+
   public interface A2uiComponent {
     method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
     method @InaccessibleFromKotlin public String getName();
@@ -45,6 +73,7 @@ package io.daio.wild.a2ui.compose {
     method public void dispatchAction(io.daio.wild.a2ui.A2uiUserAction action);
     method @InaccessibleFromKotlin public io.daio.wild.a2ui.A2uiSurfaceModel getSurface();
     method @KotlinOnly @androidx.compose.runtime.Composable public io.daio.wild.a2ui.compose.A2uiComponentState observeComponentState(String id);
+    method public io.daio.wild.a2ui.compose.A2uiChildList resolveChildList(kotlinx.serialization.json.JsonElement? el);
     property public abstract io.daio.wild.a2ui.A2uiSurfaceModel surface;
   }
 
@@ -103,6 +132,8 @@ package io.daio.wild.a2ui.compose {
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.Boolean> bool(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.util.List<java.lang.String>> childList(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> componentId(String name, optional boolean required);
+    method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.Boolean> dynamicBool(String name, optional boolean required);
+    method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> dynamicString(String name, optional boolean required);
     method public io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String> string(String name, optional boolean required);
   }
 

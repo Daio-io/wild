@@ -16,8 +16,20 @@ class A2uiProperty<T> private constructor(
             required: Boolean = false,
         ) = A2uiProperty<String>(name, required)
 
+        /** Creates a dynamic string property. @param name property name. @param required whether it is required. @since 0.1.0 */
+        fun dynamicString(
+            name: String,
+            required: Boolean = false,
+        ) = A2uiProperty<String>(name, required)
+
         /** Creates a boolean property. @param name property name. @param required whether it is required. @since 0.1.0 */
         fun bool(
+            name: String,
+            required: Boolean = false,
+        ) = A2uiProperty<Boolean>(name, required)
+
+        /** Creates a dynamic boolean property. @param name property name. @param required whether it is required. @since 0.1.0 */
+        fun dynamicBool(
             name: String,
             required: Boolean = false,
         ) = A2uiProperty<Boolean>(name, required)

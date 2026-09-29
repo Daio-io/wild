@@ -18,6 +18,11 @@ data class A2uiComponentProperties(
     fun raw(name: String): JsonElement? = map[name]
 
     companion object {
+        /** Creates properties from a protocol component object.
+         * @param json raw component object.
+         * @param componentId component identifier.
+         * @since 0.1.0
+         */
         fun from(
             json: JsonObject,
             componentId: String,
