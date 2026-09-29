@@ -40,6 +40,7 @@ include(
     ":layout:container",
     ":layout:divider",
     ":a2ui",
+    ":a2ui-compose",
 )
 
 // Test
