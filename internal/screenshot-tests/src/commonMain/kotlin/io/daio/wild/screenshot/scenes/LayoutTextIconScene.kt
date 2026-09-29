@@ -54,6 +54,7 @@ internal fun LayoutTextIconScene() {
             Text("Wild regular", fontSize = 18.sp)
             Text(
                 "Wild bold clipped text that exceeds the available width",
+                modifier = Modifier.width(200.dp),
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
