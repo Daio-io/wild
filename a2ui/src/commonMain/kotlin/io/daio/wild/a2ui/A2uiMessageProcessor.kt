@@ -14,10 +14,20 @@ import kotlinx.serialization.json.decodeFromJsonElement
 class A2uiMessageProcessor {
     private val _surfaces = MutableStateFlow<Map<String, A2uiSurfaceModel>>(emptyMap())
 
-    /** Current surface snapshots keyed by surface ID. @since 0.1.0 */
+    /**
+     * Current surface snapshots keyed by surface ID.
+     *
+     * @since 0.1.0
+     */
     val surfaces: StateFlow<Map<String, A2uiSurfaceModel>> = _surfaces.asStateFlow()
 
-    /** Processes one JSON A2UI envelope. @param json the envelope. @return the processing result. @since 0.1.0 */
+    /**
+     * Processes one JSON A2UI envelope.
+     *
+     * @param json the envelope.
+     * @return the processing result.
+     * @since 0.1.0
+     */
     fun processJson(json: String): A2uiProcessResult {
         val envelopeJson =
             runCatching { jsonParser.parseToJsonElement(json) as? JsonObject ?: return A2uiProcessResult.Failure("parse") }
@@ -39,7 +49,7 @@ class A2uiMessageProcessor {
         return when {
             envelope.createSurface != null -> create(envelope.createSurface)
             envelope.updateComponents != null -> updateComponents(envelope.updateComponents)
-            envelope.updateDataModel != null -> updateDataModel(envelope.updateDataModel, envelopeJson)
+            envelope.updateDataModel != null -> updateDataModel(envelope.updateDataModel)
             envelope.deleteSurface != null -> deleteSurface(envelope.deleteSurface)
             else -> A2uiProcessResult.Failure("unsupported message")
         }
@@ -68,10 +78,7 @@ class A2uiMessageProcessor {
         return A2uiProcessResult.Success(message.surfaceId)
     }
 
-    private fun updateDataModel(
-        message: UpdateDataModel,
-        envelope: JsonObject,
-    ): A2uiProcessResult {
+    private fun updateDataModel(message: UpdateDataModel): A2uiProcessResult {
         return setPath(message.surfaceId, message.path ?: "", message.value ?: kotlinx.serialization.json.JsonNull)
     }
 
@@ -83,13 +90,28 @@ class A2uiMessageProcessor {
         return A2uiProcessResult.Success(message.surfaceId)
     }
 
-    /** Reads a JSON Pointer from a surface data model. @param surfaceId the surface. @param path an RFC 6901 pointer. @return the value, or null if absent. @since 0.1.0 */
+    /**
+     * Reads a JSON Pointer from a surface data model.
+     *
+     * @param surfaceId the surface.
+     * @param path an RFC 6901 pointer.
+     * @return the value, or null if absent.
+     * @since 0.1.0
+     */
     fun resolvePath(
         surfaceId: String,
         path: String,
     ): JsonElement? = JsonPointer.get(_surfaces.value[surfaceId]?.dataModel, path)
 
-    /** Sets a JSON Pointer in a surface data model. @param surfaceId the surface. @param path an RFC 6901 pointer. @param value the JSON value. @return the processing result. @since 0.1.0 */
+    /**
+     * Sets a JSON Pointer in a surface data model.
+     *
+     * @param surfaceId the surface.
+     * @param path an RFC 6901 pointer.
+     * @param value the JSON value.
+     * @return the processing result.
+     * @since 0.1.0
+     */
     fun setPath(
         surfaceId: String,
         path: String,
@@ -109,6 +131,12 @@ class A2uiMessageProcessor {
         }
     }
 
-    /** Encodes a client action envelope. @param action the action. @return the JSON envelope. @since 0.1.0 */
+    /**
+     * Encodes a client action envelope.
+     *
+     * @param action the action.
+     * @return the JSON envelope.
+     * @since 0.1.0
+     */
     fun dispatchAction(action: A2uiUserAction): String = jsonParser.encodeToString(A2uiClientEnvelope(A2UI_VERSION_0_9_1, action))
 }
