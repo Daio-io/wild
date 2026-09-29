@@ -28,5 +28,16 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.androidx.navigation.compose)
         }
+        jsMain.dependencies {
+            implementation(devNpm("terser-webpack-plugin", "5.3.14"))
+        }
+        wasmJsMain.dependencies {
+            implementation(devNpm("terser-webpack-plugin", "5.3.14"))
+        }
+    }
+
+    tasks.register("prepareScreenshotDistributions") {
+        group = "verification"
+        dependsOn("jsBrowserDistribution", "wasmJsBrowserDistribution")
     }
 }
