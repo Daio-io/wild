@@ -50,24 +50,30 @@ class A2uiMessageProcessorTest {
     }
 
     @Test
-    fun malformedComponentId_returnsFailure() {
+    fun malformedComponentId_isSkipped() {
         val processor = A2uiMessageProcessor()
         processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}""")
-        assertIs<A2uiProcessResult.Failure>(
+        assertIs<A2uiProcessResult.Success>(
             processor.processJson("""{"version":"v0.9.1","updateComponents":{"surfaceId":"main","components":[{"id":{}}]}}"""),
         )
         assertTrue(processor.surfaces.value["main"]?.components?.isEmpty() == true)
     }
 
     @Test
-    fun createSurface_duplicate_fails_without_mutation_and_delete_then_recreate_succeeds() {
+    fun createSurface_duplicate_fails() {
         val processor = A2uiMessageProcessor()
         val create = """{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}"""
 
         assertIs<A2uiProcessResult.Success>(processor.processJson(create))
         assertIs<A2uiProcessResult.Failure>(processor.processJson(create))
         assertEquals(1, processor.surfaces.value.size)
+    }
 
+    @Test
+    fun deleteSurface_removes() {
+        val processor = A2uiMessageProcessor()
+        val create = """{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}"""
+        processor.processJson(create)
         assertIs<A2uiProcessResult.Success>(processor.processJson("""{"version":"v0.9.1","deleteSurface":{"surfaceId":"main"}}"""))
         assertFalse(processor.surfaces.value.containsKey("main"))
         assertIs<A2uiProcessResult.Success>(processor.processJson(create))
@@ -124,6 +130,16 @@ class A2uiMessageProcessorTest {
 
         assertIs<A2uiProcessResult.Failure>(processor.setPath("main", "/items/0", kotlinx.serialization.json.JsonPrimitive(3)))
         assertEquals("[1,2]", processor.resolvePath("main", "/items")?.toString())
+    }
+
+    @Test
+    fun updateDataModel_does_not_coerce_scalar_intermediate() {
+        val processor = A2uiMessageProcessor()
+        processor.processJson("""{"version":"v0.9.1","createSurface":{"surfaceId":"main","catalogId":"catalog"}}""")
+        processor.processJson("""{"version":"v0.9.1","updateDataModel":{"surfaceId":"main","path":"/ready","value":true}}""")
+
+        assertIs<A2uiProcessResult.Failure>(processor.setPath("main", "/ready/value", kotlinx.serialization.json.JsonPrimitive(1)))
+        assertEquals("true", processor.resolvePath("main", "/ready")?.toString())
     }
 
     @Test

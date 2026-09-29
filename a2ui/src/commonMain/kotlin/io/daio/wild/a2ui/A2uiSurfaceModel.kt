@@ -30,13 +30,11 @@ internal class MutableA2uiSurface(
     override var dataModel: JsonElement = JsonObject(emptyMap())
     override var error: String? = null
 
-    fun putComponents(items: List<JsonObject>): Boolean {
-        if (items.any { it["id"] !is kotlinx.serialization.json.JsonPrimitive }) return false
+    fun putComponents(items: List<JsonObject>) {
         items.forEach { item ->
             val id = item["id"] as? kotlinx.serialization.json.JsonPrimitive
             id?.contentOrNull?.let { _components[it] = item }
         }
-        return true
     }
 
     fun snapshot(): MutableA2uiSurface =
