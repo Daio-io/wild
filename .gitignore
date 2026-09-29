@@ -67,5 +67,10 @@ local.properties
 ### Benchmark outputs ###
 benchmark_results/sessions/
 
+### Web screenshot harness ###
+playbook/web/screenshot-tests/node_modules/
+playbook/web/screenshot-tests/test-results/
+playbook/web/screenshot-tests/playwright-report/
+
 **/__pycache__/
 *.pyc
