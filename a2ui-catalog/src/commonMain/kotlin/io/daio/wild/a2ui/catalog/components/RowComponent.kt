@@ -11,7 +11,10 @@ import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
 import io.daio.wild.a2ui.compose.A2uiProperty
 
-/** Renders the A2UI Row component. @since 0.1.0 */
+/** Renders the A2UI Row component.
+ * Example: register [RowComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object RowComponent : A2uiComponent {
     override val name = "Row"
     override val properties =

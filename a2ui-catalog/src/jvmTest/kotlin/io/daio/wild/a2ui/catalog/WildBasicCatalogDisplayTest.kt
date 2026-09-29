@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.a2ui.catalog
 
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasProgressBarRangeInfo
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import io.daio.wild.a2ui.A2uiMessageProcessor
@@ -101,6 +105,22 @@ class WildBasicCatalogDisplayTest {
             }
 
             onNodeWithText("Unsupported: Image").assertTextEquals("Unsupported: Image")
+        }
+
+    @Test
+    fun known_icon_renders_as_an_image() =
+        runComposeUiTest {
+            val processor = processorWithComponents("""[{"id":"root","component":"Icon","name":"circle"}]""")
+            setContent { A2uiSurface(processor.surfaces.value.getValue("main"), wildA2uiBasicCatalogV1(), processor) }
+            onNodeWithContentDescription("circle").assertIsDisplayed()
+        }
+
+    @Test
+    fun unresolved_card_child_shows_loading_indicator() =
+        runComposeUiTest {
+            val processor = processorWithComponents("""[{"id":"root","component":"Card","child":"missing"}]""")
+            setContent { A2uiSurface(processor.surfaces.value.getValue("main"), wildA2uiBasicCatalogV1(), processor) }
+            onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
         }
 
     private fun processorWithComponents(components: String): A2uiMessageProcessor {

@@ -15,7 +15,10 @@ import io.daio.wild.container.Container
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
-/** Renders the A2UI Card component. @since 0.1.0 */
+/** Renders the A2UI Card component.
+ * Example: register [CardComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object CardComponent : A2uiComponent {
     override val name = "Card"
     override val properties = listOf(A2uiProperty.componentId("child", required = true))

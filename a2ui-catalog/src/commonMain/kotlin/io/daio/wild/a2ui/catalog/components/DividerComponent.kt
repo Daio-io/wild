@@ -10,10 +10,11 @@ import io.daio.wild.a2ui.compose.A2uiComponentScope
 import io.daio.wild.a2ui.compose.A2uiProperty
 import io.daio.wild.layout.divider.HorizontalDivider
 import io.daio.wild.layout.divider.VerticalDivider
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
 
-/** Renders the A2UI Divider component. @since 0.1.0 */
+/** Renders the A2UI Divider component.
+ * Example: register [DividerComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object DividerComponent : A2uiComponent {
     override val name = "Divider"
     override val properties = listOf(A2uiProperty.string("axis"))
@@ -23,7 +24,7 @@ object DividerComponent : A2uiComponent {
         props: A2uiComponentProperties,
         modifier: Modifier,
     ) {
-        if (props.raw("axis")?.jsonPrimitive?.contentOrNull == "vertical") {
+        if (props.stringValue("axis") == "vertical") {
             VerticalDivider(modifier)
         } else {
             HorizontalDivider(modifier)

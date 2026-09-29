@@ -15,7 +15,10 @@ import io.daio.wild.a2ui.compose.A2uiProperty
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
-/** Renders the A2UI List component. @since 0.1.0 */
+/** Renders the A2UI List component.
+ * Example: register [ListComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object ListComponent : A2uiComponent {
     override val name = "List"
     override val properties =

@@ -10,7 +10,10 @@ import io.daio.wild.a2ui.compose.A2uiComponentScope
 import io.daio.wild.a2ui.compose.A2uiProperty
 import io.daio.wild.components.text.Text
 
-/** Renders the A2UI Text component. @since 0.1.0 */
+/** Renders the A2UI Text component.
+ * Example: register [TextComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object TextComponent : A2uiComponent {
     override val name = "Text"
     override val properties = listOf(A2uiProperty.dynamicString("text", required = true))
