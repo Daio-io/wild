@@ -23,11 +23,12 @@ import io.daio.wild.a2ui.compose.A2uiCatalog
 const val WILD_BASIC_CATALOG_ID = "https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json"
 
 /**
- * Creates Wild's display, layout, and Phase 3a stub Basic Catalog.
+ * Creates Wild's display, layout, and unsupported-component stub Basic Catalog.
  *
  * Example: `A2uiSurface(surface, wildA2uiBasicCatalogV1(), processor)`
  *
  * @since 0.1.0
+ * @return the configured Basic Catalog.
  */
 fun wildA2uiBasicCatalogV1(): A2uiCatalog =
     A2uiCatalog(

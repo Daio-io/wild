@@ -2,18 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.a2ui.catalog.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.daio.wild.a2ui.compose.A2uiChildList
 import io.daio.wild.a2ui.compose.A2uiComponent
 import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
 import io.daio.wild.a2ui.compose.A2uiProperty
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
 
 /** Renders the A2UI Column component. @since 0.1.0 */
 object ColumnComponent : A2uiComponent {
@@ -30,21 +26,8 @@ object ColumnComponent : A2uiComponent {
         props: A2uiComponentProperties,
         modifier: Modifier,
     ) {
-        val vertical =
-            when (props.raw("justify")?.jsonPrimitive?.contentOrNull) {
-                "center" -> Arrangement.Center
-                "end" -> Arrangement.Bottom
-                "spaceBetween" -> Arrangement.SpaceBetween
-                "spaceAround" -> Arrangement.SpaceAround
-                "spaceEvenly" -> Arrangement.SpaceEvenly
-                else -> Arrangement.Top
-            }
-        val horizontal =
-            when (props.raw("align")?.jsonPrimitive?.contentOrNull) {
-                "center" -> Alignment.CenterHorizontally
-                "end" -> Alignment.End
-                else -> Alignment.Start
-            }
+        val vertical = verticalArrangement(props.stringValue("justify"))
+        val horizontal = horizontalAlignment(props.stringValue("align"))
         Column(modifier, verticalArrangement = vertical, horizontalAlignment = horizontal) {
             when (val children = resolveChildList(props.raw("children"))) {
                 is A2uiChildList.Ids -> children.ids.forEach { RenderChild(it) }

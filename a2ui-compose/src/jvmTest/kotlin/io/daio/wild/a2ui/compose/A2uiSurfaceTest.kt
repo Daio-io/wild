@@ -32,17 +32,6 @@ class A2uiSurfaceTest {
     }
 
     @Test
-    fun explicit_child_list_objects_resolve_ids() {
-        val processor = processorWithRoot("Container", "")
-        val scope = DefaultA2uiComponentScope(processor.surfaces.value.getValue("main"), processor, {})
-
-        assertEquals(
-            A2uiChildList.Ids(listOf("first", "second")),
-            scope.resolveChildList(Json.parseToJsonElement("{\"explicitList\":[\"first\",\"second\"]}")),
-        )
-    }
-
-    @Test
     fun renders_literal_text_root() =
         runComposeUiTest {
             val processor = A2uiMessageProcessor()

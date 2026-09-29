@@ -93,10 +93,7 @@ internal class DefaultA2uiComponentScope(
         when (el) {
             is kotlinx.serialization.json.JsonArray ->
                 A2uiChildList.Ids(el.mapNotNull { it.jsonPrimitive.contentOrNull })
-            is JsonObject ->
-                (el["explicitList"] as? kotlinx.serialization.json.JsonArray)?.let {
-                    A2uiChildList.Ids(it.mapNotNull { item -> item.jsonPrimitive.contentOrNull })
-                } ?: A2uiChildList.TemplatesUnsupported
+            is JsonObject -> A2uiChildList.TemplatesUnsupported
             else -> A2uiChildList.Invalid
         }
 }

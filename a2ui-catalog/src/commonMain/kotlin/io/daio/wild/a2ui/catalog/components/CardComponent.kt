@@ -10,6 +10,7 @@ import io.daio.wild.a2ui.compose.A2uiComponent
 import io.daio.wild.a2ui.compose.A2uiComponentProperties
 import io.daio.wild.a2ui.compose.A2uiComponentScope
 import io.daio.wild.a2ui.compose.A2uiProperty
+import io.daio.wild.components.progress.CircularProgressIndicator
 import io.daio.wild.container.Container
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
@@ -24,7 +25,11 @@ object CardComponent : A2uiComponent {
         props: A2uiComponentProperties,
         modifier: Modifier,
     ) {
-        val childId = props.raw("child")?.jsonPrimitive?.contentOrNull ?: return
+        val childId = props.raw("child")?.jsonPrimitive?.contentOrNull
+        if (childId == null) {
+            CircularProgressIndicator(modifier)
+            return
+        }
         Container(modifier = modifier, shape = RoundedCornerShape(12.dp)) { RenderChild(childId) }
     }
 }
