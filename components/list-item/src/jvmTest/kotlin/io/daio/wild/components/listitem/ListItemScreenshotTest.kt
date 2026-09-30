@@ -7,5 +7,14 @@ import kotlin.test.Test
 
 class ListItemScreenshotTest : DesktopScreenshotTest() {
     @Test
-    fun listItem() = captureScreenshot(advanceTimeByMillis = 0) { ListItemScene() }
+    fun enabled() = captureScreenshot(advanceTimeByMillis = 0) { EnabledListItem() }
+
+    @Test
+    fun selected() = captureScreenshot(advanceTimeByMillis = 0) { SelectedListItem() }
+
+    @Test
+    fun disabled() = captureScreenshot(advanceTimeByMillis = 0) { DisabledListItem() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedListItem() }
 }

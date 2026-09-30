@@ -7,5 +7,14 @@ import kotlin.test.Test
 
 class ContainerScreenshotTest : IosScreenshotTest() {
     @Test
-    fun container() = captureScreenshot(advanceTimeByMillis = 0) { ContainerScene() }
+    fun static() = captureScreenshot(advanceTimeByMillis = 0) { StaticContainer() }
+
+    @Test
+    fun selected() = captureScreenshot(advanceTimeByMillis = 0) { SelectedContainer() }
+
+    @Test
+    fun disabled() = captureScreenshot(advanceTimeByMillis = 0) { DisabledContainer() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedContainer() }
 }

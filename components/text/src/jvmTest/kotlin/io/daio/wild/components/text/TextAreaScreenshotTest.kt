@@ -7,5 +7,5 @@ import kotlin.test.Test
 
 class TextAreaScreenshotTest : DesktopScreenshotTest() {
     @Test
-    fun textArea() = captureScreenshot(advanceTimeByMillis = 0) { TextAreaScene() }
+    fun threeLines() = captureScreenshot(advanceTimeByMillis = 0) { ThreeLineTextArea() }
 }

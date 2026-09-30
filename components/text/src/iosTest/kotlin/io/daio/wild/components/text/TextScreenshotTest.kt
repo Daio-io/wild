@@ -7,5 +7,8 @@ import kotlin.test.Test
 
 class TextScreenshotTest : IosScreenshotTest() {
     @Test
-    fun text() = captureScreenshot(advanceTimeByMillis = 0) { TextScene() }
+    fun regular() = captureScreenshot(advanceTimeByMillis = 0) { RegularText() }
+
+    @Test
+    fun boldClipped() = captureScreenshot(advanceTimeByMillis = 0) { BoldClippedText() }
 }

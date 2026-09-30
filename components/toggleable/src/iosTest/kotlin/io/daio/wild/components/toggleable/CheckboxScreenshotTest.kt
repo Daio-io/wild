@@ -7,5 +7,17 @@ import kotlin.test.Test
 
 class CheckboxScreenshotTest : IosScreenshotTest() {
     @Test
-    fun checkbox() = captureScreenshot(advanceTimeByMillis = 0) { CheckboxScene() }
+    fun unchecked() = captureScreenshot(advanceTimeByMillis = 0) { UncheckedCheckbox() }
+
+    @Test
+    fun checked() = captureScreenshot(advanceTimeByMillis = 0) { CheckedCheckbox() }
+
+    @Test
+    fun indeterminate() = captureScreenshot(advanceTimeByMillis = 0) { IndeterminateCheckbox() }
+
+    @Test
+    fun disabledChecked() = captureScreenshot(advanceTimeByMillis = 0) { DisabledCheckedCheckbox() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedCheckbox() }
 }

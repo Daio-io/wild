@@ -8,5 +8,8 @@ import kotlin.test.Test
 
 class IconScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun icon() = captureScreenshot(advanceTimeByMillis = 0) { IconScene() }
+    fun vector() = captureScreenshot(advanceTimeByMillis = 0) { VectorIcon() }
+
+    @Test
+    fun bitmap() = captureScreenshot(advanceTimeByMillis = 0) { BitmapIcon() }
 }

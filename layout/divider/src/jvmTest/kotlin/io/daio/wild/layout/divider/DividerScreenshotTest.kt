@@ -7,5 +7,8 @@ import kotlin.test.Test
 
 class DividerScreenshotTest : DesktopScreenshotTest() {
     @Test
-    fun dividers() = captureScreenshot(advanceTimeByMillis = 0) { DividerScene() }
+    fun horizontal() = captureScreenshot(advanceTimeByMillis = 0) { HorizontalDividerScreenshot() }
+
+    @Test
+    fun vertical() = captureScreenshot(advanceTimeByMillis = 0) { VerticalDividerScreenshot() }
 }

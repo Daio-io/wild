@@ -8,5 +8,11 @@ import kotlin.test.Test
 
 class SwitchScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun switch() = captureScreenshot(advanceTimeByMillis = 0) { SwitchScene() }
+    fun off() = captureScreenshot(advanceTimeByMillis = 0) { OffSwitch() }
+
+    @Test
+    fun on() = captureScreenshot(advanceTimeByMillis = 0) { OnSwitch() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedSwitch() }
 }

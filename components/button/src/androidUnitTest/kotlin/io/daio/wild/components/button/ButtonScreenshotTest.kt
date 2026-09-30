@@ -8,5 +8,11 @@ import kotlin.test.Test
 
 class ButtonScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun button() = captureScreenshot(advanceTimeByMillis = 0) { ButtonScene() }
+    fun enabled() = captureScreenshot(advanceTimeByMillis = 0) { EnabledButton() }
+
+    @Test
+    fun disabled() = captureScreenshot(advanceTimeByMillis = 0) { DisabledButton() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedButton() }
 }

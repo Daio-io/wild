@@ -17,6 +17,8 @@ val ScreenshotTestStyle: Style =
             StyleDefaults.colors(
                 backgroundColor = Color(0xFF243447),
                 contentColor = Color.White,
+                focusedBackgroundColor = Color(0xFF1565C0),
+                focusedContentColor = Color.White,
                 selectedBackgroundColor = Color(0xFF2E7D32),
                 disabledBackgroundColor = Color(0xFF54606B),
             ),

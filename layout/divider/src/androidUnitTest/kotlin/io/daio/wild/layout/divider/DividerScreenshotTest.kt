@@ -8,5 +8,8 @@ import kotlin.test.Test
 
 class DividerScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun dividers() = captureScreenshot(advanceTimeByMillis = 0) { DividerScene() }
+    fun horizontal() = captureScreenshot(advanceTimeByMillis = 0) { HorizontalDividerScreenshot() }
+
+    @Test
+    fun vertical() = captureScreenshot(advanceTimeByMillis = 0) { VerticalDividerScreenshot() }
 }

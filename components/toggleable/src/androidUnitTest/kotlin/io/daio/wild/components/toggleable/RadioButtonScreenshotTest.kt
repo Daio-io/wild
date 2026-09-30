@@ -8,5 +8,11 @@ import kotlin.test.Test
 
 class RadioButtonScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun radioButton() = captureScreenshot(advanceTimeByMillis = 0) { RadioButtonScene() }
+    fun unchecked() = captureScreenshot(advanceTimeByMillis = 0) { UncheckedRadioButton() }
+
+    @Test
+    fun checked() = captureScreenshot(advanceTimeByMillis = 0) { CheckedRadioButton() }
+
+    @Test
+    fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedRadioButton() }
 }

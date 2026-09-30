@@ -7,5 +7,11 @@ import kotlin.test.Test
 
 class TextFieldScreenshotTest : DesktopScreenshotTest() {
     @Test
-    fun textField() = captureScreenshot(advanceTimeByMillis = 0) { TextFieldScene() }
+    fun empty() = captureScreenshot(advanceTimeByMillis = 0) { EmptyTextField() }
+
+    @Test
+    fun readOnly() = captureScreenshot(advanceTimeByMillis = 0) { ReadOnlyTextField() }
+
+    @Test
+    fun disabled() = captureScreenshot(advanceTimeByMillis = 0) { DisabledTextField() }
 }

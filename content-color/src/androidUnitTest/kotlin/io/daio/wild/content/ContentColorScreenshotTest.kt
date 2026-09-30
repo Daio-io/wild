@@ -8,5 +8,5 @@ import kotlin.test.Test
 
 class ContentColorScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     @Test
-    fun contentColor() = captureScreenshot(advanceTimeByMillis = 0) { ContentColorScene() }
+    fun provided() = captureScreenshot(advanceTimeByMillis = 0) { ProvidedContentColor() }
 }
