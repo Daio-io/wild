@@ -16,10 +16,13 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
-/** Renders the A2UI TextField component. @since 0.1.0 */
+/** Renders the A2UI TextField component.
+ * Example: register [TextFieldComponent] in the Basic Catalog.
+ * @since 0.1.0
+ */
 object TextFieldComponent : A2uiComponent {
     override val name = "TextField"
-    override val properties = emptyList<A2uiProperty<*>>()
+    override val properties = listOf(A2uiProperty.dynamicString("value", required = true))
 
     @Composable
     override fun A2uiComponentScope.Content(
@@ -37,8 +40,16 @@ object TextFieldComponent : A2uiComponent {
         val state = rememberTextFieldState(initialText = initial)
 
         if (path != null) {
+            LaunchedEffect(initial) {
+                if (state.text.toString() != initial) {
+                    state.edit { replace(0, length, initial) }
+                }
+            }
             LaunchedEffect(state.text) {
-                bindUpdater(path)(JsonPrimitive(state.text.toString()))
+                val text = state.text.toString()
+                if (text != initial) {
+                    bindUpdater(path)(JsonPrimitive(text))
+                }
             }
         }
         TextField(
