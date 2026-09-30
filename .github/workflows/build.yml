@@ -54,6 +54,7 @@ jobs:
       - run: ./gradlew verifyHostScreenshots :playbook:web:prepareScreenshotDistributions
       - run: npm --prefix playbook/web/screenshot-tests test
       - run: ./scripts/verify-screenshot-assets.sh
+      - run: ./scripts/verify-screenshot-assets-test.sh
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
