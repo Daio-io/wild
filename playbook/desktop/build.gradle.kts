@@ -5,6 +5,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     id("io.daio.compose")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
 }
 
 kotlin {
@@ -13,6 +14,14 @@ kotlin {
             dependencies {
                 implementation(project(":playbook:shared"))
                 implementation(compose.desktop.currentOs)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(projects.internal.screenshotTests)
+                implementation(libs.roborazzi.core)
+                implementation(libs.roborazzi.compose.desktop)
             }
         }
     }

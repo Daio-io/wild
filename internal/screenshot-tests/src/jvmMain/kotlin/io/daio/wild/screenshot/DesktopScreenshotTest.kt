@@ -18,12 +18,17 @@ abstract class DesktopScreenshotTest {
     /** Captures the supplied composable to `screenshots/desktop`. */
     @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
+        captureName: String? = null,
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,
     ) {
-        val outputFile = File("screenshots/desktop/${roboOutputName()}.png")
+        val named = captureName != null
+        val outputDirectory = if (named) "screenshots/jvm" else "screenshots/desktop"
+        val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
-        runDesktopComposeUiTest(width = 480, height = 480) {
+        val width = if (named) 1280 else 480
+        val height = if (named) 720 else 480
+        runDesktopComposeUiTest(width = width, height = height) {
             if (advanceTimeByMillis != null) {
                 mainClock.autoAdvance = false
             }

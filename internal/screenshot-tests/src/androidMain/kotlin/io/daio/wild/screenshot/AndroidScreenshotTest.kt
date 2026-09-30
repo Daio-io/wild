@@ -37,32 +37,44 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
      * [captureActivityScreenshot].
      */
     fun captureScreenshot(
+        captureName: String? = null,
         advanceTimeByMillis: Long? = null,
+        beforeCapture: (() -> Unit)? = null,
         content: @Composable () -> Unit,
     ) {
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.autoAdvance = false
         }
         composeRule.setContent(content)
-        capture(advanceTimeByMillis)
+        capture(captureName, advanceTimeByMillis, beforeCapture)
     }
 
     /** Captures the launched activity root. Do not combine this with [captureScreenshot]. */
-    fun captureActivityScreenshot(advanceTimeByMillis: Long? = null) {
+    fun captureActivityScreenshot(
+        captureName: String? = null,
+        advanceTimeByMillis: Long? = null,
+        beforeCapture: (() -> Unit)? = null,
+    ) {
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.autoAdvance = false
         }
-        capture(advanceTimeByMillis)
+        capture(captureName, advanceTimeByMillis, beforeCapture)
     }
 
     @OptIn(ExperimentalRoborazziApi::class)
-    private fun capture(advanceTimeByMillis: Long?) {
-        val outputFile = File("screenshots/android/${roboOutputName()}.png")
+    private fun capture(
+        captureName: String?,
+        advanceTimeByMillis: Long?,
+        beforeCapture: (() -> Unit)?,
+    ) {
+        val outputDirectory = if (captureName == null) "screenshots/android" else "screenshots/debug"
+        val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
             composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
         }
         composeRule.waitForIdle()
+        beforeCapture?.invoke()
         composeRule.onRoot().captureRoboImage(
             outputFile,
             RoborazziOptions(
