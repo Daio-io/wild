@@ -14,10 +14,12 @@ roots=()
 if (( $# > 0 )); then
     roots=("$@")
 else
-    roots+=("internal/screenshot-tests/screenshots")
     while IFS= read -r -d '' root; do
         roots+=("$root")
-    done < <(find playbook -type d -name screenshots -print0 2>/dev/null)
+    done < <(find . -type d -name screenshots \
+        -not -path './.git/*' \
+        -not -path '*/build/*' \
+        -print0 2>/dev/null)
 fi
 
 files=()

@@ -87,7 +87,7 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
-                composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
+            composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
         }
         composeRule.waitForIdle()
         beforeCapture?.invoke()
