@@ -41,6 +41,7 @@ include(
     ":layout:divider",
     ":a2ui",
     ":a2ui-compose",
+    ":a2ui-catalog",
 )
 
 // Test

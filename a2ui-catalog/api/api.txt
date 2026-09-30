@@ -1,0 +1,117 @@
+// Signature format: 4.0
+package io.daio.wild.a2ui.catalog {
+
+  public final class WildBasicCatalogKt {
+    method public static io.daio.wild.a2ui.compose.A2uiCatalog wildA2uiBasicCatalogV1();
+    property public static String WILD_BASIC_CATALOG_ID;
+    field public static final String WILD_BASIC_CATALOG_ID = "https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json";
+  }
+
+}
+
+package io.daio.wild.a2ui.catalog.components {
+
+  public final class AudioPlayerComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getAudioPlayerComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent AudioPlayerComponent;
+  }
+
+  public final class CardComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.CardComponent INSTANCE;
+  }
+
+  public final class ChoicePickerComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getChoicePickerComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent ChoicePickerComponent;
+  }
+
+  public final class ColumnComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.ColumnComponent INSTANCE;
+  }
+
+  public final class DateTimeInputComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getDateTimeInputComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent DateTimeInputComponent;
+  }
+
+  public final class DividerComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.DividerComponent INSTANCE;
+  }
+
+  public final class IconComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.IconComponent INSTANCE;
+  }
+
+  public final class ImageComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getImageComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent ImageComponent;
+  }
+
+  public final class ListComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.ListComponent INSTANCE;
+  }
+
+  public final class ModalComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getModalComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent ModalComponent;
+  }
+
+  public final class RowComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<?>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.RowComponent INSTANCE;
+  }
+
+  public final class SliderComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getSliderComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent SliderComponent;
+  }
+
+  public final class TabsComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getTabsComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent TabsComponent;
+  }
+
+  public final class TextComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
+    method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
+    method @InaccessibleFromKotlin public String getName();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
+    property public String name;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
+    field public static final io.daio.wild.a2ui.catalog.components.TextComponent INSTANCE;
+  }
+
+  public final class VideoComponentKt {
+    method @InaccessibleFromKotlin public static io.daio.wild.a2ui.compose.A2uiComponent getVideoComponent();
+    property public static io.daio.wild.a2ui.compose.A2uiComponent VideoComponent;
+  }
+
+}
