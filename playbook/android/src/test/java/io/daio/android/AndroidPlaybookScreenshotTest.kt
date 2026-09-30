@@ -6,8 +6,8 @@ import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import io.daio.wild.screenshot.AndroidScreenshotTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = RobolectricDeviceQualifiers.Pixel5)
