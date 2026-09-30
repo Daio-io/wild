@@ -1,6 +1,9 @@
 # Screenshot testing
 
 Screenshot coverage spans Android mobile, Android TV, Desktop, the iOS simulator, JS, and Wasm.
+CI host verification compares committed Android, Android TV, and Desktop goldens. Library iOS
+simulator suites are enrolled for recording, but `verifyHostScreenshots` only wires module iOS
+verify tasks once `screenshots/iosSimulatorArm64` baselines are committed.
 
 ## Verify
 
@@ -21,8 +24,9 @@ reports are written to ignored build or Playwright report directories when a com
 ## Record
 
 For host screenshots, run the scoped `recordRoborazzi<Target>` task for the target being changed.
-For example, use `:playbook:desktop:recordRoborazziJvm` for the Desktop playbook or
-`:playbook:android:recordRoborazziDebug` for the Android playbook.
+For example, use `:playbook:desktop:recordRoborazziJvm` for the Desktop playbook,
+`:playbook:android:recordRoborazziDebug` for the Android playbook, or
+`:components:button:recordRoborazziIosSimulatorArm64` for an iOS library suite.
 
 For web screenshots, update only the focused case:
 
