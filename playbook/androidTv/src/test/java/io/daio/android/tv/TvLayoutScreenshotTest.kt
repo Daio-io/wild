@@ -36,12 +36,13 @@ class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
     fun grid() = captureTvScreenshot("tv-grid", "grid", "wild_container")
 
     @Test
-    fun focused() = captureTvScreenshot(
-        name = "tv-focus",
-        mode = "focus_flip",
-        itemsType = "wild_clickable",
-        beforeCapture = {
-            composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
-        },
-    )
+    fun focused() =
+        captureTvScreenshot(
+            name = "tv-focus",
+            mode = "focus_flip",
+            itemsType = "wild_clickable",
+            beforeCapture = {
+                composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
+            },
+        )
 }
