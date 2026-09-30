@@ -40,6 +40,7 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
      * @param captureName optional stable output filename without extension
      * @param advanceTimeByMillis optional virtual time to advance before capture
      * @param beforeCapture optional assertion or setup invoked immediately before capture
+     * @param content composable content to capture
      * @since 0.4.0
      */
     fun captureScreenshot(
