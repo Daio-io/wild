@@ -5,10 +5,6 @@ export async function gotoReadyCanvas(page: Page, path: string) {
   expect(response?.ok()).toBe(true);
   await page.locator("canvas").waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForFunction(() => {
-    const canvas = document.querySelector("canvas");
-    return canvas instanceof HTMLCanvasElement && canvas.width > 0 && canvas.height > 0;
-  });
   await page.evaluate(
     () =>
       new Promise<void>((resolve) =>

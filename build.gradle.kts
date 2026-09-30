@@ -33,3 +33,16 @@ dependencies {
     dokka(projects.layout.container)
     dokka(projects.layout.divider)
 }
+
+tasks.register("verifyHostScreenshots") {
+    group = "verification"
+    description = "Verifies Android, Desktop, and iOS Roborazzi screenshots."
+    dependsOn(
+        ":internal:screenshot-tests:verifyRoborazziDebug",
+        ":internal:screenshot-tests:verifyRoborazziJvm",
+        ":internal:screenshot-tests:verifyRoborazziIosSimulatorArm64",
+        ":playbook:android:verifyRoborazziDebug",
+        ":playbook:androidTv:verifyRoborazziDebug",
+        ":playbook:desktop:verifyRoborazziJvm",
+    )
+}
