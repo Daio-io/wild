@@ -15,7 +15,15 @@ import java.io.File
 /** Base class for deterministic desktop screenshot tests. */
 @OptIn(ExperimentalTestApi::class)
 abstract class DesktopScreenshotTest {
-    /** Captures the supplied composable to `screenshots/desktop`. */
+    /**
+     * Captures the supplied composable. A non-null [captureName] writes to `screenshots/jvm` at
+     * 1280x720; omitting it preserves the standard `screenshots/desktop` output at 480x480.
+     *
+     * @param captureName optional stable output filename without extension
+     * @param advanceTimeByMillis optional virtual time to advance before capture
+     * @param content composable content to capture
+     * @since 0.4.0
+     */
     @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
         captureName: String? = null,

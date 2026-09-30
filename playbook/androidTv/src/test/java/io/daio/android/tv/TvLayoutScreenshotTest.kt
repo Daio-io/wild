@@ -22,7 +22,8 @@ class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
         name: String,
         mode: String,
         itemsType: String,
-    ) = captureScreenshot(name) {
+        beforeCapture: (() -> Unit)? = null,
+    ) = captureScreenshot(name, beforeCapture = beforeCapture) {
         Box(Modifier.size(1920.dp, 1080.dp)) {
             TvLayout(mode = mode, itemsType = itemsType)
         }
@@ -35,15 +36,12 @@ class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
     fun grid() = captureTvScreenshot("tv-grid", "grid", "wild_container")
 
     @Test
-    fun focused() =
-        captureScreenshot(
-            captureName = "tv-focus",
-            beforeCapture = {
-                composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
-            },
-        ) {
-            Box(Modifier.size(1920.dp, 1080.dp)) {
-                TvLayout(mode = "focus_flip", itemsType = "wild_clickable")
-            }
-        }
+    fun focused() = captureTvScreenshot(
+        name = "tv-focus",
+        mode = "focus_flip",
+        itemsType = "wild_clickable",
+        beforeCapture = {
+            composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
+        },
+    )
 }
