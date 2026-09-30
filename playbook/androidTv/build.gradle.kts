@@ -4,6 +4,7 @@ plugins {
     id("io.daio.compose")
     id("io.daio.android.application")
     id("io.daio.kotlin.android")
+    id("io.daio.test.roborazzi")
 }
 
 dependencies {
@@ -15,6 +16,10 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.ui.test.junit4)
+    testImplementation(projects.internal.screenshotTests)
+    testImplementation(libs.roborazzi.android)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit)
     debugImplementation(libs.ui.test.manifest)
 }
 
@@ -33,6 +38,7 @@ android {
             isIncludeAndroidResources = true
         }
         unitTests.all {
+            it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
             val configuredLocalRepository = System.getProperty("maven.repo.local")
             val resolvedLocalRepository =
                 configuredLocalRepository
