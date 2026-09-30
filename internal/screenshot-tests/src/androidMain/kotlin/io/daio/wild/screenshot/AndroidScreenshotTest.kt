@@ -8,7 +8,6 @@ import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.dropbox.differ.SimpleImageComparator
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziOptions
@@ -88,25 +87,14 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         val outputFile = File("$outputDirectory/${captureName ?: roboOutputName()}.png")
         outputFile.parentFile?.mkdirs()
         if (advanceTimeByMillis != null) {
-            // advanceTimeBy(0) does not run next-frame effects (LaunchedEffect / node
-            // collectors). Advance one frame so focus interactions settle, then freeze.
-            if (advanceTimeByMillis == 0L) {
-                composeRule.mainClock.advanceTimeByFrame()
-            } else {
                 composeRule.mainClock.advanceTimeBy(advanceTimeByMillis)
-            }
         }
         composeRule.waitForIdle()
         beforeCapture?.invoke()
         composeRule.onRoot().captureRoboImage(
             outputFile,
             RoborazziOptions(
-                compareOptions =
-                    RoborazziOptions.CompareOptions(
-                        changeThreshold = 0f,
-                        // Tolerate sub-pixel font AA across JDK/OS hosts (CI vs local).
-                        imageComparator = SimpleImageComparator(maxDistance = 0.02f),
-                    ),
+                compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0f),
             ),
         )
     }

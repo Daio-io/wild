@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.runComposeUiTest
-import com.dropbox.differ.SimpleImageComparator
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
 import io.github.takahirom.roborazzi.captureRoboImage
@@ -26,13 +25,7 @@ abstract class IosScreenshotTest {
             }
             setContent(content)
             if (advanceTimeByMillis != null) {
-                // advanceTimeBy(0) does not run next-frame effects (LaunchedEffect / node
-                // collectors). Advance one frame so focus interactions settle, then freeze.
-                if (advanceTimeByMillis == 0L) {
-                    mainClock.advanceTimeByFrame()
-                } else {
-                    mainClock.advanceTimeBy(advanceTimeByMillis)
-                }
+                mainClock.advanceTimeBy(advanceTimeByMillis)
             }
             waitForIdle()
             onRoot().captureRoboImage(
@@ -40,12 +33,7 @@ abstract class IosScreenshotTest {
                 filePath = "screenshots/iosSimulatorArm64/$outputName.png",
                 roborazziOptions =
                     RoborazziOptions(
-                        compareOptions =
-                            RoborazziOptions.CompareOptions(
-                                changeThreshold = 0f,
-                                // Tolerate sub-pixel font AA across JDK/OS hosts (CI vs local).
-                                imageComparator = SimpleImageComparator(maxDistance = 0.02f),
-                            ),
+                        compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0f),
                     ),
             )
         }
