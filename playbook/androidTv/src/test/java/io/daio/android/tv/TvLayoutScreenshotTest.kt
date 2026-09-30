@@ -12,18 +12,21 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.screenshot.AndroidScreenshotTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], qualifiers = "landscape-xlarge")
 class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
-    private fun captureTvScreenshot(name: String, mode: String, itemsType: String) =
-        captureScreenshot(name) {
-            Box(Modifier.size(1920.dp, 1080.dp)) {
-                TvLayout(mode = mode, itemsType = itemsType)
-            }
+    private fun captureTvScreenshot(
+        name: String,
+        mode: String,
+        itemsType: String,
+    ) = captureScreenshot(name) {
+        Box(Modifier.size(1920.dp, 1080.dp)) {
+            TvLayout(mode = mode, itemsType = itemsType)
         }
+    }
 
     @Test
     fun list() = captureTvScreenshot("tv-list", "list", "wild_container")
