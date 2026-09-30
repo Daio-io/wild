@@ -14,7 +14,6 @@ import io.daio.wild.a2ui.A2uiMessageProcessor
 import io.daio.wild.a2ui.compose.A2uiSurface
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 
 @OptIn(ExperimentalTestApi::class)
 class WildBasicCatalogDisplayTest {
@@ -35,6 +34,8 @@ class WildBasicCatalogDisplayTest {
                 "Card",
                 "Divider",
                 "Icon",
+                "CheckBox",
+                "TextField",
                 "List",
                 "Image",
                 "Video",
@@ -47,8 +48,6 @@ class WildBasicCatalogDisplayTest {
             ),
             catalog.components.keys.toList(),
         )
-        assertFalse(catalog.components.containsKey("CheckBox"))
-        assertFalse(catalog.components.containsKey("TextField"))
     }
 
     @Test

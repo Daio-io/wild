@@ -5,6 +5,7 @@ package io.daio.wild.a2ui.catalog
 import io.daio.wild.a2ui.catalog.components.AudioPlayerComponent
 import io.daio.wild.a2ui.catalog.components.ButtonComponent
 import io.daio.wild.a2ui.catalog.components.CardComponent
+import io.daio.wild.a2ui.catalog.components.CheckBoxComponent
 import io.daio.wild.a2ui.catalog.components.ChoicePickerComponent
 import io.daio.wild.a2ui.catalog.components.ColumnComponent
 import io.daio.wild.a2ui.catalog.components.DateTimeInputComponent
@@ -17,6 +18,7 @@ import io.daio.wild.a2ui.catalog.components.RowComponent
 import io.daio.wild.a2ui.catalog.components.SliderComponent
 import io.daio.wild.a2ui.catalog.components.TabsComponent
 import io.daio.wild.a2ui.catalog.components.TextComponent
+import io.daio.wild.a2ui.catalog.components.TextFieldComponent
 import io.daio.wild.a2ui.catalog.components.VideoComponent
 import io.daio.wild.a2ui.compose.A2uiCatalog
 
@@ -43,6 +45,8 @@ fun wildA2uiBasicCatalogV1(): A2uiCatalog =
                 CardComponent,
                 DividerComponent,
                 IconComponent,
+                CheckBoxComponent,
+                TextFieldComponent,
                 ListComponent,
                 ImageComponent,
                 VideoComponent,
