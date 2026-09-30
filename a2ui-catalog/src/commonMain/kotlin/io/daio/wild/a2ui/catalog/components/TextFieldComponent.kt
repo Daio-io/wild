@@ -31,23 +31,18 @@ object TextFieldComponent : A2uiComponent {
     ) {
         val value = props.raw("value")
         val path = (value as? JsonObject)?.get("path")?.jsonPrimitive?.contentOrNull
-        val initial =
-            if (path != null) {
-                bindString(JsonObject(mapOf("path" to JsonPrimitive(path)))) ?: ""
-            } else {
-                (value as? JsonPrimitive)?.contentOrNull ?: ""
-            }
-        val state = rememberTextFieldState(initialText = initial)
+        val modelText = bindString(value) ?: ""
+        val state = rememberTextFieldState(initialText = modelText)
 
         if (path != null) {
-            LaunchedEffect(initial) {
-                if (state.text.toString() != initial) {
-                    state.edit { replace(0, length, initial) }
+            LaunchedEffect(modelText) {
+                if (state.text.toString() != modelText) {
+                    state.edit { replace(0, length, modelText) }
                 }
             }
             LaunchedEffect(state.text) {
                 val text = state.text.toString()
-                if (text != initial) {
+                if (text != modelText) {
                     bindUpdater(path)(JsonPrimitive(text))
                 }
             }

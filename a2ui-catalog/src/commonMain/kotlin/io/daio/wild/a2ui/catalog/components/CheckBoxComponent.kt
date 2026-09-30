@@ -39,19 +39,13 @@ object CheckBoxComponent : A2uiComponent {
         val path = (value as? JsonObject)?.get("path")?.jsonPrimitive?.contentOrNull
 
         Row(modifier = modifier) {
-            if (path != null) {
-                Checkbox(
-                    checked = bindBoolean(path),
-                    onCheckedChange = { bindUpdater(path)(JsonPrimitive(it)) },
-                    enabled = true,
-                )
-            } else {
-                Checkbox(
-                    checked = (value as? JsonPrimitive)?.booleanOrNull ?: false,
-                    onCheckedChange = {},
-                    enabled = false,
-                )
-            }
+            Checkbox(
+                checked = if (path != null) bindBoolean(path) else (value as? JsonPrimitive)?.booleanOrNull ?: false,
+                onCheckedChange = { checked ->
+                    if (path != null) bindUpdater(path)(JsonPrimitive(checked))
+                },
+                enabled = path != null,
+            )
             Text(label)
         }
     }
