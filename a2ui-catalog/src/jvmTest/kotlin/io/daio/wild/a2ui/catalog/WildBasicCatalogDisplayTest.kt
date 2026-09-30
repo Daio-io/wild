@@ -80,12 +80,14 @@ class WildBasicCatalogDisplayTest {
         assertEquals(listOf("text"), catalog.components.getValue("Text").properties.map { it.name })
         assertEquals(listOf("children", "justify", "align"), catalog.components.getValue("Column").properties.map { it.name })
         assertEquals(listOf("children", "justify", "align"), catalog.components.getValue("Row").properties.map { it.name })
+        assertEquals(listOf("child", "action"), catalog.components.getValue("Button").properties.map { it.name })
         assertEquals(listOf("child"), catalog.components.getValue("Card").properties.map { it.name })
         assertEquals(listOf("axis"), catalog.components.getValue("Divider").properties.map { it.name })
         assertEquals(listOf("name"), catalog.components.getValue("Icon").properties.map { it.name })
         assertEquals(listOf("children", "direction"), catalog.components.getValue("List").properties.map { it.name })
         assertEquals(true, catalog.components.getValue("Text").properties.single().required)
         assertEquals(true, catalog.components.getValue("Column").properties.first().required)
+        assertEquals(true, catalog.components.getValue("Button").properties.first().required)
     }
 
     @Test
