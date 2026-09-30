@@ -3,6 +3,7 @@
 package io.daio.wild.a2ui.catalog
 
 import io.daio.wild.a2ui.catalog.components.AudioPlayerComponent
+import io.daio.wild.a2ui.catalog.components.ButtonComponent
 import io.daio.wild.a2ui.catalog.components.CardComponent
 import io.daio.wild.a2ui.catalog.components.ChoicePickerComponent
 import io.daio.wild.a2ui.catalog.components.ColumnComponent
@@ -36,6 +37,7 @@ fun wildA2uiBasicCatalogV1(): A2uiCatalog =
         components =
             listOf(
                 TextComponent,
+                ButtonComponent,
                 ColumnComponent,
                 RowComponent,
                 CardComponent,

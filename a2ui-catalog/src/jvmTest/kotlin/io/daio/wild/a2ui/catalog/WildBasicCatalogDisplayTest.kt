@@ -29,6 +29,7 @@ class WildBasicCatalogDisplayTest {
         assertEquals(
             listOf(
                 "Text",
+                "Button",
                 "Column",
                 "Row",
                 "Card",
@@ -46,7 +47,6 @@ class WildBasicCatalogDisplayTest {
             ),
             catalog.components.keys.toList(),
         )
-        assertFalse(catalog.components.containsKey("Button"))
         assertFalse(catalog.components.containsKey("CheckBox"))
         assertFalse(catalog.components.containsKey("TextField"))
     }

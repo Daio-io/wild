@@ -14,6 +14,7 @@ kotlin {
     sourceSets.commonMain.dependencies {
         api(projects.a2uiCompose)
         api(projects.components.text)
+        api(projects.components.button)
         api(projects.components.icon)
         api(projects.components.progress)
         api(projects.layout.container)
