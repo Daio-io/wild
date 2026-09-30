@@ -41,9 +41,12 @@ assert_failure "$validator" "$fixture_root" >/dev/null
 
 aggregate_assets="$fixture_root/aggregate"
 mkdir -p "$aggregate_assets"
-dd if=/dev/zero of="$aggregate_assets/one.png" bs=10485761 count=1 >/dev/null 2>&1
-dd if=/dev/zero of="$aggregate_assets/two.webp" bs=10485761 count=1 >/dev/null 2>&1
-assert_failure "$validator" "$aggregate_assets" >/dev/null
+for index in $(seq 1 41); do
+    truncate -s 512000 "$aggregate_assets/asset-$index.png"
+done
+aggregate_output="$(assert_failure "$validator" "$aggregate_assets")"
+[[ "$aggregate_output" == *"exceed 20971520 bytes in aggregate"* ]] || \
+    fail "aggregate failure should report the aggregate-size limit"
 
 unsupported_assets="$fixture_root/unsupported"
 mkdir -p "$unsupported_assets"
