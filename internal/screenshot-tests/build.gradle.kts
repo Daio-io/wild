@@ -23,6 +23,9 @@ kotlin {
             api(libs.roborazzi.core)
             api(libs.roborazzi.compose.desktop)
         }
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+        }
         iosMain.dependencies {
             api(libs.roborazzi.compose.ios)
         }
