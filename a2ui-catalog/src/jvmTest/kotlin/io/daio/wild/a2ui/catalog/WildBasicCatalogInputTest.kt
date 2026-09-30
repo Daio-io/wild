@@ -22,26 +22,7 @@ class WildBasicCatalogInputTest {
     @Test
     fun catalog_has_18_names() {
         assertEquals(
-            listOf(
-                "Text",
-                "Button",
-                "Column",
-                "Row",
-                "Card",
-                "Divider",
-                "Icon",
-                "CheckBox",
-                "TextField",
-                "List",
-                "Image",
-                "Video",
-                "AudioPlayer",
-                "Modal",
-                "Tabs",
-                "Slider",
-                "DateTimeInput",
-                "ChoicePicker",
-            ),
+            expectedWildBasicCatalogComponentNames,
             wildA2uiBasicCatalogV1().components.keys.toList(),
         )
     }

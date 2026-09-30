@@ -26,26 +26,7 @@ class WildBasicCatalogDisplayTest {
             catalog.catalogId,
         )
         assertEquals(
-            listOf(
-                "Text",
-                "Button",
-                "Column",
-                "Row",
-                "Card",
-                "Divider",
-                "Icon",
-                "CheckBox",
-                "TextField",
-                "List",
-                "Image",
-                "Video",
-                "AudioPlayer",
-                "Modal",
-                "Tabs",
-                "Slider",
-                "DateTimeInput",
-                "ChoicePicker",
-            ),
+            expectedWildBasicCatalogComponentNames,
             catalog.components.keys.toList(),
         )
     }
