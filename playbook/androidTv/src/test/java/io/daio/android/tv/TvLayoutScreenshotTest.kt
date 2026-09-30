@@ -11,25 +11,25 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.unit.dp
 import io.daio.wild.screenshot.AndroidScreenshotTest
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import org.robolectric.RobolectricTestRunner
 
-@Config(sdk = [35], qualifiers = "w1920dp-h1080dp-land")
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35], qualifiers = "landscape-xlarge")
 class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
-    @Test
-    fun list() =
-        captureScreenshot("tv-list") {
+    private fun captureTvScreenshot(name: String, mode: String, itemsType: String) =
+        captureScreenshot(name) {
             Box(Modifier.size(1920.dp, 1080.dp)) {
-                TvLayout(mode = "list", itemsType = "wild_container")
+                TvLayout(mode = mode, itemsType = itemsType)
             }
         }
 
     @Test
-    fun grid() =
-        captureScreenshot("tv-grid") {
-            Box(Modifier.size(1920.dp, 1080.dp)) {
-                TvLayout(mode = "grid", itemsType = "wild_container")
-            }
-        }
+    fun list() = captureTvScreenshot("tv-list", "list", "wild_container")
+
+    @Test
+    fun grid() = captureTvScreenshot("tv-grid", "grid", "wild_container")
 
     @Test
     fun focused() =

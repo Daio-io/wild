@@ -33,8 +33,14 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
     val roborazziRule = RoborazziRule()
 
     /**
-     * Captures the supplied composable to `screenshots/android`. Do not combine this with
+     * Captures the supplied composable. A non-null [captureName] writes to `screenshots/debug`;
+     * omitting it preserves the standard `screenshots/android` output. Do not combine this with
      * [captureActivityScreenshot].
+     *
+     * @param captureName optional stable output filename without extension
+     * @param advanceTimeByMillis optional virtual time to advance before capture
+     * @param beforeCapture optional assertion or setup invoked immediately before capture
+     * @since 0.4.0
      */
     fun captureScreenshot(
         captureName: String? = null,
@@ -49,7 +55,16 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
         capture(captureName, advanceTimeByMillis, beforeCapture)
     }
 
-    /** Captures the launched activity root. Do not combine this with [captureScreenshot]. */
+    /**
+     * Captures the launched activity root. A non-null [captureName] writes to `screenshots/debug`;
+     * omitting it preserves the standard `screenshots/android` output. Do not combine this with
+     * [captureScreenshot].
+     *
+     * @param captureName optional stable output filename without extension
+     * @param advanceTimeByMillis optional virtual time to advance before capture
+     * @param beforeCapture optional assertion or setup invoked immediately before capture
+     * @since 0.4.0
+     */
     fun captureActivityScreenshot(
         captureName: String? = null,
         advanceTimeByMillis: Long? = null,
