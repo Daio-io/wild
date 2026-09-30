@@ -12,7 +12,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
 
 /** Base class for deterministic iOS screenshot tests. */
 abstract class IosScreenshotTest {
-    /** Captures the supplied composable. */
+    /** Captures the supplied composable to `screenshots/iosSimulatorArm64`. */
     @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
     fun captureScreenshot(
         advanceTimeByMillis: Long? = null,

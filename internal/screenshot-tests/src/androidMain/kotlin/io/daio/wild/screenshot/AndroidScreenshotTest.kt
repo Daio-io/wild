@@ -32,7 +32,10 @@ abstract class AndroidScreenshotTest<A : ComponentActivity>(activityClass: Class
     @get:Rule
     val roborazziRule = RoborazziRule()
 
-    /** Captures the supplied composable. Do not combine this with [captureActivityScreenshot]. */
+    /**
+     * Captures the supplied composable to `screenshots/android`. Do not combine this with
+     * [captureActivityScreenshot].
+     */
     fun captureScreenshot(
         advanceTimeByMillis: Long? = null,
         content: @Composable () -> Unit,

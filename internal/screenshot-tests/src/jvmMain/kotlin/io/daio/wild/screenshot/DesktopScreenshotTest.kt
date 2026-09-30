@@ -15,7 +15,7 @@ import java.io.File
 /** Base class for deterministic desktop screenshot tests. */
 @OptIn(ExperimentalTestApi::class)
 abstract class DesktopScreenshotTest {
-    /** Captures the supplied composable. */
+    /** Captures the supplied composable to `screenshots/desktop`. */
     @OptIn(ExperimentalRoborazziApi::class)
     fun captureScreenshot(
         advanceTimeByMillis: Long? = null,

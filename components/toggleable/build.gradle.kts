@@ -2,10 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 plugins {
     id("io.daio.compose")
+    id("io.daio.android.library")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
     id("io.daio.publish")
     alias(libs.plugins.dokka)
     alias(libs.plugins.metalava)
+}
+
+android {
+    namespace = "io.daio.wild.components.toggleable"
 }
 
 kotlin {
@@ -25,6 +31,7 @@ kotlin {
                 implementation(kotlin("test"))
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.uiTest)
+                implementation(projects.internal.screenshotTests)
             }
         }
         val jvmTest by getting {

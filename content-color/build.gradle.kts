@@ -4,6 +4,7 @@ plugins {
     id("io.daio.compose")
     id("io.daio.android.library")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
     id("io.daio.publish")
     alias(libs.plugins.dokka)
     alias(libs.plugins.metalava)
@@ -40,6 +41,20 @@ kotlin {
             dependencies {
                 api(compose.material)
                 api(compose.material3)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
+                implementation(projects.internal.screenshotTests)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }

@@ -4,6 +4,7 @@ plugins {
     id("io.daio.android.library")
     id("io.daio.compose")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
 }
 
 android {
@@ -15,6 +16,7 @@ kotlin {
         commonMain.dependencies {
             api(compose.foundation)
             api(projects.layout.container)
+            api(projects.style)
         }
         jvmMain.dependencies {
             api(compose.desktop.currentOs)
