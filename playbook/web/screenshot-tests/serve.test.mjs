@@ -48,13 +48,16 @@ test("falls back missing routes to index.html", async () => {
 test("serves JavaScript and Wasm with explicit MIME types", async () => {
   const { root, server } = await createServerFixture({
     "app.js": "console.log('app')",
+    "app.mjs": "export {}",
     "app.wasm": "wasm",
   });
   const { port } = server.address();
 
   const jsResponse = await fetch(`http://127.0.0.1:${port}/app.js`);
+  const mjsResponse = await fetch(`http://127.0.0.1:${port}/app.mjs`);
   const wasmResponse = await fetch(`http://127.0.0.1:${port}/app.wasm`);
   assert.equal(jsResponse.headers.get("content-type"), "application/javascript");
+  assert.equal(mjsResponse.headers.get("content-type"), "text/javascript");
   assert.equal(wasmResponse.headers.get("content-type"), "application/wasm");
 
   await rm(root, { recursive: true, force: true });
