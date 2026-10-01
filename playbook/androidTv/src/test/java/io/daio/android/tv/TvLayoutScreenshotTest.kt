@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35], qualifiers = "landscape-xlarge")
+@Config(sdk = [35], qualifiers = "w1920dp-h1080dp-land")
 class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentActivity::class.java) {
     private fun captureTvScreenshot(
         name: String,
