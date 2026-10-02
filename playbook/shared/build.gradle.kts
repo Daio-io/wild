@@ -27,8 +27,8 @@ kotlin {
                 api(projects.components.toggleable)
                 api(projects.components.icon)
                 api(projects.components.progress)
-                api(projects.components.slider)
                 api(projects.a2uiCatalog)
+                api(projects.components.slider)
             }
         }
 
