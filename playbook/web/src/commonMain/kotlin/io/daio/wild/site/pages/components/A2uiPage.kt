@@ -81,6 +81,6 @@ object A2uiPageDefaults {
             demos = listOf(galleryDemo),
             usage = "processor.processJsonl(fixture); A2uiSurface(surface, wildA2uiBasicCatalogV1(), processor)",
             props = emptyList(),
-            platforms = listOf(Platform.Android, Platform.AndroidTV, Platform.Desktop, Platform.Web),
+            platforms = listOf(Platform.Android, Platform.Desktop, Platform.Web),
         )
 }
