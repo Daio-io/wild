@@ -13,7 +13,9 @@ class A2uiFixturesTest {
     fun simple_text_and_interactive_fixtures_process_ok() {
         val processor = A2uiMessageProcessor()
 
-        val results = processor.processJsonl(A2uiGalleryFixtures.SIMPLE_TEXT) + processor.processJsonl(A2uiGalleryFixtures.INTERACTIVE_BUTTON)
+        val results =
+            processor.processJsonl(A2uiGalleryFixtures.SIMPLE_TEXT) +
+                processor.processJsonl(A2uiGalleryFixtures.INTERACTIVE_BUTTON)
 
         assertTrue(results.all { it is A2uiProcessResult.Success })
         assertEquals(setOf("gallery-simple-text", "gallery-interactive-button"), processor.surfaces.value.keys)
