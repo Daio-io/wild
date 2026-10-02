@@ -28,6 +28,7 @@ import io.daio.wild.site.navigation.routeFromPath
 import io.daio.wild.site.navigation.section
 import io.daio.wild.site.navigation.sidebarGroupsForSection
 import io.daio.wild.site.pages.GettingStartedPage
+import io.daio.wild.site.pages.components.A2uiPage
 import io.daio.wild.site.pages.components.ButtonPage
 import io.daio.wild.site.pages.components.CheckboxPage
 import io.daio.wild.site.pages.components.ContainerPage
@@ -155,6 +156,9 @@ fun SiteApp(navController: NavHostController = rememberNavController()) {
                     }
                     composable(Route.Component.Progress.path) {
                         ProgressPage()
+                    }
+                    composable(Route.Component.A2ui.path) {
+                        A2uiPage()
                     }
                     composable(Route.Component.Slider.path) {
                         SliderPage()

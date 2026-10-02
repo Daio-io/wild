@@ -1,6 +1,14 @@
 // Signature format: 4.0
 package io.daio.wild.a2ui.catalog {
 
+  public final class A2uiGalleryFixtures {
+    property public static String INTERACTIVE_BUTTON;
+    property public static String SIMPLE_TEXT;
+    field public static final io.daio.wild.a2ui.catalog.A2uiGalleryFixtures INSTANCE;
+    field public static final String INTERACTIVE_BUTTON = "\n        {\"version\":\"v0.9.1\",\"createSurface\":{\"surfaceId\":\"gallery-interactive-button\",\"catalogId\":\"https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json\"}}\n        {\"version\":\"v0.9.1\",\"updateComponents\":{\"surfaceId\":\"gallery-interactive-button\",\"components\":[{\"id\":\"root\",\"component\":\"Column\",\"children\":[\"title\",\"action_button\"]},{\"id\":\"title\",\"component\":\"Text\",\"text\":\"Click the button below\"},{\"id\":\"action_button\",\"component\":\"Button\",\"child\":\"button_label\",\"action\":{\"event\":{\"name\":\"button_clicked\",\"context\":{}}}},{\"id\":\"button_label\",\"component\":\"Text\",\"text\":\"Click Me\"}]}}\n    ";
+    field public static final String SIMPLE_TEXT = "\n        {\"version\":\"v0.9.1\",\"createSurface\":{\"surfaceId\":\"gallery-simple-text\",\"catalogId\":\"https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json\"}}\n        {\"version\":\"v0.9.1\",\"updateComponents\":{\"surfaceId\":\"gallery-simple-text\",\"components\":[{\"id\":\"root\",\"component\":\"Text\",\"text\":\"Hello, Wild A2UI!\"}]}}\n    ";
+  }
+
   public final class WildBasicCatalogKt {
     method public static io.daio.wild.a2ui.compose.A2uiCatalog wildA2uiBasicCatalogV1();
     property public static String WILD_BASIC_CATALOG_ID;
@@ -65,9 +73,9 @@ package io.daio.wild.a2ui.catalog.components {
   public final class DividerComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
     method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
     method @InaccessibleFromKotlin public String getName();
-    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<? extends java.lang.Object?>> getProperties();
     property public String name;
-    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<? extends java.lang.Object?>> properties;
     field public static final io.daio.wild.a2ui.catalog.components.DividerComponent INSTANCE;
   }
 
@@ -130,9 +138,9 @@ package io.daio.wild.a2ui.catalog.components {
   public final class TextFieldComponent implements io.daio.wild.a2ui.compose.A2uiComponent {
     method @KotlinOnly @androidx.compose.runtime.Composable public void Content(io.daio.wild.a2ui.compose.A2uiComponentScope, io.daio.wild.a2ui.compose.A2uiComponentProperties props, androidx.compose.ui.Modifier modifier);
     method @InaccessibleFromKotlin public String getName();
-    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<? extends java.lang.Object?>> getProperties();
+    method @InaccessibleFromKotlin public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> getProperties();
     property public String name;
-    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<? extends java.lang.Object?>> properties;
+    property public java.util.List<io.daio.wild.a2ui.compose.A2uiProperty<java.lang.String>> properties;
     field public static final io.daio.wild.a2ui.catalog.components.TextFieldComponent INSTANCE;
   }
 
