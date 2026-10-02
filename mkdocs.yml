@@ -17,6 +17,7 @@ nav:
   - 'Style': style.md
   - 'Container': container.md
   - 'Button': button.md
+  - 'A2UI': a2ui.md
   - 'Modifier': modifier.md
   - 'Usage Docs': storybook/
   - 'Api Reference': reference/

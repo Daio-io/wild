@@ -200,6 +200,7 @@ fun sidebarGroupsForSection(section: Section): List<SidebarGroup> =
                             SidebarItem("ListItem", Route.Component.ListItem),
                             SidebarItem("Divider", Route.Component.Divider),
                             SidebarItem("Progress", Route.Component.Progress),
+                            SidebarItem("A2UI", Route.Component.A2ui),
                             SidebarItem("Slider", Route.Component.Slider),
                         ),
                 ),
