@@ -43,7 +43,7 @@ object A2uiPageDefaults {
                 loadError =
                     (
                         processor.processJsonl(A2uiGalleryFixtures.SIMPLE_TEXT) +
-                            processor.processJsonl(A2uiGalleryFixtures.INTERACTIVE)
+                            processor.processJsonl(A2uiGalleryFixtures.INTERACTIVE_BUTTON)
                     )
                         .filterIsInstance<A2uiProcessResult.Failure>()
                         .firstOrNull()?.message
