@@ -33,3 +33,35 @@ dependencies {
     dokka(projects.layout.container)
     dokka(projects.layout.divider)
 }
+
+tasks.register("verifyHostScreenshots") {
+    group = "verification"
+    description = "Verifies Android, Desktop, and iOS Roborazzi screenshots."
+    dependsOn(
+        ":internal:screenshot-tests:verifyRoborazziDebug",
+        ":internal:screenshot-tests:verifyRoborazziJvm",
+        // Library iOS goldens are not committed yet (Phase 2a recorded Android/Desktop only).
+        ":internal:screenshot-tests:verifyRoborazziIosSimulatorArm64",
+        ":components:button:verifyRoborazziDebug",
+        ":components:button:verifyRoborazziJvm",
+        ":components:icon:verifyRoborazziDebug",
+        ":components:icon:verifyRoborazziJvm",
+        ":components:list-item:verifyRoborazziDebug",
+        ":components:list-item:verifyRoborazziJvm",
+        ":components:progress:verifyRoborazziDebug",
+        ":components:progress:verifyRoborazziJvm",
+        ":components:text:verifyRoborazziDebug",
+        ":components:text:verifyRoborazziJvm",
+        ":components:toggleable:verifyRoborazziDebug",
+        ":components:toggleable:verifyRoborazziJvm",
+        ":content-color:verifyRoborazziDebug",
+        ":content-color:verifyRoborazziJvm",
+        ":layout:container:verifyRoborazziDebug",
+        ":layout:container:verifyRoborazziJvm",
+        ":layout:divider:verifyRoborazziDebug",
+        ":layout:divider:verifyRoborazziJvm",
+        ":playbook:android:verifyRoborazziDebug",
+        ":playbook:androidTv:verifyRoborazziDebug",
+        ":playbook:desktop:verifyRoborazziJvm",
+    )
+}

@@ -48,7 +48,7 @@ abstract class DesktopScreenshotTest {
             onRoot().captureRoboImage(
                 outputFile,
                 RoborazziOptions(
-                    compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0f),
+                    compareOptions = screenshotCompareOptions(),
                 ),
             )
         }

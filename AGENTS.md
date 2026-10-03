@@ -82,6 +82,14 @@ actual val LocalAlternatePlatformColor: ProvidableCompositionLocal<Color> = ...
 
 **Code Quality**: `./gradlew spotlessCheck detekt lint`
 
+**Screenshot Verification**: `./gradlew verifyHostScreenshots :playbook:web:prepareScreenshotDistributions`,
+then `npm ci --prefix playbook/web/screenshot-tests`, `npx --prefix playbook/web/screenshot-tests playwright install chromium`,
+`npm --prefix playbook/web/screenshot-tests test`, and `./scripts/verify-screenshot-assets.sh`.
+Record host screenshots with a scoped `recordRoborazzi<Target>` task or web screenshots with
+`npm --prefix playbook/web/screenshot-tests run test:update -- <case filter>`. Any user-visible
+component or style change must update or add focused screenshot coverage in the same pull request.
+See [docs/screenshot-testing.md](docs/screenshot-testing.md) for the maintenance contract.
+
 **Docs**: `./gradlew dokkaGenerate` (API), `mkdocs serve` (local), `mkdocs gh-deploy` (deploy)
 
 **Publishing**: `./gradlew publish` (Maven Central), `./gradlew publishAllPublicationsToGitHubPackagesRepository -PuseGitHubPublishing` (GitHub Packages)

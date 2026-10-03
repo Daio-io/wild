@@ -33,3 +33,45 @@ jobs:
 
       - name: Build
         run: ./gradlew :foundations:assemble :content-color:assemble :style:assemble :layout:container:assemble :components:button:assemble
+
+  screenshot_tests:
+    name: Screenshot tests
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          java-version: 21
+          distribution: zulu
+          cache: gradle
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: playbook/web/screenshot-tests/package-lock.json
+      - name: Grant execute permission
+        run: chmod +x gradlew scripts/verify-screenshot-assets.sh
+      - name: Install web screenshot dependencies
+        run: npm ci --prefix playbook/web/screenshot-tests
+      - name: Install Playwright Chromium
+        run: npx --prefix playbook/web/screenshot-tests playwright install chromium
+      - name: Verify host screenshots and prepare web distributions
+        run: ./gradlew verifyHostScreenshots :playbook:web:prepareScreenshotDistributions
+      - name: Run web screenshot tests
+        run: npm --prefix playbook/web/screenshot-tests test
+      - name: Verify screenshot assets
+        run: ./scripts/verify-screenshot-assets.sh
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshot-test-artifacts
+          path: |
+            **/build/reports/roborazzi/**
+            **/build/outputs/roborazzi/**
+            playbook/web/screenshot-tests/test-results/**
+            playbook/web/screenshot-tests/playwright-report/**
