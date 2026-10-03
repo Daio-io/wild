@@ -19,6 +19,7 @@ nav:
   - 'Button': button.md
   - 'A2UI': a2ui.md
   - 'Modifier': modifier.md
+  - 'Contributing': contributing.md
   - 'Usage Docs': storybook/
   - 'Api Reference': reference/
 
