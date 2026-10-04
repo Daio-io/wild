@@ -789,14 +789,13 @@ fun StylePage(modifier: Modifier = Modifier) {
             tabs = listOf("Kotlin"),
         )
 
-        SectionHeader("Modifier chain order")
+        SectionHeader("Modifier Chain Order")
         SectionDescription(
-            "interactionStyle and staticStyle use a fixed chain: interaction source → " +
-                "style parent → scale → border → background → shape. Put size, clickable, " +
-                "semantics, and focus modifiers before the style call (or on the component " +
-                "modifier). Hoist one InteractionSource for input and style. Prefer content " +
-                "padding for inset spacing; avoid wrapping the styled surface in extra " +
-                "graphicsLayer or clip unless you mean to transform border and scale together.",
+            "interactionStyle installs interaction source → style parent → scale → " +
+                "border → background → shape; staticStyle uses the same visual chain " +
+                "without the interaction-source step. Put size, clickable, semantics, " +
+                "and focus before the style call; hoist one InteractionSource for input " +
+                "and style. See Style docs for the full placement table.",
         )
         CodeBlock(
             code = MODIFIER_CHAIN_USAGE,
