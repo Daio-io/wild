@@ -101,6 +101,66 @@ change the style based on the state.
     Having to ensure you share the same `InteractionSource` is an awkward part of the library
     right now which I am looking to solve with indication.
 
+### Style modifier chain order
+
+`interactionStyle` and `staticStyle` install a fixed internal chain (outer → inner):
+
+1. **Interaction source** (interactive only) — observes the hoisted `InteractionSource`.
+2. **Style parent** — resolves colors, scale, alpha, shape, and border for the current state.
+3. **Scale** — draw-time scale and focus z-index; descendant layout coordinates stay unscaled.
+4. **Border** — drawn after content so focus rings sit above the surface; positive `Border.inset`
+   can extend outside the inner shape clip.
+5. **Background** — fills behind content.
+6. **Shape** — clips content and applies group alpha.
+
+That order keeps scale wrapping the full chrome, leaves inset focus rings outside the clipped
+surface, and applies clipping/alpha innermost. Prefer not to insert custom modifiers between these
+layers; compose around the public style modifier instead.
+
+### Composing modifiers around styled surfaces
+
+Wild components apply the caller's `modifier` **outside** the style chain. When you call
+`interactionStyle` / `staticStyle` yourself, put caller modifiers before or after that call
+deliberately:
+
+| Concern | Recommended placement |
+|---------|------------------------|
+| Size / fill / aspect ratio | Before style (or on the component `modifier`) so constraints size the whole surface |
+| Outer spacing (margin-like) | Padding **before** style |
+| Inset content spacing | Padding on content inside the surface (or after style if you own the chain) |
+| Clickable / selectable | Before `interactionStyle`, sharing the same hoisted `InteractionSource` |
+| Semantics / focus requester | With or before input modifiers, outside the style chain |
+| `graphicsLayer` / clip | Before style only when you intend to transform border and scale together |
+| Custom draw | Before style to draw under/around the chrome; after style only when you want drawing inside the clipped shape |
+
+```kotlin
+val interactionSource = remember { MutableInteractionSource() }
+
+Box(
+    modifier = Modifier
+        .size(120.dp) // sizes the styled surface
+        .clickable(
+            interactionSource = interactionSource,
+            onClick = onClick,
+        )
+        .interactionStyle(
+            interactionSource = interactionSource,
+            style = style,
+        ),
+) {
+    Text(
+        text = "Label",
+        modifier = Modifier.padding(12.dp), // inset inside the chrome
+    )
+}
+```
+
+Hoist `InteractionSource` to the composable that owns both input and style. Prefer
+`Modifier.clickable(..., style = style)` / component `style` parameters when you do not need a
+custom chain — they share one source internally. For the StyleScope DSL overload, set every visual
+property you care about on each evaluation; omitted properties reset to defaults and do not carry
+over from the previous state.
+
 | Platform   | Available |
 |------------|-----------|
 | CMP        | ✅         |

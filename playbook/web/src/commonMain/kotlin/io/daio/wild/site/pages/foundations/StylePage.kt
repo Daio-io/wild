@@ -789,6 +789,19 @@ fun StylePage(modifier: Modifier = Modifier) {
             tabs = listOf("Kotlin"),
         )
 
+        SectionHeader("Modifier Chain Order")
+        SectionDescription(
+            "interactionStyle installs interaction source → style parent → scale → " +
+                "border → background → shape; staticStyle uses the same visual chain " +
+                "without the interaction-source step. Put size, clickable, semantics, " +
+                "and focus before the style call; hoist one InteractionSource for input " +
+                "and style. See Style docs for the full placement table.",
+        )
+        CodeBlock(
+            code = MODIFIER_CHAIN_USAGE,
+            tabs = listOf("Kotlin"),
+        )
+
         HorizontalDivider(color = SiteTheme.colors.border)
 
         // API Reference
@@ -997,5 +1010,28 @@ private val INTERACTION_STYLE_USAGE =
     Modifier.interactionStyle(interactionSource = interactionSource) {
         color = if (focused) Color.Blue else Color.Red
         scale = if (pressed) 0.95f else 1f
+    }
+    """.trimIndent()
+
+private val MODIFIER_CHAIN_USAGE =
+    """
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Box(
+        modifier = Modifier
+            .size(120.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                onClick = { },
+            )
+            .interactionStyle(
+                interactionSource = interactionSource,
+                style = myStyle,
+            ),
+    ) {
+        Text(
+            text = "Label",
+            modifier = Modifier.padding(12.dp),
+        )
     }
     """.trimIndent()
