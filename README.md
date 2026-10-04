@@ -18,6 +18,12 @@ More information: https://daio-io.github.io/wild/
 
 </div>
 
+## Contributing
+
+Start with the [contributor guide](docs/contributing.md) for module ownership, gallery
+wiring, API signature updates, and PR review commands. See
+[screenshot testing](docs/screenshot-testing.md) for visual change verification.
+
 ## License
 
 ```
