@@ -697,8 +697,43 @@ object StyleDefaults {
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
+ * ## Internal style chain
+ *
+ * This modifier installs a fixed chain (outer → inner):
+ *
+ * 1. **Interaction source** — observes [interactionSource] and notifies the style parent.
+ * 2. **Style parent** — resolves colors, scale, alpha, shape, and border for the current state.
+ * 3. **Scale** — draw-time scale and focus z-index; does not change descendant layout coordinates.
+ * 4. **Border** — draws after content so focus rings sit above the surface; may extend outside the
+ *    inner shape when [Border.inset] is positive.
+ * 5. **Background** — fills behind content using the resolved color/brush and shape.
+ * 6. **Shape** — clips content and applies group alpha.
+ *
+ * The order is intentional: scale wraps border/background/content together; border stays outside
+ * the inner clip so inset focus rings remain visible; shape is innermost for clipping and alpha.
+ *
+ * ## Composing caller modifiers
+ *
+ * Prefer layout, size, semantics, and focus modifiers **before** this call (or on a component's
+ * `modifier` parameter, which Wild applies outside the style chain). Put clickable/selectable
+ * before [interactionStyle] and hoist a shared [InteractionSource] into both. Prefer content
+ * padding inside the styled surface for inset spacing; padding before this modifier creates space
+ * outside the chrome. Avoid extra `graphicsLayer` / clip wrappers around the styled surface unless
+ * you mean to transform border and scale together.
+ *
+ * Example:
+ * ```
+ * val interactionSource = remember { MutableInteractionSource() }
+ * Box(
+ *     modifier = Modifier
+ *         .size(120.dp)
+ *         .clickable(interactionSource = interactionSource, onClick = onClick)
+ *         .interactionStyle(interactionSource = interactionSource, style = style),
+ * )
+ * ```
+ *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
- * pressed and focus.
+ * pressed and focus. Share the same instance with clickable/selectable modifiers.
  * @param enabled Whether the element is currently enabled.
  * @param selected Whether the element is currently selected.
  * @param style The [Style] to apply to the element.
@@ -727,6 +762,19 @@ fun Modifier.interactionStyle(
 
 /**
  * Sets a non-interactive [Style] on the element.
+ *
+ * Installs the same visual chain as [interactionStyle] without interaction observation:
+ * style parent → scale → border → background → shape. Use this for static surfaces; compose size,
+ * padding, and custom draw modifiers around it the same way as [interactionStyle].
+ *
+ * Example:
+ * ```
+ * Box(
+ *     modifier = Modifier
+ *         .size(120.dp)
+ *         .staticStyle(StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Gray))),
+ * )
+ * ```
  *
  * @param style The [Style] to apply to the element.
  * @since 0.7.0
@@ -814,6 +862,10 @@ fun Modifier.experimentalInteractionStyle(
 /**
  * Sets a [Style] on the element that reacts to interactions from the provided [interactionSource].
  *
+ * Uses the same fixed style chain and caller-composition guidance as
+ * [interactionStyle] with a [Style] value: interaction source → style parent → scale → border →
+ * background → shape. Hoist and share [interactionSource] with clickable/selectable modifiers.
+ *
  * Each time the [block] is evaluated, visual properties on [StyleScope] are reset to their defaults
  * before the block runs. Omitting a property in the block leaves that property at its default for
  * that invocation; values are not carried over from prior evaluations.
@@ -833,8 +885,19 @@ fun Modifier.experimentalInteractionStyle(
  * read inside the block is observed; when those values change, the block is re-evaluated without
  * requiring recomposition or an interaction event.
  *
+ * Example:
+ * ```
+ * val interactionSource = remember { MutableInteractionSource() }
+ * Modifier
+ *     .clickable(interactionSource = interactionSource, onClick = onClick)
+ *     .interactionStyle(interactionSource = interactionSource) {
+ *         color = if (focused) Color.Blue else Color.Red
+ *         scale = if (pressed) 0.95f else 1f
+ *     }
+ * ```
+ *
  * @param interactionSource The [InteractionSource] used to listen to user interactions such as
- * pressed and focus.
+ * pressed and focus. Share the same instance with clickable/selectable modifiers.
  * @param enabled Whether the element is currently enabled.
  * @param selected Whether the element is currently selected.
  * @param block Lambda to apply style properties. The block provides access to the elements current
