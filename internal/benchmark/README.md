@@ -138,3 +138,26 @@ before adding regression thresholds.
 Peak memory supports a relative allocation-pressure comparison but is not an exact allocation count.
 Use the captured traces or Android Studio's memory profiler when object-level allocation attribution
 is required; do not infer exact allocation counts from `MemoryUsageMetric` alone.
+
+## StyleDefaults construction microbenchmark
+
+The `:internal:style-benchmark` Android microbenchmark measures construction of the default
+`StyleDefaults` leaf factories, `StyleDefaults.style()`, `ButtonDefaults.style()`, and a
+partially customized style. Run it on a physical Android device using the release benchmark variant:
+
+```bash
+./gradlew :internal:style-benchmark:connectedCheck
+```
+
+AndroidX Benchmark writes JSON beneath
+`internal/style-benchmark/build/outputs/connected_android_test_additional_output/releaseAndroidTest/connected/<device>/`.
+Do not hardcode `<device>`; locate the report with:
+
+```bash
+find internal/style-benchmark/build/outputs/connected_android_test_additional_output \
+  -name '*-benchmarkData.json' -print
+```
+
+Record the device, Android version, benchmark version, build SHA, median time, and
+`allocationCount` when comparing revisions. Use the same device for before/after runs and do not
+derive a hard timing threshold from a single device.

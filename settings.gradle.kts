@@ -47,6 +47,7 @@ include(
 // Test
 include(
     ":internal:benchmark",
+    ":internal:style-benchmark",
     ":internal:screenshot-tests",
 )
 
