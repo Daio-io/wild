@@ -80,9 +80,21 @@ fun Modifier.interactable(
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onDoubleClick Optional callback to handle double click events.
- * @param styleBlock Optional [StyleScope] block to apply with the interactable. Required (no
- * default) so this overload does not clash with the value [style] overload.
+ * @param styleBlock [StyleScope] block to apply with the interactable. Required and non-null (no
+ * default) so this overload does not clash with the value [style] overload or fully positional
+ * null call sites. For no style, use the value [style] overload instead.
  * @param onClick Callback when the element is clicked.
+ *
+ * Example:
+ * ```
+ * Modifier.interactable(
+ *     styleBlock = {
+ *         backgroundColor = Color.Red
+ *         if (focused) scale = 1.1f
+ *     },
+ *     onClick = { /* ... */ },
+ * )
+ * ```
  *
  * @since 0.7.0
  */
@@ -93,7 +105,7 @@ fun Modifier.interactable(
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    styleBlock: (StyleScope.() -> Unit)?,
+    styleBlock: StyleScope.() -> Unit,
     onClick: (() -> Unit),
 ): Modifier =
     this then
@@ -144,7 +156,7 @@ fun Modifier.interactable(
     message = "Use interactable instead. The node-based style system is now the default.",
     replaceWith =
         ReplaceWith(
-            "interactable(enabled, selected, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style, onClick = onClick)",
+            "interactable(enabled, selected, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style ?: {}, onClick = onClick)",
         ),
     level = DeprecationLevel.WARNING,
 )
@@ -158,16 +170,29 @@ fun Modifier.experimentalInteractable(
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
-    interactable(
-        enabled = enabled,
-        selected = selected,
-        interactionSource = interactionSource,
-        role = role,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-        styleBlock = style,
-        onClick = onClick,
-    )
+    if (style != null) {
+        interactable(
+            enabled = enabled,
+            selected = selected,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            styleBlock = style,
+            onClick = onClick,
+        )
+    } else {
+        interactable(
+            enabled = enabled,
+            selected = selected,
+            style = null,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            onClick = onClick,
+        )
+    }
 
 /**
  * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
@@ -276,9 +301,21 @@ fun Modifier.clickable(
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onDoubleClick Optional callback to handle double click events.
- * @param styleBlock Optional [StyleScope] block to apply with the clickable. Required (no default)
- * so this overload does not clash with the value [style] overload.
+ * @param styleBlock [StyleScope] block to apply with the clickable. Required and non-null (no
+ * default) so this overload does not clash with the value [style] overload or fully positional
+ * null call sites. For no style, use the value [style] overload instead.
  * @param onClick Callback when the element is clicked.
+ *
+ * Example:
+ * ```
+ * Modifier.clickable(
+ *     styleBlock = {
+ *         backgroundColor = Color.Red
+ *         if (focused) scale = 1.1f
+ *     },
+ *     onClick = { /* ... */ },
+ * )
+ * ```
  *
  * @since 0.7.0
  */
@@ -288,7 +325,7 @@ fun Modifier.clickable(
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    styleBlock: (StyleScope.() -> Unit)?,
+    styleBlock: StyleScope.() -> Unit,
     onClick: (() -> Unit),
 ): Modifier =
     if (interactionSource != null) {
@@ -380,7 +417,7 @@ fun Modifier.experimentalClickable(
     message = "Use clickable instead. The node-based style system is now the default.",
     replaceWith =
         ReplaceWith(
-            "clickable(enabled, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style, onClick = onClick)",
+            "clickable(enabled, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style ?: {}, onClick = onClick)",
         ),
     level = DeprecationLevel.WARNING,
 )
@@ -393,15 +430,27 @@ fun Modifier.experimentalClickable(
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
-    clickable(
-        enabled = enabled,
-        interactionSource = interactionSource,
-        role = role,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-        styleBlock = style,
-        onClick = onClick,
-    )
+    if (style != null) {
+        clickable(
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            styleBlock = style,
+            onClick = onClick,
+        )
+    } else {
+        clickable(
+            enabled = enabled,
+            interactionSource = interactionSource,
+            style = null,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            onClick = onClick,
+        )
+    }
 
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
@@ -464,9 +513,22 @@ fun Modifier.selectable(
  * services.
  * @param onLongClick Optional callback to handle long click events.
  * @param onDoubleClick Optional callback to handle double click events.
- * @param styleBlock Optional [StyleScope] block to apply with the selectable. Required (no default)
- * so this overload does not clash with the value [style] overload.
+ * @param styleBlock [StyleScope] block to apply with the selectable. Required and non-null (no
+ * default) so this overload does not clash with the value [style] overload or fully positional
+ * null call sites. For no style, use the value [style] overload instead.
  * @param onClick Callback when the element is clicked.
+ *
+ * Example:
+ * ```
+ * Modifier.selectable(
+ *     selected = selected,
+ *     styleBlock = {
+ *         backgroundColor = Color.Red
+ *         if (focused) scale = 1.1f
+ *     },
+ *     onClick = { /* ... */ },
+ * )
+ * ```
  *
  * @since 0.7.0
  */
@@ -477,7 +539,7 @@ fun Modifier.selectable(
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    styleBlock: (StyleScope.() -> Unit)?,
+    styleBlock: StyleScope.() -> Unit,
     onClick: (() -> Unit),
 ): Modifier =
     if (interactionSource != null) {
@@ -594,7 +656,7 @@ private fun Modifier.clickableWithStyle(
 private fun Modifier.clickableWithStyleBlock(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
-    styleBlock: (StyleScope.() -> Unit)?,
+    styleBlock: StyleScope.() -> Unit,
     role: Role?,
     onLongClick: (() -> Unit)?,
     onDoubleClick: (() -> Unit)?,
@@ -607,9 +669,9 @@ private fun Modifier.clickableWithStyleBlock(
         onClick = onClick,
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
-    ).thenIfNotNull(styleBlock, ifNotNullModifier = {
-        Modifier.interactionStyle(interactionSource, enabled, block = it)
-    })
+    ).then(
+        Modifier.interactionStyle(interactionSource, enabled, block = styleBlock),
+    )
 
 private fun Modifier.experimentalClickableWithStyle(
     enabled: Boolean,
@@ -662,7 +724,7 @@ private fun Modifier.selectableWithStyleBlock(
     selected: Boolean,
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
-    styleBlock: (StyleScope.() -> Unit)?,
+    styleBlock: StyleScope.() -> Unit,
     role: Role?,
     onLongClick: (() -> Unit)?,
     onDoubleClick: (() -> Unit)?,
@@ -676,14 +738,14 @@ private fun Modifier.selectableWithStyleBlock(
         onDoubleClick = onDoubleClick,
         role = role,
         onClick = onClick,
-    ).thenIfNotNull(styleBlock, ifNotNullModifier = {
+    ).then(
         Modifier.interactionStyle(
             interactionSource = interactionSource,
             enabled = enabled,
             selected = selected,
-            block = it,
-        )
-    })
+            block = styleBlock,
+        ),
+    )
 
 private fun Modifier.experimentalSelectableWithStyle(
     selected: Boolean,
@@ -732,7 +794,7 @@ private fun Modifier.experimentalSelectableWithStyle(
     message = "Use selectable instead. The node-based style system is now the default.",
     replaceWith =
         ReplaceWith(
-            "selectable(selected, enabled, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style, onClick = onClick)",
+            "selectable(selected, enabled, interactionSource, role, onLongClick, onDoubleClick, styleBlock = style ?: {}, onClick = onClick)",
         ),
     level = DeprecationLevel.WARNING,
 )
@@ -746,13 +808,26 @@ fun Modifier.experimentalSelectable(
     onDoubleClick: (() -> Unit)? = null,
     onClick: (() -> Unit),
 ): Modifier =
-    selectable(
-        selected = selected,
-        enabled = enabled,
-        interactionSource = interactionSource,
-        role = role,
-        onLongClick = onLongClick,
-        onDoubleClick = onDoubleClick,
-        styleBlock = style,
-        onClick = onClick,
-    )
+    if (style != null) {
+        selectable(
+            selected = selected,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            styleBlock = style,
+            onClick = onClick,
+        )
+    } else {
+        selectable(
+            selected = selected,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            style = null,
+            role = role,
+            onLongClick = onLongClick,
+            onDoubleClick = onDoubleClick,
+            onClick = onClick,
+        )
+    }
