@@ -48,8 +48,9 @@ class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
 
     @Test
     fun focusedWildLambda() =
+        // Same golden as focused() so wild_lambda must stay visually identical to wild_clickable.
         captureTvScreenshot(
-            name = "tv-focus-wild-lambda",
+            name = "tv-focus",
             mode = "focus_flip",
             itemsType = "wild_lambda",
             beforeCapture = {

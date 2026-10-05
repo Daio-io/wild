@@ -80,7 +80,7 @@ class TvBenchmarkScenarioTest {
     }
 
     @Test
-    fun wildLambda_matchesWildClickable_inputFocus() {
+    fun wildLambda_matchesWildClickable_visualAndInput() {
         val itemsType = mutableStateOf("wild_clickable")
         composeRule.setContent {
             TvLayout(
@@ -97,6 +97,8 @@ class TvBenchmarkScenarioTest {
         composeRule.waitForIdle()
 
         assertFocusFlipInputAndStructure()
+        // Visual parity vs wild_clickable is asserted by TvLayoutScreenshotTest.focusedWildLambda
+        // against the same tv-focus golden owned by focused() (wild_clickable).
     }
 
     private fun assertFocusFlipInputAndStructure() {

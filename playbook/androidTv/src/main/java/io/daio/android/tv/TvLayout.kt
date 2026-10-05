@@ -256,7 +256,8 @@ private fun BenchmarkLayout(
         "list" -> OptionsList(variant, modifier, recompositionDriver)
         "grid" -> OptionsGrid(variant, modifier, recompositionDriver)
         "focus_flip" -> OptionsFocusFlip(variant, modifier, recompositionDriver)
-        "recompose_only" -> OptionsRecomposeOnly(variant, modifier, recompositionDriver)
+        "recompose_only" ->
+            SingleItemBenchmarkFixture(variant, modifier, recompositionDriver)
         "snapshot_chrome" -> OptionsSnapshotChrome(variant, modifier)
         "nested_styles", "nested_styles_small" ->
             OptionsNestedStyles(variant, modifier, nestedSize = NestedStylesSize.Small)
@@ -385,19 +386,6 @@ private fun OptionsFocusFlip(
 private enum class NestedStylesSize {
     Small,
     Large,
-}
-
-@Composable
-private fun OptionsRecomposeOnly(
-    variant: StyleVariant,
-    modifier: Modifier = Modifier,
-    recompositionDriver: BenchmarkRecompositionDriver? = null,
-) {
-    SingleItemBenchmarkFixture(
-        variant = variant,
-        modifier = modifier,
-        recompositionDriver = recompositionDriver,
-    )
 }
 
 @Stable
