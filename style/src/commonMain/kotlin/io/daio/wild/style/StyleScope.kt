@@ -22,6 +22,29 @@ interface StyleScope : InteractionState {
     var color: Color
 
     /**
+     * Alias for [color] so migrations that used `backgroundColor` continue to compile without an
+     * extra extension import.
+     *
+     * Example:
+     * ```
+     * Modifier.clickable(
+     *     styleBlock = {
+     *         backgroundColor = Color.Red
+     *         if (focused) scale = 1.1f
+     *     },
+     *     onClick = { /* ... */ },
+     * )
+     * ```
+     *
+     * @since 0.7.0
+     */
+    var backgroundColor: Color
+        get() = color
+        set(value) {
+            color = value
+        }
+
+    /**
      * Sets the alpha value of the element.
      * Range 0.0f to 1.0f.
      */

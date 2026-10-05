@@ -841,7 +841,7 @@ fun Modifier.experimentalInteractionStyle(
 @OptIn(ExperimentalWildApi::class)
 @Deprecated(
     message = "Use interactionStyle instead. The node-based style system is now the default.",
-    replaceWith = ReplaceWith("interactionStyle(interactionSource, enabled, selected, style)"),
+    replaceWith = ReplaceWith("interactionStyle(interactionSource, enabled, selected, block)"),
     level = DeprecationLevel.WARNING,
 )
 fun Modifier.experimentalInteractionStyle(
