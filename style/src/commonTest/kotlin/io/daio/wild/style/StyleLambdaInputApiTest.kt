@@ -24,15 +24,17 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalTestApi::class)
 class StyleLambdaInputApiTest {
     @Test
-    fun noStyle_valueStyle_nullStyle_lambda_trailingOnClick_resolve() {
+    fun noStyle_valueStyle_nullStyle_nullStyleBlock_lambda_trailingOnClick_resolve() {
         val source = MutableInteractionSource()
         val style = StyleDefaults.None
         val block: StyleScope.() -> Unit = { color = Color.Red }
+        val nullBlock: (StyleScope.() -> Unit)? = null
 
-        // clickable call-site shapes must remain unambiguous.
+        // clickable call-site shapes must remain unambiguous (named args for null styleBlock).
         Modifier.clickable(onClick = {})
         Modifier.clickable(style = style, onClick = {})
         Modifier.clickable(style = null, onClick = {})
+        Modifier.clickable(styleBlock = nullBlock, onClick = {})
         Modifier.clickable(styleBlock = block, onClick = {})
         Modifier.clickable(styleBlock = { color = Color.Blue }, onClick = {})
         Modifier.clickable(interactionSource = source, styleBlock = block, onClick = {})
@@ -40,6 +42,7 @@ class StyleLambdaInputApiTest {
         Modifier.selectable(selected = true, onClick = {})
         Modifier.selectable(selected = true, style = style, onClick = {})
         Modifier.selectable(selected = true, style = null, onClick = {})
+        Modifier.selectable(selected = true, styleBlock = nullBlock, onClick = {})
         Modifier.selectable(selected = true, styleBlock = block, onClick = {})
         Modifier.selectable(selected = true, styleBlock = { color = Color.Blue }, onClick = {})
         Modifier.selectable(selected = true, interactionSource = source, styleBlock = block, onClick = {})
@@ -47,6 +50,7 @@ class StyleLambdaInputApiTest {
         Modifier.interactable(onClick = {})
         Modifier.interactable(style = style, onClick = {})
         Modifier.interactable(style = null, onClick = {})
+        Modifier.interactable(styleBlock = nullBlock, onClick = {})
         Modifier.interactable(styleBlock = block, onClick = {})
         Modifier.interactable(styleBlock = { color = Color.Blue }, onClick = {})
         Modifier.interactable(interactionSource = source, styleBlock = block, onClick = {})
@@ -56,10 +60,34 @@ class StyleLambdaInputApiTest {
     @Test
     fun positionalNulls_preferValueStyleOverload() {
         val source = MutableInteractionSource()
-        // Existing fully positional call shape from pre-styleBlock API.
-        Modifier.clickable(true, source, null, null, null, null) {}
-        Modifier.selectable(true, true, source, null, null, null, null) {}
-        Modifier.interactable(true, null, null, null, null, null, null) {}
+        // Named style keeps the value overload; fully positional nulls are ambiguous once
+        // styleBlock is required-but-nullable (THE-608).
+        Modifier.clickable(
+            true,
+            source,
+            style = null,
+            role = null,
+            onLongClick = null,
+            onDoubleClick = null,
+        ) {}
+        Modifier.selectable(
+            true,
+            true,
+            source,
+            style = null,
+            role = null,
+            onLongClick = null,
+            onDoubleClick = null,
+        ) {}
+        Modifier.interactable(
+            true,
+            null,
+            style = null,
+            interactionSource = null,
+            role = null,
+            onLongClick = null,
+            onDoubleClick = null,
+        ) {}
     }
 
     @Test
@@ -81,6 +109,33 @@ class StyleLambdaInputApiTest {
         assertNull(
             Modifier.interactable(selected = true, interactionSource = source, style = null, onClick = {})
                 .findStyleParent(),
+        )
+    }
+
+    @Test
+    fun nullStyleBlock_installsNoStyleObserver() {
+        val source = MutableInteractionSource()
+        val nullBlock: (StyleScope.() -> Unit)? = null
+
+        assertNull(
+            Modifier.clickable(interactionSource = source, styleBlock = nullBlock, onClick = {})
+                .findStyleParent(),
+        )
+        assertNull(
+            Modifier.selectable(selected = true, interactionSource = source, styleBlock = nullBlock, onClick = {})
+                .findStyleParent(),
+        )
+        assertNull(
+            Modifier.interactable(interactionSource = source, styleBlock = nullBlock, onClick = {})
+                .findStyleParent(),
+        )
+        assertNull(
+            Modifier.interactable(
+                selected = true,
+                interactionSource = source,
+                styleBlock = nullBlock,
+                onClick = {},
+            ).findStyleParent(),
         )
     }
 
@@ -111,6 +166,29 @@ class StyleLambdaInputApiTest {
         }
 
     @Test
+    fun styleBlock_nonNullSource_ordinaryChain() {
+        val source = MutableInteractionSource()
+        val block: StyleScope.() -> Unit = {}
+
+        val modifiers =
+            listOf(
+                Modifier.clickable(interactionSource = source, styleBlock = block, onClick = {}),
+                Modifier.selectable(true, interactionSource = source, styleBlock = block, onClick = {}),
+                Modifier.interactable(interactionSource = source, styleBlock = block, onClick = {}),
+                Modifier.interactable(selected = true, interactionSource = source, styleBlock = block, onClick = {}),
+            )
+
+        modifiers.forEach { modifier ->
+            assertTrue(
+                modifier.elements().none { element ->
+                    element::class.simpleName?.contains("ComposedModifier") == true
+                },
+                "Unexpected composed element in $modifier",
+            )
+        }
+    }
+
+    @Test
     fun interactable_selected_routesToSelectableStyleBlock() {
         val source = MutableInteractionSource()
         val block: StyleScope.() -> Unit = { color = Color.Green }
@@ -134,7 +212,6 @@ class StyleLambdaInputApiTest {
         val style: (StyleScope.() -> Unit)? = { color = Color.Red }
         val onLongClick: (() -> Unit)? = null
         val onDoubleClick: (() -> Unit)? = null
-        val block: StyleScope.() -> Unit = style ?: {}
 
         // ReplaceWith targets for deprecated lambda helpers must compile with nullable locals.
         Modifier.clickable(
@@ -143,7 +220,7 @@ class StyleLambdaInputApiTest {
             role = null,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
-            styleBlock = style ?: {},
+            styleBlock = style,
             onClick = {},
         )
         Modifier.selectable(
@@ -153,7 +230,7 @@ class StyleLambdaInputApiTest {
             role = null,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
-            styleBlock = style ?: {},
+            styleBlock = style,
             onClick = {},
         )
         Modifier.interactable(
@@ -163,14 +240,14 @@ class StyleLambdaInputApiTest {
             role = null,
             onLongClick = onLongClick,
             onDoubleClick = onDoubleClick,
-            styleBlock = style ?: {},
+            styleBlock = style,
             onClick = {},
         )
         Modifier.interactionStyle(
             interactionSource = source,
             enabled = true,
             selected = false,
-            block = block,
+            block = style ?: {},
         )
     }
 
@@ -195,3 +272,8 @@ private fun Modifier.findStyleParent(): StyleScopeParentElement? {
     }
     return found
 }
+
+private fun Modifier.elements(): List<Modifier.Element> =
+    buildList {
+        foldIn(Unit) { _, element -> add(element) }
+    }
