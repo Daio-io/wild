@@ -133,16 +133,20 @@ fun Modifier.interactable(
         }
 
 /**
- * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
- * the correct modifier based on the requirement for hardware input. For example if a Tv device
- * is detected it adds support for hardware clicks from remote controls. This has the added support
- * for [Style], applying [experimentalInteractionStyle] to update the component based on the current
- * [InteractionSource] state.
+ * Deprecated forwarder for [Modifier.interactable] with a nullable [StyleScope] lambda.
+ *
+ * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying the
+ * correct modifier based on the requirement for hardware input. For example if a Tv device is
+ * detected it adds support for hardware clicks from remote controls. Style is applied through the
+ * current `styleBlock` overload (via [interactionStyle]), not [experimentalInteractionStyle].
+ *
+ * Prefer [Modifier.interactable] with named `styleBlock = ...`.
  *
  * @param enabled Whether the click action handling is enabled.
  * @param selected Optional property to set the selected state. Setting this to a value will enable
  * selectable support.
- * @param style Optional [Style] block to apply with the interactable.
+ * @param style Optional [StyleScope] lambda forwarded as `styleBlock`. Pass null for no style
+ * parent.
  * @param interactionSource The interaction source to emit interaction events to.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
@@ -430,8 +434,8 @@ fun Modifier.experimentalClickable(
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
- *  * the component based on the current [InteractionSource] state.
+ * remote controls. This has the added support for [Style], applying [interactionStyle] to update
+ * the component based on the current [InteractionSource] state.
  *
  * @param selected Whether the element is currently selected.
  * @param enabled Whether the click action handling is enabled.
