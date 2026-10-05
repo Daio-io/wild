@@ -90,6 +90,7 @@ def session_compatibility_error(
             candidate.get("compilationMode"),
         ),
         ("workload", baseline.get("workload"), candidate.get("workload")),
+        ("profile", baseline.get("profile"), candidate.get("profile")),
         (
             "sourceStrategy",
             baseline.get("sourceStrategy"),

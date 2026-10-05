@@ -232,12 +232,14 @@ class TvBenchmarkReportTest(unittest.TestCase):
             "compilationMode": "Partial",
             "workload": "scroll_grid",
             "sourceStrategy": "explicit",
+            "profile": "confirmation",
         }
         candidate = {
             "device": {"model": "AFTR", "apiLevel": 31},
             "compilationMode": "Partial",
             "workload": "scroll_grid",
             "sourceStrategy": "explicit",
+            "profile": "confirmation",
         }
         error = session_compatibility_error(baseline, candidate)
         self.assertIsNotNone(error)
@@ -246,6 +248,21 @@ class TvBenchmarkReportTest(unittest.TestCase):
         compatible = dict(baseline)
         self.assertIsNone(session_compatibility_error(baseline, compatible))
 
+    def test_rejects_sessions_with_mismatched_profiles(self):
+        baseline = {
+            "device": {"model": "AFTR", "apiLevel": 28},
+            "compilationMode": "Partial",
+            "workload": "scroll_grid",
+            "sourceStrategy": "explicit",
+            "profile": "confirmation",
+        }
+        candidate = dict(baseline)
+        candidate["profile"] = "local_short"
+        error = session_compatibility_error(baseline, candidate)
+        self.assertIsNotNone(error)
+        self.assertIn("profile", error.lower())
+        self.assertIn("confirmation", error)
+        self.assertIn("local_short", error)
     def test_write_session_artifacts_rejects_invalid_session_for_lean_baseline(self):
         session = {
             "profile": "confirmation",
