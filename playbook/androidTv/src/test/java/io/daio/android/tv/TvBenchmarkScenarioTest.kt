@@ -80,7 +80,7 @@ class TvBenchmarkScenarioTest {
     }
 
     @Test
-    fun wildLambda_matchesWildClickable_visualAndInput() {
+    fun wildLambda_matchesWildClickable_inputFocus() {
         val itemsType = mutableStateOf("wild_clickable")
         composeRule.setContent {
             TvLayout(
@@ -89,17 +89,17 @@ class TvBenchmarkScenarioTest {
             )
         }
 
-        assertFocusFlipVisualAndInput()
+        assertFocusFlipInputAndStructure()
 
         composeRule.runOnIdle {
             itemsType.value = "wild_lambda"
         }
         composeRule.waitForIdle()
 
-        assertFocusFlipVisualAndInput()
+        assertFocusFlipInputAndStructure()
     }
 
-    private fun assertFocusFlipVisualAndInput() {
+    private fun assertFocusFlipInputAndStructure() {
         composeRule
             .onAllNodesWithText("style_focus_flip")
             .assertCountEquals(2)
@@ -153,7 +153,7 @@ class TvBenchmarkScenarioTest {
     }
 
     @Test
-    fun snapshotChrome_completionTiedToAppliedDraw_notStateWriteAlone() {
+    fun snapshotChrome_completionTiedToAppliedWork_notStateWriteAlone() {
         composeRule.setContent {
             TvLayout(
                 mode = "snapshot_chrome",
@@ -173,7 +173,7 @@ class TvBenchmarkScenarioTest {
             keyUp(Key.C)
         }
 
-        // Marker advances only after the chrome update is applied/drawn, not at the state write.
+        // Marker advances only after applied acknowledgement, not at the state write.
         composeRule
             .onNodeWithContentDescription("benchmark-snapshot-chrome-1")
             .assertExists()
@@ -191,7 +191,7 @@ class TvBenchmarkScenarioTest {
         composeRule
             .onNodeWithContentDescription("benchmark-item-0-2")
             .assertDoesNotExist()
-        assertFocusFlipVisualAndInput()
+        assertFocusFlipInputAndStructure()
     }
 
     @Test
@@ -215,6 +215,21 @@ class TvBenchmarkScenarioTest {
         composeRule
             .onAllNodesWithText("style_focus_flip")
             .assertCountEquals(2)
+    }
+
+    @Test
+    fun snapshotChromeDriverPublishesMarkerOnlyAfterApplication() {
+        val driver = BenchmarkSnapshotChromeDriver()
+
+        assertEquals("benchmark-snapshot-chrome-0", driver.marker)
+
+        assertEquals(1, driver.requestChromeFlip())
+        assertEquals(1, driver.requestedGeneration)
+        assertEquals("benchmark-snapshot-chrome-0", driver.marker)
+
+        driver.acknowledgeApplied(1)
+
+        assertEquals("benchmark-snapshot-chrome-1", driver.marker)
     }
 
     @Test

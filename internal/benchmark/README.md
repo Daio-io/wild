@@ -38,7 +38,8 @@ acknowledgement. Use these for unchanged-item recomposition cost without focus m
 Additional playbook modes for harness investigation:
 
 - `snapshot_chrome`: snapshot-driven chrome color flip (`C` key); completion marker
-  `benchmark-snapshot-chrome-N` advances only after applied acknowledgement.
+  `benchmark-snapshot-chrome-N` advances only after apply-time acknowledgement (not at the
+  state write), matching the recomposition-driver contract.
 - `nested_styles` / `nested_styles_small` / `nested_styles_large`: nested chrome owners around the
   shared item fixture.
 

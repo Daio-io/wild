@@ -468,7 +468,8 @@ private fun OptionsSnapshotChrome(
             }.semantics { contentDescription = driver.marker }
 
     // Reading requestedGeneration invalidates this scope after the state write so SideEffect can
-    // acknowledge applied work; the public marker still lags until acknowledgement.
+    // acknowledge applied composition; the public marker still lags until acknowledgement
+    // (same apply-time contract as BenchmarkRecompositionDriver).
     SideEffect {
         if (requestedGeneration > 0) {
             driver.acknowledgeApplied(requestedGeneration)

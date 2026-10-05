@@ -11,6 +11,7 @@ from tv_benchmark_report import (
     percent_delta,
     resolve_variant_alias,
     session_compatibility_error,
+    session_invalid_reason,
     write_session_artifacts,
 )
 
@@ -38,7 +39,10 @@ class TvBenchmarkReportTest(unittest.TestCase):
         self.assertAlmostEqual(metrics["frameDurationCpuMs"]["P50"], 5.902167, places=5)
         self.assertEqual(metrics["memoryHeapSizeMaxKb"]["median"], 9288.0)
         self.assertGreater(metrics["totalRunTimeNs"], 0)
-        self.assertEqual(metrics["frameOverrunMs"], {"available": False})
+        self.assertEqual(
+            metrics["frameOverrunMs"],
+            {"available": False, "reason": "missing_metric"},
+        )
 
     def test_percent_delta_handles_baseline(self):
         self.assertAlmostEqual(percent_delta(9.0, 12.0), -25.0)
@@ -133,8 +137,11 @@ class TvBenchmarkReportTest(unittest.TestCase):
             benchmark_name="scrollGridWithWildClickable",
             api_level=28,
         )
-        self.assertEqual(metrics["frameOverrunMs"], {"available": False})
-        self.assertNotEqual(metrics["frameOverrunMs"], {"available": False, "P50": 0})
+        self.assertEqual(
+            metrics["frameOverrunMs"],
+            {"available": False, "reason": "api_lt_31"},
+        )
+        self.assertNotIn("P50", metrics["frameOverrunMs"])
 
     def test_extract_retains_frame_overrun_when_present(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -181,7 +188,10 @@ class TvBenchmarkReportTest(unittest.TestCase):
                                 "P95": 7.0,
                                 "P99": 8.0,
                             },
-                            "frameOverrunMs": {"available": False},
+                            "frameOverrunMs": {
+                                "available": False,
+                                "reason": "api_lt_31",
+                            },
                             "totalRunTimeNs": 1000,
                         },
                         "wild_lambda": {
@@ -192,7 +202,10 @@ class TvBenchmarkReportTest(unittest.TestCase):
                                 "P95": 7.1,
                                 "P99": 8.1,
                             },
-                            "frameOverrunMs": {"available": False},
+                            "frameOverrunMs": {
+                                "available": False,
+                                "reason": "api_lt_31",
+                            },
                             "totalRunTimeNs": 1100,
                         },
                     },
@@ -263,17 +276,39 @@ class TvBenchmarkReportTest(unittest.TestCase):
         self.assertIn("profile", error.lower())
         self.assertIn("confirmation", error)
         self.assertIn("local_short", error)
-    def test_write_session_artifacts_rejects_invalid_session_for_lean_baseline(self):
+
+    def test_session_invalid_reason_reports_missing_variant_archive(self):
         session = {
-            "profile": "confirmation",
-            "device": {"model": "AFTR", "androidVersion": "9", "apiLevel": 28},
-            "gitSha": "deadbeef",
-            "composeVersion": "1.11.1",
-            "workload": "scroll_grid",
-            "sourceStrategy": "explicit",
-            "compilationMode": "Partial",
-            "valid": False,
-            "invalidReason": "missing recomposition markers",
+            "variants": ["wild_clickable", "wild_lambda"],
+            "invocations": [
+                {
+                    "index": 1,
+                    "results": {
+                        "wild_clickable": {
+                            "frameCount": {"median": 512.0},
+                            "frameDurationCpuMs": {
+                                "P50": 6.5,
+                                "P90": 9.0,
+                                "P95": 10.0,
+                                "P99": 12.0,
+                            },
+                        },
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            session_dir = Path(tmp)
+            inv = session_dir / "invocations" / "01" / "wild_clickable"
+            inv.mkdir(parents=True)
+            (inv / "benchmarkData.json").write_text("{}")
+            reason = session_invalid_reason(session_dir, session)
+            self.assertIsNotNone(reason)
+            self.assertIn("missing completion markers", reason.lower())
+            self.assertIn("wild_lambda", reason)
+
+    def test_session_invalid_reason_accepts_complete_archives(self):
+        session = {
             "variants": ["wild_clickable"],
             "invocations": [
                 {
@@ -287,7 +322,46 @@ class TvBenchmarkReportTest(unittest.TestCase):
                                 "P95": 10.0,
                                 "P99": 12.0,
                             },
-                            "frameOverrunMs": {"available": False},
+                        },
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            session_dir = Path(tmp)
+            inv = session_dir / "invocations" / "01" / "wild_clickable"
+            inv.mkdir(parents=True)
+            (inv / "benchmarkData.json").write_text("{}")
+            self.assertIsNone(session_invalid_reason(session_dir, session))
+
+    def test_write_session_artifacts_rejects_invalid_session_for_lean_baseline(self):
+        session = {
+            "profile": "confirmation",
+            "device": {"model": "AFTR", "androidVersion": "9", "apiLevel": 28},
+            "gitSha": "deadbeef",
+            "composeVersion": "1.11.1",
+            "workload": "scroll_grid",
+            "sourceStrategy": "explicit",
+            "compilationMode": "Partial",
+            "valid": False,
+            "invalidReason": "missing completion markers for wild_lambda",
+            "variants": ["wild_clickable"],
+            "invocations": [
+                {
+                    "index": 1,
+                    "results": {
+                        "wild_clickable": {
+                            "frameCount": {"median": 512.0},
+                            "frameDurationCpuMs": {
+                                "P50": 6.5,
+                                "P90": 9.0,
+                                "P95": 10.0,
+                                "P99": 12.0,
+                            },
+                            "frameOverrunMs": {
+                                "available": False,
+                                "reason": "api_lt_31",
+                            },
                             "totalRunTimeNs": 1000,
                         }
                     },
@@ -297,10 +371,60 @@ class TvBenchmarkReportTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
             lean = out / "lean"
-            with self.assertRaisesRegex(ValueError, "missing recomposition markers"):
+            with self.assertRaisesRegex(ValueError, "missing completion markers"):
                 write_session_artifacts(out, session, lean_baseline_dir=lean)
             self.assertTrue((out / "session.json").exists())
             self.assertFalse(lean.exists())
+
+    def test_write_session_artifacts_copies_lean_variant_files_when_valid(self):
+        session = {
+            "profile": "confirmation",
+            "device": {"model": "AFTR", "androidVersion": "9", "apiLevel": 28},
+            "gitSha": "deadbeef",
+            "composeVersion": "1.11.1",
+            "workload": "scroll_grid",
+            "sourceStrategy": "explicit",
+            "compilationMode": "Partial",
+            "valid": True,
+            "variants": ["wild_clickable"],
+            "invocations": [
+                {
+                    "index": 1,
+                    "results": {
+                        "wild_clickable": {
+                            "frameCount": {"median": 512.0},
+                            "frameDurationCpuMs": {
+                                "P50": 6.5,
+                                "P90": 9.0,
+                                "P95": 10.0,
+                                "P99": 12.0,
+                            },
+                            "frameOverrunMs": {
+                                "available": False,
+                                "reason": "api_lt_31",
+                            },
+                            "totalRunTimeNs": 1000,
+                        }
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "session"
+            lean = Path(tmp) / "lean"
+            variant = out / "invocations" / "01" / "wild_clickable"
+            variant.mkdir(parents=True)
+            (variant / "benchmarkData.json").write_text('{"ok": true}\n')
+            (variant / "message.txt").write_text("done\n")
+            write_session_artifacts(out, session, lean_baseline_dir=lean)
+            self.assertTrue((lean / "session.json").exists())
+            self.assertTrue((lean / "summary.md").exists())
+            self.assertTrue(
+                (lean / "invocations" / "01" / "wild_clickable" / "benchmarkData.json").exists()
+            )
+            self.assertTrue(
+                (lean / "invocations" / "01" / "wild_clickable" / "message.txt").exists()
+            )
 
 
 if __name__ == "__main__":

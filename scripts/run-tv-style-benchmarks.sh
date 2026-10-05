@@ -122,6 +122,8 @@ COMPOSE_VERSION="$(awk -F' = ' '/^compose-multiplatform/ {gsub(/"/, "", $2); pri
 MODEL_SAFE="$(printf '%s' "$MODEL" | tr ' /' '__')"
 STAMP="$(date +%Y-%m-%d_%H-%M-%S)"
 SESSION_DIR="$ROOT_DIR/benchmark_results/sessions/${STAMP}_${MODEL_SAFE}_${PROFILE}"
+DATE_STAMP="$(date +%Y-%m-%d)"
+LEAN_BASELINE_DIR="$ROOT_DIR/benchmark_results/snapshots/${DATE_STAMP}_${MODEL_SAFE}_${PROFILE}"
 CONNECTED_OUTPUT_ROOT="$ROOT_DIR/internal/benchmark/build/outputs/connected_android_test_additional_output/debug/connected"
 
 mkdir -p "$SESSION_DIR"
@@ -191,7 +193,7 @@ for ((i = 1; i <= INVOCATIONS; i++)); do
   done
 done
 
-python3 - "$ROOT_DIR" "$SESSION_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$API_LEVEL" "$GIT_SHA" "$COMPOSE_VERSION" "$GIT_DIRTY" "$APK_HASH" "$WORKLOAD" "$SOURCE_STRATEGY" "${SELECTED_FOLDERS[@]}" <<'PY'
+python3 - "$ROOT_DIR" "$SESSION_DIR" "$LEAN_BASELINE_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$API_LEVEL" "$GIT_SHA" "$COMPOSE_VERSION" "$GIT_DIRTY" "$APK_HASH" "$WORKLOAD" "$SOURCE_STRATEGY" "${SELECTED_FOLDERS[@]}" <<'PY'
 from __future__ import annotations
 
 import sys
@@ -199,15 +201,21 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 session_dir = Path(sys.argv[2])
-profile, model, android, api_level, git_sha, compose = sys.argv[3:9]
-git_dirty = sys.argv[9].lower() == "true"
-apk_hash = sys.argv[10]
-workload = sys.argv[11]
-source_strategy = sys.argv[12]
-folders = sys.argv[13:]
+lean_baseline_dir = Path(sys.argv[3])
+profile, model, android, api_level, git_sha, compose = sys.argv[4:10]
+git_dirty = sys.argv[10].lower() == "true"
+apk_hash = sys.argv[11]
+workload = sys.argv[12]
+source_strategy = sys.argv[13]
+folders = sys.argv[14:]
 
 sys.path.insert(0, str(root / "scripts"))
-from tv_benchmark_report import FOLDER_TO_METHOD, extract_variant_metrics, write_session_artifacts
+from tv_benchmark_report import (
+    FOLDER_TO_METHOD,
+    extract_variant_metrics,
+    session_invalid_reason,
+    write_session_artifacts,
+)
 
 api_level_int = int(api_level) if api_level.isdigit() else None
 
@@ -225,7 +233,6 @@ session = {
     "workload": workload,
     "sourceStrategy": source_strategy,
     "compilationMode": "Partial",
-    "valid": True,
     "variants": folders,
     "invocations": [],
 }
@@ -236,11 +243,12 @@ for inv_dir in sorted(session_dir.glob("invocations/*")):
     results = {}
     for folder in folders:
         data = inv_dir / folder / "benchmarkData.json"
-        results[folder] = extract_variant_metrics(
-            data,
-            FOLDER_TO_METHOD[folder],
-            api_level=api_level_int,
-        )
+        if data.is_file():
+            results[folder] = extract_variant_metrics(
+                data,
+                FOLDER_TO_METHOD[folder],
+                api_level=api_level_int,
+            )
     session["invocations"].append(
         {
             "index": int(inv_dir.name),
@@ -249,9 +257,16 @@ for inv_dir in sorted(session_dir.glob("invocations/*")):
         }
     )
 
-write_session_artifacts(session_dir, session)
+invalid_reason = session_invalid_reason(session_dir, session)
+session["valid"] = invalid_reason is None
+if invalid_reason is not None:
+    session["invalidReason"] = invalid_reason
+
+write_session_artifacts(session_dir, session, lean_baseline_dir=lean_baseline_dir)
 print(session_dir / "summary.md")
+print(lean_baseline_dir)
 PY
 
 echo "Session archived at: $SESSION_DIR"
+echo "Lean baseline: $LEAN_BASELINE_DIR"
 echo "Summary: $SESSION_DIR/summary.md"

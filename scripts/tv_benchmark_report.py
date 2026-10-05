@@ -65,8 +65,45 @@ def _frame_overrun_metric(
         }
     # API < 31 cannot supply frameOverrunMs; never coerce missing data to 0.
     if api_level is not None and api_level < 31:
-        return {"available": False}
-    return {"available": False}
+        return {"available": False, "reason": "api_lt_31"}
+    return {"available": False, "reason": "missing_metric"}
+
+
+def session_invalid_reason(
+    session_dir: Path,
+    session: dict[str, Any],
+) -> str | None:
+    """Return a rejection reason when completion archives/metrics are incomplete."""
+    variants = session.get("variants") or []
+    invocations = session.get("invocations") or []
+    if not invocations:
+        return "incomplete session: no invocations"
+    if not variants:
+        return "incomplete session: no variants"
+
+    invocation_dirs = {
+        int(path.name): path
+        for path in session_dir.glob("invocations/*")
+        if path.is_dir() and path.name.isdigit()
+    }
+
+    for invocation in invocations:
+        index = invocation.get("index")
+        try:
+            inv_dir = invocation_dirs[int(index)]
+        except (TypeError, ValueError, KeyError):
+            return f"missing completion markers for invocation {index}"
+
+        results = invocation.get("results") or {}
+        for variant in variants:
+            metrics = results.get(variant)
+            data_path = inv_dir / str(variant) / "benchmarkData.json"
+            if metrics is None or not data_path.is_file():
+                return f"missing completion markers for {variant}"
+            cpu = metrics.get("frameDurationCpuMs") or {}
+            if not all(key in cpu for key in ("P50", "P90", "P95", "P99")):
+                return f"missing completion markers for {variant}"
+    return None
 
 
 def percent_delta(value: float | None, baseline: float | None) -> float | None:
@@ -296,3 +333,16 @@ def write_session_artifacts(
     lean_baseline_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(session_dir / "session.json", lean_baseline_dir / "session.json")
     shutil.copy2(session_dir / "summary.md", lean_baseline_dir / "summary.md")
+
+    for inv_dir in sorted(session_dir.glob("invocations/*")):
+        if not inv_dir.is_dir():
+            continue
+        for variant_dir in sorted(inv_dir.iterdir()):
+            if not variant_dir.is_dir():
+                continue
+            dest = lean_baseline_dir / "invocations" / inv_dir.name / variant_dir.name
+            dest.mkdir(parents=True, exist_ok=True)
+            for name in ("benchmarkData.json", "message.txt"):
+                src = variant_dir / name
+                if src.exists():
+                    shutil.copy2(src, dest / name)
