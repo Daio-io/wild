@@ -29,6 +29,7 @@ dependencies {
     androidTestImplementation(projects.components.button)
     // See THE-511 exception on id("io.daio.compose") above.
     androidTestImplementation(compose.ui)
+    androidTestImplementation(compose.foundation)
     androidTestImplementation(libs.androidx.benchmark.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.junit)

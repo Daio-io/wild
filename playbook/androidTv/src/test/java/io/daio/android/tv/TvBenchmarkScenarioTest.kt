@@ -65,6 +65,121 @@ class TvBenchmarkScenarioTest {
     }
 
     @Test
+    fun wildLambdaVariantsRouteThroughStyledClickableWithDistinctStyleModes() {
+        val value = benchmarkStyleVariant("wild_clickable")
+        val hoisted = benchmarkStyleVariant("wild_lambda")
+        val recreated = benchmarkStyleVariant("wild_lambda_recreated")
+
+        assertEquals(BenchmarkItemImplementation.StyledClickable, hoisted.implementation)
+        assertEquals(BenchmarkItemImplementation.StyledClickable, recreated.implementation)
+        assertEquals(BenchmarkInteractionSourceStrategy.Explicit, hoisted.interactionSourceStrategy)
+        assertEquals(BenchmarkInteractionSourceStrategy.Explicit, recreated.interactionSourceStrategy)
+        assertEquals(BenchmarkStyleMode.Value, value.styleMode)
+        assertEquals(BenchmarkStyleMode.HoistedLambda, hoisted.styleMode)
+        assertEquals(BenchmarkStyleMode.RecreatedLambda, recreated.styleMode)
+    }
+
+    @Test
+    fun wildLambda_matchesWildClickable_visualAndInput() {
+        val itemsType = mutableStateOf("wild_clickable")
+        composeRule.setContent {
+            TvLayout(
+                mode = "focus_flip",
+                itemsType = itemsType.value,
+            )
+        }
+
+        assertFocusFlipVisualAndInput()
+
+        composeRule.runOnIdle {
+            itemsType.value = "wild_lambda"
+        }
+        composeRule.waitForIdle()
+
+        assertFocusFlipVisualAndInput()
+    }
+
+    private fun assertFocusFlipVisualAndInput() {
+        composeRule
+            .onAllNodesWithText("style_focus_flip")
+            .assertCountEquals(2)
+        val firstTarget =
+            composeRule
+                .onNodeWithContentDescription("benchmark-item-0-0")
+                .assertIsFocused()
+        val secondTarget = composeRule.onNodeWithContentDescription("benchmark-item-0-1")
+
+        firstTarget.performKeyInput {
+            keyDown(Key.DirectionRight)
+            keyUp(Key.DirectionRight)
+        }
+        secondTarget.assertIsFocused()
+
+        secondTarget.performKeyInput {
+            keyDown(Key.DirectionLeft)
+            keyUp(Key.DirectionLeft)
+        }
+        firstTarget.assertIsFocused()
+    }
+
+    @Test
+    fun recomposeOnly_noFocusMovement_40HandledR() {
+        composeRule.setContent {
+            TvLayout(
+                mode = "recompose_only",
+                itemsType = "wild_lambda",
+                enableRecompositionDriver = true,
+            )
+        }
+
+        val focusTarget =
+            composeRule
+                .onNodeWithContentDescription("benchmark-item-0-0")
+                .assertIsFocused()
+        composeRule
+            .onNodeWithContentDescription("benchmark-recomposition-0")
+            .assertExists()
+
+        repeat(40) { generation ->
+            focusTarget.performKeyInput {
+                keyDown(Key.R)
+                keyUp(Key.R)
+            }
+            composeRule
+                .onNodeWithContentDescription("benchmark-recomposition-${generation + 1}")
+                .assertExists()
+            focusTarget.assertIsFocused()
+        }
+    }
+
+    @Test
+    fun snapshotChrome_completionTiedToAppliedDraw_notStateWriteAlone() {
+        composeRule.setContent {
+            TvLayout(
+                mode = "snapshot_chrome",
+                itemsType = "wild_lambda",
+            )
+        }
+
+        composeRule
+            .onNodeWithContentDescription("benchmark-item-0-0")
+            .assertIsFocused()
+        composeRule
+            .onNodeWithContentDescription("benchmark-snapshot-chrome-0")
+            .assertExists()
+
+        composeRule.onNodeWithContentDescription("benchmark-item-0-0").performKeyInput {
+            keyDown(Key.C)
+            keyUp(Key.C)
+        }
+
+        // Marker advances only after the chrome update is applied/drawn, not at the state write.
+        composeRule
+            .onNodeWithContentDescription("benchmark-snapshot-chrome-1")
+            .assertExists()
+    }
+
+    @Test
     fun focusFlipScenarioAlternatesBetweenTwoStationaryTargets() {
         composeRule.setContent {
             TvLayout(

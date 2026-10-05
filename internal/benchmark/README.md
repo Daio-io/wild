@@ -3,6 +3,10 @@
 The TV macrobenchmark suite compares equivalent grid items across explicit style variants:
 
 - `wild_clickable`: production Wild `Modifier.clickable(style = ...)` traversable-node chain.
+- `wild_lambda`: production Wild `Modifier.clickable(styleBlock = ...)` with a hoisted equivalent
+  callback; default lambda candidate for value-vs-lambda comparisons.
+- `wild_lambda_recreated`: diagnostic negative control that recreates the style callback each
+  composition; not the default comparable candidate.
 - `explicit_source_fast_path`: production Wild styled clickable with one remembered, non-null
   `MutableInteractionSource`, exercising the ordinary modifier path.
 - `null_source_compatibility`: the same styled clickable and item configuration with a null source,
@@ -27,6 +31,17 @@ lookup/null branch in each driven item. Both measured variants pay that same min
 detailed composition records and their marker strings are created only when the test observer is
 present.
 
+`recomposeOnlyWithWildClickable` / `recomposeOnlyWithWildLambda` keep focus fixed on
+`benchmark-item-0-0` and issue 40 handled `R` requests per iteration with per-generation
+acknowledgement. Use these for unchanged-item recomposition cost without focus movement.
+
+Additional playbook modes for harness investigation:
+
+- `snapshot_chrome`: snapshot-driven chrome color flip (`C` key); completion marker
+  `benchmark-snapshot-chrome-N` advances only after applied acknowledgement.
+- `nested_styles` / `nested_styles_small` / `nested_styles_large`: nested chrome owners around the
+  shared item fixture.
+
 ## Release workflow (preferred)
 
 Use the single-device release runner for comparable Wild vs Material claims. Prefer one physical
@@ -36,13 +51,18 @@ Android TV or matching device profile. Emulator runs are useful for harness debu
 # Release claims (confirmation profile)
 ./scripts/run-tv-style-benchmarks.sh --profile confirmation
 
+# Value vs hoisted-lambda comparison (rotate order across invocations)
+./scripts/run-tv-style-benchmarks.sh --profile confirmation \
+  --variants clickable,lambda --invocations 2
+
 # Local exploration on a physical device
 ./scripts/run-tv-style-benchmarks.sh --profile local_short --invocations 1
 ```
 
 Useful flags:
 
-- `--variants clickable,container,material` — subset of the release comparison set
+- `--variants clickable,container,material,lambda` — subset of the comparison set
+  (`lambda_recreated` is diagnostic only)
 - `--serial <adb-serial>` — required when more than one device is connected
 - `--invocations N` — repeat the selected set; order rotates left each invocation to
   counterbalance thermal / position bias (prefer `N` equal to the variant count)
@@ -54,6 +74,8 @@ Alias mapping:
 | Alias | Variant folder | Test method |
 |-------|----------------|-------------|
 | `clickable` | `wild_clickable` | `scrollGridWithWildClickable` |
+| `lambda` | `wild_lambda` | `scrollGridWithWildLambda` |
+| `lambda_recreated` | `wild_lambda_recreated` | `scrollGridWithWildLambdaRecreated` |
 | `container` | `wild_container` | `scrollGridWithWildContainer` |
 | `material` | `material_surface` | `scrollGridWithMaterialSurface` |
 
@@ -63,6 +85,13 @@ Each session archives raw JSON, optional message text, perfetto traces, `session
 ```text
 benchmark_results/sessions/<yyyy-mm-dd_HH-mm-ss>_<device>_<profile>/
 ```
+
+Session metadata records git SHA, dirty flag, APK hash, device model/API, Compose version,
+compilation mode (`Partial`), workload (`scroll_grid`), source strategy (`explicit`), variant
+order per invocation, and frame distributions. `frameOverrunMs` is retained when present and
+reported as unavailable on API < 31 (never coerced to 0). Invalid or incomplete sessions are
+rejected rather than silently retried; incompatible device/API/compilation/workload pairs must not
+be compared. Missing markers invalidate a session and prevent writing a lean baseline.
 
 Full session directories (including traces) stay local and are gitignored. Lean dated baselines for
 human comparison live under:
@@ -79,7 +108,7 @@ focused-marker validation; capture a new dated snapshot after harness changes.
 **Confirmation / release profile (default):** warm startup, 20 measured iterations,
 `CompilationMode.Partial()`, full scroll path ending at `benchmark-item-5-20`, fixed ~50ms key pace,
 `FrameTimingMetric` + `MemoryUsageMetric(Mode.Max)`. This is the only profile valid for release
-claims in docs or PRs.
+claims in docs or PRs. Durations remain report-only — no automatic CI duration gate.
 
 **Local short profile:** same compilation mode and metrics, 5 iterations, shortened scroll path
 ending at `benchmark-item-2-10`. Use for device bring-up and harness debugging only — not for
@@ -89,6 +118,9 @@ The runner installs `:playbook:androidTv` before measuring, runs each selected v
 (with per-invocation order rotation), and copies outputs before the next Gradle run overwrites them.
 Each invocation records its run `order` in `session.json`. Summaries are report-only: no automatic
 pass/fail thresholds.
+
+For confirmation claims, collect at least three complete sessions with rotated variant order on the
+same physical device, then archive raw JSON/traces/metadata and lean baselines as above.
 
 ## Deep-dive Gradle commands
 
@@ -107,11 +139,22 @@ Directly comparable unchanged-recomposition cases:
   -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#recomposeUnchangedGridWithNullSourceCompatibility"
 ```
 
+Focus-fixed recomposition (40 handled `R` per iteration):
+
+```bash
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#recomposeOnlyWithWildClickable"
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#recomposeOnlyWithWildLambda"
+```
+
 Two-item focus-flip pair:
 
 ```bash
 ./gradlew :internal:benchmark:connectedCheck \
   -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithWildClickable"
+./gradlew :internal:benchmark:connectedCheck \
+  -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithWildLambda"
 ./gradlew :internal:benchmark:connectedCheck \
   -Pandroid.testInstrumentationRunnerArguments.class="io.daio.wild.benchmark.TvBenchmarkTest#focusFlipWithWildContainer"
 ```
@@ -148,6 +191,12 @@ partially customized style. Run it on a physical Android device using the releas
 ```bash
 ./gradlew :internal:style-benchmark:connectedCheck
 ```
+
+`StyleModifierConstructionBenchmark` adds warmed construction cases for value and hoisted-lambda
+`interactionStyle` modifiers (`valueInteractionStyle_construction`,
+`hoistedLambdaInteractionStyle_construction`). Sources, base styles, and callbacks are hoisted
+outside `measureRepeated`; results label definition/modifier construction only — never attached
+node resolution. Keep `StyleDefaultsBenchmark` as the default-factory control.
 
 AndroidX Benchmark writes JSON beneath
 `internal/style-benchmark/build/outputs/connected_android_test_additional_output/releaseAndroidTest/connected/<device>/`.

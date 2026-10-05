@@ -31,6 +31,7 @@ private const val ITEMS_EXTRA = "ITEMS"
 private const val RECOMPOSITION_DRIVER_EXTRA = "RECOMPOSITION_DRIVER"
 private const val GRID_MODE = "grid"
 private const val FOCUS_FLIP_MODE = "focus_flip"
+private const val RECOMPOSE_ONLY_MODE = "recompose_only"
 private const val FIRST_FOCUS_TARGET = "benchmark-item-0-0"
 private const val SCROLL_TERMINAL_FOCUS_TARGET = "benchmark-item-5-20"
 private const val FOCUS_FLIP_TERMINAL_TARGET = "benchmark-item-0-1"
@@ -38,6 +39,7 @@ private const val RECOMPOSITION_MARKER_PREFIX = "benchmark-recomposition-"
 private const val FOCUS_TARGET_TIMEOUT_MS = 10_000L
 private const val BENCHMARK_PROFILE_ARGUMENT = "benchmarkProfile"
 private const val LOCAL_SHORT_PROFILE = "local_short"
+private const val RECOMPOSE_ONLY_HANDLED_R_COUNT = 40
 
 /**
  * Fixed delay between DPAD keys. Prefer this over [UiDevice.waitForIdle] alone so bursty focus
@@ -54,6 +56,8 @@ private data class BenchmarkProfile(
 
 private enum class StyleVariant(val extraValue: String) {
     WildClickable("wild_clickable"),
+    WildLambda("wild_lambda"),
+    WildLambdaRecreated("wild_lambda_recreated"),
     ExplicitSourceFastPath("explicit_source_fast_path"),
     NullSourceCompatibility("null_source_compatibility"),
     WildContainer("wild_container"),
@@ -130,6 +134,28 @@ class TvBenchmarkTest {
     }
 
     @Test
+    fun scrollGridWithWildLambda() {
+        val profile = activeBenchmarkProfile()
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.WildLambda,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
+        )
+    }
+
+    @Test
+    fun scrollGridWithWildLambdaRecreated() {
+        val profile = activeBenchmarkProfile()
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.WildLambdaRecreated,
+            iterations = profile.iterations,
+            focusSequence = profile.scrollFocusSequence,
+            terminalFocusTarget = profile.scrollTerminalTarget,
+        )
+    }
+
+    @Test
     fun scrollGridWithWildContainer() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
@@ -145,6 +171,18 @@ class TvBenchmarkTest {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
             variant = StyleVariant.WildClickable,
+            mode = FOCUS_FLIP_MODE,
+            iterations = profile.iterations,
+            focusSequence = FOCUS_FLIP_SEQUENCE,
+            terminalFocusTarget = FOCUS_FLIP_TERMINAL_TARGET,
+        )
+    }
+
+    @Test
+    fun focusFlipWithWildLambda() {
+        val profile = activeBenchmarkProfile()
+        benchmarkRule.measureStyleVariant(
+            variant = StyleVariant.WildLambda,
             mode = FOCUS_FLIP_MODE,
             iterations = profile.iterations,
             focusSequence = FOCUS_FLIP_SEQUENCE,
@@ -176,6 +214,24 @@ class TvBenchmarkTest {
     }
 
     @Test
+    fun recomposeOnlyWithWildClickable() {
+        val profile = activeBenchmarkProfile()
+        benchmarkRule.measureRecomposeOnly(
+            variant = StyleVariant.WildClickable,
+            iterations = profile.iterations,
+        )
+    }
+
+    @Test
+    fun recomposeOnlyWithWildLambda() {
+        val profile = activeBenchmarkProfile()
+        benchmarkRule.measureRecomposeOnly(
+            variant = StyleVariant.WildLambda,
+            iterations = profile.iterations,
+        )
+    }
+
+    @Test
     fun recomposeUnchangedGridWithExplicitSourceFastPath() {
         val profile = activeBenchmarkProfile()
         benchmarkRule.measureStyleVariant(
@@ -197,6 +253,40 @@ class TvBenchmarkTest {
             terminalFocusTarget = profile.scrollTerminalTarget,
             enableRecompositionDriver = true,
         )
+    }
+}
+
+private fun MacrobenchmarkRule.measureRecomposeOnly(
+    variant: StyleVariant,
+    iterations: Int,
+) {
+    measureRepeated(
+        packageName = APP_PACKAGE,
+        metrics = styleMetrics(),
+        compilationMode = BENCHMARK_COMPILATION_MODE,
+        startupMode = StartupMode.WARM,
+        iterations = iterations,
+        setupBlock = {
+            startActivityAndWait {
+                it.putExtra(MODE_EXTRA, RECOMPOSE_ONLY_MODE)
+                it.putExtra(ITEMS_EXTRA, variant.extraValue)
+                it.putExtra(RECOMPOSITION_DRIVER_EXTRA, true)
+            }
+            device.waitForIdle()
+            check(device.waitUntilFocusedMarker(FIRST_FOCUS_TARGET, FOCUS_TARGET_TIMEOUT_MS)) {
+                "Timed out waiting for first focused benchmark marker $FIRST_FOCUS_TARGET"
+            }
+            check(device.wait(Until.hasObject(By.desc(recompositionMarker(0))), FOCUS_TARGET_TIMEOUT_MS)) {
+                "Timed out waiting for initial recomposition marker ${recompositionMarker(0)}"
+            }
+        },
+    ) {
+        repeat(RECOMPOSE_ONLY_HANDLED_R_COUNT) { index ->
+            device.requestUnchangedRecomposition(index + 1)
+        }
+        check(device.waitUntilFocusedMarker(FIRST_FOCUS_TARGET, FOCUS_TARGET_TIMEOUT_MS)) {
+            "Focus moved during recompose_only; expected $FIRST_FOCUS_TARGET to remain focused"
+        }
     }
 }
 
