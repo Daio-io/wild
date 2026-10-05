@@ -188,27 +188,10 @@ class TvBenchmarkScenarioTest {
             )
         }
 
-        val firstTarget =
-            composeRule
-                .onNodeWithContentDescription("benchmark-item-0-0")
-                .assertIsFocused()
-        val secondTarget =
-            composeRule.onNodeWithContentDescription("benchmark-item-0-1")
         composeRule
             .onNodeWithContentDescription("benchmark-item-0-2")
             .assertDoesNotExist()
-
-        firstTarget.performKeyInput {
-            keyDown(Key.DirectionRight)
-            keyUp(Key.DirectionRight)
-        }
-        secondTarget.assertIsFocused()
-
-        secondTarget.performKeyInput {
-            keyDown(Key.DirectionLeft)
-            keyUp(Key.DirectionLeft)
-        }
-        firstTarget.assertIsFocused()
+        assertFocusFlipVisualAndInput()
     }
 
     @Test

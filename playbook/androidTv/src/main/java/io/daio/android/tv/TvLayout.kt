@@ -393,29 +393,11 @@ private fun OptionsRecomposeOnly(
     modifier: Modifier = Modifier,
     recompositionDriver: BenchmarkRecompositionDriver? = null,
 ) {
-    val config = remember { BenchmarkItemConfig() }
-    val style = remember(config) { config.style }
-    val focusRequester = remember { FocusRequester() }
-
-    Box(
-        modifier = modifier.fillMaxSize().background(Color.Black),
-        contentAlignment = Alignment.Center,
-    ) {
-        BenchmarkItem(
-            variant = variant,
-            title = variant.benchmarkTitle,
-            style = style,
-            config = config,
-            marker = "benchmark-item-0-0",
-            recompositionDriver = recompositionDriver,
-            onClick = { },
-            modifier = Modifier.focusRequester(focusRequester),
-        )
-    }
-
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-    }
+    SingleItemBenchmarkFixture(
+        variant = variant,
+        modifier = modifier,
+        recompositionDriver = recompositionDriver,
+    )
 }
 
 @Stable
@@ -457,7 +439,6 @@ private fun OptionsSnapshotChrome(
 ) {
     val driver = remember { BenchmarkSnapshotChromeDriver() }
     val config = remember { BenchmarkItemConfig() }
-    val focusRequester = remember { FocusRequester() }
     val requestedGeneration = driver.requestedGeneration
     val chromeColor = driver.chromeColor
 
@@ -494,25 +475,12 @@ private fun OptionsSnapshotChrome(
         }
     }
 
-    Box(
-        modifier = drivenModifier.fillMaxSize().background(Color.Black),
-        contentAlignment = Alignment.Center,
-    ) {
-        BenchmarkItem(
-            variant = variant,
-            title = variant.benchmarkTitle,
-            style = style,
-            config = config,
-            marker = "benchmark-item-0-0",
-            recompositionDriver = null,
-            onClick = { },
-            modifier = Modifier.focusRequester(focusRequester),
-        )
-    }
-
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-    }
+    SingleItemBenchmarkFixture(
+        variant = variant,
+        modifier = drivenModifier,
+        style = style,
+        config = config,
+    )
 }
 
 @Composable
@@ -521,30 +489,47 @@ private fun OptionsNestedStyles(
     modifier: Modifier = Modifier,
     nestedSize: NestedStylesSize,
 ) {
-    val config = remember { BenchmarkItemConfig() }
-    val style = remember(config) { config.style }
-    val focusRequester = remember { FocusRequester() }
     val nestedDepth =
         when (nestedSize) {
             NestedStylesSize.Small -> 1
             NestedStylesSize.Large -> 4
         }
 
+    SingleItemBenchmarkFixture(variant = variant, modifier = modifier) { style, item ->
+        NestedStyledChrome(
+            depth = nestedDepth,
+            style = style,
+            content = item,
+        )
+    }
+}
+
+@Composable
+private fun SingleItemBenchmarkFixture(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+    recompositionDriver: BenchmarkRecompositionDriver? = null,
+    style: Style? = null,
+    config: BenchmarkItemConfig? = null,
+    wrapItem: @Composable (style: Style, item: @Composable () -> Unit) -> Unit =
+        { _, item -> item() },
+) {
+    val resolvedConfig = config ?: remember { BenchmarkItemConfig() }
+    val resolvedStyle = style ?: remember(resolvedConfig) { resolvedConfig.style }
+    val focusRequester = remember { FocusRequester() }
+
     Box(
         modifier = modifier.fillMaxSize().background(Color.Black),
         contentAlignment = Alignment.Center,
     ) {
-        NestedStyledChrome(
-            depth = nestedDepth,
-            style = style,
-        ) {
+        wrapItem(resolvedStyle) {
             BenchmarkItem(
                 variant = variant,
                 title = variant.benchmarkTitle,
-                style = style,
-                config = config,
+                style = resolvedStyle,
+                config = resolvedConfig,
                 marker = "benchmark-item-0-0",
-                recompositionDriver = null,
+                recompositionDriver = recompositionDriver,
                 onClick = { },
                 modifier = Modifier.focusRequester(focusRequester),
             )
