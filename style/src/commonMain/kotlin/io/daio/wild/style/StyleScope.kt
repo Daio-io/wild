@@ -51,6 +51,17 @@ interface StyleScope : InteractionState {
     var scaleAnimationSpec: AnimationSpec<Float>?
 }
 
+/**
+ * Alias for [StyleScope.color] so migrations that used `backgroundColor` continue to compile.
+ *
+ * @since 0.7.0
+ */
+var StyleScope.backgroundColor: Color
+    get() = color
+    set(value) {
+        color = value
+    }
+
 internal class DefaultStyleScope : StyleScope {
     override var color: Color = Color.Unspecified
     override var alpha: Float = 1f

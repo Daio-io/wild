@@ -80,6 +80,17 @@ Modifier.interactionStyle(interactionSource = interactionSource) {
 }
 ```
 
+`StyleScope.backgroundColor` is an alias for `color`, so older lambda migrations that assigned
+`backgroundColor` continue to compile.
+
+Clickable, selectable, and interactable also expose a required `styleBlock` overload that installs
+the same block-based `interactionStyle` chain. Prefer `styleBlock = { … }` (or
+`styleBlock = null`) when migrating from deprecated lambda helpers; keep the existing
+`style: Style?` overload for value styles. Deprecated `experimentalClickable` /
+`experimentalSelectable` / `experimentalInteractable` / `experimentalInteractionStyle` lambda
+`ReplaceWith` expressions target these current APIs (`styleBlock = style` and
+`interactionStyle(..., block)`).
+
 !!! note "StyleScope DSL reset semantics"
     When using the `StyleScope` block overload of `interactionStyle`, each evaluation resets visual
     properties to defaults before your block runs: `color = Color.Unspecified`, `alpha = 1f`,

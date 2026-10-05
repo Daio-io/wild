@@ -41,9 +41,13 @@ class ClickableFastPathTest {
         val modifiers =
             listOf(
                 Modifier.clickable(interactionSource = source, style = StyleDefaults.None, onClick = {}),
+                Modifier.clickable(interactionSource = source, styleBlock = block, onClick = {}),
                 Modifier.selectable(true, interactionSource = source, style = StyleDefaults.None, onClick = {}),
+                Modifier.selectable(true, interactionSource = source, styleBlock = block, onClick = {}),
                 Modifier.interactable(interactionSource = source, style = StyleDefaults.None, onClick = {}),
+                Modifier.interactable(interactionSource = source, styleBlock = block, onClick = {}),
                 Modifier.interactable(selected = true, interactionSource = source, style = StyleDefaults.None, onClick = {}),
+                Modifier.interactable(selected = true, interactionSource = source, styleBlock = block, onClick = {}),
                 Modifier.experimentalClickable(interactionSource = source, style = StyleDefaults.None, onClick = {}),
                 Modifier.experimentalClickable(interactionSource = source, style = block, onClick = {}),
                 Modifier.experimentalSelectable(true, interactionSource = source, style = StyleDefaults.None, onClick = {}),
