@@ -389,17 +389,23 @@ fun Modifier.experimentalClickable(
     }
 
 /**
+ * Deprecated forwarder for [Modifier.clickable] with a nullable [StyleScope] lambda.
+ *
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
- * the component based on the current [InteractionSource] state.
+ * remote controls. Style is applied through the current `styleBlock` overload (via
+ * [interactionStyle]), not [experimentalInteractionStyle].
+ *
+ * Prefer [Modifier.clickable] with named `styleBlock = ...`.
  *
  * @param enabled Whether the click action handling is enabled.
  * @param interactionSource The interaction source to emit interaction events to.
- * @param style Optional [Style] block to apply with the clickable.
+ * @param style Optional [StyleScope] lambda forwarded as `styleBlock`. Pass null for no style
+ * parent.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
  * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.4.0
@@ -754,17 +760,24 @@ private fun Modifier.experimentalSelectableWithStyle(
     })
 
 /**
+ * Deprecated forwarder for [Modifier.selectable] with a nullable [StyleScope] lambda.
+ *
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
- * remote controls. This has the added support for [Style], applying [experimentalInteractionStyle] to update
- *  * the component based on the current [InteractionSource] state.
+ * remote controls. Style is applied through the current `styleBlock` overload (via
+ * [interactionStyle]), not [experimentalInteractionStyle].
+ *
+ * Prefer [Modifier.selectable] with named `styleBlock = ...`.
  *
  * @param selected Whether the element is currently selected.
  * @param enabled Whether the click action handling is enabled.
  * @param interactionSource The interaction source to emit interaction events to.
- * @param style Optional [Style] block apply with the selectable.
+ * @param style Optional [StyleScope] lambda forwarded as `styleBlock`. Pass null for no style
+ * parent.
  * @param role The Role of the associated user interface element, typically used by Accessiblity
  * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
  * @since 0.4.0
