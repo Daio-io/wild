@@ -41,6 +41,12 @@ internal class StyleRecorder {
         get() = snapshots.last()
 }
 
+/** Counts chrome dispatches and [StyleScopeSnapshot] allocations for work-count gates. */
+internal class WorkCounters {
+    var chromeUpdates: Int = 0
+    var snapshotAllocations: Int = 0
+}
+
 internal fun Modifier.recordStyle(recorder: StyleRecorder): Modifier = this then RecordingStyleChildElement(recorder)
 
 private data class RecordingStyleChildElement(

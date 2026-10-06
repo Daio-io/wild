@@ -259,15 +259,28 @@ internal class StyleScopeParentNode(
     }
 
     private fun dispatchResolvedStyle() {
-        val resolvedStyle = styleScopeSnapshot()
-        if (resolvedStyle != lastDispatchedStyle) {
-            lastDispatchedStyle = resolvedStyle
+        val previous = lastDispatchedStyle
+        if (previous == null || !sameAsSnapshot(previous)) {
+            lastDispatchedStyle = styleScopeSnapshot()
             traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
                 it.updateStyle(this)
             }
         }
         publishContentColorIfNeeded()
     }
+
+    private fun sameAsSnapshot(s: StyleScopeSnapshot): Boolean =
+        s.color == color &&
+            s.alpha == alpha &&
+            s.scale == scale &&
+            s.shape == shape &&
+            s.border == border &&
+            s.scaleAnimationSpec == scaleAnimationSpec &&
+            s.focused == focused &&
+            s.hovered == hovered &&
+            s.pressed == pressed &&
+            s.selected == selected &&
+            s.enabled == enabled
 
     @OptIn(ExperimentalWildApi::class)
     private fun publishContentColorIfNeeded() {
@@ -297,8 +310,9 @@ internal class StyleScopeParentNode(
         scaleAnimationSpec = null
     }
 
-    private fun styleScopeSnapshot() =
-        StyleScopeSnapshot(
+    private fun styleScopeSnapshot(): StyleScopeSnapshot {
+        styleScopeSnapshotAllocationHook?.invoke()
+        return StyleScopeSnapshot(
             color = color,
             alpha = alpha,
             scale = scale,
@@ -311,6 +325,7 @@ internal class StyleScopeParentNode(
             selected = selected,
             enabled = enabled,
         )
+    }
 
     override fun onInteractionStateChanged(interactions: Interactions) {
         if (_focused != interactions.focused ||
@@ -335,6 +350,12 @@ internal class StyleScopeParentNode(
 
     override val traverseKey: Any = StyleParentTraversalKey
 }
+
+/**
+ * Optional hook invoked when a [StyleScopeSnapshot] is allocated.
+ * Used by work-count / allocation regression tests; leave null in production.
+ */
+internal var styleScopeSnapshotAllocationHook: (() -> Unit)? = null
 
 /** Complete [StyleScope] state observed by descendant style nodes. */
 private data class StyleScopeSnapshot(

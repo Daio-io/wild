@@ -233,3 +233,27 @@ find internal/style-benchmark/build/outputs/connected_android_test_additional_ou
 Record the device, Android version, benchmark version, build SHA, median time, and
 `allocationCount` when comparing revisions. Use the same device for before/after runs and do not
 derive a hard timing threshold from a single device.
+
+## Regression policy (confirmation vs CI)
+
+**Target (Phase 5 / THE-612):** Equal-output style resolve must not allocate a
+`StyleScopeSnapshot` or dispatch chrome children. Selection is the THE-606 source-visible
+finding that `dispatchResolvedStyle` previously allocated a snapshot before equality; the JVM
+work-count gate is `StyleSnapshotAllocationTest.equalOutputResolve_skipsDispatchAndSnapshotAlloc`
+(`WorkCounters` + `StyleRecorder`). Focus / `scaleAnimationSpec` changes that alter the snapshot
+must still dispatch; first attach and `onReset` clear `lastDispatchedStyle`.
+
+**CI (deterministic):** Gate work-count / correctness with ordinary JVM tests
+(`:style:jvmTest` — allocation/work-count, recomposition, traversal, scale-animation suites). Do
+not add duration or frame-time assertions to default CI.
+
+**Device timing (controlled job):** Keep frame distributions report-only until baseline variance
+is known from ≥3 counterbalanced confirmation sessions on the same physical device (deps, SHA,
+APK hash, device/API/refresh, compilation, workload, and order recorded via
+`write_session_artifacts`). Encode relative regression + absolute frame budgets in this README
+and optional `tv_benchmark_report.py` helpers only after that variance is measured. Reject
+invalid/noisy sessions; do not retry into a false pass. Mismatched workload, single-session P99,
+or missing overrun must abort a measured conclusion.
+
+Before/after device evidence for a runtime styling fix is required for a release timing claim;
+work-count gates alone do not establish frame-budget thresholds.
