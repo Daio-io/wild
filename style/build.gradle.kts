@@ -4,10 +4,16 @@
 
 plugins {
     id("io.daio.compose")
+    id("io.daio.android.library")
     id("io.daio.kotlin.multiplatform")
+    id("io.daio.test.roborazzi")
     id("io.daio.publish")
     alias(libs.plugins.dokka)
     alias(libs.plugins.metalava)
+}
+
+android {
+    namespace = "io.daio.wild.style"
 }
 
 kotlin {
@@ -24,6 +30,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(compose.uiTest)
+                implementation(projects.internal.screenshotTests)
             }
         }
         val jvmTest by getting {

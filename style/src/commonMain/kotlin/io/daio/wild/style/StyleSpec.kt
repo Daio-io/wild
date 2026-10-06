@@ -33,6 +33,7 @@ class StyleSpec
          * Returns a new [StyleSpec] that appends [block] after existing callbacks.
          *
          * @param block Additional override applied after earlier blocks in the same evaluation.
+         * @since 0.8.0
          */
         fun then(block: ComponentStyleScope.() -> Unit): StyleSpec = StyleSpec(base, blocks + block)
 
