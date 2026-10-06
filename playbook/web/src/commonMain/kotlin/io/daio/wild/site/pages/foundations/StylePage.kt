@@ -784,6 +784,37 @@ fun StylePage(modifier: Modifier = Modifier) {
         val surface = SiteTheme.colors.background
         val primaryText = SiteTheme.colors.textPrimary
         var pulse by remember { mutableStateOf(false) }
+        // Capture theme values before Spec build; hoist one reusable base + Specs.
+        val demoBaseStyle =
+            remember(accent, surface, primaryText) {
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = surface,
+                            contentColor = primaryText,
+                            focusedBackgroundColor = accent,
+                            focusedContentColor = surface,
+                        ),
+                    shapes =
+                        StyleDefaults.shapes(
+                            shape = RoundedCornerShape(8.dp),
+                        ),
+                )
+            }
+        val focusSpec =
+            remember(demoBaseStyle) {
+                styleSpec(demoBaseStyle) {
+                    if (focused) scale = 1.1f
+                }
+            }
+        val pulseSpec =
+            remember(demoBaseStyle, accent) {
+                styleSpec(demoBaseStyle) {
+                    // Snapshot read: pulse is observed by the style parent, not Spec rebuild.
+                    scale = if (pulse) 1.08f else 1f
+                    if (focused) contentColor = accent
+                }
+            }
         DemoContainer {
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
@@ -791,65 +822,17 @@ fun StylePage(modifier: Modifier = Modifier) {
             ) {
                 SpecDemoBox(
                     label = "Spec focus",
-                    spec =
-                        styleSpec(
-                            StyleDefaults.style(
-                                colors =
-                                    StyleDefaults.colors(
-                                        backgroundColor = surface,
-                                        contentColor = primaryText,
-                                        focusedBackgroundColor = accent,
-                                        focusedContentColor = surface,
-                                    ),
-                                shapes =
-                                    StyleDefaults.shapes(
-                                        shape = RoundedCornerShape(8.dp),
-                                    ),
-                            ),
-                        ) {
-                            if (focused) scale = 1.1f
-                        },
+                    spec = focusSpec,
                 )
+                // Label observes pulse in composition; Spec identity stays stable.
                 SpecDemoBox(
                     label = if (pulse) "Pulse on" else "Pulse off",
-                    spec =
-                        styleSpec(
-                            StyleDefaults.style(
-                                colors =
-                                    StyleDefaults.colors(
-                                        backgroundColor = surface,
-                                        contentColor = primaryText,
-                                        focusedBackgroundColor = accent,
-                                        focusedContentColor = surface,
-                                    ),
-                                shapes =
-                                    StyleDefaults.shapes(
-                                        shape = RoundedCornerShape(8.dp),
-                                    ),
-                            ),
-                        ) {
-                            // Snapshot read: pulse is observed without recomposing the Spec owner.
-                            scale = if (pulse) 1.08f else 1f
-                            if (focused) contentColor = accent
-                        },
+                    spec = pulseSpec,
                 )
                 Container(
                     onClick = { pulse = !pulse },
                     modifier = Modifier.size(120.dp),
-                    style =
-                        StyleDefaults.style(
-                            colors =
-                                StyleDefaults.colors(
-                                    backgroundColor = SiteTheme.colors.surface,
-                                    contentColor = SiteTheme.colors.textPrimary,
-                                    focusedBackgroundColor = accent,
-                                    focusedContentColor = surface,
-                                ),
-                            shapes =
-                                StyleDefaults.shapes(
-                                    shape = RoundedCornerShape(8.dp),
-                                ),
-                        ),
+                    style = demoBaseStyle,
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),

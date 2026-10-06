@@ -39,17 +39,18 @@ class StyleSpec
         fun then(block: ComponentStyleScope.() -> Unit): StyleSpec = StyleSpec(base, blocks + block)
 
         /**
-         * Resolves content color for the given flags by seeding from [base] tables then applying
-         * ordered Spec callbacks — the same path the style parent uses before publishing.
+         * Resolves content color for the given flags by seeding chrome and content color from
+         * [base] tables then applying ordered Spec callbacks — the same path the style parent
+         * uses before publishing.
          *
          * Component Spec overloads use this to seed the equality-gated bridge for the first frame.
          *
          * Example:
          * ```
-         * val spec = styleSpec(StyleDefaults.style()) {
-         *     contentColor = if (enabled) Color.White else Color.Gray
+         * val spec = styleSpec(StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))) {
+         *     contentColor = color // derives from chrome seeded from base
          * }
-         * val initial = spec.contentColorFor(enabled = false) // Color.Gray
+         * val initial = spec.contentColorFor(enabled = true) // Color.Red
          * ```
          *
          * @param enabled Whether the component is enabled.
@@ -75,6 +76,49 @@ class StyleSpec
                 pressed = pressed,
                 hovered = hovered,
             )
+            // Mirror StyleScopeParentElement.resolveSpec: seed chrome from base tables before
+            // applyBlocks so callbacks that derive contentColor from color/alpha/… match the parent.
+            scope.color =
+                base.colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.alpha =
+                base.alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.scale =
+                base.scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.shape =
+                base.shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.border =
+                base.borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.scaleAnimationSpec = base.scale.animationSpec
             scope.contentColor =
                 base.colors.contentColorFor(
                     enabled = enabled,

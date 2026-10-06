@@ -79,27 +79,16 @@ fun Button(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Container(
-        modifier =
-            modifier
-                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
-                .semantics { role = Role.Button },
-        enabled = enabled,
-        style = style,
+    ButtonLayout(
         onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
         onLongClick = onLongClick,
         onDoubleClick = onDoubleClick,
+        style = style,
+        contentPadding = contentPadding,
         interactionSource = interactionSource,
-        content = {
-            Box(
-                modifier =
-                    Modifier
-                        .align(Alignment.Center)
-                        .padding(contentPadding),
-                contentAlignment = Alignment.Center,
-                content = content,
-            )
-        },
+        content = content,
     )
 }
 
@@ -108,7 +97,8 @@ fun Button(
  * propagation through Container's equality-gated bridge.
  *
  * Owns one interaction source and one style chain. Default calls still select the value [Style]
- * overload.
+ * overload. Required [style] is placed early (after [onClick]) to match ListItem / Toggleable Spec
+ * overloads so positional callers do not need named arguments for preceding defaults.
  *
  * @param onClick Callback invoked when the button is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
@@ -136,13 +126,75 @@ fun Button(
 @Composable
 fun Button(
     onClick: () -> Unit,
+    style: StyleSpec,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    style: StyleSpec,
     contentPadding: PaddingValues = ButtonDefaults.contentPadding,
     interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ButtonLayout(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        style = style,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+@Composable
+private fun ButtonLayout(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    style: Style,
+    contentPadding: PaddingValues,
+    interactionSource: MutableInteractionSource?,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        modifier =
+            modifier
+                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
+                .semantics { role = Role.Button },
+        enabled = enabled,
+        style = style,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        interactionSource = interactionSource,
+        content = {
+            Box(
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(contentPadding),
+                contentAlignment = Alignment.Center,
+                content = content,
+            )
+        },
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun ButtonLayout(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    style: StyleSpec,
+    contentPadding: PaddingValues,
+    interactionSource: MutableInteractionSource?,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Container(

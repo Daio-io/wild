@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.tooling.CompositionData
-import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -124,46 +123,6 @@ private fun focusedContentStyle() =
                 focusedContentColor = FocusedContentColor,
             ),
     )
-
-private fun CompositionData.ownedInteractionSources(): List<MutableInteractionSource> =
-    firstSourceOwnerGroup()
-        ?.allInteractionSources()
-        .orEmpty()
-
-private fun CompositionGroup.allInteractionSources(): List<MutableInteractionSource> =
-    mutableListOf<MutableInteractionSource>().also(::collectInteractionSources)
-
-private fun CompositionGroup.collectInteractionSources(sources: MutableList<MutableInteractionSource>) {
-    data.filterIsInstance<MutableInteractionSource>().forEach { source ->
-        if (sources.none { it === source }) {
-            sources += source
-        }
-    }
-    compositionGroups.forEach { group -> group.collectInteractionSources(sources) }
-}
-
-private fun CompositionData.firstSourceOwnerGroup(): CompositionGroup? =
-    compositionGroups.firstNotNullOfOrNull { group ->
-        group.takeIf {
-            it.compositionGroups.any { child -> child.data.any { value -> value is MutableInteractionSource } }
-        } ?: group.firstSourceOwnerGroup()
-    }
-
-private fun CompositionData.firstSourceOwnerHasDirectLayoutNode(): Boolean =
-    firstSourceOwnerGroup()
-        ?.compositionGroups
-        ?.any { group -> group.data.any { value -> value?.let { it::class.simpleName } == "LayoutNode" } }
-        ?: false
-
-private fun CompositionData.dump(depth: Int = 0): String =
-    compositionGroups.joinToString(separator = "\n") { group ->
-        "${"  ".repeat(depth)}${group.sourceInfo} ${group.data.map {
-            it?.let {
-                    value ->
-                value::class.simpleName
-            }
-        }}\n${group.dump(depth + 1)}"
-    }
 
 private class CountingMutableInteractionSource : MutableInteractionSource {
     private val delegate = MutableInteractionSource()

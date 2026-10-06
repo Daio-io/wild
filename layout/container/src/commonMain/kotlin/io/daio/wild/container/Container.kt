@@ -192,7 +192,9 @@ fun Container(
  * propagation through the equality-gated bridge.
  *
  * Owns one [MutableInteractionSource] and one style chain. Prefer a stable [StyleSpec] (hoisted
- * or remembered callbacks).
+ * or remembered callbacks). Required [style] is placed early (after [onClick]) to match ListItem /
+ * Toggleable Spec overloads so positional callers do not need named arguments for preceding
+ * defaults.
  *
  * @param onClick Callback when the container is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
@@ -223,11 +225,11 @@ fun Container(
 @Composable
 fun Container(
     onClick: () -> Unit,
+    style: StyleSpec,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
-    style: StyleSpec,
     interactionSource: MutableInteractionSource? = null,
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,

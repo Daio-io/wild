@@ -35,4 +35,27 @@ class StyleSpecTest {
         assertNotEquals(a, differentIdentity)
         assertNotEquals(a, differentBase)
     }
+
+    @Test
+    fun contentColorFor_seedsChromeFromBaseBeforeCallbacks() {
+        val baseBackground = Color.Red
+        val base =
+            StyleDefaults.style(
+                colors =
+                    StyleDefaults.colors(
+                        backgroundColor = baseBackground,
+                        contentColor = Color.Black,
+                        focusedBackgroundColor = Color.Green,
+                        focusedContentColor = Color.Yellow,
+                    ),
+            )
+        // Same derivation resolveSpec allows: contentColor reads chrome seeded from base.
+        val spec =
+            styleSpec(base) {
+                contentColor = color
+            }
+
+        assertEquals(baseBackground, spec.contentColorFor(enabled = true))
+        assertEquals(Color.Green, spec.contentColorFor(enabled = true, focused = true))
+    }
 }
