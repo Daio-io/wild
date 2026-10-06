@@ -30,12 +30,13 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(compose.uiTest)
-                implementation(libs.dejavu)
                 implementation(projects.internal.screenshotTests)
             }
         }
         val jvmTest by getting {
             dependencies {
+                // Dejavu 0.5.0 publishes JVM/Android/iOS/wasmJs, not JS — keep off commonTest.
+                implementation(libs.dejavu)
                 implementation(compose.desktop.currentOs)
             }
         }
