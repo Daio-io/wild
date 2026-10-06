@@ -433,6 +433,7 @@ package io.daio.wild.style {
   }
 
   @io.daio.wild.foundation.ExperimentalWildApi public final class StyleSpec {
+    method @KotlinOnly public androidx.compose.ui.graphics.Color contentColorFor(boolean enabled, optional boolean focused, optional boolean hovered, optional boolean pressed, optional boolean selected);
     method public boolean equals(Object? other);
     method @InaccessibleFromKotlin public io.daio.wild.style.Style getBase();
     method public int hashCode();

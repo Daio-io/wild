@@ -773,10 +773,17 @@ fun StylePage(modifier: Modifier = Modifier) {
         // StyleSpec
         SectionHeader("Experimental StyleSpec")
         SectionDescription(
-            "StyleSpec is a reusable base Style plus ordered overrides. Standalone chrome " +
-                "modifiers apply visuals only. Container, Button, ListItem, and Toggleable " +
-                "Spec overloads also publish content color through an equality-gated bridge.",
+            "StyleSpec is a reusable base Style plus ordered overrides. Capture theme colors " +
+                "from composition before building the Spec. Read live snapshot state inside " +
+                "callbacks when deferred observation is intended. Keep callbacks pure and " +
+                "synchronous. Standalone chrome modifiers apply visuals only; Container, " +
+                "Button, ListItem, and Toggleable Spec overloads also publish content color " +
+                "through an equality-gated bridge.",
         )
+        val accent = SiteTheme.colors.accent
+        val surface = SiteTheme.colors.background
+        val primaryText = SiteTheme.colors.textPrimary
+        var pulse by remember { mutableStateOf(false) }
         DemoContainer {
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
@@ -789,10 +796,10 @@ fun StylePage(modifier: Modifier = Modifier) {
                             StyleDefaults.style(
                                 colors =
                                     StyleDefaults.colors(
-                                        backgroundColor = SiteTheme.colors.background,
-                                        contentColor = SiteTheme.colors.textPrimary,
-                                        focusedBackgroundColor = SiteTheme.colors.accent,
-                                        focusedContentColor = SiteTheme.colors.background,
+                                        backgroundColor = surface,
+                                        contentColor = primaryText,
+                                        focusedBackgroundColor = accent,
+                                        focusedContentColor = surface,
                                     ),
                                 shapes =
                                     StyleDefaults.shapes(
@@ -803,6 +810,57 @@ fun StylePage(modifier: Modifier = Modifier) {
                             if (focused) scale = 1.1f
                         },
                 )
+                SpecDemoBox(
+                    label = if (pulse) "Pulse on" else "Pulse off",
+                    spec =
+                        styleSpec(
+                            StyleDefaults.style(
+                                colors =
+                                    StyleDefaults.colors(
+                                        backgroundColor = surface,
+                                        contentColor = primaryText,
+                                        focusedBackgroundColor = accent,
+                                        focusedContentColor = surface,
+                                    ),
+                                shapes =
+                                    StyleDefaults.shapes(
+                                        shape = RoundedCornerShape(8.dp),
+                                    ),
+                            ),
+                        ) {
+                            // Snapshot read: pulse is observed without recomposing the Spec owner.
+                            scale = if (pulse) 1.08f else 1f
+                            if (focused) contentColor = accent
+                        },
+                )
+                Container(
+                    onClick = { pulse = !pulse },
+                    modifier = Modifier.size(120.dp),
+                    style =
+                        StyleDefaults.style(
+                            colors =
+                                StyleDefaults.colors(
+                                    backgroundColor = SiteTheme.colors.surface,
+                                    contentColor = SiteTheme.colors.textPrimary,
+                                    focusedBackgroundColor = accent,
+                                    focusedContentColor = surface,
+                                ),
+                            shapes =
+                                StyleDefaults.shapes(
+                                    shape = RoundedCornerShape(8.dp),
+                                ),
+                        ),
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Toggle pulse",
+                            style = SiteTheme.typography.bodySmall,
+                        )
+                    }
+                }
             }
         }
         CodeBlock(
@@ -1031,9 +1089,20 @@ private fun SelectableDemoBox(
 private val STYLE_SPEC_USAGE =
     """
     @OptIn(ExperimentalWildApi::class)
+    // Capture theme values from composition before building the Spec.
+    val accent = MaterialTheme.colorScheme.primary
+    val onAccent = MaterialTheme.colorScheme.onPrimary
+
+    // Keep callbacks pure/synchronous; read snapshot state inside when deferred.
+    var highlight by remember { mutableStateOf(false) }
     val cardStyle = styleSpec(base = StyleDefaults.style()) {
-        contentColor = if (enabled) Color.White else Color.Gray
-        if (focused) scale = 1.08f
+        contentColor = if (enabled) onAccent else Color.Gray
+        // Snapshot read: highlight is observed by the style parent, not composition.
+        scale = if (highlight) 1.05f else 1f
+        if (focused) {
+            scale = 1.08f
+            contentColor = accent
+        }
     }.then {
         if (pressed) alpha = 0.9f
     }

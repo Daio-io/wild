@@ -106,8 +106,9 @@ internal class StyleScopeParentNode(
     private var isUpdating: Boolean = false
     private var needsUpdate: Boolean = false
 
-    // Content color for the composition bridge; published only when a LocalContentColorPublisher
-    // is provided (component path). Standalone chrome Spec/value modifiers leave the local null.
+    // Content color for the composition bridge; published only when a ContentColorBridgeNode
+    // descendant is present (component path via contentColorBridge). Standalone chrome Spec/value
+    // modifiers omit the bridge and do not publish to composition.
     @OptIn(ExperimentalWildApi::class)
     private var contentColor: Color = Color.Unspecified
 

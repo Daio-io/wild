@@ -157,42 +157,33 @@ fun Container(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val selectedFlag = selected ?: false
-    val binding =
-        remember(style, enabled, selectedFlag) {
-            ComponentStyleBinding(
-                initial =
-                    style.colors.contentColorFor(
-                        enabled = enabled,
-                        focused = false,
-                        hovered = false,
-                        pressed = false,
-                        selected = selectedFlag,
-                    ),
+    BridgedInteractiveContainer(
+        modifier = modifier,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        selectedFlag = selectedFlag,
+        styleKey = style,
+        initialContentColor =
+            style.colors.contentColorFor(
+                enabled = enabled,
+                focused = false,
+                hovered = false,
+                pressed = false,
+                selected = selectedFlag,
+            ),
+        applyStyle = { source ->
+            interactable(
+                selected = selected,
+                enabled = enabled,
+                style = style,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                interactionSource = source,
             )
-        }
-
-    Box(
-        modifier =
-            modifier
-                .interactable(
-                    selected = selected,
-                    enabled = enabled,
-                    style = style,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    onDoubleClick = onDoubleClick,
-                    interactionSource = interactionSource,
-                )
-                .contentColorBridge(binding),
-        propagateMinConstraints = true,
-        content = {
-            ProvidesContentColor(binding.contentColor.value) {
-                content()
-            }
         },
+        content = content,
     )
 }
 
@@ -241,35 +232,59 @@ fun Container(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val selectedFlag = selected ?: false
+    BridgedInteractiveContainer(
+        modifier = modifier,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        selectedFlag = selectedFlag,
+        styleKey = style,
+        initialContentColor =
+            style.contentColorFor(
+                enabled = enabled,
+                focused = false,
+                hovered = false,
+                pressed = false,
+                selected = selectedFlag,
+            ),
+        applyStyle = { source ->
+            interactable(
+                selected = selected,
+                enabled = enabled,
+                style = style,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                interactionSource = source,
+            )
+        },
+        content = content,
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun BridgedInteractiveContainer(
+    modifier: Modifier,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource?,
+    selectedFlag: Boolean,
+    styleKey: Any,
+    initialContentColor: Color,
+    applyStyle: Modifier.(MutableInteractionSource) -> Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-    val selectedFlag = selected ?: false
     val binding =
-        remember(style, enabled, selectedFlag) {
-            ComponentStyleBinding(
-                initial =
-                    style.base.colors.contentColorFor(
-                        enabled = enabled,
-                        focused = false,
-                        hovered = false,
-                        pressed = false,
-                        selected = selectedFlag,
-                    ),
-            )
+        remember(styleKey, enabled, selectedFlag) {
+            ComponentStyleBinding(initial = initialContentColor)
         }
 
     Box(
         modifier =
             modifier
-                .interactable(
-                    selected = selected,
-                    enabled = enabled,
-                    style = style,
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    onDoubleClick = onDoubleClick,
-                    interactionSource = interactionSource,
-                )
+                .applyStyle(interactionSource)
                 .contentColorBridge(binding),
         propagateMinConstraints = true,
         content = {

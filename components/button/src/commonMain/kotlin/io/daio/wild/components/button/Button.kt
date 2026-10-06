@@ -107,8 +107,8 @@ fun Button(
  * Basic button that applies an experimental [StyleSpec] for chrome and content-color
  * propagation through Container's equality-gated bridge.
  *
- * Owns one interaction source and one style chain. Default / trailing-content calls still select
- * the value [Style] overload.
+ * Owns one interaction source and one style chain. Default calls still select the value [Style]
+ * overload.
  *
  * @param onClick Callback invoked when the button is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.

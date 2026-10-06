@@ -106,6 +106,45 @@ class ComponentStyleBindingTest {
         }
 
     @Test
+    fun firstRenderedFrame_specCallbackOverride_usesResolvedContentColor() =
+        runComposeUiTest {
+            mainClock.autoAdvance = false
+            var firstFrameColor = Color.Unspecified
+            val spec =
+                styleSpec(
+                    StyleDefaults.style(
+                        colors =
+                            StyleDefaults.colors(
+                                contentColor = Color.Red,
+                                disabledContentColor = Color.Red,
+                                focusedContentColor = Color.Green,
+                            ),
+                    ),
+                ) {
+                    contentColor = if (enabled) Color.White else Color.Gray
+                }
+
+            setContent {
+                Container(
+                    onClick = {},
+                    enabled = false,
+                    modifier = Modifier.size(48.dp),
+                    style = spec,
+                ) {
+                    val color = LocalContentColor.current
+                    SideEffect {
+                        if (firstFrameColor == Color.Unspecified) {
+                            firstFrameColor = color
+                        }
+                    }
+                }
+            }
+
+            mainClock.advanceTimeByFrame()
+            runOnIdle { assertEquals(Color.Gray, firstFrameColor) }
+        }
+
+    @Test
     fun equalResolvedColor_interactionChange_noContentRecompose() =
         runComposeUiTest {
             val source = MutableInteractionSource()
