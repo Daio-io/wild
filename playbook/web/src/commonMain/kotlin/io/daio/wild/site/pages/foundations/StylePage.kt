@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.layout.divider.HorizontalDivider
 import io.daio.wild.site.components.CodeBlock
 import io.daio.wild.site.components.Prop
@@ -33,8 +34,10 @@ import io.daio.wild.site.components.PropsTable
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalWildApi::class)
 @Composable
 fun StylePage(modifier: Modifier = Modifier) {
     Column(
@@ -58,6 +61,89 @@ fun StylePage(modifier: Modifier = Modifier) {
                     "and alpha.",
             style = SiteTheme.typography.body,
             color = SiteTheme.colors.textSecondary,
+        )
+
+        HorizontalDivider(color = SiteTheme.colors.border)
+
+        // StyleSpec — early so the playbook style golden captures Spec gallery coverage.
+        SectionHeader("Experimental StyleSpec")
+        SectionDescription(
+            "StyleSpec is a reusable base Style plus ordered overrides. Capture theme colors " +
+                "from composition before building the Spec. Read live snapshot state inside " +
+                "callbacks when deferred observation is intended. Keep callbacks pure and " +
+                "synchronous. Standalone chrome modifiers apply visuals only; Container, " +
+                "Button, ListItem, and Toggleable Spec overloads also publish content color " +
+                "through an equality-gated bridge.",
+        )
+        val accent = SiteTheme.colors.accent
+        val surface = SiteTheme.colors.background
+        val primaryText = SiteTheme.colors.textPrimary
+        var pulse by remember { mutableStateOf(false) }
+        // Capture theme values before Spec build; hoist one reusable base + Specs.
+        val demoBaseStyle =
+            remember(accent, surface, primaryText) {
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = surface,
+                            contentColor = primaryText,
+                            focusedBackgroundColor = accent,
+                            focusedContentColor = surface,
+                        ),
+                    shapes =
+                        StyleDefaults.shapes(
+                            shape = RoundedCornerShape(8.dp),
+                        ),
+                )
+            }
+        val focusSpec =
+            remember(demoBaseStyle) {
+                styleSpec(demoBaseStyle) {
+                    if (focused) scale = 1.1f
+                }
+            }
+        val pulseSpec =
+            remember(demoBaseStyle, accent) {
+                styleSpec(demoBaseStyle) {
+                    // Snapshot read: pulse is observed by the style parent, not Spec rebuild.
+                    scale = if (pulse) 1.08f else 1f
+                    if (focused) contentColor = accent
+                }
+            }
+        DemoContainer {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+            ) {
+                SpecDemoBox(
+                    label = "Spec focus",
+                    spec = focusSpec,
+                )
+                // Label observes pulse in composition; Spec identity stays stable.
+                SpecDemoBox(
+                    label = if (pulse) "Pulse on" else "Pulse off",
+                    spec = pulseSpec,
+                )
+                Container(
+                    onClick = { pulse = !pulse },
+                    modifier = Modifier.size(120.dp),
+                    style = demoBaseStyle,
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Toggle pulse",
+                            style = SiteTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+        }
+        CodeBlock(
+            code = STYLE_SPEC_USAGE,
+            tabs = listOf("Kotlin"),
         )
 
         HorizontalDivider(color = SiteTheme.colors.border)
@@ -930,6 +1016,29 @@ private fun DemoBox(
     }
 }
 
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun SpecDemoBox(
+    label: String,
+    spec: StyleSpec,
+) {
+    Container(
+        onClick = {},
+        modifier = Modifier.size(120.dp),
+        style = spec,
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = label,
+                style = SiteTheme.typography.bodySmall,
+            )
+        }
+    }
+}
+
 @Composable
 private fun SelectableDemoBox(
     label: String,
@@ -959,6 +1068,36 @@ private fun SelectableDemoBox(
         }
     }
 }
+
+private val STYLE_SPEC_USAGE =
+    """
+    @OptIn(ExperimentalWildApi::class)
+    // Capture theme values from composition before building the Spec.
+    val accent = MaterialTheme.colorScheme.primary
+    val onAccent = MaterialTheme.colorScheme.onPrimary
+
+    // Keep callbacks pure/synchronous; read snapshot state inside when deferred.
+    var highlight by remember { mutableStateOf(false) }
+    val cardStyle = styleSpec(base = StyleDefaults.style()) {
+        contentColor = if (enabled) onAccent else Color.Gray
+        // Snapshot read: highlight is observed by the style parent, not composition.
+        scale = if (highlight) 1.05f else 1f
+        if (focused) {
+            scale = 1.08f
+            contentColor = accent
+        }
+    }.then {
+        if (pressed) alpha = 0.9f
+    }
+
+    // Component Spec overload: chrome + content-color bridge
+    Container(onClick = { }, style = cardStyle) {
+        Text("Spec container")
+    }
+
+    // Standalone chrome only — no content locals
+    Modifier.interactionStyle(interactionSource, style = cardStyle)
+    """.trimIndent()
 
 private val STYLE_USAGE =
     """

@@ -4,30 +4,31 @@ package io.daio.wild.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import io.daio.wild.content.ProvidesContentColor
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.contentColorBridge
 import io.daio.wild.style.interactable
 import io.daio.wild.style.staticStyle
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * [Container] is a building block component that can be used for any static element or as an
@@ -145,6 +146,7 @@ fun Container(
  * }
  * ```
  */
+@OptIn(ExperimentalWildApi::class)
 @Composable
 fun Container(
     onClick: () -> Unit,
@@ -157,34 +159,140 @@ fun Container(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Box(
-        modifier =
-            modifier.interactable(
+    val selectedFlag = selected ?: false
+    BridgedInteractiveContainer(
+        modifier = modifier,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        selectedFlag = selectedFlag,
+        styleKey = style,
+        initialContentColor =
+            style.colors.contentColorFor(
+                enabled = enabled,
+                focused = false,
+                hovered = false,
+                pressed = false,
+                selected = selectedFlag,
+            ),
+        applyStyle = { source ->
+            interactable(
                 selected = selected,
                 enabled = enabled,
                 style = style,
                 onClick = onClick,
                 onLongClick = onLongClick,
                 onDoubleClick = onDoubleClick,
-                interactionSource = interactionSource,
+                interactionSource = source,
+            )
+        },
+        content = content,
+    )
+}
+
+/**
+ * Interactive [Container] that applies an experimental [StyleSpec] for chrome and content-color
+ * propagation through the equality-gated bridge.
+ *
+ * Owns one [MutableInteractionSource] and one style chain. Prefer a stable [StyleSpec] (hoisted
+ * or remembered callbacks). Required [style] is placed early (after [onClick]) to match ListItem /
+ * Toggleable Spec overloads so positional callers do not need named arguments for preceding
+ * defaults. Prefer [ContainerDefaults.styleSpec] when building the Spec.
+ *
+ * @param onClick Callback when the container is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier applied outside the style chain.
+ * @param enabled Whether the container is enabled.
+ * @param onLongClick Optional long-click callback.
+ * @param onDoubleClick Optional double-click callback.
+ * @param interactionSource Optional hoisted interaction source; when null, Container owns one.
+ * @param selected Optional selected flag for selectable surfaces.
+ * @param content Content inside the container.
+ *
+ * Example:
+ * ```
+ * val spec = ContainerDefaults.styleSpec {
+ *     if (focused) {
+ *         scale = 1.1f
+ *         contentColor = Color.Yellow
+ *     }
+ * }
+ * Container(onClick = { }, style = spec) {
+ *     Text("Spec container")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Container(
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource? = null,
+    selected: Boolean? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    val selectedFlag = selected ?: false
+    BridgedInteractiveContainer(
+        modifier = modifier,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        selectedFlag = selectedFlag,
+        styleKey = style,
+        initialContentColor =
+            style.contentColorFor(
+                enabled = enabled,
+                focused = false,
+                hovered = false,
+                pressed = false,
+                selected = selectedFlag,
             ),
+        applyStyle = { source ->
+            interactable(
+                selected = selected,
+                enabled = enabled,
+                style = style,
+                onClick = onClick,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                interactionSource = source,
+            )
+        },
+        content = content,
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun BridgedInteractiveContainer(
+    modifier: Modifier,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource?,
+    selectedFlag: Boolean,
+    styleKey: Any,
+    initialContentColor: Color,
+    applyStyle: Modifier.(MutableInteractionSource) -> Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val binding =
+        remember(styleKey, enabled, selectedFlag) {
+            ComponentStyleBinding(initial = initialContentColor)
+        }
+
+    Box(
+        modifier =
+            modifier
+                .applyStyle(interactionSource)
+                .contentColorBridge(binding),
         propagateMinConstraints = true,
         content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
-            ProvidesContentColor(
-                style.colors.contentColorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected ?: false,
-                ),
-            ) {
+            ProvidesContentColor(binding.contentColor.value) {
                 content()
             }
         },
@@ -273,6 +381,7 @@ fun Container(
         ),
     level = DeprecationLevel.WARNING,
 )
+@OptIn(ExperimentalWildApi::class)
 @Composable
 fun ExperimentalContainer(
     onClick: () -> Unit,
@@ -285,37 +394,16 @@ fun ExperimentalContainer(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Box(
-        modifier =
-            modifier.interactable(
-                selected = selected,
-                enabled = enabled,
-                style = style,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                onDoubleClick = onDoubleClick,
-                interactionSource = interactionSource,
-            ),
-        propagateMinConstraints = true,
-        content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
-            ProvidesContentColor(
-                style.colors.contentColorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected ?: false,
-                ),
-            ) {
-                content()
-            }
-        },
+    Container(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        style = style,
+        interactionSource = interactionSource,
+        selected = selected,
+        content = content,
     )
 }
 
@@ -370,4 +458,48 @@ object ContainerDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for interactive containers.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * Example:
+     * ```
+     * val spec = ContainerDefaults.styleSpec {
+     *     if (focused) scale = 1.1f
+     * }
+     * ```
+     *
+     * @param colors The colors for the container in different states.
+     * @param borders The borders for the container in different states.
+     * @param scale The scale for the container in different states.
+     * @param shapes The shapes for the container in different states.
+     * @param alpha The alpha for the container in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

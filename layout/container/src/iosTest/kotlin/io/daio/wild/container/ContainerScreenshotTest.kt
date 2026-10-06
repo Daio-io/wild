@@ -17,4 +17,7 @@ class ContainerScreenshotTest : IosScreenshotTest() {
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedContainer() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecContainer() }
 }

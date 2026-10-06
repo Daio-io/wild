@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
@@ -17,6 +18,13 @@ class ToggleableDefaultsTest {
     @Test
     fun defaultStyleMatchesStyleDefaultsNone() {
         assertSame(StyleDefaults.None, ToggleableDefaults.style())
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    @Test
+    fun defaultStyleSpecReusesCachedInstance() {
+        assertSame(ToggleableDefaults.styleSpec(), ToggleableDefaults.styleSpec())
+        assertSame(ToggleableDefaults.style(), ToggleableDefaults.styleSpec().base)
     }
 
     @Test
@@ -98,6 +106,13 @@ class SelectableDefaultsTest {
     @Test
     fun defaultStyleMatchesStyleDefaultsNone() {
         assertSame(StyleDefaults.None, SelectableDefaults.style())
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    @Test
+    fun defaultStyleSpecReusesCachedInstance() {
+        assertSame(SelectableDefaults.styleSpec(), SelectableDefaults.styleSpec())
+        assertSame(SelectableDefaults.style(), SelectableDefaults.styleSpec().base)
     }
 
     @Test

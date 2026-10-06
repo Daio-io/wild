@@ -19,13 +19,17 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * A list item with content only — no leading or trailing slots.
@@ -148,6 +152,156 @@ fun ListItem(
 }
 
 /**
+ * Content-only list item with an experimental [StyleSpec] for chrome and content-color
+ * propagation through Container's equality-gated bridge.
+ *
+ * @param onClick Callback invoked when the list item is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ListItemDefaults.styleSpec] when building the Spec.
+ * @param modifier Modifier to apply to the list item.
+ * @param enabled Whether the list item is enabled.
+ * @param selected Whether the list item is currently selected.
+ * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Main content of the list item.
+ *
+ * Example:
+ * ```
+ * val spec = ListItemDefaults.styleSpec {
+ *     if (focused) scale = 1.05f
+ * }
+ * ListItem(onClick = onClick, style = spec) {
+ *     Text("Settings")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun ListItem(
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = ListItemDefaults.defaultMinHeight),
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
+        ) {
+            content()
+        }
+    }
+}
+
+/**
+ * Slotted list item with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param onClick Callback invoked when the list item is clicked.
+ * @param leadingContent Content displayed at the start.
+ * @param trailingContent Content displayed at the end.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ListItemDefaults.styleSpec] when building the Spec.
+ * @param modifier Modifier to apply to the list item.
+ * @param enabled Whether the list item is enabled.
+ * @param selected Whether the list item is currently selected.
+ * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Main content of the list item.
+ *
+ * Example:
+ * ```
+ * val spec = ListItemDefaults.styleSpec {
+ *     if (selected) contentColor = Color.Yellow
+ * }
+ * ListItem(
+ *     onClick = onClick,
+ *     leadingContent = { Icon() },
+ *     trailingContent = { Chevron() },
+ *     style = spec,
+ * ) {
+ *     Text("Account")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun ListItem(
+    onClick: () -> Unit,
+    leadingContent: (@Composable () -> Unit)?,
+    trailingContent: (@Composable () -> Unit)?,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = ListItemDefaults.defaultMinHeight),
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
+        ) {
+            if (leadingContent != null) {
+                leadingContent()
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                content()
+            }
+            if (trailingContent != null) {
+                trailingContent()
+            }
+        }
+    }
+}
+
+/**
  * Contains the default values used by [ListItem].
  *
  * @since 0.6.0
@@ -190,4 +344,48 @@ object ListItemDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for list items.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * Example:
+     * ```
+     * val spec = ListItemDefaults.styleSpec {
+     *     if (focused) scale = 1.05f
+     * }
+     * ```
+     *
+     * @param colors The colors for the list item in different states.
+     * @param borders The borders for the list item in different states.
+     * @param scale The scale for the list item in different states.
+     * @param shapes The shapes for the list item in different states.
+     * @param alpha The alpha for the list item in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

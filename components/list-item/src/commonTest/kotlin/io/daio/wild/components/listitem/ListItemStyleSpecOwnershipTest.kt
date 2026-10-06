@@ -1,0 +1,137 @@
+// Copyright 2024, Dai Williams
+// SPDX-License-Identifier: Apache-2.0
+package io.daio.wild.components.listitem
+
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.tooling.CompositionData
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.unit.dp
+import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
+import io.daio.wild.screenshot.styleScopeParentCount
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
+class ListItemStyleSpecOwnershipTest {
+    @Test
+    fun defaultValueCall_selectsStyleOverload() =
+        runComposeUiTest {
+            var clicks = 0
+            setContent {
+                ListItem(onClick = { clicks++ }, modifier = Modifier.testTag("item").size(48.dp)) {
+                    BasicText("item")
+                }
+            }
+            onNodeWithTag("item").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
+    fun specOverload_compiles_allSlots() =
+        runComposeUiTest {
+            val spec = ListItemDefaults.styleSpec { if (focused) scale = 1.05f }
+            var clicks = 0
+            setContent {
+                ListItem(
+                    onClick = { clicks++ },
+                    leadingContent = { BasicText("L") },
+                    trailingContent = { BasicText("T") },
+                    style = spec,
+                    modifier = Modifier.testTag("item").size(48.dp),
+                ) {
+                    BasicText("content")
+                }
+            }
+            onNodeWithTag("item").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
+    fun oneSharedSource_oneStyleChain() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val spec = ListItemDefaults.styleSpec { }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                ListItem(
+                    onClick = {},
+                    style = spec,
+                    modifier = Modifier.testTag("item").size(48.dp),
+                    interactionSource = source,
+                ) {
+                    BasicText("item")
+                }
+            }
+
+            runOnIdle {
+                val sources = compositionData.ownedInteractionSources()
+                assertEquals(1, sources.size, compositionData.dump())
+                assertSame(source, sources.single())
+                assertEquals(
+                    1,
+                    onNodeWithTag("item").fetchSemanticsNode().styleScopeParentCount(),
+                    compositionData.dump(),
+                )
+            }
+        }
+
+    @Test
+    fun ownedSource_noNullableComposedPath() =
+        runComposeUiTest {
+            val spec = ListItemDefaults.styleSpec { }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                ListItem(onClick = {}, style = spec, modifier = Modifier.size(48.dp)) {
+                    BasicText("item")
+                }
+            }
+
+            runOnIdle {
+                assertEquals(1, compositionData.ownedInteractionSources().size)
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
+            }
+        }
+
+    @Test
+    fun selectedCheckedSemantics_unchanged() =
+        runComposeUiTest {
+            val spec = ListItemDefaults.styleSpec { }
+            var clicks = 0
+            setContent {
+                ListItem(
+                    onClick = { clicks++ },
+                    selected = true,
+                    style = spec,
+                    modifier = Modifier.testTag("item").size(48.dp),
+                ) {
+                    BasicText("selected")
+                }
+            }
+            onNodeWithTag("item").assertIsSelected()
+            runOnIdle {
+                val node = onNodeWithTag("item").fetchSemanticsNode()
+                assertEquals(true, node.config[SemanticsProperties.Selected])
+            }
+            onNodeWithTag("item").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+        }
+}

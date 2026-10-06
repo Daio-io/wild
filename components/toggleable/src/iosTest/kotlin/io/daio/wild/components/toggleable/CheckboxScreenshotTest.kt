@@ -20,4 +20,7 @@ class CheckboxScreenshotTest : IosScreenshotTest() {
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedCheckbox() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecToggleableCheckbox() }
 }

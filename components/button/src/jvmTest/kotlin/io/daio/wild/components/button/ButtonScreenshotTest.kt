@@ -14,4 +14,7 @@ class ButtonScreenshotTest : DesktopScreenshotTest() {
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedButton() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecButton() }
 }

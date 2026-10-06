@@ -21,4 +21,7 @@ class CheckboxScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedCheckbox() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecToggleableCheckbox() }
 }

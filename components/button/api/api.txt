@@ -4,6 +4,7 @@ package io.daio.wild.components.button {
   public final class ButtonDefaults {
     method @InaccessibleFromKotlin public androidx.compose.foundation.layout.PaddingValues getContentPadding();
     method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    method @io.daio.wild.foundation.ExperimentalWildApi public io.daio.wild.style.StyleSpec styleSpec(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.ComponentStyleScope,kotlin.Unit> block);
     property public androidx.compose.foundation.layout.PaddingValues contentPadding;
     property public androidx.compose.ui.unit.Dp defaultHeight;
     property public androidx.compose.ui.unit.Dp defaultWidth;
@@ -12,6 +13,7 @@ package io.daio.wild.components.button {
 
   public final class ButtonKt {
     method @KotlinOnly @androidx.compose.runtime.Composable public static void Button(kotlin.jvm.functions.Function0<kotlin.Unit> onClick, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional io.daio.wild.style.Style style, optional androidx.compose.foundation.layout.PaddingValues contentPadding, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
+    method @KotlinOnly @androidx.compose.runtime.Composable @io.daio.wild.foundation.ExperimentalWildApi public static void Button(kotlin.jvm.functions.Function0<kotlin.Unit> onClick, io.daio.wild.style.StyleSpec style, optional androidx.compose.ui.Modifier modifier, optional boolean enabled, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onLongClick, optional kotlin.jvm.functions.Function0<kotlin.Unit>? onDoubleClick, optional androidx.compose.foundation.layout.PaddingValues contentPadding, optional androidx.compose.foundation.interaction.MutableInteractionSource? interactionSource, kotlin.jvm.functions.Function1<androidx.compose.foundation.layout.BoxScope,kotlin.Unit> content);
   }
 
 }

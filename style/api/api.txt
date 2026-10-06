@@ -219,6 +219,14 @@ package io.daio.wild.style {
     property public abstract androidx.compose.ui.graphics.Color contentColor;
   }
 
+  @io.daio.wild.foundation.ExperimentalWildApi public fun interface ContentColorPublisher {
+    method @KotlinOnly public void publishResolvedColor(androidx.compose.ui.graphics.Color color);
+  }
+
+  public final class ContentColorPublisherKt {
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier contentColorBridge(androidx.compose.ui.Modifier, io.daio.wild.style.ContentColorPublisher publisher);
+  }
+
   public final class CornerShapesKt {
     method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
     method @KotlinOnly public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, androidx.compose.ui.unit.Dp cornerExpansion);
@@ -387,6 +395,7 @@ package io.daio.wild.style {
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Scale scale(optional float scale, optional float focusedScale, optional float hoveredScale, optional float pressedScale, optional float selectedScale, optional float disabledScale, optional float focusedSelectedScale, optional float pressedSelectedScale, optional float hoveredSelectedScale, optional float focusedDisabledScale, optional float pressedDisabledScale, optional float hoveredDisabledScale, optional androidx.compose.animation.core.AnimationSpec<java.lang.Float>? animationSpec);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Shapes shapes(optional androidx.compose.ui.graphics.Shape shape, optional androidx.compose.ui.graphics.Shape focusedShape, optional androidx.compose.ui.graphics.Shape hoveredShape, optional androidx.compose.ui.graphics.Shape pressedShape, optional androidx.compose.ui.graphics.Shape selectedShape, optional androidx.compose.ui.graphics.Shape disabledShape, optional androidx.compose.ui.graphics.Shape focusedSelectedShape, optional androidx.compose.ui.graphics.Shape pressedSelectedShape, optional androidx.compose.ui.graphics.Shape hoveredSelectedShape, optional androidx.compose.ui.graphics.Shape focusedDisabledShape, optional androidx.compose.ui.graphics.Shape pressedDisabledShape, optional androidx.compose.ui.graphics.Shape hoveredDisabledShape);
     method @androidx.compose.runtime.Stable public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    method @io.daio.wild.foundation.ExperimentalWildApi public io.daio.wild.style.StyleSpec styleSpec(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.ComponentStyleScope,kotlin.Unit> block);
     property public io.daio.wild.style.Style None;
     field public static final io.daio.wild.style.StyleDefaults INSTANCE;
   }
@@ -425,6 +434,7 @@ package io.daio.wild.style {
   }
 
   @io.daio.wild.foundation.ExperimentalWildApi public final class StyleSpec {
+    method @KotlinOnly public androidx.compose.ui.graphics.Color contentColorFor(boolean enabled, optional boolean focused, optional boolean hovered, optional boolean pressed, optional boolean selected);
     method public boolean equals(Object? other);
     method @InaccessibleFromKotlin public io.daio.wild.style.Style getBase();
     method public int hashCode();

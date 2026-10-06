@@ -1,5 +1,7 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
+@file:OptIn(io.daio.wild.foundation.ExperimentalWildApi::class)
+
 package io.daio.wild.components.listitem
 
 import androidx.compose.foundation.background
@@ -15,6 +17,7 @@ import io.daio.wild.content.LocalContentColor
 import io.daio.wild.screenshot.ScreenshotSurface
 import io.daio.wild.screenshot.ScreenshotTestStyle
 import io.daio.wild.screenshot.rememberFocusedInteractionSource
+import io.daio.wild.style.styleSpec
 
 @Composable
 private fun Leading() {
@@ -82,6 +85,24 @@ internal fun FocusedListItem() {
             interactionSource = interactionSource,
         ) {
             BasicText("focused item", style = TextStyle(color = LocalContentColor.current))
+        }
+    }
+}
+
+@Composable
+internal fun SpecListItem() {
+    val spec =
+        styleSpec(ScreenshotTestStyle) {
+            if (focused) scale = 1.05f
+        }
+    ScreenshotSurface {
+        ListItem(
+            onClick = {},
+            leadingContent = { Leading() },
+            trailingContent = { Trailing() },
+            style = spec,
+        ) {
+            BasicText("spec item", style = TextStyle(color = LocalContentColor.current))
         }
     }
 }

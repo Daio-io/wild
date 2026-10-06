@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.tooling.CompositionData
-import androidx.compose.runtime.tooling.CompositionGroup
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -19,6 +18,9 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
 import io.daio.wild.style.StyleDefaults
 import kotlinx.coroutines.flow.Flow
 import kotlin.test.Test
@@ -232,38 +234,3 @@ private class RecordingMutableInteractionSource : MutableInteractionSource {
         return delegate.tryEmit(interaction)
     }
 }
-
-private fun CompositionData.ownedInteractionSources(): List<MutableInteractionSource> =
-    firstSourceOwnerGroup()
-        ?.allInteractionSources()
-        .orEmpty()
-
-private fun CompositionGroup.allInteractionSources(): List<MutableInteractionSource> =
-    mutableListOf<MutableInteractionSource>().also(::collectInteractionSources)
-
-private fun CompositionGroup.collectInteractionSources(sources: MutableList<MutableInteractionSource>) {
-    data.filterIsInstance<MutableInteractionSource>().forEach { source ->
-        if (sources.none { it === source }) {
-            sources += source
-        }
-    }
-    compositionGroups.forEach { group -> group.collectInteractionSources(sources) }
-}
-
-private fun CompositionData.firstSourceOwnerGroup(): CompositionGroup? =
-    compositionGroups.firstNotNullOfOrNull { group ->
-        group.takeIf {
-            it.compositionGroups.any { child -> child.data.any { value -> value is MutableInteractionSource } }
-        } ?: group.firstSourceOwnerGroup()
-    }
-
-private fun CompositionData.firstSourceOwnerHasDirectLayoutNode(): Boolean =
-    firstSourceOwnerGroup()
-        ?.compositionGroups
-        ?.any { group -> group.data.any { value -> value?.let { it::class.simpleName } == "LayoutNode" } }
-        ?: false
-
-private fun CompositionData.dump(depth: Int = 0): String =
-    compositionGroups.joinToString(separator = "\n") { group ->
-        "${"  ".repeat(depth)}${group.data.map { value -> value?.let { it::class.simpleName } }}\n${group.dump(depth + 1)}"
-    }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.container
 
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertSame
@@ -10,5 +11,12 @@ class ContainerDefaultsTest {
     @Test
     fun defaultStyleUsesCachedStyleDefaultsNone() {
         assertSame(StyleDefaults.None, ContainerDefaults.style())
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    @Test
+    fun defaultStyleSpecReusesCachedInstance() {
+        assertSame(ContainerDefaults.styleSpec(), ContainerDefaults.styleSpec())
+        assertSame(ContainerDefaults.style(), ContainerDefaults.styleSpec().base)
     }
 }

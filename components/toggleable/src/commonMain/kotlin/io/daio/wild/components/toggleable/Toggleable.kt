@@ -12,13 +12,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * Base toggleable component for building selection controls (switches, checkboxes, radio buttons).
@@ -105,6 +109,52 @@ fun Toggleable(
 }
 
 /**
+ * Boolean [Toggleable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param checked Whether the control is currently checked.
+ * @param onCheckedChange Callback invoked when the checked state should change.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ToggleableDefaults.styleSpec] when building the Spec.
+ * @param modifier Modifier to apply to the toggleable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * Example:
+ * ```
+ * val spec = ToggleableDefaults.styleSpec {
+ *     if (selected) scale = 1.1f
+ * }
+ * Toggleable(checked = checked, onCheckedChange = onCheckedChange, style = spec) {
+ *     // Draw checkbox mark
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Toggleable(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ToggleableImpl(
+        state = ToggleableState(checked),
+        onClick = { onCheckedChange(!checked) },
+        modifier = modifier,
+        enabled = enabled,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
  * Base toggleable component that supports on, off, and indeterminate states.
  *
  * The caller owns the state transition policy: [onClick] is invoked once for an enabled
@@ -161,6 +211,52 @@ fun Toggleable(
     )
 }
 
+/**
+ * Tri-state [Toggleable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param state The current on, off, or indeterminate state.
+ * @param onClick Callback invoked when the enabled control is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ToggleableDefaults.styleSpec] when building the Spec.
+ * @param modifier Modifier to apply to the toggleable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * Example:
+ * ```
+ * val spec = ToggleableDefaults.styleSpec {
+ *     if (selected) contentColor = Color.Green
+ * }
+ * Toggleable(state = state, onClick = onCycle, style = spec) {
+ *     // Render On / Off / Indeterminate marks
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Toggleable(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ToggleableImpl(
+        state = state,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
 @Composable
 private fun ToggleableImpl(
     state: ToggleableState,
@@ -168,6 +264,28 @@ private fun ToggleableImpl(
     modifier: Modifier,
     enabled: Boolean,
     style: Style,
+    interactionSource: MutableInteractionSource?,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier = modifier.semantics { toggleableState = state },
+        enabled = enabled,
+        selected = state != ToggleableState.Off,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun ToggleableImpl(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    style: StyleSpec,
     interactionSource: MutableInteractionSource?,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -237,6 +355,55 @@ fun Selectable(
 }
 
 /**
+ * [Selectable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param selected Whether this item is currently selected.
+ * @param onClick Callback invoked when the item is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [SelectableDefaults.styleSpec] when building the Spec.
+ * @param modifier Modifier to apply to the selectable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * Example:
+ * ```
+ * val spec = SelectableDefaults.styleSpec {
+ *     if (selected) scale = 1.1f
+ * }
+ * Selectable(selected = isSelected, onClick = onSelect, style = spec) {
+ *     // Draw selection indicator
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Selectable(
+    selected: Boolean,
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier.semantics {
+                this.selected = selected
+            },
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
  * Contains the default values used by [Toggleable].
  *
  * @since 0.6.0
@@ -259,6 +426,43 @@ object ToggleableDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for toggleable controls.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * @param colors The colors for the control in different states.
+     * @param borders The borders for the control in different states.
+     * @param scale The scale for the control in different states.
+     * @param shapes The shapes for the control in different states.
+     * @param alpha The alpha for the control in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }
 
 /**
@@ -287,4 +491,41 @@ object SelectableDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for selectable controls.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * @param colors The colors for the control in different states.
+     * @param borders The borders for the control in different states.
+     * @param scale The scale for the control in different states.
+     * @param shapes The shapes for the control in different states.
+     * @param alpha The alpha for the control in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

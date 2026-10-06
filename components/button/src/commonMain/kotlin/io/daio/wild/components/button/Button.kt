@@ -18,13 +18,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * Basic button component.
@@ -75,6 +79,125 @@ fun Button(
     style: Style = ButtonDefaults.style(),
     contentPadding: PaddingValues = ButtonDefaults.contentPadding,
     interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ButtonLayout(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        style = style,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
+ * Basic button that applies an experimental [StyleSpec] for chrome and content-color
+ * propagation through Container's equality-gated bridge.
+ *
+ * Owns one interaction source and one style chain. Default calls still select the value [Style]
+ * overload. Required [style] is placed early (after [onClick]) to match ListItem / Toggleable Spec
+ * overloads so positional callers do not need named arguments for preceding defaults. Prefer
+ * [ButtonDefaults.styleSpec] when building the Spec.
+ *
+ * @param onClick Callback invoked when the button is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier applied outside the style chain.
+ * @param enabled Whether the button is enabled.
+ * @param onLongClick Callback invoked when the button is long clicked.
+ * @param onDoubleClick Optional callback invoked when the button is double clicked.
+ * @param contentPadding Padding set on the inner content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Defines the content inside the button.
+ *
+ * Example:
+ * ```
+ * val spec = ButtonDefaults.styleSpec {
+ *     if (focused) scale = 1.1f
+ * }
+ * Button(onClick = onClick, style = spec) {
+ *     Text("Continue")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Button(
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    contentPadding: PaddingValues = ButtonDefaults.contentPadding,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ButtonLayout(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        style = style,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+@Composable
+private fun ButtonLayout(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    style: Style,
+    contentPadding: PaddingValues,
+    interactionSource: MutableInteractionSource?,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        modifier =
+            modifier
+                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
+                .semantics { role = Role.Button },
+        enabled = enabled,
+        style = style,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        interactionSource = interactionSource,
+        content = {
+            Box(
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(contentPadding),
+                contentAlignment = Alignment.Center,
+                content = content,
+            )
+        },
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun ButtonLayout(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    style: StyleSpec,
+    contentPadding: PaddingValues,
+    interactionSource: MutableInteractionSource?,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Container(
@@ -149,4 +272,48 @@ object ButtonDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for the button.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * Example:
+     * ```
+     * val spec = ButtonDefaults.styleSpec {
+     *     if (focused) scale = 1.1f
+     * }
+     * ```
+     *
+     * @param colors The colors for the button in different states.
+     * @param borders The borders for the button in different states.
+     * @param scale The scale for the button in different states.
+     * @param shapes The shapes for the button in different states.
+     * @param alpha The alpha for the button in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

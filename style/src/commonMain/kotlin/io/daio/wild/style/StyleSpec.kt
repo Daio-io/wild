@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
+import androidx.compose.ui.graphics.Color
 import io.daio.wild.foundation.ExperimentalWildApi
 
 /**
@@ -36,6 +37,99 @@ class StyleSpec
          * @since 0.8.0
          */
         fun then(block: ComponentStyleScope.() -> Unit): StyleSpec = StyleSpec(base, blocks + block)
+
+        /**
+         * Resolves content color for the given flags by seeding chrome and content color from
+         * [base] tables then applying ordered Spec callbacks — the same path the style parent
+         * uses before publishing.
+         *
+         * Component Spec overloads use this to seed the equality-gated bridge for the first frame.
+         *
+         * Example:
+         * ```
+         * val spec = styleSpec(StyleDefaults.style(colors = StyleDefaults.colors(backgroundColor = Color.Red))) {
+         *     contentColor = color // derives from chrome seeded from base
+         * }
+         * val initial = spec.contentColorFor(enabled = true) // Color.Red
+         * ```
+         *
+         * @param enabled Whether the component is enabled.
+         * @param focused Whether the component is focused.
+         * @param hovered Whether the component is hovered.
+         * @param pressed Whether the component is pressed.
+         * @param selected Whether the component is selected.
+         * @return Spec-resolved content color for these flags.
+         * @since 0.8.0
+         */
+        fun contentColorFor(
+            enabled: Boolean,
+            focused: Boolean = false,
+            hovered: Boolean = false,
+            pressed: Boolean = false,
+            selected: Boolean = false,
+        ): Color {
+            val scope = DefaultComponentStyleScope()
+            scope.updateState(
+                enabled = enabled,
+                focused = focused,
+                selected = selected,
+                pressed = pressed,
+                hovered = hovered,
+            )
+            // Mirror StyleScopeParentElement.resolveSpec: seed chrome from base tables before
+            // applyBlocks so callbacks that derive contentColor from color/alpha/… match the parent.
+            scope.color =
+                base.colors.colorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.alpha =
+                base.alpha.alphaFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.scale =
+                base.scale.scaleFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.shape =
+                base.shapes.shapeFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.border =
+                base.borders.borderFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            scope.scaleAnimationSpec = base.scale.animationSpec
+            scope.contentColor =
+                base.colors.contentColorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            applyBlocks(scope)
+            return scope.contentColor
+        }
 
         internal fun applyBlocks(scope: ComponentStyleScope) {
             for (block in blocks) {

@@ -14,4 +14,7 @@ class RadioButtonScreenshotTest : IosScreenshotTest() {
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedRadioButton() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecSelectableRadioButton() }
 }
