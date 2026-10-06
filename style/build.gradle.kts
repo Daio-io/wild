@@ -30,6 +30,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(compose.uiTest)
+                implementation(libs.dejavu)
                 implementation(projects.internal.screenshotTests)
             }
         }
