@@ -42,46 +42,46 @@ class StyleModifierConstructionBenchmark {
         color = if (focused) Color.Blue else Color.Red
     }
 
-    private val oneOverride: ComponentStyleScope.() -> Unit = { color = Color.Green }
-    private val override2: ComponentStyleScope.() -> Unit = { scale = 1.1f }
-    private val override3: ComponentStyleScope.() -> Unit = { alpha = 0.9f }
-    private val override4: ComponentStyleScope.() -> Unit = { color = Color.Cyan }
-    private val override5: ComponentStyleScope.() -> Unit = { scale = 1.2f }
-    private val override6: ComponentStyleScope.() -> Unit = { alpha = 0.8f }
-    private val override7: ComponentStyleScope.() -> Unit = { color = Color.Magenta }
-    private val override8: ComponentStyleScope.() -> Unit = { scale = 1.3f }
-    private val override9: ComponentStyleScope.() -> Unit = { alpha = 0.7f }
-    private val override10: ComponentStyleScope.() -> Unit = { color = Color.Yellow }
-    private val override11: ComponentStyleScope.() -> Unit = { scale = 1.4f }
-    private val override12: ComponentStyleScope.() -> Unit = { alpha = 0.6f }
-    private val override13: ComponentStyleScope.() -> Unit = { color = Color.Gray }
-    private val override14: ComponentStyleScope.() -> Unit = { scale = 1.5f }
-    private val override15: ComponentStyleScope.() -> Unit = { alpha = 0.5f }
-    private val override16: ComponentStyleScope.() -> Unit = { color = Color.Black }
+    private val colorGreen: ComponentStyleScope.() -> Unit = { color = Color.Green }
+    private val scale110: ComponentStyleScope.() -> Unit = { scale = 1.1f }
+    private val alpha90: ComponentStyleScope.() -> Unit = { alpha = 0.9f }
+    private val colorCyan: ComponentStyleScope.() -> Unit = { color = Color.Cyan }
+    private val scale120: ComponentStyleScope.() -> Unit = { scale = 1.2f }
+    private val alpha80: ComponentStyleScope.() -> Unit = { alpha = 0.8f }
+    private val colorMagenta: ComponentStyleScope.() -> Unit = { color = Color.Magenta }
+    private val scale130: ComponentStyleScope.() -> Unit = { scale = 1.3f }
+    private val alpha70: ComponentStyleScope.() -> Unit = { alpha = 0.7f }
+    private val colorYellow: ComponentStyleScope.() -> Unit = { color = Color.Yellow }
+    private val scale140: ComponentStyleScope.() -> Unit = { scale = 1.4f }
+    private val alpha60: ComponentStyleScope.() -> Unit = { alpha = 0.6f }
+    private val colorGray: ComponentStyleScope.() -> Unit = { color = Color.Gray }
+    private val scale150: ComponentStyleScope.() -> Unit = { scale = 1.5f }
+    private val alpha50: ComponentStyleScope.() -> Unit = { alpha = 0.5f }
+    private val colorBlack: ComponentStyleScope.() -> Unit = { color = Color.Black }
 
-    private val styleSpec1: StyleSpec = styleSpec(style, oneOverride)
+    private val styleSpec1: StyleSpec = styleSpec(style, colorGreen)
     private val styleSpec4: StyleSpec =
-        styleSpec(style, oneOverride)
-            .then(override2)
-            .then(override3)
-            .then(override4)
+        styleSpec(style, colorGreen)
+            .then(scale110)
+            .then(alpha90)
+            .then(colorCyan)
     private val styleSpec16: StyleSpec =
-        styleSpec(style, oneOverride)
-            .then(override2)
-            .then(override3)
-            .then(override4)
-            .then(override5)
-            .then(override6)
-            .then(override7)
-            .then(override8)
-            .then(override9)
-            .then(override10)
-            .then(override11)
-            .then(override12)
-            .then(override13)
-            .then(override14)
-            .then(override15)
-            .then(override16)
+        styleSpec(style, colorGreen)
+            .then(scale110)
+            .then(alpha90)
+            .then(colorCyan)
+            .then(scale120)
+            .then(alpha80)
+            .then(colorMagenta)
+            .then(scale130)
+            .then(alpha70)
+            .then(colorYellow)
+            .then(scale140)
+            .then(alpha60)
+            .then(colorGray)
+            .then(scale150)
+            .then(alpha50)
+            .then(colorBlack)
 
     @Test
     fun valueInteractionStyle_construction() =

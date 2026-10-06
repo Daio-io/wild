@@ -421,7 +421,7 @@ package io.daio.wild.style {
     property public abstract androidx.compose.ui.graphics.Shape shape;
   }
 
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @kotlin.DslMarker public @interface StyleScopeDslMarker {
+  @kotlin.DslMarker public @interface StyleScopeDslMarker {
   }
 
   @io.daio.wild.foundation.ExperimentalWildApi public final class StyleSpec {

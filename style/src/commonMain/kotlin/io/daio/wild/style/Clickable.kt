@@ -82,6 +82,14 @@ fun Modifier.interactable(
  * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Modifier.interactable(style = spec, onClick = { /* ... */ })
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
@@ -348,6 +356,14 @@ fun Modifier.clickable(
  * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Modifier.clickable(style = spec, onClick = { /* ... */ })
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
@@ -596,6 +612,14 @@ fun Modifier.selectable(
  * @param onLongClick Optional callback to handle long click events.
  * @param onDoubleClick Optional callback to handle double click events.
  * @param onClick Callback when the element is clicked.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Modifier.selectable(selected = selected, style = spec, onClick = { /* ... */ })
+ * ```
  *
  * @since 0.8.0
  */

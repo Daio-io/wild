@@ -117,11 +117,6 @@ Standalone Spec chrome modifiers do **not** publish content composition locals y
 deferred to a later phase. Prefer a stable `StyleSpec` (hoisted / remembered callbacks); there is
 no default `rememberStyleSpec` helper.
 
-**Keep decision:** StyleSpec is kept. Construction harness cases cover value, hoisted-lambda, and
-StyleSpec with 1/4/16 stable overrides (`StyleModifierConstructionBenchmark`); the TV Phase 1c
-scenario includes `wild_spec`. Spec construction is a thin `StyleResolver.Spec` wrapper around an
-immutable definition, so reuse cost is justified versus recreating lambda blocks.
-
 !!! note "StyleScope DSL reset semantics"
     When using the `StyleScope` block overload of `interactionStyle`, each evaluation resets visual
     properties to defaults before your block runs: `color = Color.Unspecified`, `alpha = 1f`,

@@ -66,6 +66,14 @@ class StyleSpec
 /**
  * Creates a [StyleSpec] from a base [Style] and an initial override block.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Modifier.interactionStyle(interactionSource, style = spec)
+ * ```
+ *
  * @param base Immutable style tables seeded before [block] runs.
  * @param block First ordered override applied to [ComponentStyleScope].
  * @since 0.8.0
