@@ -257,3 +257,12 @@ or missing overrun must abort a measured conclusion.
 
 Before/after device evidence for a runtime styling fix is required for a release timing claim;
 work-count gates alone do not establish frame-budget thresholds.
+
+**Acceptance criteria (THE-612) — status:**
+
+| Criterion | Status |
+| --- | --- |
+| One measured fix (or explicit no-op) with before/after device evidence | **Fix shipped** (`sameAsSnapshot` / allocate-only-on-dispatch). **Device before/after deferred**: this change makes no release timing claim; ≥3 counterbalanced sessions remain required before any frame-budget or timing conclusion (section above). Selection evidence is the THE-606 source-visible finding that `dispatchResolvedStyle` allocated `StyleScopeSnapshot` before equality. |
+| Work-count (and allocation if available) regression covers the trigger | **Met** — `StyleSnapshotAllocationTest.equalOutputResolve_skipsDispatchAndSnapshotAlloc` (`WorkCounters` + `StyleRecorder` + `styleScopeSnapshotAllocationHook`). |
+| No public behavior change; rendering/input tests pass | **Met** — focus / `scaleAnimationSpec` / nested isolation covered by `StyleValueRecompositionTest`, `StyleTraversalIntegrationTest`, and `ScaleAnimationRequestTest`; first attach and `onReset` still clear `lastDispatchedStyle`. |
+| Duration budgets only after variance known; CI separates counts from device timing | **Met** — no duration/frame assertions in default CI; device timing stays report-only until variance is measured. |
