@@ -237,11 +237,20 @@ derive a hard timing threshold from a single device.
 ## Regression policy (confirmation vs CI)
 
 **Target (Phase 5 / THE-612):** Equal-output style resolve must not allocate a
-`StyleScopeSnapshot` or dispatch chrome children. Selection is the THE-606 source-visible
-finding that `dispatchResolvedStyle` previously allocated a snapshot before equality; the JVM
-work-count gate is `StyleSnapshotAllocationTest.equalOutputResolve_skipsDispatchAndSnapshotAlloc`
-(`WorkCounters` + `StyleRecorder`). Focus / `scaleAnimationSpec` changes that alter the snapshot
-must still dispatch; first attach and `onReset` clear `lastDispatchedStyle`.
+`StyleScopeSnapshot` or dispatch chrome children. Focus / `scaleAnimationSpec` changes that
+alter the snapshot must still dispatch; first attach and `onReset` clear `lastDispatchedStyle`.
+
+**Step 0 — target confirmation:** No Phase 1c `write_session_artifacts` allocation profile /
+session directory in-tree names `StyleScopeSnapshot` or the equal-output dispatch path.
+Construction benches (`StyleModifierConstructionBenchmark`, StyleSpec keep evidence above) are
+**not** used as selection evidence. Selection is the ticket Findings default target: THE-606
+source-visible per-resolve `styleScopeSnapshot()` before equality in `dispatchResolvedStyle`
+(see THE-606 “Performance questions worth measuring” row for `StyleScopeSnapshot`). This is
+not a documented alternate (`ScaleLayoutElement` / `Traversable`). Plan Review authorized
+THE-612 Exact Implementation §2 for that default target. JVM lock of the equal-path alloc /
+dispatch skip is
+`StyleSnapshotAllocationTest.equalOutputResolve_skipsDispatchAndSnapshotAlloc`
+(`WorkCounters` + `StyleRecorder` + `styleScopeSnapshotAllocationHook`).
 
 **CI (deterministic):** Gate work-count / correctness with ordinary JVM tests
 (`:style:jvmTest` — allocation/work-count, recomposition, traversal, scale-animation suites). Do
@@ -255,14 +264,15 @@ and optional `tv_benchmark_report.py` helpers only after that variance is measur
 invalid/noisy sessions; do not retry into a false pass. Mismatched workload, single-session P99,
 or missing overrun must abort a measured conclusion.
 
-Before/after device evidence for a runtime styling fix is required for a release timing claim;
-work-count gates alone do not establish frame-budget thresholds.
+Before/after device evidence for a runtime styling fix is required to mark the measured-fix
+acceptance criterion Met; work-count gates alone do not satisfy that criterion or establish
+frame-budget thresholds.
 
 **Acceptance criteria (THE-612) — status:**
 
 | Criterion | Status |
 | --- | --- |
-| One measured fix (or explicit no-op) with before/after device evidence | **Fix shipped** (`sameAsSnapshot` / allocate-only-on-dispatch). **Device before/after deferred**: this change makes no release timing claim; ≥3 counterbalanced sessions remain required before any frame-budget or timing conclusion (section above). Selection evidence is the THE-606 source-visible finding that `dispatchResolvedStyle` allocated `StyleScopeSnapshot` before equality. |
+| One measured fix (or explicit no-op) with before/after device evidence | **Partial / Not Met** — Runtime optimization is present (`sameAsSnapshot` / allocate-only-on-dispatch) and gated by JVM work-count. **Device before/after is Not Met**: no ≥3 counterbalanced baseline-vs-candidate sessions are archived for this change. This PR does **not** claim the full measured-fix AC Met, and makes no release timing / frame-budget claim. |
 | Work-count (and allocation if available) regression covers the trigger | **Met** — `StyleSnapshotAllocationTest.equalOutputResolve_skipsDispatchAndSnapshotAlloc` (`WorkCounters` + `StyleRecorder` + `styleScopeSnapshotAllocationHook`). |
 | No public behavior change; rendering/input tests pass | **Met** — focus / `scaleAnimationSpec` / nested isolation covered by `StyleValueRecompositionTest`, `StyleTraversalIntegrationTest`, and `ScaleAnimationRequestTest`; first attach and `onReset` still clear `lastDispatchedStyle`. |
 | Duration budgets only after variance known; CI separates counts from device timing | **Met** — no duration/frame assertions in default CI; device timing stays report-only until variance is measured. |

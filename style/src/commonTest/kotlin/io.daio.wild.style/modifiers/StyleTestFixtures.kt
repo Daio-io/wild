@@ -41,9 +41,8 @@ internal class StyleRecorder {
         get() = snapshots.last()
 }
 
-/** Counts chrome dispatches and [StyleScopeSnapshot] allocations for work-count gates. */
+/** Counts [StyleScopeSnapshot] allocations for work-count gates. */
 internal class WorkCounters {
-    var chromeUpdates: Int = 0
     var snapshotAllocations: Int = 0
 }
 

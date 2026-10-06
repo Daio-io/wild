@@ -13,12 +13,18 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.interactionStyle
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class StyleSnapshotAllocationTest {
+    @AfterTest
+    fun clearAllocationHook() {
+        styleScopeSnapshotAllocationHook = null
+    }
+
     @Test
     fun equalOutputResolve_skipsDispatchAndSnapshotAlloc() =
         runComposeUiTest {
@@ -47,7 +53,7 @@ class StyleSnapshotAllocationTest {
                 }
                 waitForIdle()
                 assertEquals(Color.Red, recorder.last.color)
-                work.chromeUpdates = recorder.snapshots.size
+                val chromeBaseline = recorder.snapshots.size
                 val allocationsAfterAttach = work.snapshotAllocations
                 assertTrue(allocationsAfterAttach > 0)
 
@@ -55,12 +61,12 @@ class StyleSnapshotAllocationTest {
                 runOnIdle { styleKeyState.value = 1 }
                 waitForIdle()
 
-                assertEquals(work.chromeUpdates, recorder.snapshots.size)
+                assertEquals(chromeBaseline, recorder.snapshots.size)
                 assertEquals(Color.Red, recorder.last.color)
                 assertEquals(
                     allocationsAfterAttach,
                     work.snapshotAllocations,
-                    "Equal-output resolve must not allocate StyleScopeSnapshot",
+                    "equal-output resolve must not allocate StyleScopeSnapshot",
                 )
             } finally {
                 styleScopeSnapshotAllocationHook = null

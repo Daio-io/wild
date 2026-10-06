@@ -269,6 +269,8 @@ internal class StyleScopeParentNode(
         publishContentColorIfNeeded()
     }
 
+    // Keep field-for-field in lockstep with [StyleScopeSnapshot] / [styleScopeSnapshot].
+    // Comparing without allocating is intentional; do not replace with snapshot equality alone.
     private fun sameAsSnapshot(s: StyleScopeSnapshot): Boolean =
         s.color == color &&
             s.alpha == alpha &&
@@ -354,6 +356,7 @@ internal class StyleScopeParentNode(
 /**
  * Optional hook invoked when a [StyleScopeSnapshot] is allocated.
  * Used by work-count / allocation regression tests; leave null in production.
+ * Every test consumer must clear this in `finally` and/or `@AfterTest`.
  */
 internal var styleScopeSnapshotAllocationHook: (() -> Unit)? = null
 
