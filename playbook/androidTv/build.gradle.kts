@@ -39,6 +39,9 @@ android {
         }
         unitTests.all {
             it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+            // Roborazzi convention filters UnitTest to *ScreenshotTest; keep scenario coverage enrolled.
+            it.filter.isFailOnNoMatchingTests = false
+            it.filter.includeTestsMatching("*TvBenchmarkScenarioTest")
             val configuredLocalRepository = System.getProperty("maven.repo.local")
             val resolvedLocalRepository =
                 configuredLocalRepository

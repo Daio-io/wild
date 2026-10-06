@@ -45,4 +45,16 @@ class TvLayoutScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
                 composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
             },
         )
+
+    @Test
+    fun focusedWildLambda() =
+        // Same golden as focused() so wild_lambda must stay visually identical to wild_clickable.
+        captureTvScreenshot(
+            name = "tv-focus",
+            mode = "focus_flip",
+            itemsType = "wild_lambda",
+            beforeCapture = {
+                composeRule.onNodeWithContentDescription("benchmark-item-0-0").assertIsFocused()
+            },
+        )
 }

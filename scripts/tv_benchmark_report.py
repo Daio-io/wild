@@ -2,15 +2,40 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
 
-def extract_variant_metrics(path: Path, benchmark_name: str) -> dict[str, Any]:
+VARIANT_ALIASES: dict[str, tuple[str, str]] = {
+    "clickable": ("wild_clickable", "scrollGridWithWildClickable"),
+    "container": ("wild_container", "scrollGridWithWildContainer"),
+    "material": ("material_surface", "scrollGridWithMaterialSurface"),
+    "lambda": ("wild_lambda", "scrollGridWithWildLambda"),
+    "lambda_recreated": ("wild_lambda_recreated", "scrollGridWithWildLambdaRecreated"),
+}
+
+FOLDER_TO_METHOD = {folder: method for folder, method in VARIANT_ALIASES.values()}
+
+
+def resolve_variant_alias(alias: str) -> tuple[str, str]:
+    try:
+        return VARIANT_ALIASES[alias]
+    except KeyError as exc:
+        raise ValueError(f"Unknown variant alias: {alias}") from exc
+
+
+def extract_variant_metrics(
+    path: Path,
+    benchmark_name: str,
+    *,
+    api_level: int | None = None,
+) -> dict[str, Any]:
     data = json.loads(path.read_text())
     match = next(b for b in data["benchmarks"] if b["name"] == benchmark_name)
     metrics = match["metrics"]
     sampled = match["sampledMetrics"]["frameDurationCpuMs"]
+    overrun_sampled = match["sampledMetrics"].get("frameOverrunMs")
     return {
         "name": match["name"],
         "frameCount": metrics["frameCount"],
@@ -22,13 +47,97 @@ def extract_variant_metrics(path: Path, benchmark_name: str) -> dict[str, Any]:
         },
         "memoryHeapSizeMaxKb": metrics.get("memoryHeapSizeMaxKb"),
         "totalRunTimeNs": match["totalRunTimeNs"],
+        "frameOverrunMs": _frame_overrun_metric(overrun_sampled, api_level),
     }
+
+
+def _frame_overrun_metric(
+    overrun_sampled: dict[str, Any] | None,
+    api_level: int | None,
+) -> dict[str, Any]:
+    if overrun_sampled is not None:
+        return {
+            "available": True,
+            "P50": overrun_sampled["P50"],
+            "P90": overrun_sampled["P90"],
+            "P95": overrun_sampled["P95"],
+            "P99": overrun_sampled["P99"],
+        }
+    # API < 31 cannot supply frameOverrunMs; never coerce missing data to 0.
+    if api_level is not None and api_level < 31:
+        return {"available": False, "reason": "api_lt_31"}
+    return {"available": False, "reason": "missing_metric"}
+
+
+def session_invalid_reason(
+    session_dir: Path,
+    session: dict[str, Any],
+) -> str | None:
+    """Return a rejection reason when completion archives/metrics are incomplete."""
+    variants = session.get("variants") or []
+    invocations = session.get("invocations") or []
+    if not invocations:
+        return "incomplete session: no invocations"
+    if not variants:
+        return "incomplete session: no variants"
+
+    invocation_dirs = {
+        int(path.name): path
+        for path in session_dir.glob("invocations/*")
+        if path.is_dir() and path.name.isdigit()
+    }
+
+    for invocation in invocations:
+        index = invocation.get("index")
+        try:
+            inv_dir = invocation_dirs[int(index)]
+        except (TypeError, ValueError, KeyError):
+            return f"missing completion markers for invocation {index}"
+
+        results = invocation.get("results") or {}
+        for variant in variants:
+            metrics = results.get(variant)
+            data_path = inv_dir / str(variant) / "benchmarkData.json"
+            if metrics is None or not data_path.is_file():
+                return f"missing completion markers for {variant}"
+            cpu = metrics.get("frameDurationCpuMs") or {}
+            if not all(key in cpu for key in ("P50", "P90", "P95", "P99")):
+                return f"missing completion markers for {variant}"
+    return None
 
 
 def percent_delta(value: float | None, baseline: float | None) -> float | None:
     if value is None or baseline is None or baseline == 0:
         return None
     return ((value - baseline) / baseline) * 100.0
+
+
+def session_compatibility_error(
+    baseline: dict[str, Any],
+    candidate: dict[str, Any],
+) -> str | None:
+    baseline_device = baseline.get("device", {})
+    candidate_device = candidate.get("device", {})
+    checks = [
+        ("device.model", baseline_device.get("model"), candidate_device.get("model")),
+        ("device.apiLevel", baseline_device.get("apiLevel"), candidate_device.get("apiLevel")),
+        (
+            "compilationMode",
+            baseline.get("compilationMode"),
+            candidate.get("compilationMode"),
+        ),
+        ("workload", baseline.get("workload"), candidate.get("workload")),
+        ("profile", baseline.get("profile"), candidate.get("profile")),
+        (
+            "sourceStrategy",
+            baseline.get("sourceStrategy"),
+            candidate.get("sourceStrategy"),
+        ),
+    ]
+    for label, left, right in checks:
+        if left != right:
+            return f"Incompatible sessions: {label} mismatch ({left!r} vs {right!r})"
+    return None
 
 
 def _fmt_number(value: float | None, digits: int = 2) -> str:
@@ -54,6 +163,31 @@ def _median_or_none(metric: Any) -> float | None:
     return None
 
 
+def build_comparison_summary(
+    *,
+    baseline_label: str,
+    candidate_label: str,
+    baseline_metrics: dict[str, Any],
+    candidate_metrics: dict[str, Any],
+) -> str:
+    baseline_cpu = baseline_metrics.get("frameDurationCpuMs", {})
+    candidate_cpu = candidate_metrics.get("frameDurationCpuMs", {})
+    lines = [
+        f"# Comparison: {candidate_label} vs {baseline_label}",
+        "",
+        "| Metric | Baseline | Candidate | Delta |",
+        "|---|---:|---:|---:|",
+    ]
+    for percentile in ("P50", "P90", "P95", "P99"):
+        base = baseline_cpu.get(percentile)
+        cand = candidate_cpu.get(percentile)
+        lines.append(
+            f"| {percentile} | {_fmt_number(base)} | {_fmt_number(cand)} | "
+            f"{_fmt_delta(percent_delta(cand, base))} |"
+        )
+    return "\n".join(lines)
+
+
 def build_session_summary(session: dict[str, Any]) -> str:
     device = session.get("device", {})
     lines: list[str] = [
@@ -64,12 +198,28 @@ def build_session_summary(session: dict[str, Any]) -> str:
         f"- Android: {device.get('androidVersion', 'unknown')}",
         f"- Git SHA: `{session.get('gitSha', 'unknown')}`",
         f"- Compose: {session.get('composeVersion', 'unknown')}",
-        "",
-        "Verdict is human-reviewed; this report does not apply automatic pass/fail thresholds.",
-        "",
-        "`totalRunTimeNs` stays in `session.json` as harness wall time only — omitted from deltas.",
-        "",
     ]
+    if session.get("workload"):
+        lines.append(f"- Workload: `{session['workload']}`")
+    if session.get("sourceStrategy"):
+        lines.append(f"- Source strategy: `{session['sourceStrategy']}`")
+    if session.get("compilationMode"):
+        lines.append(f"- Compilation: `{session['compilationMode']}`")
+
+    lines.extend(
+        [
+            "",
+            "Verdict is human-reviewed; this report does not apply automatic pass/fail thresholds.",
+            "",
+            "`totalRunTimeNs` stays in `session.json` as harness wall time only — omitted from deltas.",
+            "",
+        ]
+    )
+
+    overrun_note = _session_overrun_availability(session)
+    if overrun_note is not None:
+        lines.append(f"`frameOverrunMs`: {overrun_note}.")
+        lines.append("")
 
     invocations = session.get("invocations", [])
     if not invocations:
@@ -148,7 +298,51 @@ def build_session_summary(session: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def write_session_artifacts(session_dir: Path, session: dict[str, Any]) -> None:
+def _session_overrun_availability(session: dict[str, Any]) -> str | None:
+    invocations = session.get("invocations", [])
+    if not invocations:
+        return None
+    for metrics in invocations[0].get("results", {}).values():
+        overrun = metrics.get("frameOverrunMs")
+        if isinstance(overrun, dict):
+            if overrun.get("available"):
+                return "available"
+            return "unavailable"
+    api_level = session.get("device", {}).get("apiLevel")
+    if api_level is not None and api_level < 31:
+        return "unavailable"
+    return None
+
+
+def write_session_artifacts(
+    session_dir: Path,
+    session: dict[str, Any],
+    lean_baseline_dir: Path | None = None,
+) -> None:
     session_dir.mkdir(parents=True, exist_ok=True)
     (session_dir / "session.json").write_text(json.dumps(session, indent=2) + "\n")
     (session_dir / "summary.md").write_text(build_session_summary(session) + "\n")
+
+    if lean_baseline_dir is None:
+        return
+
+    if session.get("valid") is False:
+        reason = session.get("invalidReason") or "session marked invalid"
+        raise ValueError(reason)
+
+    lean_baseline_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(session_dir / "session.json", lean_baseline_dir / "session.json")
+    shutil.copy2(session_dir / "summary.md", lean_baseline_dir / "summary.md")
+
+    for inv_dir in sorted(session_dir.glob("invocations/*")):
+        if not inv_dir.is_dir():
+            continue
+        for variant_dir in sorted(inv_dir.iterdir()):
+            if not variant_dir.is_dir():
+                continue
+            dest = lean_baseline_dir / "invocations" / inv_dir.name / variant_dir.name
+            dest.mkdir(parents=True, exist_ok=True)
+            for name in ("benchmarkData.json", "message.txt"):
+                src = variant_dir / name
+                if src.exists():
+                    shutil.copy2(src, dest / name)

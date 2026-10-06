@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import io.daio.wild.content.LocalContentColor
 import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleScope
 import io.daio.wild.style.clickable
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
 
@@ -68,16 +70,35 @@ internal enum class BenchmarkInteractionSourceStrategy {
     NullCompatibility,
 }
 
+internal enum class BenchmarkStyleMode {
+    Value,
+    HoistedLambda,
+    RecreatedLambda,
+}
+
 internal enum class StyleVariant(
     val extraValue: String,
     val implementation: BenchmarkItemImplementation,
     val interactionSourceStrategy: BenchmarkInteractionSourceStrategy? = null,
     val benchmarkTitle: String = extraValue,
+    val styleMode: BenchmarkStyleMode = BenchmarkStyleMode.Value,
 ) {
     WildClickable(
         "wild_clickable",
         BenchmarkItemImplementation.StyledClickable,
         BenchmarkInteractionSourceStrategy.Explicit,
+    ),
+    WildLambda(
+        "wild_lambda",
+        BenchmarkItemImplementation.StyledClickable,
+        BenchmarkInteractionSourceStrategy.Explicit,
+        styleMode = BenchmarkStyleMode.HoistedLambda,
+    ),
+    WildLambdaRecreated(
+        "wild_lambda_recreated",
+        BenchmarkItemImplementation.StyledClickable,
+        BenchmarkInteractionSourceStrategy.Explicit,
+        styleMode = BenchmarkStyleMode.RecreatedLambda,
     ),
     ExplicitSourceFastPath(
         "explicit_source_fast_path",
@@ -235,6 +256,13 @@ private fun BenchmarkLayout(
         "list" -> OptionsList(variant, modifier, recompositionDriver)
         "grid" -> OptionsGrid(variant, modifier, recompositionDriver)
         "focus_flip" -> OptionsFocusFlip(variant, modifier, recompositionDriver)
+        "recompose_only" ->
+            SingleItemBenchmarkFixture(variant, modifier, recompositionDriver)
+        "snapshot_chrome" -> OptionsSnapshotChrome(variant, modifier)
+        "nested_styles", "nested_styles_small" ->
+            OptionsNestedStyles(variant, modifier, nestedSize = NestedStylesSize.Small)
+        "nested_styles_large" ->
+            OptionsNestedStyles(variant, modifier, nestedSize = NestedStylesSize.Large)
     }
 }
 
@@ -350,8 +378,180 @@ private fun OptionsFocusFlip(
         }
     }
 
-    LaunchedEffect(firstItemFocusRequester) {
+    LaunchedEffect(firstItemFocusRequester, variant) {
         firstItemFocusRequester.requestFocus()
+    }
+}
+
+private enum class NestedStylesSize {
+    Small,
+    Large,
+}
+
+@Stable
+internal class BenchmarkSnapshotChromeDriver {
+    private val requestedGenerationState = mutableIntStateOf(0)
+    private val appliedGenerationState = mutableIntStateOf(0)
+    private val chromeColorState = mutableStateOf(Color.Black)
+
+    val requestedGeneration: Int
+        get() = requestedGenerationState.intValue
+
+    val marker: String
+        get() = "benchmark-snapshot-chrome-${appliedGenerationState.intValue}"
+
+    val chromeColor: Color
+        get() = chromeColorState.value
+
+    fun requestChromeFlip(): Int {
+        chromeColorState.value =
+            if (chromeColorState.value == Color.Black) {
+                Color.Red
+            } else {
+                Color.Black
+            }
+        return ++requestedGenerationState.intValue
+    }
+
+    fun acknowledgeApplied(generation: Int) {
+        if (generation > appliedGenerationState.intValue) {
+            appliedGenerationState.intValue = generation
+        }
+    }
+}
+
+@Composable
+private fun OptionsSnapshotChrome(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+) {
+    val driver = remember { BenchmarkSnapshotChromeDriver() }
+    val config = remember { BenchmarkItemConfig() }
+    val requestedGeneration = driver.requestedGeneration
+    val chromeColor = driver.chromeColor
+
+    // Value-style control reads chrome color while building the Style in composition. Lambda
+    // variants still receive an equivalent Style value here; their styleBlock closes over that
+    // value. Completion is gated on applied acknowledgement rather than the state write alone.
+    val style =
+        remember(config, chromeColor) {
+            config
+                .copy(
+                    backgroundColor = chromeColor,
+                    focusedBackgroundColor = chromeColor,
+                ).style
+        }
+
+    val drivenModifier =
+        modifier
+            .onPreviewKeyEvent { event ->
+                if (event.key != Key.C) {
+                    false
+                } else {
+                    if (event.type == KeyEventType.KeyUp) {
+                        driver.requestChromeFlip()
+                    }
+                    true
+                }
+            }.semantics { contentDescription = driver.marker }
+
+    // Reading requestedGeneration invalidates this scope after the state write so SideEffect can
+    // acknowledge applied composition; the public marker still lags until acknowledgement
+    // (same apply-time contract as BenchmarkRecompositionDriver).
+    SideEffect {
+        if (requestedGeneration > 0) {
+            driver.acknowledgeApplied(requestedGeneration)
+        }
+    }
+
+    SingleItemBenchmarkFixture(
+        variant = variant,
+        modifier = drivenModifier,
+        style = style,
+        config = config,
+    )
+}
+
+@Composable
+private fun OptionsNestedStyles(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+    nestedSize: NestedStylesSize,
+) {
+    val nestedDepth =
+        when (nestedSize) {
+            NestedStylesSize.Small -> 1
+            NestedStylesSize.Large -> 4
+        }
+
+    SingleItemBenchmarkFixture(variant = variant, modifier = modifier) { style, item ->
+        NestedStyledChrome(
+            depth = nestedDepth,
+            style = style,
+            content = item,
+        )
+    }
+}
+
+@Composable
+private fun SingleItemBenchmarkFixture(
+    variant: StyleVariant,
+    modifier: Modifier = Modifier,
+    recompositionDriver: BenchmarkRecompositionDriver? = null,
+    style: Style? = null,
+    config: BenchmarkItemConfig? = null,
+    wrapItem: @Composable (style: Style, item: @Composable () -> Unit) -> Unit =
+        { _, item -> item() },
+) {
+    val resolvedConfig = config ?: remember { BenchmarkItemConfig() }
+    val resolvedStyle = style ?: remember(resolvedConfig) { resolvedConfig.style }
+    val focusRequester = remember { FocusRequester() }
+
+    Box(
+        modifier = modifier.fillMaxSize().background(Color.Black),
+        contentAlignment = Alignment.Center,
+    ) {
+        wrapItem(resolvedStyle) {
+            BenchmarkItem(
+                variant = variant,
+                title = variant.benchmarkTitle,
+                style = resolvedStyle,
+                config = resolvedConfig,
+                marker = "benchmark-item-0-0",
+                recompositionDriver = recompositionDriver,
+                onClick = { },
+                modifier = Modifier.focusRequester(focusRequester),
+            )
+        }
+    }
+
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun NestedStyledChrome(
+    depth: Int,
+    style: Style,
+    content: @Composable () -> Unit,
+) {
+    if (depth <= 0) {
+        content()
+        return
+    }
+    Box(
+        modifier =
+            Modifier
+                .size((100 + depth * 16).dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    style = style,
+                    onClick = {},
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        NestedStyledChrome(depth = depth - 1, style = style, content = content)
     }
 }
 
@@ -410,6 +610,7 @@ private fun BenchmarkItem(
                 onClick = onClick,
                 style = style,
                 interactionSourceStrategy = checkNotNull(variant.interactionSourceStrategy),
+                styleMode = variant.styleMode,
                 recompositionDriver = recompositionDriver,
                 modifier = itemModifier,
             )
@@ -420,12 +621,29 @@ private fun BenchmarkItem(
     }
 }
 
+private fun styleEquivalentBlock(style: Style): StyleScope.() -> Unit {
+    val colors = style.colors
+    val scaleValues = style.scale
+    val shapes = style.shapes
+    val borders = style.borders
+    val alphaValues = style.alpha
+    return {
+        color = colors.colorFor(enabled, focused, hovered, pressed, selected)
+        scale = scaleValues.scaleFor(enabled, focused, hovered, pressed, selected)
+        alpha = alphaValues.alphaFor(enabled, focused, hovered, pressed, selected)
+        shape = shapes.shapeFor(enabled, focused, hovered, pressed, selected)
+        border = borders.borderFor(enabled, focused, hovered, pressed, selected)
+        scaleAnimationSpec = scaleValues.animationSpec
+    }
+}
+
 @Composable
 private fun StyledClickableItem(
     title: String,
     onClick: () -> Unit,
     style: Style,
     interactionSourceStrategy: BenchmarkInteractionSourceStrategy,
+    styleMode: BenchmarkStyleMode,
     recompositionDriver: BenchmarkRecompositionDriver?,
     modifier: Modifier = Modifier,
 ) {
@@ -439,11 +657,30 @@ private fun StyledClickableItem(
             BenchmarkInteractionSourceStrategy.NullCompatibility -> null
         }
     val clickableModifier =
-        modifier.clickable(
-            onClick = onClick,
-            interactionSource = interactionSource,
-            style = style,
-        )
+        when (styleMode) {
+            BenchmarkStyleMode.Value ->
+                modifier.clickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                    style = style,
+                )
+            BenchmarkStyleMode.HoistedLambda -> {
+                val styleBlock = remember(style) { styleEquivalentBlock(style) }
+                modifier.clickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                    styleBlock = styleBlock,
+                )
+            }
+            BenchmarkStyleMode.RecreatedLambda -> {
+                val styleBlock = styleEquivalentBlock(style)
+                modifier.clickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                    styleBlock = styleBlock,
+                )
+            }
+        }
     val runtimeObserver = recompositionDriver?.runtimeObserver
 
     if (recompositionDriver != null && recompositionGeneration != null) {

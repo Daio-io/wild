@@ -7,6 +7,8 @@ SERIAL=""
 VARIANTS="clickable,container,material"
 INVOCATIONS=1
 ALLOW_DIRTY=0
+WORKLOAD="scroll_grid"
+SOURCE_STRATEGY="explicit"
 
 usage() {
   cat <<'EOF'
@@ -15,7 +17,7 @@ Usage: ./scripts/run-tv-style-benchmarks.sh [options]
 Options:
   --profile confirmation|local_short   Benchmark profile (default: confirmation)
   --serial <adb-serial>                Required if multiple devices are connected
-  --variants clickable,container,material
+  --variants clickable,container,material,lambda
   --invocations <N>                    Repeat the selected set N times (default: 1)
   --allow-dirty                        Allow uncommitted changes; session records gitDirty=true
   -h, --help                           Show help
@@ -68,6 +70,8 @@ variant_info() {
     clickable) echo "wild_clickable scrollGridWithWildClickable" ;;
     container) echo "wild_container scrollGridWithWildContainer" ;;
     material) echo "material_surface scrollGridWithMaterialSurface" ;;
+    lambda) echo "wild_lambda scrollGridWithWildLambda" ;;
+    lambda_recreated) echo "wild_lambda_recreated scrollGridWithWildLambdaRecreated" ;;
     *)
       echo "Unknown variant alias: $1" >&2
       exit 1
@@ -112,11 +116,14 @@ export ANDROID_SERIAL="$SERIAL"
 
 MODEL="$(adb -s "$SERIAL" shell getprop ro.product.model | tr -d '\r')"
 ANDROID_VERSION="$(adb -s "$SERIAL" shell getprop ro.build.version.release | tr -d '\r')"
+API_LEVEL="$(adb -s "$SERIAL" shell getprop ro.build.version.sdk | tr -d '\r')"
 GIT_SHA="$(git -C "$ROOT_DIR" rev-parse --short HEAD)"
 COMPOSE_VERSION="$(awk -F' = ' '/^compose-multiplatform/ {gsub(/"/, "", $2); print $2; exit}' "$ROOT_DIR/gradle/libs.versions.toml")"
 MODEL_SAFE="$(printf '%s' "$MODEL" | tr ' /' '__')"
 STAMP="$(date +%Y-%m-%d_%H-%M-%S)"
 SESSION_DIR="$ROOT_DIR/benchmark_results/sessions/${STAMP}_${MODEL_SAFE}_${PROFILE}"
+DATE_STAMP="$(date +%Y-%m-%d)"
+LEAN_BASELINE_DIR="$ROOT_DIR/benchmark_results/snapshots/${DATE_STAMP}_${MODEL_SAFE}_${PROFILE}"
 CONNECTED_OUTPUT_ROOT="$ROOT_DIR/internal/benchmark/build/outputs/connected_android_test_additional_output/debug/connected"
 
 mkdir -p "$SESSION_DIR"
@@ -126,6 +133,12 @@ echo "Installing TV playbook on $SERIAL ($MODEL)..."
   cd "$ROOT_DIR"
   ./gradlew :playbook:androidTv:installDebug
 )
+
+APK_PATH="$(adb -s "$SERIAL" shell pm path io.daio.wild.playbook.tv | head -n1 | tr -d '\r' | cut -d: -f2)"
+APK_HASH=""
+if [[ -n "$APK_PATH" ]]; then
+  APK_HASH="$(adb -s "$SERIAL" shell sha256sum "$APK_PATH" 2>/dev/null | awk '{print $1}' | tr -d '\r')"
+fi
 
 run_variant() {
   local invocation_index="$1"
@@ -180,7 +193,7 @@ for ((i = 1; i <= INVOCATIONS; i++)); do
   done
 done
 
-python3 - "$ROOT_DIR" "$SESSION_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$GIT_SHA" "$COMPOSE_VERSION" "$GIT_DIRTY" "${SELECTED_FOLDERS[@]}" <<'PY'
+python3 - "$ROOT_DIR" "$SESSION_DIR" "$LEAN_BASELINE_DIR" "$PROFILE" "$MODEL" "$ANDROID_VERSION" "$API_LEVEL" "$GIT_SHA" "$COMPOSE_VERSION" "$GIT_DIRTY" "$APK_HASH" "$WORKLOAD" "$SOURCE_STRATEGY" "${SELECTED_FOLDERS[@]}" <<'PY'
 from __future__ import annotations
 
 import sys
@@ -188,25 +201,38 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 session_dir = Path(sys.argv[2])
-profile, model, android, git_sha, compose = sys.argv[3:8]
-git_dirty = sys.argv[8].lower() == "true"
-folders = sys.argv[9:]
+lean_baseline_dir = Path(sys.argv[3])
+profile, model, android, api_level, git_sha, compose = sys.argv[4:10]
+git_dirty = sys.argv[10].lower() == "true"
+apk_hash = sys.argv[11]
+workload = sys.argv[12]
+source_strategy = sys.argv[13]
+folders = sys.argv[14:]
 
 sys.path.insert(0, str(root / "scripts"))
-from tv_benchmark_report import extract_variant_metrics, write_session_artifacts
+from tv_benchmark_report import (
+    FOLDER_TO_METHOD,
+    extract_variant_metrics,
+    session_invalid_reason,
+    write_session_artifacts,
+)
 
-FOLDER_TO_METHOD = {
-    "wild_clickable": "scrollGridWithWildClickable",
-    "wild_container": "scrollGridWithWildContainer",
-    "material_surface": "scrollGridWithMaterialSurface",
-}
+api_level_int = int(api_level) if api_level.isdigit() else None
 
 session = {
     "profile": profile,
-    "device": {"model": model, "androidVersion": android},
+    "device": {
+        "model": model,
+        "androidVersion": android,
+        "apiLevel": api_level_int,
+    },
     "gitSha": git_sha,
     "gitDirty": git_dirty,
     "composeVersion": compose,
+    "apkHash": apk_hash or None,
+    "workload": workload,
+    "sourceStrategy": source_strategy,
+    "compilationMode": "Partial",
     "variants": folders,
     "invocations": [],
 }
@@ -217,7 +243,12 @@ for inv_dir in sorted(session_dir.glob("invocations/*")):
     results = {}
     for folder in folders:
         data = inv_dir / folder / "benchmarkData.json"
-        results[folder] = extract_variant_metrics(data, FOLDER_TO_METHOD[folder])
+        if data.is_file():
+            results[folder] = extract_variant_metrics(
+                data,
+                FOLDER_TO_METHOD[folder],
+                api_level=api_level_int,
+            )
     session["invocations"].append(
         {
             "index": int(inv_dir.name),
@@ -226,9 +257,16 @@ for inv_dir in sorted(session_dir.glob("invocations/*")):
         }
     )
 
-write_session_artifacts(session_dir, session)
+invalid_reason = session_invalid_reason(session_dir, session)
+session["valid"] = invalid_reason is None
+if invalid_reason is not None:
+    session["invalidReason"] = invalid_reason
+
+write_session_artifacts(session_dir, session, lean_baseline_dir=lean_baseline_dir)
 print(session_dir / "summary.md")
+print(lean_baseline_dir)
 PY
 
 echo "Session archived at: $SESSION_DIR"
+echo "Lean baseline: $LEAN_BASELINE_DIR"
 echo "Summary: $SESSION_DIR/summary.md"
