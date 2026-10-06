@@ -7,6 +7,8 @@ The TV macrobenchmark suite compares equivalent grid items across explicit style
   callback; default lambda candidate for value-vs-lambda comparisons.
 - `wild_lambda_recreated`: diagnostic negative control that recreates the style callback each
   composition; not the default comparable candidate.
+- `wild_spec`: production Wild styled clickable with experimental `StyleSpec` (`BenchmarkStyleMode.Spec`);
+  Phase 1c / THE-610 TV scenario for Spec vs value / hoisted-lambda cost.
 - `explicit_source_fast_path`: production Wild styled clickable with one remembered, non-null
   `MutableInteractionSource`, exercising the ordinary modifier path.
 - `null_source_compatibility`: the same styled clickable and item configuration with a null source,
@@ -193,11 +195,31 @@ partially customized style. Run it on a physical Android device using the releas
 ./gradlew :internal:style-benchmark:connectedCheck
 ```
 
-`StyleModifierConstructionBenchmark` adds warmed construction cases for value and hoisted-lambda
-`interactionStyle` modifiers (`valueInteractionStyle_construction`,
-`hoistedLambdaInteractionStyle_construction`). Sources, base styles, and callbacks are hoisted
-outside `measureRepeated`; results label definition/modifier construction only — never attached
-node resolution. Keep `StyleDefaultsBenchmark` as the default-factory control.
+`StyleModifierConstructionBenchmark` adds warmed construction cases for value, hoisted-lambda, and
+StyleSpec `interactionStyle` modifiers (`valueInteractionStyle_construction`,
+`hoistedLambdaInteractionStyle_construction`, `styleSpec1Override_construction`,
+`styleSpec4Override_construction`, `styleSpec16Override_construction`). Sources, base styles,
+and callbacks (including Spec override lambdas) are hoisted outside `measureRepeated`; results
+label definition/modifier construction only — never attached node resolution. Keep
+`StyleDefaultsBenchmark` as the default-factory control.
+
+### StyleSpec keep decision (THE-610 / Phase 1c)
+
+**Keep (harness-only evidence accepted for Phase 3):** StyleSpec is kept. THE-610’s construction /
+`wild_spec` AC for this phase is satisfied by checked-in harness coverage, not by recording a
+specific device SHA’s medians / `allocationCount` in-tree:
+
+- Construction: `StyleModifierConstructionBenchmark` cases
+  `valueInteractionStyle_construction`, `hoistedLambdaInteractionStyle_construction`,
+  `styleSpec1Override_construction`, `styleSpec4Override_construction`,
+  `styleSpec16Override_construction` (stable callbacks hoisted outside `measureRepeated`).
+- TV: `wild_spec` scenario in the Android TV playbook suite
+  (`BenchmarkStyleMode.Spec` / production Wild styled clickable with experimental `StyleSpec`).
+
+Spec construction is a thin `StyleResolver.Spec` wrapper around an immutable definition, so reuse
+cost is justified versus recreating lambda blocks. Device medians / `allocationCount` remain
+optional revision-comparison data (capture steps below); they are not required to gate the Phase 3
+keep decision.
 
 AndroidX Benchmark writes JSON beneath
 `internal/style-benchmark/build/outputs/connected_android_test_additional_output/releaseAndroidTest/connected/<device>/`.

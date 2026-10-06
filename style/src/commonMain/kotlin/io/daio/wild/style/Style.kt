@@ -789,6 +789,32 @@ fun Modifier.staticStyle(style: Style): Modifier =
         BackgroundElement() then
         ShapeLayoutElement()
 
+/**
+ * Sets a non-interactive experimental [StyleSpec] on the element.
+ *
+ * Installs the same visual chain as [interactionStyle] with a [StyleSpec] without interaction
+ * observation. Standalone chrome only — does not publish content composition locals.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) { alpha = 0.9f }
+ * Box(Modifier = Modifier.staticStyle(spec))
+ * ```
+ *
+ * @param style The [StyleSpec] to apply to the element.
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+fun Modifier.staticStyle(style: StyleSpec): Modifier =
+    this.staticStyleBoundary() then
+        StyleScopeParentElement(
+            resolver = StyleResolver.Spec(style),
+        ) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
+
 @Deprecated(
     message = "Use interactionStyle instead. The node-based style system is now the default.",
     replaceWith = ReplaceWith("interactionStyle(interactionSource, enabled, selected, style)"),
@@ -916,6 +942,52 @@ fun Modifier.interactionStyle(
         interactionSource = interactionSource,
         childTraversalKey = StyleParentTraversalKey,
     ) then StyleScopeParentElement(enabled, selected, StyleResolver.Block(block)) then
+        ScaleLayoutElement() then
+        BorderElement() then
+        BackgroundElement() then
+        ShapeLayoutElement()
+
+/**
+ * Sets an experimental [StyleSpec] on the element that reacts to interactions from the provided
+ * [interactionSource].
+ *
+ * Seeds chrome from [StyleSpec.base] tables for the current flags, then runs ordered
+ * [ComponentStyleScope] blocks without resetting between blocks. Omitting a property keeps the
+ * base or earlier write for that evaluation; the next evaluation re-seeds from the base tables.
+ *
+ * Standalone chrome only — does not publish content composition locals.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Modifier.interactionStyle(interactionSource, style = spec)
+ * ```
+ *
+ * @param interactionSource The [InteractionSource] used to listen to user interactions such as
+ * pressed and focus. Share the same instance with clickable/selectable modifiers.
+ * @param enabled Whether the element is currently enabled.
+ * @param selected Whether the element is currently selected.
+ * @param style The [StyleSpec] to apply to the element.
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+fun Modifier.interactionStyle(
+    interactionSource: InteractionSource?,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    style: StyleSpec,
+): Modifier =
+    this.interactionSourceNode(
+        interactionSource = interactionSource,
+        childTraversalKey = StyleParentTraversalKey,
+    ) then
+        StyleScopeParentElement(
+            enabled = enabled,
+            selected = selected,
+            resolver = StyleResolver.Spec(style),
+        ) then
         ScaleLayoutElement() then
         BorderElement() then
         BackgroundElement() then

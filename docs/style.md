@@ -32,12 +32,13 @@ One of the main Modifiers provided by Wild is `Modifier.interactionStyle`. This 
 relevance for Tv developers to be able to setup Styles on components that will need to respond and
 change based on the current `InteractionSource` state, things like Focus and Press.
 
-`interactionStyle` has two overloads:
+`interactionStyle` has three overloads:
 
 | Overload | When to use |
 |----------|-------------|
 | `interactionStyle(..., style: Style)` | Preferred for immutable `Style` values from `StyleDefaults` |
 | `interactionStyle(..., block: StyleScope.() -> Unit)` | Advanced / custom resolution in a DSL |
+| `interactionStyle(..., style: StyleSpec)` | Experimental reusable base `Style` + ordered overrides |
 
 #### Style value overload
 
@@ -91,6 +92,30 @@ name `style =` or `styleBlock =` so overload resolution stays unambiguous. Depre
 `experimentalClickable` / `experimentalSelectable` / `experimentalInteractable` /
 `experimentalInteractionStyle` lambda `ReplaceWith` expressions target these current APIs
 (`styleBlock = style` and `interactionStyle(..., block)`).
+
+#### Experimental StyleSpec
+
+`StyleSpec` is an `@ExperimentalWildApi` immutable definition: a base `Style` plus ordered
+`ComponentStyleScope` callbacks. The style parent seeds chrome (and content color on the scope)
+from the base tables for the current flags, then runs blocks **without** resetting between them.
+Omitting a property keeps the base or an earlier write for that evaluation; the next evaluation
+re-seeds from the base tables (omit does not carry prior evaluations).
+
+```kotlin
+@OptIn(ExperimentalWildApi::class)
+val spec = styleSpec(StyleDefaults.style()) {
+    if (focused) scale = 1.1f
+}.then {
+    if (pressed) alpha = 0.9f
+}
+
+Modifier.interactionStyle(interactionSource, style = spec)
+// also: staticStyle(spec), clickable(..., style = spec), selectable(...), interactable(...)
+```
+
+Standalone Spec chrome modifiers do **not** publish content composition locals yet — that is
+deferred to a later phase. Prefer a stable `StyleSpec` (hoisted / remembered callbacks); there is
+no default `rememberStyleSpec` helper.
 
 !!! note "StyleScope DSL reset semantics"
     When using the `StyleScope` block overload of `interactionStyle`, each evaluation resets visual

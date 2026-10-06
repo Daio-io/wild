@@ -12,10 +12,13 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.TraversableNode
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.DefaultComponentStyleScope
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleScope
+import io.daio.wild.style.StyleSpec
 
 internal class StyleScopeParentElement(
     val enabled: Boolean = true,
@@ -101,6 +104,13 @@ internal class StyleScopeParentNode(
     private var isUpdating: Boolean = false
     private var needsUpdate: Boolean = false
 
+    // Retained for Phase 4 content-local bridge; Spec chrome modifiers do not publish it yet.
+    @OptIn(ExperimentalWildApi::class)
+    private var contentColor: Color = Color.Unspecified
+
+    @OptIn(ExperimentalWildApi::class)
+    private val componentStyleScope = DefaultComponentStyleScope()
+
     fun updateState(
         selected: Boolean,
         enabled: Boolean,
@@ -136,6 +146,7 @@ internal class StyleScopeParentNode(
         }
     }
 
+    @OptIn(ExperimentalWildApi::class)
     private fun resolveStyle() {
         when (val currentResolver = resolver) {
             is StyleResolver.Block ->
@@ -145,6 +156,44 @@ internal class StyleScopeParentNode(
                 }
 
             is StyleResolver.Value -> resolveValue(currentResolver.style)
+            is StyleResolver.Spec -> resolveSpec(currentResolver.spec)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private fun resolveSpec(spec: StyleSpec) {
+        observeReads {
+            resolveValue(spec.base)
+            val scope = componentStyleScope
+            scope.updateState(
+                enabled = enabled,
+                focused = focused,
+                selected = selected,
+                pressed = pressed,
+                hovered = hovered,
+            )
+            scope.color = color
+            scope.alpha = alpha
+            scope.scale = scale
+            scope.shape = shape
+            scope.border = border
+            scope.scaleAnimationSpec = scaleAnimationSpec
+            scope.contentColor =
+                spec.base.colors.contentColorFor(
+                    enabled = enabled,
+                    focused = focused,
+                    hovered = hovered,
+                    pressed = pressed,
+                    selected = selected,
+                )
+            spec.applyBlocks(scope)
+            color = scope.color
+            alpha = scope.alpha
+            scale = scope.scale
+            shape = scope.shape
+            border = scope.border
+            scaleAnimationSpec = scope.scaleAnimationSpec
+            contentColor = scope.contentColor
         }
     }
 
@@ -244,6 +293,7 @@ internal class StyleScopeParentNode(
 
     override fun onReset() {
         resetResolvedStyle()
+        contentColor = Color.Unspecified
         lastDispatchedStyle = null
         isUpdating = false
         needsUpdate = false

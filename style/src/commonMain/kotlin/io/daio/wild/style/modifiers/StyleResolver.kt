@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style.modifiers
 
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleScope
+import io.daio.wild.style.StyleSpec
 
 internal sealed interface StyleResolver {
     data class Value(val style: Style) : StyleResolver
@@ -17,4 +19,7 @@ internal sealed interface StyleResolver {
 
         override fun hashCode(): Int = block.hashCode()
     }
+
+    @OptIn(ExperimentalWildApi::class)
+    data class Spec(val spec: StyleSpec) : StyleResolver
 }

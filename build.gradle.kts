@@ -56,6 +56,8 @@ tasks.register("verifyHostScreenshots") {
         ":components:toggleable:verifyRoborazziJvm",
         ":content-color:verifyRoborazziDebug",
         ":content-color:verifyRoborazziJvm",
+        ":style:verifyRoborazziDebug",
+        ":style:verifyRoborazziJvm",
         ":layout:container:verifyRoborazziDebug",
         ":layout:container:verifyRoborazziJvm",
         ":layout:divider:verifyRoborazziDebug",
