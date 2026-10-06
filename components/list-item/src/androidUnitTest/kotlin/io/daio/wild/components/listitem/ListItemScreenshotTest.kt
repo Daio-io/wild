@@ -18,4 +18,7 @@ class ListItemScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Componen
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedListItem() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecListItem() }
 }

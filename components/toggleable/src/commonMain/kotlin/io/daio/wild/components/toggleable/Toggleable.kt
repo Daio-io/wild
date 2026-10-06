@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
@@ -19,6 +20,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
 
 /**
  * Base toggleable component for building selection controls (switches, checkboxes, radio buttons).
@@ -105,6 +107,41 @@ fun Toggleable(
 }
 
 /**
+ * Boolean [Toggleable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param checked Whether the control is currently checked.
+ * @param onCheckedChange Callback invoked when the checked state should change.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier to apply to the toggleable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Toggleable(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ToggleableImpl(
+        state = ToggleableState(checked),
+        onClick = { onCheckedChange(!checked) },
+        modifier = modifier,
+        enabled = enabled,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
  * Base toggleable component that supports on, off, and indeterminate states.
  *
  * The caller owns the state transition policy: [onClick] is invoked once for an enabled
@@ -161,6 +198,41 @@ fun Toggleable(
     )
 }
 
+/**
+ * Tri-state [Toggleable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param state The current on, off, or indeterminate state.
+ * @param onClick Callback invoked when the enabled control is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier to apply to the toggleable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Toggleable(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    ToggleableImpl(
+        state = state,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
 @Composable
 private fun ToggleableImpl(
     state: ToggleableState,
@@ -168,6 +240,28 @@ private fun ToggleableImpl(
     modifier: Modifier,
     enabled: Boolean,
     style: Style,
+    interactionSource: MutableInteractionSource?,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier = modifier.semantics { toggleableState = state },
+        enabled = enabled,
+        selected = state != ToggleableState.Off,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun ToggleableImpl(
+    state: ToggleableState,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    style: StyleSpec,
     interactionSource: MutableInteractionSource?,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -219,6 +313,44 @@ fun Selectable(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     style: Style = SelectableDefaults.style(),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier.semantics {
+                this.selected = selected
+            },
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+        content = content,
+    )
+}
+
+/**
+ * [Selectable] with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param selected Whether this item is currently selected.
+ * @param onClick Callback invoked when the item is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier to apply to the selectable.
+ * @param enabled Whether the control is enabled.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Visual content of the control.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Selectable(
+    selected: Boolean,
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {

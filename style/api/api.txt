@@ -219,6 +219,14 @@ package io.daio.wild.style {
     property public abstract androidx.compose.ui.graphics.Color contentColor;
   }
 
+  @io.daio.wild.foundation.ExperimentalWildApi public fun interface ContentColorPublisher {
+    method @KotlinOnly public void publishResolvedColor(androidx.compose.ui.graphics.Color color);
+  }
+
+  public final class ContentColorPublisherKt {
+    method @io.daio.wild.foundation.ExperimentalWildApi public static androidx.compose.ui.Modifier contentColorBridge(androidx.compose.ui.Modifier, io.daio.wild.style.ContentColorPublisher publisher);
+  }
+
   public final class CornerShapesKt {
     method public static boolean isRoundedCornerShape(androidx.compose.ui.graphics.Shape);
     method @KotlinOnly public static io.daio.wild.style.ExpandedRoundedCornerShape toExpandedCornerShape(androidx.compose.foundation.shape.RoundedCornerShape, androidx.compose.ui.unit.Dp cornerExpansion);

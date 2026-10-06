@@ -4,19 +4,16 @@ package io.daio.wild.container
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import io.daio.wild.content.ProvidesContentColor
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
@@ -26,6 +23,8 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.contentColorBridge
 import io.daio.wild.style.interactable
 import io.daio.wild.style.staticStyle
 
@@ -145,6 +144,7 @@ fun Container(
  * }
  * ```
  */
+@OptIn(ExperimentalWildApi::class)
 @Composable
 fun Container(
     onClick: () -> Unit,
@@ -159,32 +159,121 @@ fun Container(
 ) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val selectedFlag = selected ?: false
+    val binding =
+        remember(style, enabled, selectedFlag) {
+            ComponentStyleBinding(
+                initial =
+                    style.colors.contentColorFor(
+                        enabled = enabled,
+                        focused = false,
+                        hovered = false,
+                        pressed = false,
+                        selected = selectedFlag,
+                    ),
+            )
+        }
 
     Box(
         modifier =
-            modifier.interactable(
-                selected = selected,
-                enabled = enabled,
-                style = style,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                onDoubleClick = onDoubleClick,
-                interactionSource = interactionSource,
-            ),
+            modifier
+                .interactable(
+                    selected = selected,
+                    enabled = enabled,
+                    style = style,
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                    onDoubleClick = onDoubleClick,
+                    interactionSource = interactionSource,
+                )
+                .contentColorBridge(binding),
         propagateMinConstraints = true,
         content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
-            ProvidesContentColor(
-                style.colors.contentColorFor(
+            ProvidesContentColor(binding.contentColor.value) {
+                content()
+            }
+        },
+    )
+}
+
+/**
+ * Interactive [Container] that applies an experimental [StyleSpec] for chrome and content-color
+ * propagation through the equality-gated bridge.
+ *
+ * Owns one [MutableInteractionSource] and one style chain. Prefer a stable [StyleSpec] (hoisted
+ * or remembered callbacks).
+ *
+ * @param onClick Callback when the container is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier applied outside the style chain.
+ * @param enabled Whether the container is enabled.
+ * @param onLongClick Optional long-click callback.
+ * @param onDoubleClick Optional double-click callback.
+ * @param interactionSource Optional hoisted interaction source; when null, Container owns one.
+ * @param selected Optional selected flag for selectable surfaces.
+ * @param content Content inside the container.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     if (focused) {
+ *         scale = 1.1f
+ *         contentColor = Color.Yellow
+ *     }
+ * }
+ * Container(onClick = { }, style = spec) {
+ *     Text("Spec container")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Container(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    style: StyleSpec,
+    interactionSource: MutableInteractionSource? = null,
+    selected: Boolean? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    @Suppress("NAME_SHADOWING")
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val selectedFlag = selected ?: false
+    val binding =
+        remember(style, enabled, selectedFlag) {
+            ComponentStyleBinding(
+                initial =
+                    style.base.colors.contentColorFor(
+                        enabled = enabled,
+                        focused = false,
+                        hovered = false,
+                        pressed = false,
+                        selected = selectedFlag,
+                    ),
+            )
+        }
+
+    Box(
+        modifier =
+            modifier
+                .interactable(
+                    selected = selected,
                     enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected ?: false,
-                ),
-            ) {
+                    style = style,
+                    onClick = onClick,
+                    onLongClick = onLongClick,
+                    onDoubleClick = onDoubleClick,
+                    interactionSource = interactionSource,
+                )
+                .contentColorBridge(binding),
+        propagateMinConstraints = true,
+        content = {
+            ProvidesContentColor(binding.contentColor.value) {
                 content()
             }
         },
@@ -273,6 +362,7 @@ fun Container(
         ),
     level = DeprecationLevel.WARNING,
 )
+@OptIn(ExperimentalWildApi::class)
 @Composable
 fun ExperimentalContainer(
     onClick: () -> Unit,
@@ -285,37 +375,16 @@ fun ExperimentalContainer(
     selected: Boolean? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    @Suppress("NAME_SHADOWING")
-    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
-
-    Box(
-        modifier =
-            modifier.interactable(
-                selected = selected,
-                enabled = enabled,
-                style = style,
-                onClick = onClick,
-                onLongClick = onLongClick,
-                onDoubleClick = onDoubleClick,
-                interactionSource = interactionSource,
-            ),
-        propagateMinConstraints = true,
-        content = {
-            val focused by interactionSource.collectIsFocusedAsState()
-            val pressed by interactionSource.collectIsPressedAsState()
-            val hovered by interactionSource.collectIsHoveredAsState()
-            ProvidesContentColor(
-                style.colors.contentColorFor(
-                    enabled = enabled,
-                    focused = focused,
-                    hovered = hovered,
-                    pressed = pressed,
-                    selected = selected ?: false,
-                ),
-            ) {
-                content()
-            }
-        },
+    Container(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        style = style,
+        interactionSource = interactionSource,
+        selected = selected,
+        content = content,
     )
 }
 

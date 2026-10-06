@@ -20,13 +20,15 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.styleSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class ContainerInteractionSourceOwnershipTest {
     @Test
     fun implicitInteractionSourceKeepsFocusedContentColorAcrossParentRecomposition() =
@@ -105,6 +107,33 @@ class ContainerInteractionSourceOwnershipTest {
             runOnIdle {
                 assertEquals(1, clickCount)
                 assertSame(source, compositionData.ownedInteractionSources().single())
+            }
+        }
+
+    @Test
+    fun specOverload_oneSharedSource_oneStyleChain() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val spec =
+                styleSpec(StyleDefaults.style()) {
+                    if (focused) scale = 1.1f
+                }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                Container(
+                    onClick = {},
+                    modifier = Modifier.size(48.dp),
+                    style = spec,
+                    interactionSource = source,
+                ) {}
+            }
+
+            runOnIdle {
+                val sources = compositionData.ownedInteractionSources()
+                assertEquals(1, sources.size, compositionData.dump())
+                assertSame(source, sources.single())
             }
         }
 }

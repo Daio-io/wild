@@ -12,8 +12,8 @@ import io.daio.wild.foundation.ExperimentalWildApi
  * Style scope for [StyleSpec] callbacks. Extends [StyleScope] with a content color output that is
  * resolved from the base [Style] tables and may be overridden by ordered blocks.
  *
- * Content color is retained for a later content-local bridge; chrome Spec modifiers do not publish
- * content composition locals yet.
+ * Content color is published to composition by interactive component Spec/value overloads via
+ * an equality-gated bridge. Standalone Spec chrome modifiers do not publish content locals.
  *
  * Example:
  * ```

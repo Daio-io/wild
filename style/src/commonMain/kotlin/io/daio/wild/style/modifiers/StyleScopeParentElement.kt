@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.InspectorInfo
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
+import io.daio.wild.style.ContentColorBridgeNode
+import io.daio.wild.style.ContentColorBridgeTraversalKey
 import io.daio.wild.style.DefaultComponentStyleScope
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleScope
@@ -104,9 +106,12 @@ internal class StyleScopeParentNode(
     private var isUpdating: Boolean = false
     private var needsUpdate: Boolean = false
 
-    // Retained for Phase 4 content-local bridge; Spec chrome modifiers do not publish it yet.
+    // Content color for the composition bridge; published only when a LocalContentColorPublisher
+    // is provided (component path). Standalone chrome Spec/value modifiers leave the local null.
     @OptIn(ExperimentalWildApi::class)
     private var contentColor: Color = Color.Unspecified
+
+    private var contentColorResolved: Boolean = false
 
     @OptIn(ExperimentalWildApi::class)
     private val componentStyleScope = DefaultComponentStyleScope()
@@ -148,6 +153,7 @@ internal class StyleScopeParentNode(
 
     @OptIn(ExperimentalWildApi::class)
     private fun resolveStyle() {
+        contentColorResolved = false
         when (val currentResolver = resolver) {
             is StyleResolver.Block ->
                 observeReads {
@@ -194,6 +200,7 @@ internal class StyleScopeParentNode(
             border = scope.border
             scaleAnimationSpec = scope.scaleAnimationSpec
             contentColor = scope.contentColor
+            contentColorResolved = true
         }
     }
 
@@ -239,16 +246,41 @@ internal class StyleScopeParentNode(
                 selected = selected,
             )
         scaleAnimationSpec = style.scale.animationSpec
+        contentColor =
+            style.colors.contentColorFor(
+                enabled = enabled,
+                focused = focused,
+                hovered = hovered,
+                pressed = pressed,
+                selected = selected,
+            )
+        contentColorResolved = true
     }
 
     private fun dispatchResolvedStyle() {
         val resolvedStyle = styleScopeSnapshot()
-        if (resolvedStyle == lastDispatchedStyle) return
-        lastDispatchedStyle = resolvedStyle
-
-        traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
-            it.updateStyle(this)
+        if (resolvedStyle != lastDispatchedStyle) {
+            lastDispatchedStyle = resolvedStyle
+            traverseDirectDescendants<StyleScopeChildNode>(key = StyleChildTraversalKey) {
+                it.updateStyle(this)
+            }
         }
+        publishContentColorIfNeeded()
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private fun publishContentColorIfNeeded() {
+        if (!contentColorResolved || !isAttached) return
+        // Equality gating lives on the publisher (ComponentStyleBinding); always offer the
+        // current resolution so a replaced binding still receives the correct color.
+        traverseDirectDescendants<ContentColorBridgeNode>(key = ContentColorBridgeTraversalKey) {
+            it.onResolvedContentColor(contentColor)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    internal fun republishContentColor() {
+        publishContentColorIfNeeded()
     }
 
     override fun onObservedReadsChanged() {
@@ -294,6 +326,7 @@ internal class StyleScopeParentNode(
     override fun onReset() {
         resetResolvedStyle()
         contentColor = Color.Unspecified
+        contentColorResolved = false
         lastDispatchedStyle = null
         isUpdating = false
         needsUpdate = false

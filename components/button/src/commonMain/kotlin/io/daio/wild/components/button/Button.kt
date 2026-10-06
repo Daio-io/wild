@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
@@ -25,6 +26,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
 
 /**
  * Basic button component.
@@ -73,6 +75,72 @@ fun Button(
     onLongClick: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     style: Style = ButtonDefaults.style(),
+    contentPadding: PaddingValues = ButtonDefaults.contentPadding,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Container(
+        modifier =
+            modifier
+                .defaultMinSize(ButtonDefaults.defaultWidth, ButtonDefaults.defaultHeight)
+                .semantics { role = Role.Button },
+        enabled = enabled,
+        style = style,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        interactionSource = interactionSource,
+        content = {
+            Box(
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(contentPadding),
+                contentAlignment = Alignment.Center,
+                content = content,
+            )
+        },
+    )
+}
+
+/**
+ * Basic button that applies an experimental [StyleSpec] for chrome and content-color
+ * propagation through Container's equality-gated bridge.
+ *
+ * Owns one interaction source and one style chain. Default / trailing-content calls still select
+ * the value [Style] overload.
+ *
+ * @param onClick Callback invoked when the button is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier applied outside the style chain.
+ * @param enabled Whether the button is enabled.
+ * @param onLongClick Callback invoked when the button is long clicked.
+ * @param onDoubleClick Optional callback invoked when the button is double clicked.
+ * @param contentPadding Padding set on the inner content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Defines the content inside the button.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(ButtonDefaults.style()) {
+ *     if (focused) scale = 1.1f
+ * }
+ * Button(onClick = onClick, style = spec) {
+ *     Text("Continue")
+ * }
+ * ```
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun Button(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    style: StyleSpec,
     contentPadding: PaddingValues = ButtonDefaults.contentPadding,
     interactionSource: MutableInteractionSource? = null,
     content: @Composable BoxScope.() -> Unit,

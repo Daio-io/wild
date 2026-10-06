@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
@@ -26,6 +27,7 @@ import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
 
 /**
  * A list item with content only — no leading or trailing slots.
@@ -108,6 +110,129 @@ fun ListItem(
     enabled: Boolean = true,
     selected: Boolean = false,
     style: Style = ListItemDefaults.style(),
+    contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = ListItemDefaults.defaultMinHeight),
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
+        ) {
+            if (leadingContent != null) {
+                leadingContent()
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                content()
+            }
+            if (trailingContent != null) {
+                trailingContent()
+            }
+        }
+    }
+}
+
+/**
+ * Content-only list item with an experimental [StyleSpec] for chrome and content-color
+ * propagation through Container's equality-gated bridge.
+ *
+ * @param onClick Callback invoked when the list item is clicked.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier to apply to the list item.
+ * @param enabled Whether the list item is enabled.
+ * @param selected Whether the list item is currently selected.
+ * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Main content of the list item.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun ListItem(
+    onClick: () -> Unit,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    selected: Boolean = false,
+    contentPadding: PaddingValues = ListItemDefaults.contentPadding,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal =
+        Arrangement.spacedBy(ListItemDefaults.contentSpacing),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+) {
+    Container(
+        onClick = onClick,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = ListItemDefaults.defaultMinHeight),
+        enabled = enabled,
+        selected = selected,
+        style = style,
+        interactionSource = interactionSource,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
+        ) {
+            content()
+        }
+    }
+}
+
+/**
+ * Slotted list item with an experimental [StyleSpec] for chrome and content-color propagation.
+ *
+ * @param onClick Callback invoked when the list item is clicked.
+ * @param leadingContent Content displayed at the start.
+ * @param trailingContent Content displayed at the end.
+ * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * @param modifier Modifier to apply to the list item.
+ * @param enabled Whether the list item is enabled.
+ * @param selected Whether the list item is currently selected.
+ * @param contentPadding Padding applied inside the list item.
+ * @param verticalAlignment Vertical alignment of the row content.
+ * @param horizontalArrangement Horizontal arrangement of the row content.
+ * @param interactionSource Optional interaction source; when null, Container owns one.
+ * @param content Main content of the list item.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+@Composable
+fun ListItem(
+    onClick: () -> Unit,
+    leadingContent: (@Composable () -> Unit)?,
+    trailingContent: (@Composable () -> Unit)?,
+    style: StyleSpec,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    selected: Boolean = false,
     contentPadding: PaddingValues = ListItemDefaults.contentPadding,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     horizontalArrangement: Arrangement.Horizontal =

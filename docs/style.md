@@ -113,9 +113,29 @@ Modifier.interactionStyle(interactionSource, style = spec)
 // also: staticStyle(spec), clickable(..., style = spec), selectable(...), interactable(...)
 ```
 
-Standalone Spec chrome modifiers do **not** publish content composition locals yet — that is
-deferred to a later phase. Prefer a stable `StyleSpec` (hoisted / remembered callbacks); there is
-no default `rememberStyleSpec` helper.
+Standalone Spec chrome modifiers (`interactionStyle` / `staticStyle` / input helpers) do **not**
+publish content composition locals. Interactive component overloads on `Container`, `Button`,
+`ListItem`, and `Toggleable`/`Selectable` that take `style: StyleSpec` **do** bridge resolved
+content color (including Spec callback overrides) through an equality-gated publisher: content
+recomposes only when the resolved color changes. Prefer a stable `StyleSpec` (hoisted /
+remembered callbacks); there is no default `rememberStyleSpec` helper.
+
+```kotlin
+@OptIn(ExperimentalWildApi::class)
+val cardStyle = styleSpec(base = ButtonDefaults.style()) {
+    contentColor = if (enabled) Color.White else Color.Gray
+    if (focused) scale = 1.08f
+}.then {
+    if (pressed) alpha = 0.9f
+}
+
+Button(onClick = onClick, style = cardStyle) {
+    Text("Continue") // reads LocalContentColor from the Spec bridge
+}
+```
+
+Capture theme values from composition before building the Spec; read live snapshot state inside
+callbacks when deferred observation is intended. Keep callbacks pure and synchronous.
 
 !!! note "StyleScope DSL reset semantics"
     When using the `StyleScope` block overload of `interactionStyle`, each evaluation resets visual

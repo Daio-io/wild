@@ -107,7 +107,7 @@ class ButtonInteractionSourceOwnershipTest {
 
             runOnIdle {
                 assertEquals(1, clickCount)
-                assertEquals(4, source.subscriptionCount)
+                assertEquals(1, source.subscriptionCount)
                 assertTrue(source.emittedInteractions.any { it is androidx.compose.foundation.interaction.FocusInteraction.Focus })
             }
         }

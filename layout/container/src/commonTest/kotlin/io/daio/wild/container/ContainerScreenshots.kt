@@ -1,5 +1,7 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
+@file:OptIn(io.daio.wild.foundation.ExperimentalWildApi::class)
+
 package io.daio.wild.container
 
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,7 @@ import io.daio.wild.screenshot.ScreenshotSurface
 import io.daio.wild.screenshot.ScreenshotTestStyle
 import io.daio.wild.screenshot.rememberFocusedInteractionSource
 import io.daio.wild.style.Border
+import io.daio.wild.style.styleSpec
 
 private val Navy = Color(0xFF17324D)
 
@@ -56,6 +59,19 @@ internal fun FocusedContainer() {
     ScreenshotSurface {
         Container(onClick = {}, style = ScreenshotTestStyle, interactionSource = interactionSource) {
             BasicText("focused", Modifier.padding(12.dp), style = TextStyle(color = LocalContentColor.current))
+        }
+    }
+}
+
+@Composable
+internal fun SpecContainer() {
+    val spec =
+        styleSpec(ScreenshotTestStyle) {
+            if (focused) scale = 1.1f
+        }
+    ScreenshotSurface {
+        Container(onClick = {}, style = spec) {
+            BasicText("spec", Modifier.padding(12.dp), style = TextStyle(color = LocalContentColor.current))
         }
     }
 }

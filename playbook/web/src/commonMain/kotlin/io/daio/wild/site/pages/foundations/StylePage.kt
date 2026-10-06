@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.daio.wild.components.text.Text
 import io.daio.wild.container.Container
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.layout.divider.HorizontalDivider
 import io.daio.wild.site.components.CodeBlock
 import io.daio.wild.site.components.Prop
@@ -33,8 +34,10 @@ import io.daio.wild.site.components.PropsTable
 import io.daio.wild.site.theme.SiteTheme
 import io.daio.wild.style.Border
 import io.daio.wild.style.StyleDefaults
+import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalWildApi::class)
 @Composable
 fun StylePage(modifier: Modifier = Modifier) {
     Column(
@@ -767,6 +770,48 @@ fun StylePage(modifier: Modifier = Modifier) {
 
         HorizontalDivider(color = SiteTheme.colors.border)
 
+        // StyleSpec
+        SectionHeader("Experimental StyleSpec")
+        SectionDescription(
+            "StyleSpec is a reusable base Style plus ordered overrides. Standalone chrome " +
+                "modifiers apply visuals only. Container, Button, ListItem, and Toggleable " +
+                "Spec overloads also publish content color through an equality-gated bridge.",
+        )
+        DemoContainer {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+            ) {
+                SpecDemoBox(
+                    label = "Spec focus",
+                    spec =
+                        styleSpec(
+                            StyleDefaults.style(
+                                colors =
+                                    StyleDefaults.colors(
+                                        backgroundColor = SiteTheme.colors.background,
+                                        contentColor = SiteTheme.colors.textPrimary,
+                                        focusedBackgroundColor = SiteTheme.colors.accent,
+                                        focusedContentColor = SiteTheme.colors.background,
+                                    ),
+                                shapes =
+                                    StyleDefaults.shapes(
+                                        shape = RoundedCornerShape(8.dp),
+                                    ),
+                            ),
+                        ) {
+                            if (focused) scale = 1.1f
+                        },
+                )
+            }
+        }
+        CodeBlock(
+            code = STYLE_SPEC_USAGE,
+            tabs = listOf("Kotlin"),
+        )
+
+        HorizontalDivider(color = SiteTheme.colors.border)
+
         // Usage
         SectionHeader("Usage")
         SectionDescription(
@@ -930,6 +975,29 @@ private fun DemoBox(
     }
 }
 
+@OptIn(ExperimentalWildApi::class)
+@Composable
+private fun SpecDemoBox(
+    label: String,
+    spec: StyleSpec,
+) {
+    Container(
+        onClick = {},
+        modifier = Modifier.size(120.dp),
+        style = spec,
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = label,
+                style = SiteTheme.typography.bodySmall,
+            )
+        }
+    }
+}
+
 @Composable
 private fun SelectableDemoBox(
     label: String,
@@ -959,6 +1027,25 @@ private fun SelectableDemoBox(
         }
     }
 }
+
+private val STYLE_SPEC_USAGE =
+    """
+    @OptIn(ExperimentalWildApi::class)
+    val cardStyle = styleSpec(base = StyleDefaults.style()) {
+        contentColor = if (enabled) Color.White else Color.Gray
+        if (focused) scale = 1.08f
+    }.then {
+        if (pressed) alpha = 0.9f
+    }
+
+    // Component Spec overload: chrome + content-color bridge
+    Container(onClick = { }, style = cardStyle) {
+        Text("Spec container")
+    }
+
+    // Standalone chrome only — no content locals
+    Modifier.interactionStyle(interactionSource, style = cardStyle)
+    """.trimIndent()
 
 private val STYLE_USAGE =
     """

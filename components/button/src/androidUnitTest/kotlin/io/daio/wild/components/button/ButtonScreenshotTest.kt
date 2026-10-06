@@ -15,4 +15,7 @@ class ButtonScreenshotTest : AndroidScreenshotTest<ComponentActivity>(ComponentA
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedButton() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecButton() }
 }
