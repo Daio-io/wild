@@ -41,11 +41,6 @@ internal class StyleRecorder {
         get() = snapshots.last()
 }
 
-/** Counts [StyleScopeSnapshot] allocations for work-count gates. */
-internal class WorkCounters {
-    var snapshotAllocations: Int = 0
-}
-
 internal fun Modifier.recordStyle(recorder: StyleRecorder): Modifier = this then RecordingStyleChildElement(recorder)
 
 private data class RecordingStyleChildElement(
