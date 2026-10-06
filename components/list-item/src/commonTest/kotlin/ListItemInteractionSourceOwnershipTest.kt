@@ -19,6 +19,9 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
 import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 import kotlin.test.assertEquals

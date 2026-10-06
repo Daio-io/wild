@@ -1,5 +1,7 @@
 // Copyright 2024, Dai Williams
 // SPDX-License-Identifier: Apache-2.0
+@file:OptIn(io.daio.wild.foundation.ExperimentalWildApi::class)
+
 package io.daio.wild.components.toggleable
 
 import androidx.compose.foundation.background
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.screenshot.ScreenshotSurface
 import io.daio.wild.screenshot.ScreenshotTestStyle
 import io.daio.wild.screenshot.rememberFocusedInteractionSource
+import io.daio.wild.style.styleSpec
 
 @Composable
 internal fun UncheckedRadioButton() {
@@ -56,5 +59,23 @@ internal fun FocusedRadioButton() {
                 Box(Modifier.size(20.dp).border(2.dp, Color.White, RoundedCornerShape(10.dp)))
             },
         )
+    }
+}
+
+@Composable
+internal fun SpecSelectableRadioButton() {
+    val spec =
+        styleSpec(ScreenshotTestStyle) {
+            if (selected) scale = 1.05f
+        }
+    ScreenshotSurface {
+        Selectable(
+            selected = true,
+            onClick = {},
+            style = spec,
+            modifier = Modifier.size(24.dp),
+        ) {
+            Box(Modifier.size(20.dp).background(Color(0xFF43A047), RoundedCornerShape(10.dp)))
+        }
     }
 }

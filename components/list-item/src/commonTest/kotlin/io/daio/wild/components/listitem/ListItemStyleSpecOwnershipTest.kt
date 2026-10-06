@@ -9,12 +9,18 @@ import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.tooling.CompositionData
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
+import io.daio.wild.screenshot.styleScopeParentCount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -67,7 +73,7 @@ class ListItemStyleSpecOwnershipTest {
                 ListItem(
                     onClick = {},
                     style = spec,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.testTag("item").size(48.dp),
                     interactionSource = source,
                 ) {
                     BasicText("item")
@@ -78,6 +84,11 @@ class ListItemStyleSpecOwnershipTest {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
                 assertSame(source, sources.single())
+                assertEquals(
+                    1,
+                    onNodeWithTag("item").fetchSemanticsNode().styleScopeParentCount(),
+                    compositionData.dump(),
+                )
             }
         }
 
@@ -114,6 +125,11 @@ class ListItemStyleSpecOwnershipTest {
                 ) {
                     BasicText("selected")
                 }
+            }
+            onNodeWithTag("item").assertIsSelected()
+            runOnIdle {
+                val node = onNodeWithTag("item").fetchSemanticsNode()
+                assertEquals(true, node.config[SemanticsProperties.Selected])
             }
             onNodeWithTag("item").performClick()
             runOnIdle { assertEquals(1, clicks) }

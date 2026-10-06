@@ -21,6 +21,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
+import io.daio.wild.screenshot.styleScopeParentCount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -108,7 +112,7 @@ class ToggleableStyleSpecOwnershipTest {
                     checked = false,
                     onCheckedChange = {},
                     style = spec,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.testTag("toggle").size(48.dp),
                     interactionSource = source,
                 ) {}
             }
@@ -117,6 +121,41 @@ class ToggleableStyleSpecOwnershipTest {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
                 assertSame(source, sources.single())
+                assertEquals(
+                    1,
+                    onNodeWithTag("toggle").fetchSemanticsNode().styleScopeParentCount(),
+                    compositionData.dump(),
+                )
+            }
+        }
+
+    @Test
+    fun selectable_oneSharedSource_oneStyleChain() =
+        runComposeUiTest {
+            val source = MutableInteractionSource()
+            val spec = SelectableDefaults.styleSpec { }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                Selectable(
+                    selected = true,
+                    onClick = {},
+                    style = spec,
+                    modifier = Modifier.testTag("selectable").size(48.dp),
+                    interactionSource = source,
+                ) {}
+            }
+
+            runOnIdle {
+                val sources = compositionData.ownedInteractionSources()
+                assertEquals(1, sources.size, compositionData.dump())
+                assertSame(source, sources.single())
+                assertEquals(
+                    1,
+                    onNodeWithTag("selectable").fetchSemanticsNode().styleScopeParentCount(),
+                    compositionData.dump(),
+                )
             }
         }
 
@@ -131,6 +170,28 @@ class ToggleableStyleSpecOwnershipTest {
                 Toggleable(
                     checked = true,
                     onCheckedChange = {},
+                    style = spec,
+                    modifier = Modifier.size(48.dp),
+                ) {}
+            }
+
+            runOnIdle {
+                assertEquals(1, compositionData.ownedInteractionSources().size)
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
+            }
+        }
+
+    @Test
+    fun selectable_ownedSource_noNullableComposedPath() =
+        runComposeUiTest {
+            val spec = SelectableDefaults.styleSpec { }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                Selectable(
+                    selected = false,
+                    onClick = {},
                     style = spec,
                     modifier = Modifier.size(48.dp),
                 ) {}

@@ -65,6 +65,89 @@ fun StylePage(modifier: Modifier = Modifier) {
 
         HorizontalDivider(color = SiteTheme.colors.border)
 
+        // StyleSpec — early so the playbook style golden captures Spec gallery coverage.
+        SectionHeader("Experimental StyleSpec")
+        SectionDescription(
+            "StyleSpec is a reusable base Style plus ordered overrides. Capture theme colors " +
+                "from composition before building the Spec. Read live snapshot state inside " +
+                "callbacks when deferred observation is intended. Keep callbacks pure and " +
+                "synchronous. Standalone chrome modifiers apply visuals only; Container, " +
+                "Button, ListItem, and Toggleable Spec overloads also publish content color " +
+                "through an equality-gated bridge.",
+        )
+        val accent = SiteTheme.colors.accent
+        val surface = SiteTheme.colors.background
+        val primaryText = SiteTheme.colors.textPrimary
+        var pulse by remember { mutableStateOf(false) }
+        // Capture theme values before Spec build; hoist one reusable base + Specs.
+        val demoBaseStyle =
+            remember(accent, surface, primaryText) {
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = surface,
+                            contentColor = primaryText,
+                            focusedBackgroundColor = accent,
+                            focusedContentColor = surface,
+                        ),
+                    shapes =
+                        StyleDefaults.shapes(
+                            shape = RoundedCornerShape(8.dp),
+                        ),
+                )
+            }
+        val focusSpec =
+            remember(demoBaseStyle) {
+                styleSpec(demoBaseStyle) {
+                    if (focused) scale = 1.1f
+                }
+            }
+        val pulseSpec =
+            remember(demoBaseStyle, accent) {
+                styleSpec(demoBaseStyle) {
+                    // Snapshot read: pulse is observed by the style parent, not Spec rebuild.
+                    scale = if (pulse) 1.08f else 1f
+                    if (focused) contentColor = accent
+                }
+            }
+        DemoContainer {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
+            ) {
+                SpecDemoBox(
+                    label = "Spec focus",
+                    spec = focusSpec,
+                )
+                // Label observes pulse in composition; Spec identity stays stable.
+                SpecDemoBox(
+                    label = if (pulse) "Pulse on" else "Pulse off",
+                    spec = pulseSpec,
+                )
+                Container(
+                    onClick = { pulse = !pulse },
+                    modifier = Modifier.size(120.dp),
+                    style = demoBaseStyle,
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Toggle pulse",
+                            style = SiteTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+        }
+        CodeBlock(
+            code = STYLE_SPEC_USAGE,
+            tabs = listOf("Kotlin"),
+        )
+
+        HorizontalDivider(color = SiteTheme.colors.border)
+
         // Colors Demo
         SectionHeader("Colors")
         SectionDescription(
@@ -767,89 +850,6 @@ fun StylePage(modifier: Modifier = Modifier) {
                 )
             }
         }
-
-        HorizontalDivider(color = SiteTheme.colors.border)
-
-        // StyleSpec
-        SectionHeader("Experimental StyleSpec")
-        SectionDescription(
-            "StyleSpec is a reusable base Style plus ordered overrides. Capture theme colors " +
-                "from composition before building the Spec. Read live snapshot state inside " +
-                "callbacks when deferred observation is intended. Keep callbacks pure and " +
-                "synchronous. Standalone chrome modifiers apply visuals only; Container, " +
-                "Button, ListItem, and Toggleable Spec overloads also publish content color " +
-                "through an equality-gated bridge.",
-        )
-        val accent = SiteTheme.colors.accent
-        val surface = SiteTheme.colors.background
-        val primaryText = SiteTheme.colors.textPrimary
-        var pulse by remember { mutableStateOf(false) }
-        // Capture theme values before Spec build; hoist one reusable base + Specs.
-        val demoBaseStyle =
-            remember(accent, surface, primaryText) {
-                StyleDefaults.style(
-                    colors =
-                        StyleDefaults.colors(
-                            backgroundColor = surface,
-                            contentColor = primaryText,
-                            focusedBackgroundColor = accent,
-                            focusedContentColor = surface,
-                        ),
-                    shapes =
-                        StyleDefaults.shapes(
-                            shape = RoundedCornerShape(8.dp),
-                        ),
-                )
-            }
-        val focusSpec =
-            remember(demoBaseStyle) {
-                styleSpec(demoBaseStyle) {
-                    if (focused) scale = 1.1f
-                }
-            }
-        val pulseSpec =
-            remember(demoBaseStyle, accent) {
-                styleSpec(demoBaseStyle) {
-                    // Snapshot read: pulse is observed by the style parent, not Spec rebuild.
-                    scale = if (pulse) 1.08f else 1f
-                    if (focused) contentColor = accent
-                }
-            }
-        DemoContainer {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
-                verticalArrangement = Arrangement.spacedBy(SiteTheme.spacing.m),
-            ) {
-                SpecDemoBox(
-                    label = "Spec focus",
-                    spec = focusSpec,
-                )
-                // Label observes pulse in composition; Spec identity stays stable.
-                SpecDemoBox(
-                    label = if (pulse) "Pulse on" else "Pulse off",
-                    spec = pulseSpec,
-                )
-                Container(
-                    onClick = { pulse = !pulse },
-                    modifier = Modifier.size(120.dp),
-                    style = demoBaseStyle,
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "Toggle pulse",
-                            style = SiteTheme.typography.bodySmall,
-                        )
-                    }
-                }
-            }
-        }
-        CodeBlock(
-            code = STYLE_SPEC_USAGE,
-            tabs = listOf("Kotlin"),
-        )
 
         HorizontalDivider(color = SiteTheme.colors.border)
 

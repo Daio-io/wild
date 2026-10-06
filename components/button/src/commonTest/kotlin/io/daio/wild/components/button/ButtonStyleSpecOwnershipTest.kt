@@ -9,6 +9,7 @@ import androidx.compose.runtime.tooling.CompositionData
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -16,7 +17,10 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
-import io.daio.wild.style.StyleDefaults
+import io.daio.wild.screenshot.dump
+import io.daio.wild.screenshot.firstSourceOwnerHasDirectLayoutNode
+import io.daio.wild.screenshot.ownedInteractionSources
+import io.daio.wild.screenshot.styleScopeParentCount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -55,14 +59,14 @@ class ButtonStyleSpecOwnershipTest {
     fun oneSharedSource_oneStyleChain() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val spec = StyleDefaults.styleSpec()
+            val spec = ButtonDefaults.styleSpec()
             lateinit var compositionData: CompositionData
 
             setContent {
                 compositionData = currentComposer.compositionData
                 Button(
                     onClick = {},
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.testTag("button").size(48.dp),
                     style = spec,
                     interactionSource = source,
                 ) {}
@@ -72,6 +76,11 @@ class ButtonStyleSpecOwnershipTest {
                 val sources = compositionData.ownedInteractionSources()
                 assertEquals(1, sources.size, compositionData.dump())
                 assertSame(source, sources.single())
+                assertEquals(
+                    1,
+                    onNodeWithTag("button").fetchSemanticsNode().styleScopeParentCount(),
+                    compositionData.dump(),
+                )
             }
         }
 
@@ -93,17 +102,27 @@ class ButtonStyleSpecOwnershipTest {
         }
 
     @Test
-    fun selectedCheckedSemantics_unchanged() =
+    fun enabledClickFocusSemantics_unchanged() =
         runComposeUiTest {
             val spec = ButtonDefaults.styleSpec()
+            var clicks = 0
             setContent {
                 Button(
-                    onClick = {},
+                    onClick = { clicks++ },
                     modifier = Modifier.testTag("button").size(48.dp),
                     style = spec,
                 ) {}
             }
+            val node = onNodeWithTag("button").fetchSemanticsNode()
+            assertTrue(SemanticsProperties.Disabled !in node.config)
+            assertEquals(
+                androidx.compose.ui.semantics.Role.Button,
+                node.config[SemanticsProperties.Role],
+            )
+            assertTrue(SemanticsActions.RequestFocus in node.config)
+            assertTrue(SemanticsActions.OnClick in node.config)
             onNodeWithTag("button").performSemanticsAction(SemanticsActions.RequestFocus)
-            waitForIdle()
+            onNodeWithTag("button").performClick()
+            runOnIdle { assertEquals(1, clicks) }
         }
 }

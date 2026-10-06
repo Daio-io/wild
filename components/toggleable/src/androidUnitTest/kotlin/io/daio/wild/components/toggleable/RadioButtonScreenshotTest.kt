@@ -15,4 +15,7 @@ class RadioButtonScreenshotTest : AndroidScreenshotTest<ComponentActivity>(Compo
 
     @Test
     fun focused() = captureScreenshot(advanceTimeByMillis = 0) { FocusedRadioButton() }
+
+    @Test
+    fun spec() = captureScreenshot(advanceTimeByMillis = 0) { SpecSelectableRadioButton() }
 }
