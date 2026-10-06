@@ -15,6 +15,22 @@ import io.daio.wild.style.modifiers.StyleScopeParentNode
 /**
  * Receives equality-gated content color publications from the style parent node.
  *
+ * Prefer component [StyleSpec] overloads (Container / Button / …) which own the bridge. Use this
+ * interface only when wiring a custom sink after [interactionStyle]:
+ *
+ * Example:
+ * ```
+ * val sink =
+ *     object : ContentColorPublisher {
+ *         override fun publishResolvedColor(color: Color) {
+ *             // update a remembered MutableState / binding when color changes
+ *         }
+ *     }
+ * Modifier
+ *     .interactionStyle(interactionSource = source, style = style)
+ *     .contentColorBridge(sink)
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
@@ -50,6 +66,13 @@ internal object ContentColorBridgeTraversalKey
  * Place after [interactionStyle] / interactable style chains. Standalone chrome modifiers that omit
  * this call do not publish content composition locals.
  *
+ * Example:
+ * ```
+ * Modifier
+ *     .interactionStyle(interactionSource = source, style = style)
+ *     .contentColorBridge(publisher)
+ * ```
+ *
  * @param publisher Sink that receives resolved content colors.
  * @since 0.8.0
  */
@@ -63,7 +86,13 @@ private data class ContentColorBridgeElement(
     override fun create() = ContentColorBridgeModifierNode(publisher)
 
     override fun update(node: ContentColorBridgeModifierNode) {
+        val publisherChanged = node.publisher !== publisher
         node.publisher = publisher
+        // Style parent may be reused when only the sink changes; request a publication so the
+        // new publisher is initialized without waiting for a later interaction/style change.
+        if (publisherChanged) {
+            node.requestRepublish()
+        }
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -81,6 +110,11 @@ private class ContentColorBridgeModifierNode(
     }
 
     override fun onAttach() {
+        requestRepublish()
+    }
+
+    fun requestRepublish() {
+        if (!isAttached) return
         val parent =
             findNearestAncestor(StyleParentTraversalKey) as? StyleScopeParentNode ?: return
         parent.republishContentColor()

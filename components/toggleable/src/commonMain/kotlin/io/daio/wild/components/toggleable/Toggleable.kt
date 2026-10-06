@@ -117,6 +117,16 @@ fun Toggleable(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(ToggleableDefaults.style()) {
+ *     if (selected) scale = 1.1f
+ * }
+ * Toggleable(checked = checked, onCheckedChange = onCheckedChange, style = spec) {
+ *     // Draw checkbox mark
+ * }
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
@@ -208,6 +218,16 @@ fun Toggleable(
  * @param enabled Whether the control is enabled.
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(ToggleableDefaults.style()) {
+ *     if (selected) contentColor = Color.Green
+ * }
+ * Toggleable(state = state, onClick = onCycle, style = spec) {
+ *     // Render On / Off / Indeterminate marks
+ * }
+ * ```
  *
  * @since 0.8.0
  */
@@ -340,6 +360,16 @@ fun Selectable(
  * @param enabled Whether the control is enabled.
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(SelectableDefaults.style()) {
+ *     if (selected) scale = 1.1f
+ * }
+ * Selectable(selected = isSelected, onClick = onSelect, style = spec) {
+ *     // Draw selection indicator
+ * }
+ * ```
  *
  * @since 0.8.0
  */

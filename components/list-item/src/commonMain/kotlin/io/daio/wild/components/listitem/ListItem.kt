@@ -164,6 +164,16 @@ fun ListItem(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Main content of the list item.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(ListItemDefaults.style()) {
+ *     if (focused) scale = 1.05f
+ * }
+ * ListItem(onClick = onClick, style = spec) {
+ *     Text("Settings")
+ * }
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
@@ -220,6 +230,21 @@ fun ListItem(
  * @param horizontalArrangement Horizontal arrangement of the row content.
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Main content of the list item.
+ *
+ * Example:
+ * ```
+ * val spec = styleSpec(ListItemDefaults.style()) {
+ *     if (selected) contentColor = Color.Yellow
+ * }
+ * ListItem(
+ *     onClick = onClick,
+ *     leadingContent = { Icon() },
+ *     trailingContent = { Chevron() },
+ *     style = spec,
+ * ) {
+ *     Text("Account")
+ * }
+ * ```
  *
  * @since 0.8.0
  */
