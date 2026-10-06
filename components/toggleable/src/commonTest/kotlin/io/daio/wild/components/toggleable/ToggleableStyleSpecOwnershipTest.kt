@@ -46,6 +46,21 @@ class ToggleableStyleSpecOwnershipTest {
         }
 
     @Test
+    fun selectableDefaultValueCall_selectsStyleOverload() =
+        runComposeUiTest {
+            var clicks = 0
+            setContent {
+                Selectable(
+                    selected = false,
+                    onClick = { clicks++ },
+                    modifier = Modifier.testTag("selectable").size(48.dp),
+                ) {}
+            }
+            onNodeWithTag("selectable").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
     fun specOverload_compiles_allSlots() =
         runComposeUiTest {
             val spec = styleSpec(ToggleableDefaults.style()) { if (selected) scale = 1.05f }

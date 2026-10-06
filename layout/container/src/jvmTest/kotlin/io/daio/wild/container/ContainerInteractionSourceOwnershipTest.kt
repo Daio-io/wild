@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
@@ -30,6 +32,77 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
 class ContainerInteractionSourceOwnershipTest {
+    @Test
+    fun defaultValueCall_selectsStyleOverload() =
+        runComposeUiTest {
+            var clicks = 0
+            setContent {
+                Container(
+                    onClick = { clicks++ },
+                    modifier = Modifier.testTag("container").size(48.dp),
+                ) {}
+            }
+            onNodeWithTag("container").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+        }
+
+    @Test
+    fun specOverload_compiles_allSlots() =
+        runComposeUiTest {
+            val spec =
+                styleSpec(StyleDefaults.style()) {
+                    if (focused) scale = 1.1f
+                }
+            var clicks = 0
+            setContent {
+                Container(
+                    onClick = { clicks++ },
+                    modifier = Modifier.testTag("container").size(48.dp),
+                    style = spec,
+                    selected = true,
+                ) {}
+            }
+            onNodeWithTag("container").performClick()
+            runOnIdle { assertEquals(1, clicks) }
+            onNodeWithTag("container").assertIsSelected()
+        }
+
+    @Test
+    fun ownedSource_noNullableComposedPath() =
+        runComposeUiTest {
+            val spec = styleSpec(StyleDefaults.style()) { }
+            lateinit var compositionData: CompositionData
+
+            setContent {
+                compositionData = currentComposer.compositionData
+                Container(onClick = {}, modifier = Modifier.size(48.dp), style = spec) {}
+            }
+
+            runOnIdle {
+                assertEquals(1, compositionData.ownedInteractionSources().size)
+                assertTrue(compositionData.firstSourceOwnerHasDirectLayoutNode())
+            }
+        }
+
+    @Test
+    fun selectedCheckedSemantics_unchanged() =
+        runComposeUiTest {
+            val spec = styleSpec(StyleDefaults.style()) { }
+            setContent {
+                Container(
+                    onClick = {},
+                    modifier = Modifier.testTag("container").size(48.dp),
+                    style = spec,
+                    selected = true,
+                ) {}
+            }
+            onNodeWithTag("container").assertIsSelected()
+            runOnIdle {
+                val node = onNodeWithTag("container").fetchSemanticsNode()
+                assertEquals(true, node.config[SemanticsProperties.Selected])
+            }
+        }
+
     @Test
     fun implicitInteractionSourceKeepsFocusedContentColorAcrossParentRecomposition() =
         runComposeUiTest {
