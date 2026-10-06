@@ -205,14 +205,21 @@ label definition/modifier construction only — never attached node resolution. 
 
 ### StyleSpec keep decision (THE-610 / Phase 1c)
 
-**Keep:** StyleSpec is kept. Construction harness cases cover value, hoisted-lambda, and StyleSpec
-with 1/4/16 stable overrides (`StyleModifierConstructionBenchmark`); the TV suite includes
-`wild_spec`. Spec construction is a thin `StyleResolver.Spec` wrapper around an immutable
-definition, so reuse cost is justified versus recreating lambda blocks.
+**Keep (harness-only evidence accepted for Phase 3):** StyleSpec is kept. THE-610’s construction /
+`wild_spec` AC for this phase is satisfied by checked-in harness coverage, not by recording a
+specific device SHA’s medians / `allocationCount` in-tree:
 
-Device medians / `allocationCount` for a given SHA should be recorded from connected microbenchmark
-JSON and TV release traces when comparing revisions (see capture steps below). This keep note is
-the AC gate when measured numbers for a specific SHA are not checked in.
+- Construction: `StyleModifierConstructionBenchmark` cases
+  `valueInteractionStyle_construction`, `hoistedLambdaInteractionStyle_construction`,
+  `styleSpec1Override_construction`, `styleSpec4Override_construction`,
+  `styleSpec16Override_construction` (stable callbacks hoisted outside `measureRepeated`).
+- TV: `wild_spec` scenario in the Android TV playbook suite
+  (`BenchmarkStyleMode.Spec` / production Wild styled clickable with experimental `StyleSpec`).
+
+Spec construction is a thin `StyleResolver.Spec` wrapper around an immutable definition, so reuse
+cost is justified versus recreating lambda blocks. Device medians / `allocationCount` remain
+optional revision-comparison data (capture steps below); they are not required to gate the Phase 3
+keep decision.
 
 AndroidX Benchmark writes JSON beneath
 `internal/style-benchmark/build/outputs/connected_android_test_additional_output/releaseAndroidTest/connected/<device>/`.

@@ -15,6 +15,18 @@ import io.daio.wild.foundation.ExperimentalWildApi
  * Content color is retained for a later content-local bridge; chrome Spec modifiers do not publish
  * content composition locals yet.
  *
+ * Example:
+ * ```
+ * val spec = styleSpec(StyleDefaults.style()) {
+ *     contentColor = Color.White
+ *     if (focused) {
+ *         scale = 1.1f
+ *         border = Border(width = 2.dp, color = Color.Cyan)
+ *     }
+ * }
+ * Modifier.interactionStyle(interactionSource, style = spec)
+ * ```
+ *
  * @since 0.8.0
  */
 @ExperimentalWildApi
