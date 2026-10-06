@@ -46,11 +46,13 @@ import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.Surface
 import io.daio.wild.container.Container
 import io.daio.wild.content.LocalContentColor
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Border
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.StyleScope
 import io.daio.wild.style.clickable
+import io.daio.wild.style.styleSpec
 import androidx.tv.material3.LocalContentColor as TvLocalContentColor
 
 private const val GRID_ROWS = 20
@@ -74,6 +76,7 @@ internal enum class BenchmarkStyleMode {
     Value,
     HoistedLambda,
     RecreatedLambda,
+    Spec,
 }
 
 internal enum class StyleVariant(
@@ -99,6 +102,12 @@ internal enum class StyleVariant(
         BenchmarkItemImplementation.StyledClickable,
         BenchmarkInteractionSourceStrategy.Explicit,
         styleMode = BenchmarkStyleMode.RecreatedLambda,
+    ),
+    WildSpec(
+        "wild_spec",
+        BenchmarkItemImplementation.StyledClickable,
+        BenchmarkInteractionSourceStrategy.Explicit,
+        styleMode = BenchmarkStyleMode.Spec,
     ),
     ExplicitSourceFastPath(
         "explicit_source_fast_path",
@@ -637,6 +646,7 @@ private fun styleEquivalentBlock(style: Style): StyleScope.() -> Unit {
     }
 }
 
+@OptIn(ExperimentalWildApi::class)
 @Composable
 private fun StyledClickableItem(
     title: String,
@@ -678,6 +688,15 @@ private fun StyledClickableItem(
                     onClick = onClick,
                     interactionSource = interactionSource,
                     styleBlock = styleBlock,
+                )
+            }
+            BenchmarkStyleMode.Spec -> {
+                // Stable StyleSpec: base tables only, no fresh callback allocation per composition.
+                val rememberedSpec = remember(style) { styleSpec(style) {} }
+                modifier.clickable(
+                    onClick = onClick,
+                    interactionSource = interactionSource,
+                    style = rememberedSpec,
                 )
             }
         }

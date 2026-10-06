@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.semantics.Role
+import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.modifier.thenIfNotNull
 import io.daio.wild.foundation.clickable as foundationClickable
 import io.daio.wild.foundation.selectable as foundationSelectable
@@ -35,6 +36,59 @@ fun Modifier.interactable(
     enabled: Boolean = true,
     selected: Boolean? = null,
     style: Style? = null,
+    interactionSource: MutableInteractionSource? = null,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+): Modifier =
+    this then
+        if (selected != null) {
+            Modifier.selectable(
+                selected = selected,
+                style = style,
+                enabled = enabled,
+                interactionSource = interactionSource,
+                role = role,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                onClick = onClick,
+            )
+        } else {
+            Modifier.clickable(
+                enabled = enabled,
+                style = style,
+                interactionSource = interactionSource,
+                role = role,
+                onLongClick = onLongClick,
+                onDoubleClick = onDoubleClick,
+                onClick = onClick,
+            )
+        }
+
+/**
+ * Interop Modifier to support either [Modifier.selectable] or [Modifier.clickable], applying
+ * the correct modifier based on the requirement for hardware input. Applies an experimental
+ * [StyleSpec] via [interactionStyle] for chrome only (no content-local publication).
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param selected Optional property to set the selected state. Setting this to a value will enable
+ * selectable support.
+ * @param style Required [StyleSpec] to apply with the interactable.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+fun Modifier.interactable(
+    enabled: Boolean = true,
+    selected: Boolean? = null,
+    style: StyleSpec,
     interactionSource: MutableInteractionSource? = null,
     role: Role? = null,
     onLongClick: (() -> Unit)? = null,
@@ -282,6 +336,49 @@ fun Modifier.clickable(
 
 /**
  * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
+ * hardware input. Applies an experimental [StyleSpec] via [interactionStyle] for chrome only (no
+ * content-local publication).
+ *
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param style Required [StyleSpec] to apply with the clickable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+fun Modifier.clickable(
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    style: StyleSpec,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+): Modifier =
+    if (interactionSource != null) {
+        clickableWithStyleSpec(enabled, interactionSource, style, role, onLongClick, onDoubleClick, onClick)
+    } else {
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            clickableWithStyleSpec(
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
+            )
+        }
+    }
+
+/**
+ * Interop Modifier.clickable to apply the correct clickable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
  * remote controls. This has the added support for a [StyleScope] block, applying [interactionStyle]
  * to update the component based on the current [InteractionSource] state.
@@ -487,6 +584,61 @@ fun Modifier.selectable(
 
 /**
  * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
+ * hardware input. Applies an experimental [StyleSpec] via [interactionStyle] for chrome only (no
+ * content-local publication).
+ *
+ * @param selected Whether the element is currently selected.
+ * @param enabled Whether the click action handling is enabled.
+ * @param interactionSource The interaction source to emit interaction events to.
+ * @param style Required [StyleSpec] to apply with the selectable.
+ * @param role The Role of the associated user interface element, typically used by Accessiblity
+ * services.
+ * @param onLongClick Optional callback to handle long click events.
+ * @param onDoubleClick Optional callback to handle double click events.
+ * @param onClick Callback when the element is clicked.
+ *
+ * @since 0.8.0
+ */
+@ExperimentalWildApi
+fun Modifier.selectable(
+    selected: Boolean,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    style: StyleSpec,
+    role: Role? = null,
+    onLongClick: (() -> Unit)? = null,
+    onDoubleClick: (() -> Unit)? = null,
+    onClick: (() -> Unit),
+): Modifier =
+    if (interactionSource != null) {
+        selectableWithStyleSpec(
+            selected,
+            enabled,
+            interactionSource,
+            style,
+            role,
+            onLongClick,
+            onDoubleClick,
+            onClick,
+        )
+    } else {
+        composed {
+            val rememberedInteractionSource = remember { MutableInteractionSource() }
+            selectableWithStyleSpec(
+                selected,
+                enabled,
+                rememberedInteractionSource,
+                style,
+                role,
+                onLongClick,
+                onDoubleClick,
+                onClick,
+            )
+        }
+    }
+
+/**
+ * Interop Modifier.selectable to apply the correct selectable modifier based on the requirement for
  * hardware input. For example if a Tv device is detected it adds support for hardware clicks from
  * remote controls. This has the added support for a [StyleScope] block, applying [interactionStyle]
  * to update the component based on the current [InteractionSource] state.
@@ -638,6 +790,27 @@ private fun Modifier.clickableWithStyle(
         Modifier.interactionStyle(interactionSource, enabled, style = it)
     })
 
+@OptIn(ExperimentalWildApi::class)
+private fun Modifier.clickableWithStyleSpec(
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: StyleSpec,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationClickable(
+        enabled = enabled,
+        interactionSource = interactionSource,
+        role = role,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+    ).then(
+        Modifier.interactionStyle(interactionSource, enabled, style = style),
+    )
+
 private fun Modifier.clickableWithStyleBlock(
     enabled: Boolean,
     interactionSource: MutableInteractionSource,
@@ -704,6 +877,34 @@ private fun Modifier.selectableWithStyle(
             selected = selected,
         )
     })
+
+@OptIn(ExperimentalWildApi::class)
+private fun Modifier.selectableWithStyleSpec(
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    style: StyleSpec,
+    role: Role?,
+    onLongClick: (() -> Unit)?,
+    onDoubleClick: (() -> Unit)?,
+    onClick: () -> Unit,
+): Modifier =
+    foundationSelectable(
+        selected = selected,
+        enabled = enabled,
+        interactionSource = interactionSource,
+        onLongClick = onLongClick,
+        onDoubleClick = onDoubleClick,
+        role = role,
+        onClick = onClick,
+    ).then(
+        Modifier.interactionStyle(
+            style = style,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            selected = selected,
+        ),
+    )
 
 private fun Modifier.selectableWithStyleBlock(
     selected: Boolean,
