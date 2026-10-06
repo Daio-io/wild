@@ -17,7 +17,6 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.style.styleSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -39,7 +38,7 @@ class ButtonStyleSpecOwnershipTest {
     @Test
     fun specOverload_compiles_allSlots() =
         runComposeUiTest {
-            val spec = styleSpec(ButtonDefaults.style()) { if (focused) scale = 1.1f }
+            val spec = ButtonDefaults.styleSpec { if (focused) scale = 1.1f }
             var clicks = 0
             setContent {
                 Button(
@@ -56,7 +55,7 @@ class ButtonStyleSpecOwnershipTest {
     fun oneSharedSource_oneStyleChain() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val spec = styleSpec(StyleDefaults.style()) { }
+            val spec = StyleDefaults.styleSpec()
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -79,7 +78,7 @@ class ButtonStyleSpecOwnershipTest {
     @Test
     fun ownedSource_noNullableComposedPath() =
         runComposeUiTest {
-            val spec = styleSpec(ButtonDefaults.style()) { }
+            val spec = ButtonDefaults.styleSpec()
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -96,7 +95,7 @@ class ButtonStyleSpecOwnershipTest {
     @Test
     fun selectedCheckedSemantics_unchanged() =
         runComposeUiTest {
-            val spec = styleSpec(ButtonDefaults.style()) { }
+            val spec = ButtonDefaults.styleSpec()
             setContent {
                 Button(
                     onClick = {},

@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import io.daio.wild.foundation.ExperimentalWildApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotSame
@@ -30,6 +31,24 @@ class StyleDefaultsTest {
                 alpha = StyleDefaults.alpha(),
             ),
         )
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    @Test
+    fun defaultStyleSpecReusesCachedInstance() {
+        assertSame(StyleDefaults.styleSpec(), StyleDefaults.styleSpec())
+        assertSame(StyleDefaults.None, StyleDefaults.styleSpec().base)
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    @Test
+    fun customizedStyleSpecDoesNotReuseCachedInstance() {
+        val customized =
+            StyleDefaults.styleSpec(colors = StyleDefaults.colors(backgroundColor = Color.Red)) {
+                if (focused) scale = 1.1f
+            }
+        assertNotSame(StyleDefaults.styleSpec(), customized)
+        assertEquals(Color.Red, customized.base.colors.backgroundColor)
     }
 
     @Test

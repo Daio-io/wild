@@ -178,6 +178,50 @@ object StyleDefaults {
             )
         }
 
+    /**
+     * Creates a default experimental [StyleSpec] with optional style tables and override [block].
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [None].
+     *
+     * Example:
+     * ```
+     * val spec = StyleDefaults.styleSpec {
+     *     if (focused) scale = 1.1f
+     * }
+     * ```
+     *
+     * @param colors The colors for different interaction states.
+     * @param borders The borders for different interaction states.
+     * @param scale The scale for different interaction states.
+     * @param shapes The shapes for different interaction states.
+     * @param alpha The alpha for different interaction states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = DefaultColors,
+        borders: Borders = DefaultBorders,
+        scale: Scale = DefaultScale,
+        shapes: Shapes = DefaultShapes,
+        alpha: Alpha = DefaultAlpha,
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === None && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            styleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = styleSpec(None, DefaultStyleSpecOverride)
+
     @Stable
     fun colors(
         /**

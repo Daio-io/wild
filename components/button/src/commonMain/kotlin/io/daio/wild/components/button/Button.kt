@@ -22,11 +22,13 @@ import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * Basic button component.
@@ -98,7 +100,8 @@ fun Button(
  *
  * Owns one interaction source and one style chain. Default calls still select the value [Style]
  * overload. Required [style] is placed early (after [onClick]) to match ListItem / Toggleable Spec
- * overloads so positional callers do not need named arguments for preceding defaults.
+ * overloads so positional callers do not need named arguments for preceding defaults. Prefer
+ * [ButtonDefaults.styleSpec] when building the Spec.
  *
  * @param onClick Callback invoked when the button is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
@@ -112,7 +115,7 @@ fun Button(
  *
  * Example:
  * ```
- * val spec = styleSpec(ButtonDefaults.style()) {
+ * val spec = ButtonDefaults.styleSpec {
  *     if (focused) scale = 1.1f
  * }
  * Button(onClick = onClick, style = spec) {
@@ -269,4 +272,48 @@ object ButtonDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for the button.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * Example:
+     * ```
+     * val spec = ButtonDefaults.styleSpec {
+     *     if (focused) scale = 1.1f
+     * }
+     * ```
+     *
+     * @param colors The colors for the button in different states.
+     * @param borders The borders for the button in different states.
+     * @param scale The scale for the button in different states.
+     * @param shapes The shapes for the button in different states.
+     * @param alpha The alpha for the button in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

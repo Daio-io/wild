@@ -15,7 +15,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
-import io.daio.wild.style.styleSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -39,7 +38,7 @@ class ListItemStyleSpecOwnershipTest {
     @Test
     fun specOverload_compiles_allSlots() =
         runComposeUiTest {
-            val spec = styleSpec(ListItemDefaults.style()) { if (focused) scale = 1.05f }
+            val spec = ListItemDefaults.styleSpec { if (focused) scale = 1.05f }
             var clicks = 0
             setContent {
                 ListItem(
@@ -60,7 +59,7 @@ class ListItemStyleSpecOwnershipTest {
     fun oneSharedSource_oneStyleChain() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val spec = styleSpec(ListItemDefaults.style()) { }
+            val spec = ListItemDefaults.styleSpec { }
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -85,7 +84,7 @@ class ListItemStyleSpecOwnershipTest {
     @Test
     fun ownedSource_noNullableComposedPath() =
         runComposeUiTest {
-            val spec = styleSpec(ListItemDefaults.style()) { }
+            val spec = ListItemDefaults.styleSpec { }
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -104,7 +103,7 @@ class ListItemStyleSpecOwnershipTest {
     @Test
     fun selectedCheckedSemantics_unchanged() =
         runComposeUiTest {
-            val spec = styleSpec(ListItemDefaults.style()) { }
+            val spec = ListItemDefaults.styleSpec { }
             var clicks = 0
             setContent {
                 ListItem(

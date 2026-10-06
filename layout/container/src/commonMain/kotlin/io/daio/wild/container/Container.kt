@@ -19,6 +19,7 @@ import io.daio.wild.style.Border
 import io.daio.wild.style.BorderDefaults
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
@@ -27,6 +28,7 @@ import io.daio.wild.style.StyleSpec
 import io.daio.wild.style.contentColorBridge
 import io.daio.wild.style.interactable
 import io.daio.wild.style.staticStyle
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * [Container] is a building block component that can be used for any static element or as an
@@ -194,7 +196,7 @@ fun Container(
  * Owns one [MutableInteractionSource] and one style chain. Prefer a stable [StyleSpec] (hoisted
  * or remembered callbacks). Required [style] is placed early (after [onClick]) to match ListItem /
  * Toggleable Spec overloads so positional callers do not need named arguments for preceding
- * defaults.
+ * defaults. Prefer [ContainerDefaults.styleSpec] when building the Spec.
  *
  * @param onClick Callback when the container is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
@@ -208,7 +210,7 @@ fun Container(
  *
  * Example:
  * ```
- * val spec = styleSpec(StyleDefaults.style()) {
+ * val spec = ContainerDefaults.styleSpec {
  *     if (focused) {
  *         scale = 1.1f
  *         contentColor = Color.Yellow
@@ -456,4 +458,48 @@ object ContainerDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for interactive containers.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * Example:
+     * ```
+     * val spec = ContainerDefaults.styleSpec {
+     *     if (focused) scale = 1.1f
+     * }
+     * ```
+     *
+     * @param colors The colors for the container in different states.
+     * @param borders The borders for the container in different states.
+     * @param scale The scale for the container in different states.
+     * @param shapes The shapes for the container in different states.
+     * @param alpha The alpha for the container in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }

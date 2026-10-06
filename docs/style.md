@@ -103,7 +103,7 @@ re-seeds from the base tables (omit does not carry prior evaluations).
 
 ```kotlin
 @OptIn(ExperimentalWildApi::class)
-val spec = styleSpec(StyleDefaults.style()) {
+val spec = StyleDefaults.styleSpec {
     if (focused) scale = 1.1f
 }.then {
     if (pressed) alpha = 0.9f
@@ -118,11 +118,14 @@ publish content composition locals. Interactive component overloads on `Containe
 `ListItem`, and `Toggleable`/`Selectable` that take `style: StyleSpec` **do** bridge resolved
 content color (including Spec callback overrides) through an equality-gated publisher: content
 recomposes only when the resolved color changes. Prefer a stable `StyleSpec` (hoisted /
-remembered callbacks); there is no default `rememberStyleSpec` helper.
+remembered callbacks). Build Specs with `StyleDefaults.styleSpec` or component factories such as
+`ButtonDefaults.styleSpec` / `ListItemDefaults.styleSpec` (cached when fully defaulted). The
+`style: StyleSpec` parameter stays required so default component calls keep selecting the value
+`Style` overload.
 
 ```kotlin
 @OptIn(ExperimentalWildApi::class)
-val cardStyle = styleSpec(base = ButtonDefaults.style()) {
+val cardStyle = ButtonDefaults.styleSpec {
     contentColor = if (enabled) Color.White else Color.Gray
     if (focused) scale = 1.08f
 }.then {

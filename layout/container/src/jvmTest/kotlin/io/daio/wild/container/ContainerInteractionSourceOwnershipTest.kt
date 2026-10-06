@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import io.daio.wild.content.LocalContentColor
 import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.StyleDefaults
-import io.daio.wild.style.styleSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -50,7 +49,7 @@ class ContainerInteractionSourceOwnershipTest {
     fun specOverload_compiles_allSlots() =
         runComposeUiTest {
             val spec =
-                styleSpec(StyleDefaults.style()) {
+                ContainerDefaults.styleSpec {
                     if (focused) scale = 1.1f
                 }
             var clicks = 0
@@ -70,7 +69,7 @@ class ContainerInteractionSourceOwnershipTest {
     @Test
     fun ownedSource_noNullableComposedPath() =
         runComposeUiTest {
-            val spec = styleSpec(StyleDefaults.style()) { }
+            val spec = ContainerDefaults.styleSpec()
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -87,7 +86,7 @@ class ContainerInteractionSourceOwnershipTest {
     @Test
     fun selectedCheckedSemantics_unchanged() =
         runComposeUiTest {
-            val spec = styleSpec(StyleDefaults.style()) { }
+            val spec = ContainerDefaults.styleSpec()
             setContent {
                 Container(
                     onClick = {},
@@ -188,7 +187,7 @@ class ContainerInteractionSourceOwnershipTest {
         runComposeUiTest {
             val source = MutableInteractionSource()
             val spec =
-                styleSpec(StyleDefaults.style()) {
+                ContainerDefaults.styleSpec {
                     if (focused) scale = 1.1f
                 }
             lateinit var compositionData: CompositionData

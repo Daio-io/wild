@@ -21,7 +21,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import io.daio.wild.foundation.ExperimentalWildApi
-import io.daio.wild.style.styleSpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertSame
@@ -62,7 +61,7 @@ class ToggleableStyleSpecOwnershipTest {
     @Test
     fun specOverload_compiles_allSlots() =
         runComposeUiTest {
-            val spec = styleSpec(ToggleableDefaults.style()) { if (selected) scale = 1.05f }
+            val spec = ToggleableDefaults.styleSpec { if (selected) scale = 1.05f }
             var checked by mutableStateOf(false)
             setContent {
                 Toggleable(
@@ -100,7 +99,7 @@ class ToggleableStyleSpecOwnershipTest {
     fun oneSharedSource_oneStyleChain() =
         runComposeUiTest {
             val source = MutableInteractionSource()
-            val spec = styleSpec(ToggleableDefaults.style()) { }
+            val spec = ToggleableDefaults.styleSpec { }
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -124,7 +123,7 @@ class ToggleableStyleSpecOwnershipTest {
     @Test
     fun ownedSource_noNullableComposedPath() =
         runComposeUiTest {
-            val spec = styleSpec(ToggleableDefaults.style()) { }
+            val spec = ToggleableDefaults.styleSpec { }
             lateinit var compositionData: CompositionData
 
             setContent {
@@ -146,7 +145,7 @@ class ToggleableStyleSpecOwnershipTest {
     @Test
     fun selectedCheckedSemantics_unchanged() =
         runComposeUiTest {
-            val spec = styleSpec(ToggleableDefaults.style()) { }
+            val spec = ToggleableDefaults.styleSpec { }
             setContent {
                 Toggleable(
                     checked = true,

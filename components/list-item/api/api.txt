@@ -5,6 +5,7 @@ package io.daio.wild.components.listitem {
     method @InaccessibleFromKotlin public androidx.compose.foundation.layout.PaddingValues getContentPadding();
     method @InaccessibleFromKotlin public androidx.compose.ui.graphics.Shape getShape();
     method public io.daio.wild.style.Style style(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha);
+    method @io.daio.wild.foundation.ExperimentalWildApi public io.daio.wild.style.StyleSpec styleSpec(optional io.daio.wild.style.Colors colors, optional io.daio.wild.style.Borders borders, optional io.daio.wild.style.Scale scale, optional io.daio.wild.style.Shapes shapes, optional io.daio.wild.style.Alpha alpha, optional kotlin.jvm.functions.Function1<? super io.daio.wild.style.ComponentStyleScope,kotlin.Unit> block);
     property public androidx.compose.foundation.layout.PaddingValues contentPadding;
     property public androidx.compose.ui.unit.Dp contentSpacing;
     property public androidx.compose.ui.unit.Dp defaultMinHeight;

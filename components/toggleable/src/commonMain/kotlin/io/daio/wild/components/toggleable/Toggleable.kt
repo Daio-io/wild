@@ -16,11 +16,13 @@ import io.daio.wild.foundation.ExperimentalWildApi
 import io.daio.wild.style.Alpha
 import io.daio.wild.style.Borders
 import io.daio.wild.style.Colors
+import io.daio.wild.style.ComponentStyleScope
 import io.daio.wild.style.Scale
 import io.daio.wild.style.Shapes
 import io.daio.wild.style.Style
 import io.daio.wild.style.StyleDefaults
 import io.daio.wild.style.StyleSpec
+import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
  * Base toggleable component for building selection controls (switches, checkboxes, radio buttons).
@@ -112,6 +114,7 @@ fun Toggleable(
  * @param checked Whether the control is currently checked.
  * @param onCheckedChange Callback invoked when the checked state should change.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ToggleableDefaults.styleSpec] when building the Spec.
  * @param modifier Modifier to apply to the toggleable.
  * @param enabled Whether the control is enabled.
  * @param interactionSource Optional interaction source; when null, Container owns one.
@@ -119,7 +122,7 @@ fun Toggleable(
  *
  * Example:
  * ```
- * val spec = styleSpec(ToggleableDefaults.style()) {
+ * val spec = ToggleableDefaults.styleSpec {
  *     if (selected) scale = 1.1f
  * }
  * Toggleable(checked = checked, onCheckedChange = onCheckedChange, style = spec) {
@@ -214,6 +217,7 @@ fun Toggleable(
  * @param state The current on, off, or indeterminate state.
  * @param onClick Callback invoked when the enabled control is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [ToggleableDefaults.styleSpec] when building the Spec.
  * @param modifier Modifier to apply to the toggleable.
  * @param enabled Whether the control is enabled.
  * @param interactionSource Optional interaction source; when null, Container owns one.
@@ -221,7 +225,7 @@ fun Toggleable(
  *
  * Example:
  * ```
- * val spec = styleSpec(ToggleableDefaults.style()) {
+ * val spec = ToggleableDefaults.styleSpec {
  *     if (selected) contentColor = Color.Green
  * }
  * Toggleable(state = state, onClick = onCycle, style = spec) {
@@ -356,6 +360,7 @@ fun Selectable(
  * @param selected Whether this item is currently selected.
  * @param onClick Callback invoked when the item is clicked.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
+ * Prefer [SelectableDefaults.styleSpec] when building the Spec.
  * @param modifier Modifier to apply to the selectable.
  * @param enabled Whether the control is enabled.
  * @param interactionSource Optional interaction source; when null, Container owns one.
@@ -363,7 +368,7 @@ fun Selectable(
  *
  * Example:
  * ```
- * val spec = styleSpec(SelectableDefaults.style()) {
+ * val spec = SelectableDefaults.styleSpec {
  *     if (selected) scale = 1.1f
  * }
  * Selectable(selected = isSelected, onClick = onSelect, style = spec) {
@@ -421,6 +426,43 @@ object ToggleableDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for toggleable controls.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * @param colors The colors for the control in different states.
+     * @param borders The borders for the control in different states.
+     * @param scale The scale for the control in different states.
+     * @param shapes The shapes for the control in different states.
+     * @param alpha The alpha for the control in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }
 
 /**
@@ -449,4 +491,41 @@ object SelectableDefaults {
             shapes = shapes,
             alpha = alpha,
         )
+
+    /**
+     * Creates a default experimental [StyleSpec] for selectable controls.
+     *
+     * When every argument is left at its default (including [block]), returns a cached instance
+     * whose [StyleSpec.base] is [style].
+     *
+     * @param colors The colors for the control in different states.
+     * @param borders The borders for the control in different states.
+     * @param scale The scale for the control in different states.
+     * @param shapes The shapes for the control in different states.
+     * @param alpha The alpha for the control in different states.
+     * @param block First ordered override applied to [ComponentStyleScope].
+     * @since 0.8.0
+     */
+    @ExperimentalWildApi
+    fun styleSpec(
+        colors: Colors = StyleDefaults.colors(),
+        borders: Borders = StyleDefaults.borders(),
+        scale: Scale = StyleDefaults.scale(),
+        shapes: Shapes = StyleDefaults.shapes(),
+        alpha: Alpha = StyleDefaults.alpha(),
+        block: ComponentStyleScope.() -> Unit = DefaultStyleSpecOverride,
+    ): StyleSpec {
+        val base = style(colors = colors, borders = borders, scale = scale, shapes = shapes, alpha = alpha)
+        return if (base === style() && block === DefaultStyleSpecOverride) {
+            DefaultStyleSpec
+        } else {
+            newStyleSpec(base, block)
+        }
+    }
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpecOverride: ComponentStyleScope.() -> Unit = {}
+
+    @OptIn(ExperimentalWildApi::class)
+    private val DefaultStyleSpec: StyleSpec = newStyleSpec(style(), DefaultStyleSpecOverride)
 }
