@@ -236,26 +236,29 @@ derive a hard timing threshold from a single device.
 
 ## Regression policy (confirmation vs CI)
 
-**Explicit no-op (Phase 5):** No runtime styling optimization ships in this change. Step 0
-requires an archived Phase 1c `write_session_artifacts` allocation profile / session note that
-names `StyleScopeSnapshot` (or a documented alternate with an artifact path). No such profile
-is in-tree; construction benches above are not selection evidence; THE-606 source-visible
-findings alone do not satisfy Step 0. Without that confirmation — and without ≥3
-counterbalanced baseline-vs-candidate device sessions — the allowed Spec path is
-“no optimization” + policy only. `dispatchResolvedStyle` keeps allocate-then-compare.
+**Allocation-profile confirmation before a runtime fix:** Ship a styling hot-path optimization
+only after an archived `write_session_artifacts` allocation profile / session note that names
+`StyleScopeSnapshot` (or a documented alternate with an artifact path). Construction benches
+above are not selection evidence; source-visible findings alone are not confirmation. Missing
+in-tree artifacts means the snapshot cost is **unconfirmed** (not the same as profiling
+**rejecting** the hypothesis). When confirmation is missing — or when profiling rejects the
+hypothesis — keep `dispatchResolvedStyle` as allocate-then-compare and ship policy-only; do
+not land a speculative runtime change. Ticket-scoped outcomes belong on the issue/PR.
 
 **CI (deterministic):** Gate correctness with ordinary JVM tests (`:style:jvmTest` —
 recomposition, traversal, scale-animation suites). Do not add duration or frame-time
-assertions to default CI. Do not add work-count / allocation gates for an optimization that
-did not ship.
+assertions to default CI. When a runtime equal-path optimization does ship, add a
+deterministic work-count gate in `:style:jvmTest` (for example `StyleSnapshotAllocationTest`
+using `StyleRecorder` for chrome dispatch plus a narrow allocation observation seam /
+`WorkCounters`) so equal-output resolve cannot silently reintroduce per-resolve snapshot
+allocation or chrome re-dispatch. Until then, do not add allocation work-count gates for an
+optimization that has not shipped.
 
-**Device timing (controlled job):** Keep frame distributions report-only until baseline
-variance is known from ≥3 counterbalanced confirmation sessions on the same physical device
-(deps, SHA, APK hash, device/API/refresh, compilation, workload, and order recorded via
-`write_session_artifacts`). Encode relative regression + absolute frame budgets in this README
-and optional `tv_benchmark_report.py` helpers only after that variance is measured. Reject
-invalid/noisy sessions; do not retry into a false pass. Mismatched workload, single-session
-P99, or missing overrun must abort a measured conclusion.
+**Device timing (controlled job):** Follow the report-only durations, ≥3 counterbalanced
+confirmation sessions, reject-invalid-sessions, and baseline-before-thresholds rules under
+**Confirmation / release profile** above. Encode relative regression + absolute frame budgets
+in this README and optional `tv_benchmark_report.py` helpers only after that variance is
+measured.
 
 Before/after device evidence is required when a runtime styling fix ships; work-count gates
 alone do not establish frame-budget thresholds. Ticket acceptance status belongs on the
