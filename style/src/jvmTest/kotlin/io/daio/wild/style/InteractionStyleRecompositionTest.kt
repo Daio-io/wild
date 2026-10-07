@@ -23,7 +23,7 @@ import io.daio.wild.foundation.ExperimentalWildApi
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class, ExperimentalWildApi::class)
-class InteractionStyleDejavuTest {
+class InteractionStyleRecompositionTest {
     @Test
     fun interactionStyle_unrelatedParentTick_isStable() =
         runRecompositionTrackingUiTest {
