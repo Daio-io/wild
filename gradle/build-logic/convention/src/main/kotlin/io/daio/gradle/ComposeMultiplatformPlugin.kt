@@ -16,12 +16,12 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
 }
 
 internal fun Project.configureCompose() {
-    // Opt-in only: ./gradlew … -PcomposeReports=true
-    if (providers.gradleProperty("composeReports").orNull != "true") return
-
     extensions.configure<ComposeCompilerGradlePluginExtension>("composeCompiler") {
-        val destination = layout.buildDirectory.dir("compose_compiler")
-        reportsDestination.set(destination)
-        metricsDestination.set(destination)
+        includeSourceInformation.set(true)
+        if (providers.gradleProperty("composeReports").orNull == "true") {
+            val destination = layout.buildDirectory.dir("compose_compiler")
+            reportsDestination.set(destination)
+            metricsDestination.set(destination)
+        }
     }
 }
