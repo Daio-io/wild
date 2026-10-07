@@ -84,7 +84,7 @@ class InteractionStyleRecompositionTest {
         }
 
     @Test
-    fun interactionStyle_focusEmit_recomposesOnce() =
+    fun interactionStyle_focusEmit_composableStaysStable() =
         runRecompositionTrackingUiTest {
             val source = MutableInteractionSource()
             val style =

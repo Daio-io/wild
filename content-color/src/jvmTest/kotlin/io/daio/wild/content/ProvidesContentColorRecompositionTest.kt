@@ -23,9 +23,9 @@ import dejavu.setTrackedContent
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class ProvidesContentColorDejavuTest {
+class ProvidesContentColorRecompositionTest {
     @Test
-    fun providesContentColor_unrelatedTick_childStable() =
+    fun providesContentColor_unrelatedTick_isStable() =
         runRecompositionTrackingUiTest {
             var tick by mutableStateOf(0)
             var color by mutableStateOf(Color.Red)

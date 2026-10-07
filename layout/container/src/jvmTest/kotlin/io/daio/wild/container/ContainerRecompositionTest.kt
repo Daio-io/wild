@@ -22,7 +22,7 @@ import io.daio.wild.style.StyleDefaults
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class ContainerDejavuTest {
+class ContainerRecompositionTest {
     @Test
     fun staticContainer_unrelatedTick_isStable() =
         runRecompositionTrackingUiTest {
