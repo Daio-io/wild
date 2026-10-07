@@ -56,7 +56,7 @@ class IconDejavuTest {
         }
 
     @Test
-    fun icon_tintChange_recomposesOnce() =
+    fun icon_tintChange_recomposesTwice() =
         runRecompositionTrackingUiTest {
             var tint by mutableStateOf(Color.Red)
             setTrackedContent {
