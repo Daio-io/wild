@@ -6,7 +6,7 @@
     "test:server": "node --test serve.test.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "typescript": "7.0.2"
   }
 }
