@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package io.daio.wild.style
 
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -58,6 +60,51 @@ class InteractionStyleRecompositionTest {
             onNodeWithTag("styled_box").assertRecompositions(exactly = 1)
             // If actual > 1: change to exactly = N with // budget: N — do not edit production Style APIs
         }
+
+    @Test
+    fun interactionStyle_enabledFlip_recomposesOnce() =
+        runRecompositionTrackingUiTest {
+            var enabled by mutableStateOf(true)
+            val style =
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = Color.Red,
+                            disabledBackgroundColor = Color.Gray,
+                        ),
+                )
+            setTrackedContent {
+                TaggedStyledBox(style = style, enabled = enabled)
+            }
+            waitForIdle()
+            resetRecompositionCounts()
+            runOnIdle { enabled = false }
+            waitForIdle()
+            onNodeWithTag("styled_box").assertRecompositions(exactly = 1)
+        }
+
+    @Test
+    fun interactionStyle_focusEmit_recomposesOnce() =
+        runRecompositionTrackingUiTest {
+            val source = MutableInteractionSource()
+            val style =
+                StyleDefaults.style(
+                    colors =
+                        StyleDefaults.colors(
+                            backgroundColor = Color.Red,
+                            focusedBackgroundColor = Color.Blue,
+                        ),
+                )
+            setTrackedContent {
+                TaggedStyledBox(style = style, interactionSource = source)
+            }
+            waitForIdle()
+            resetRecompositionCounts()
+            runOnIdle { source.tryEmit(FocusInteraction.Focus()) }
+            waitForIdle()
+            // modifier-node; composable budget 0
+            onNodeWithTag("styled_box").assertStable()
+        }
 }
 
 /**
@@ -65,11 +112,19 @@ class InteractionStyleRecompositionTest {
  * skippable user boundary to measure [interactionStyle] stability under parent invalidation.
  */
 @Composable
-private fun TaggedStyledBox(style: Style) {
+private fun TaggedStyledBox(
+    style: Style,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+) {
     Box(
         Modifier
             .testTag("styled_box")
             .size(8.dp)
-            .interactionStyle(interactionSource = null, style = style),
+            .interactionStyle(
+                interactionSource = interactionSource,
+                enabled = enabled,
+                style = style,
+            ),
     )
 }
