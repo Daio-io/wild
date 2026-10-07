@@ -81,6 +81,7 @@ class InteractionStyleRecompositionTest {
             runOnIdle { enabled = false }
             waitForIdle()
             onNodeWithTag("styled_box").assertRecompositions(exactly = 1)
+            // If actual > 1: change to exactly = N with // budget: N — do not edit production Style APIs
         }
 
     @Test

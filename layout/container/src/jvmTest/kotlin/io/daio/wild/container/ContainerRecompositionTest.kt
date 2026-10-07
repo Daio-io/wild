@@ -32,7 +32,7 @@ class ContainerRecompositionTest {
                 TaggedStaticContainer(color = Color.Gray)
             }
             waitForIdle()
-            resetRecompositionCounts()
+            resetRecompositionCounts() // AFTER initial composition — counts exclude first compose
             runOnIdle { tick++ }
             waitForIdle()
             onNodeWithTag("container").assertStable()
@@ -50,6 +50,7 @@ class ContainerRecompositionTest {
             runOnIdle { color = Color.Blue }
             waitForIdle()
             onNodeWithTag("container").assertRecompositions(exactly = 1)
+            // If actual > 1: change to exactly = N with // budget: N — do not edit production Container APIs
         }
 
     @Test
@@ -78,7 +79,8 @@ private fun TaggedStaticContainer(color: Color) {
 }
 
 /**
- * User composable owning the SUT tag for the interactive [Container] overload.
+ * User composable owning the SUT tag. Dejavu skips framework layout nodes, so the tag must sit on
+ * a skippable user boundary to measure interactive [Container] stability under parent invalidation.
  */
 @Composable
 private fun TaggedInteractiveContainer() {
