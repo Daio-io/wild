@@ -23,6 +23,10 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
         }
-        jvmTest.dependencies { implementation(compose.desktop.currentOs) }
+        jvmTest.dependencies {
+            // Dejavu 0.5.0 publishes JVM/Android/iOS/wasmJs, not JS — keep off commonTest.
+            implementation(libs.dejavu)
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
