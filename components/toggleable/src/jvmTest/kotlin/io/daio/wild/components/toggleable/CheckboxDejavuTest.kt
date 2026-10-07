@@ -24,7 +24,11 @@ class CheckboxDejavuTest {
             var tick by mutableStateOf(0)
             setTrackedContent {
                 tick
-                Checkbox(false, {}, Modifier.testTag("sut"))
+                Checkbox(
+                    checked = false,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("sut"),
+                )
             }
             waitForIdle()
             resetRecompositionCounts()
@@ -38,7 +42,11 @@ class CheckboxDejavuTest {
         runRecompositionTrackingUiTest {
             var checked by mutableStateOf(false)
             setTrackedContent {
-                Checkbox(checked, {}, Modifier.testTag("sut"))
+                Checkbox(
+                    checked = checked,
+                    onCheckedChange = {},
+                    modifier = Modifier.testTag("sut"),
+                )
             }
             waitForIdle()
             resetRecompositionCounts()
