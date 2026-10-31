@@ -77,6 +77,24 @@ Review the generated diff alongside the source change. If it rewrites unrelated
 signatures, compare the Kotlin/Metalava versions and declarations before accepting
 those changes. Add KDoc, an applicable `@since`, and a consumer example with the API.
 
+## Publish a release
+
+Release tags are semantic versions without a `v` prefix, for example `0.8.0` or
+`0.8.0-rc.1`. Create and push the tag from the commit to release:
+
+```bash
+git tag 0.8.0
+git push origin 0.8.0
+```
+
+The release workflow validates the tag, stamps `VERSION_NAME` in its checkout with
+`scripts/release.sh`, runs the quality checks, publishes to Maven Central, and creates
+a GitHub Release with generated notes. The stamped `gradle.properties` is only a CI
+input; it is not committed back to the repository.
+
+Use the release workflow's manual `snapshot_version` input when publishing a snapshot
+to GitHub Packages. The workflow adds the commit-specific snapshot suffix.
+
 ## Locate PR review feedback
 
 From the PR branch, get its number with `gh pr view --json number,url,baseRefName`.
