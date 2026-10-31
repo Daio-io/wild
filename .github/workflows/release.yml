@@ -1,74 +1,139 @@
-name: Deploy Release
+name: Release
 
 on:
-  release:
-    types: [ created ]
+  push:
+    tags:
+      - "[0-9]*"
   workflow_dispatch:
     inputs:
-      snapshot:
-        description: 'Deploy a snapshot'
+      snapshot_version:
+        description: "Base version for a GitHub Packages snapshot, for example 0.8.0"
         required: true
-        type: boolean
-        default: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  verify:
+    name: Verify ${{ github.ref_name }}
     runs-on: macos-26
-
-    # Set GITHUB_TOKEN permissions for GitHub packages.
     permissions:
       contents: read
-      packages: write
-      attestations: write
-      id-token: write
 
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v6
         with:
           java-version: 21
-          distribution: 'zulu'
+          distribution: zulu
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Stamp release version
+        if: github.event_name == 'push'
+        run: ./scripts/release.sh "$GITHUB_REF_NAME"
 
-      - name: Lint & Test
+      - name: Stamp snapshot base version
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+        run: ./scripts/release.sh "$SNAPSHOT_VERSION"
+
+      - name: Test release script
+        run: ./scripts/release-test.sh
+
+      - name: Lint and test
         run: ./gradlew spotlessCheck detekt lint jvmTest
 
-      - name: Get current commit
-        id: commit-sha
-        run: echo "GITHUB_COMMIT=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+  publish-release:
+    name: Publish ${{ github.ref_name }}
+    if: github.event_name == 'push'
+    needs: verify
+    runs-on: macos-26
+    permissions:
+      contents: write
 
-      - name: Get current version from gradle.properties
-        id: get-version
-        run: |
-          VERSION=$(grep 'VERSION_NAME=' gradle.properties | cut -d'=' -f2)
-          echo "VERSION_NAME=$VERSION-snapshot-$GITHUB_COMMIT" >> $GITHUB_ENV
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      - name: Publish to GitHub packages
-        if: ${{ github.event.inputs.snapshot == 'true' }}
-        run: |
-          ./gradlew publishAllPublicationsToGitHubPackagesRepository \
-            -PuseGitHubPublishing \
-            -PVERSION_NAME=${{ env.VERSION_NAME }} \
-            -PgitCommit=${{ env.GITHUB_COMMIT }} \
-            --no-configuration-cache
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          java-version: 21
+          distribution: zulu
+          cache: gradle
+
+      - name: Stamp release version
+        run: ./scripts/release.sh "$GITHUB_REF_NAME"
+
+      - name: Publish and release to Maven Central
+        run: ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
         env:
-          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.GITHUB_TOKEN }}
-          ORG_GRADLE_PROJECT_githubUser: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}
 
-      - name: Deploy to Sonatype
-        if: ${{ github.event.inputs.snapshot == 'false' || github.event_name == 'release' }}
-        run: ./gradlew publish --no-configuration-cache
+      - name: Read release metadata
+        id: release-metadata
         env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          version_without_build="${RELEASE_VERSION%%+*}"
+          if [[ "$version_without_build" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ steps.release-metadata.outputs.prerelease }}
+
+  publish-snapshot:
+    name: Publish ${{ inputs.snapshot_version }} snapshot
+    if: github.event_name == 'workflow_dispatch'
+    needs: verify
+    runs-on: macos-26
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          java-version: 21
+          distribution: zulu
+          cache: gradle
+
+      - name: Stamp snapshot version
+        env:
+          SNAPSHOT_VERSION: ${{ inputs.snapshot_version }}
+        run: |
+          short_sha="${GITHUB_SHA::7}"
+          ./scripts/release.sh "${SNAPSHOT_VERSION}-snapshot-$short_sha"
+
+      - name: Publish to GitHub Packages
+        run: |
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository \
+            -PuseGitHubPublishing \
+            -PgitCommit="${GITHUB_SHA::7}" \
+            --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_githubToken: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_githubUser: ${{ github.actor }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}
