@@ -46,6 +46,9 @@ jobs:
       - name: Test release script
         run: ./scripts/release-test.sh
 
+      - name: Verify publication metadata
+        run: ./scripts/verify-publication-metadata.sh
+
       - name: Lint and test
         run: ./gradlew spotlessCheck detekt lint jvmTest
 
