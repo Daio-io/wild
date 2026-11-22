@@ -176,19 +176,30 @@ private fun SliderImpl(
 /**
  * A controlled, unstyled single-value slider with caller-supplied track and thumb content.
  *
+ * ```kotlin
+ * var volume by remember { mutableStateOf(0.5f) }
+ * Slider(
+ *     value = volume,
+ *     onValueChange = { volume = it },
+ *     modifier = Modifier.width(SliderDefaults.minWidth),
+ *     thumb = { VolumeThumb(enabled = enabled) },
+ *     track = { VolumeTrack(fraction = fraction) },
+ * )
+ * ```
+ *
  * @param value the externally controlled current value.
  * @param onValueChange called with a coerced and, when configured, snapped value.
  * @param modifier the modifier applied to the slider layout.
  * @param enabled whether the slider accepts input and can receive focus.
- * @param valueRange the inclusive range used to coerce values.
- * @param steps the number of discrete intervals between the range endpoints.
+ * @param valueRange The inclusive range used to coerce values. Requires finite increasing endpoints.
+ * @param steps the number of selectable values between the endpoints. Zero allows continuous input.
  * @param onValueChangeFinished called after a gesture or semantic update finishes.
  * @param interactionSource the optional source used for drag interactions.
  * @param thumb content for the thumb slot.
- * @param track content for the track slot.
- * Example: `Slider(value = value, onValueChange = { value = it }, thumb = { ... }, track = { ... })`
+ * @param track Track content with the thumb position as a visual fraction, reversed for right-to-left layouts.
  *
  * @since 0.7.0
+ * @guidance Hoist the value, supply the track and thumb visuals, and provide an accessible label for the adjustable control.
  */
 @Composable
 fun Slider(

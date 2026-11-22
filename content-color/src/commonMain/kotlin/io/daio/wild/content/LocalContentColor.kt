@@ -24,10 +24,17 @@ val LocalContentColor = compositionLocalOf { Color.Black }
  *
  * This function also acts as a shim to set LocalContentColor from all Material libraries.
  *
+ * ```kotlin
+ * ProvidesContentColor(color = onPanelColor) {
+ *     Text("Downloads")
+ * }
+ * ```
+ *
  * @param color The color to set for the [LocalContentColor].
  * @param content Main composable content.
  *
  * @since 0.2.0
+ * @guidance Use ProvidesContentColor to set a common foreground color for a subtree with Wild and Compose Material content.
  */
 @Composable
 fun ProvidesContentColor(

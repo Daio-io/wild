@@ -76,6 +76,8 @@ git diff -- a2ui-catalog/api/api.txt
 Review the generated diff alongside the source change. If it rewrites unrelated
 signatures, compare the Kotlin/Metalava versions and declarations before accepting
 those changes. Add KDoc, an applicable `@since`, and a consumer example with the API.
+For Compose components, follow the [Wax registry documentation guidance](wax-registry.md)
+so the API contract, examples, and usage guidance are available in registry lookup.
 
 ## Publish a release
 

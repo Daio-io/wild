@@ -16,11 +16,20 @@ Wild currently pins the A2UI fixtures and catalog format to protocol version `v0
 
 ## Quick start
 
+Create the processor and feed it JSONL messages outside composition. In the UI,
+observe its surface models and render the one matching your surface ID. Handle
+dispatched user actions with `onAction`. Custom catalog renderers can use
+`A2uiComponent` for children so they share the surface's catalog and data scope.
+
 ```kotlin
 val processor = A2uiMessageProcessor()
 processor.processJsonl(fixture)
 val catalog = wildA2uiBasicCatalogV1()
-A2uiSurface(surface, catalog, processor)
+// Inside composition
+val surfaces by processor.surfaces.collectAsState()
+surfaces[surfaceId]?.let { surface ->
+    A2uiSurface(surface, catalog, processor, onAction = onAction)
+}
 ```
 
 ## AndroidX note

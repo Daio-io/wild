@@ -5,8 +5,15 @@ package io.daio.wild.components.slider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Default sizing guidance for slot-based sliders. */
+/**
+ * Suggested dimensions for [Slider] and [RangeSlider]. Apply them with a size modifier.
+ *
+ * @since 0.7.0
+ */
 object SliderDefaults {
+    /** Suggested minimum width for the slider track. */
     val minWidth: Dp = 100.dp
+
+    /** Suggested minimum height for the slider layout. */
     val minHeight: Dp = 48.dp
 }

@@ -86,6 +86,7 @@ import io.daio.wild.style.styleSpec as newStyleSpec
  *     }
  * }
  * ```
+ * @guidance Use Toggleable to build a custom state-changing control and supply an appropriate accessibility role and name.
  */
 @Composable
 fun Toggleable(
@@ -120,7 +121,6 @@ fun Toggleable(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
  *
- * Example:
  * ```
  * val spec = ToggleableDefaults.styleSpec {
  *     if (selected) scale = 1.1f
@@ -131,6 +131,7 @@ fun Toggleable(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use Toggleable to build a custom state-changing control and supply an appropriate accessibility role and name.
  */
 @ExperimentalWildApi
 @Composable
@@ -189,6 +190,7 @@ fun Toggleable(
  *     // Render a distinct mark for ToggleableState.Indeterminate.
  * }
  * ```
+ * @guidance Use Toggleable to build a custom state-changing control and supply an appropriate accessibility role and name.
  */
 @Composable
 fun Toggleable(
@@ -223,7 +225,6 @@ fun Toggleable(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
  *
- * Example:
  * ```
  * val spec = ToggleableDefaults.styleSpec {
  *     if (selected) contentColor = Color.Green
@@ -234,6 +235,7 @@ fun Toggleable(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use Toggleable to build a custom state-changing control and supply an appropriate accessibility role and name.
  */
 @ExperimentalWildApi
 @Composable
@@ -329,6 +331,7 @@ private fun ToggleableImpl(
  *     // Draw your selection indicator here
  * }
  * ```
+ * @guidance Use Selectable to build a custom single-choice item and let the parent update which item is selected.
  */
 @Composable
 fun Selectable(
@@ -366,7 +369,6 @@ fun Selectable(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Visual content of the control.
  *
- * Example:
  * ```
  * val spec = SelectableDefaults.styleSpec {
  *     if (selected) scale = 1.1f
@@ -377,6 +379,7 @@ fun Selectable(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use Selectable to build a custom single-choice item and let the parent update which item is selected.
  */
 @ExperimentalWildApi
 @Composable

@@ -31,8 +31,14 @@ import io.daio.wild.style.staticStyle
 import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
- * [Container] is a building block component that can be used for any static element or as an
- * interactive container.
+ * A static layout surface that draws a background, shape and border and provides a content color.
+ * Choose an interactive overload for a focusable tile or a selectable surface.
+ *
+ * ```kotlin
+ * Container(color = panelColor, contentColor = onPanelColor) {
+ *     Text("Download complete")
+ * }
+ * ```
  *
  * @param modifier Modifier to be applied to the container layout for styling and positioning.
  * @param color Background color of the container.
@@ -42,6 +48,7 @@ import io.daio.wild.style.styleSpec as newStyleSpec
  * @param content A [Composable] lambda that defines the content inside the container.
  *
  * @since 0.3.1
+ * @guidance Use Container for custom surfaces and choose Button or ListItem when their interaction semantics fit.
  */
 @Composable
 fun Container(
@@ -76,9 +83,7 @@ fun Container(
 }
 
 /**
- * [Container] is a building block component that can be used for any selectable TV
- * element or on its own as a selectable container. The [Container] handles an additional
- * state compared to [Container] to indicate whether it is currently selected.
+ * An interactive surface for custom clickable or selectable content, including TV tiles.
  *
  * @param onClick Callback to be called when the container is clicked. If this and [onLongClick]
  * are null, the container will not be focusable on TV.
@@ -145,6 +150,7 @@ fun Container(
  *     )
  * }
  * ```
+ * @guidance Supply onClick or onLongClick to make the surface focusable on TV, and hoist selected state for selectable tiles.
  */
 @OptIn(ExperimentalWildApi::class)
 @Composable
@@ -208,7 +214,6 @@ fun Container(
  * @param selected Optional selected flag for selectable surfaces.
  * @param content Content inside the container.
  *
- * Example:
  * ```
  * val spec = ContainerDefaults.styleSpec {
  *     if (focused) {
@@ -222,6 +227,7 @@ fun Container(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use Container for custom surfaces and choose Button or ListItem when their interaction semantics fit.
  */
 @ExperimentalWildApi
 @Composable
@@ -300,78 +306,26 @@ private fun BridgedInteractiveContainer(
 }
 
 /**
- * [ExperimentalContainer] is a building block component that can be used for any selectable TV
- * element or on its own as a selectable container. The [Container] handles an additional
- * state compared to [Container] to indicate whether it is currently selected.
+ * Legacy interactive surface. Migrate to [Container] with the same style and callbacks.
  *
- * The experimental version uses the []
- *
- * @param onClick Callback to be called when the container is clicked. If this and [onLongClick]
- * are null, the container will not be focusable on TV.
- * @param modifier Modifier to be applied to the layout corresponding to the container.
- * @param enabled Whether or not the container is enabled.
- * @param selected Whether or not the container is currently selected.
- * @param onLongClick Callback to be called when the container is long clicked. If this and
- * [onClick] are null, the container will not be focusable on TV.
- * @param onDoubleClick Optional callback to be called when the container is double clicked.
- * @param style The [Style] to supply to the Container. See [StyleDefaults.style].
- * @param interactionSource An optional hoisted [MutableInteractionSource] for observing and
- * emitting [Interaction]s for this container.
- * @param content Defines the [Composable] content inside the container.
- *
- * Example:
- * ```
- * ExperimentalContainer(
- *     style =
- *         StyleDefaults.style(
- *             colors = StyleDefaults.colors(
- *                 backgroundColor = Color.Black,
- *                 contentColor = Color.White,
- *                 focusedBackgroundColor = Color.Blue,
- *                 focusedContentColor = Color.Yellow,
- *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
- *             ),
- *             scale = StyleDefaults.scale(focusedScale = 1.1f),
- *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
- *         ),
- *     modifier = Modifier.size(300.dp, 100.dp),
- *     onClick = { /* Handle click */ },
- *     onLongClick = { /* Handle long click */ }
- * ) {
- *     val color = LocalContentColor.current
- *     BasicText(text = "Interactive Container", color = { color })
+ * ```kotlin
+ * Container(onClick = onOpenDetails, style = cardStyle) {
+ *     Text("Details")
  * }
  * ```
  *
- * Example usage as a selectable container.
- * ```
- * var selected by remember { mutableStateOf(false) }
- * ExperimentalContainer(
- *     onClick = {
- *         selected = !selected
- *     },
- *     selected = selected,
- *     style =
- *         StyleDefaults.style(
- *             colors = StyleDefaults.colors(
- *                 backgroundColor = if (selected) Color.Green else Color.Black,
- *                 contentColor = Color.White,
- *                 focusedBackgroundColor = Color.Red,
- *                 focusedContentColor = Color.Black,
- *                 pressedBackgroundColor = Color.Black.copy(alpha = 0.6f)
- *             ),
- *             scale = StyleDefaults.scale(focusedScale = 1.1f),
- *             shapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))
- *         )
- * ) {
- *     val color = LocalContentColor.current
- *     BasicText(
- *         text = if (selected) "Selected Container" else "Unselected Container",
- *         color = { color },
- *     )
- * }
- * ```
+ * @param onClick Callback invoked when the container is clicked.
+ * @param modifier Modifier applied to the container layout.
+ * @param enabled Whether the container accepts interaction.
+ * @param selected Whether the container uses its selected style.
+ * @param onLongClick Optional callback invoked on a long click.
+ * @param onDoubleClick Optional callback invoked on a double click.
+ * @param style Interaction style for the container.
+ * @param interactionSource Optional source for observing and emitting interactions.
+ * @param content Content placed in the container's BoxScope.
  * @since 0.4.0
+ * @deprecated Use the interactive Container overload with the same style and callbacks.
+ * @guidance For new interactive surfaces, use Container.
  */
 @Deprecated(
     message = "ExperimentalContainer is no longer needed. Container now uses the node-based style system internally.",

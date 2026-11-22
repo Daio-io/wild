@@ -17,9 +17,11 @@ nav:
   - 'Style': style.md
   - 'Container': container.md
   - 'Button': button.md
+  - 'Choose a component': component-selection.md
   - 'A2UI': a2ui.md
   - 'Modifier': modifier.md
   - 'Contributing': contributing.md
+  - 'Wax registry preparation': wax-registry.md
   - 'Usage Docs': storybook/
   - 'Api Reference': reference/
 
