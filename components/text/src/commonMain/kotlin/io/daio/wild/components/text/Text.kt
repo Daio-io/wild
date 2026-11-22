@@ -35,6 +35,10 @@ import io.daio.wild.content.LocalContentColor
  * For [color], if [color] is not set, and [style] does not have a color, then
  * [LocalContentColor] will be used.
  *
+ * ```kotlin
+ * Text("New releases", maxLines = 1, overflow = TextOverflow.Ellipsis)
+ * ```
+ *
  * @param text The text to display.
  * @param modifier Modifier to apply to the text.
  * @param color The color of the text. If [Color.Unspecified], and [style] has no color set,
@@ -55,6 +59,7 @@ import io.daio.wild.content.LocalContentColor
  * @param style Style configuration for the text such as color, font, line height etc.
  *
  * @since 0.6.0
+ * @guidance Let Text inherit the local text style and content color, overriding only the attributes the design requires.
  */
 @Composable
 fun Text(
@@ -108,6 +113,13 @@ fun Text(
  * Integrates with Wild's content color system via [LocalContentColor] and supports
  * typography inheritance via [LocalTextStyle].
  *
+ * ```kotlin
+ * Text(buildAnnotatedString {
+ *     append("Status: ")
+ *     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Ready") }
+ * })
+ * ```
+ *
  * @param text The [AnnotatedString] to display.
  * @param modifier Modifier to apply to the text.
  * @param color The color of the text. If [Color.Unspecified], and [style] has no color set,
@@ -128,6 +140,7 @@ fun Text(
  * @param style Style configuration for the text.
  *
  * @since 0.6.0
+ * @guidance Let Text inherit the local text style and content color, overriding only the attributes the design requires.
  */
 @Composable
 fun Text(

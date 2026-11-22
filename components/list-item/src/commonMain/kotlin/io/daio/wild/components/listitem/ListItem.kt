@@ -32,7 +32,14 @@ import io.daio.wild.style.StyleSpec
 import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
- * A list item with content only — no leading or trailing slots.
+ * A full-width clickable list row with one content slot.
+ * Choose the slotted overload when an icon, avatar, or trailing value needs its own space.
+ *
+ * ```kotlin
+ * ListItem(onClick = onOpenSettings) {
+ *     Text("Settings")
+ * }
+ * ```
  *
  * @param onClick Callback invoked when the list item is clicked.
  * @param modifier Modifier to apply to the list item.
@@ -46,6 +53,7 @@ import io.daio.wild.style.styleSpec as newStyleSpec
  * @param content Main content of the list item.
  *
  * @since 0.6.0
+ * @guidance Use ListItem as the primary click target for a row and hoist the selected state to the caller.
  */
 @Composable
 fun ListItem(
@@ -88,9 +96,19 @@ fun ListItem(
 /**
  * A list item with leading, content, and trailing slots.
  *
+ * ```kotlin
+ * ListItem(
+ *     onClick = onOpenAccount,
+ *     leadingContent = { Icon(accountPainter, contentDescription = null) },
+ *     trailingContent = null,
+ * ) {
+ *     Text("Account")
+ * }
+ * ```
+ *
  * @param onClick Callback invoked when the list item is clicked.
- * @param leadingContent Content displayed at the start.
- * @param trailingContent Content displayed at the end.
+ * @param leadingContent Content displayed at the start. Pass null to omit the slot.
+ * @param trailingContent Content displayed at the end. Pass null to omit the slot.
  * @param modifier Modifier to apply to the list item.
  * @param enabled Whether the list item is enabled.
  * @param selected Whether the list item is currently selected.
@@ -102,6 +120,7 @@ fun ListItem(
  * @param content Main content of the list item.
  *
  * @since 0.6.0
+ * @guidance Use ListItem as the primary click target for a row and hoist the selected state to the caller.
  */
 @Composable
 fun ListItem(
@@ -167,7 +186,6 @@ fun ListItem(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Main content of the list item.
  *
- * Example:
  * ```
  * val spec = ListItemDefaults.styleSpec {
  *     if (focused) scale = 1.05f
@@ -178,6 +196,7 @@ fun ListItem(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use ListItem as the primary click target for a row and hoist the selected state to the caller.
  */
 @ExperimentalWildApi
 @Composable
@@ -222,8 +241,8 @@ fun ListItem(
  * Slotted list item with an experimental [StyleSpec] for chrome and content-color propagation.
  *
  * @param onClick Callback invoked when the list item is clicked.
- * @param leadingContent Content displayed at the start.
- * @param trailingContent Content displayed at the end.
+ * @param leadingContent Content displayed at the start. Pass null to omit the slot.
+ * @param trailingContent Content displayed at the end. Pass null to omit the slot.
  * @param style Required [StyleSpec] distinguishing this overload from the value [Style] overload.
  * Prefer [ListItemDefaults.styleSpec] when building the Spec.
  * @param modifier Modifier to apply to the list item.
@@ -235,15 +254,14 @@ fun ListItem(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Main content of the list item.
  *
- * Example:
  * ```
  * val spec = ListItemDefaults.styleSpec {
  *     if (selected) contentColor = Color.Yellow
  * }
  * ListItem(
  *     onClick = onClick,
- *     leadingContent = { Icon() },
- *     trailingContent = { Chevron() },
+ *     leadingContent = { Icon(accountPainter, contentDescription = null) },
+ *     trailingContent = null,
  *     style = spec,
  * ) {
  *     Text("Account")
@@ -251,6 +269,7 @@ fun ListItem(
  * ```
  *
  * @since 0.8.0
+ * @guidance Use ListItem as the primary click target for a row and hoist the selected state to the caller.
  */
 @ExperimentalWildApi
 @Composable
@@ -308,7 +327,7 @@ fun ListItem(
  */
 object ListItemDefaults {
     /**
-     * The default minimum height of the list item.
+     * Default minimum row height. Content and padding can make the row taller.
      */
     val defaultMinHeight: Dp = 48.dp
 
@@ -323,7 +342,7 @@ object ListItemDefaults {
     val contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 
     /**
-     * The default spacing between leading, content, and trailing slots.
+     * Default horizontal spacing between the row slots that are present.
      */
     val contentSpacing: Dp = 16.dp
 

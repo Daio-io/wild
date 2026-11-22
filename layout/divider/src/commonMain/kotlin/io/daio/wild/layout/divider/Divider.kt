@@ -21,11 +21,20 @@ import io.daio.wild.content.LocalContentColor
  * By default uses [LocalContentColor] for the divider color, allowing it to
  * adapt when placed inside styled containers.
  *
+ * ```kotlin
+ * Column {
+ *     Text("Account")
+ *     HorizontalDivider()
+ *     Text("Notifications")
+ * }
+ * ```
+ *
  * @param modifier Modifier to apply to the divider.
  * @param color Color of the divider line. Defaults to [LocalContentColor].
  * @param thickness Thickness of the divider line.
  *
  * @since 0.6.0
+ * @guidance Place a HorizontalDivider between groups stacked in a Column and give it bounded width.
  */
 @Composable
 fun HorizontalDivider(
@@ -49,11 +58,20 @@ fun HorizontalDivider(
  * By default uses [LocalContentColor] for the divider color, allowing it to
  * adapt when placed inside styled containers.
  *
+ * ```kotlin
+ * Row(Modifier.height(32.dp)) {
+ *     Text("Monthly")
+ *     VerticalDivider()
+ *     Text("Yearly")
+ * }
+ * ```
+ *
  * @param modifier Modifier to apply to the divider.
  * @param color Color of the divider line. Defaults to [LocalContentColor].
  * @param thickness Thickness of the divider line.
  *
  * @since 0.6.0
+ * @guidance Place a VerticalDivider between items in a Row with a bounded height.
  */
 @Composable
 fun VerticalDivider(
@@ -78,7 +96,7 @@ fun VerticalDivider(
  */
 object DividerDefaults {
     /**
-     * The default thickness of the divider.
+     * Default line thickness for both horizontal and vertical dividers.
      */
     val thickness: Dp = 1.dp
 }

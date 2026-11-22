@@ -31,11 +31,14 @@ import io.daio.wild.style.StyleSpec
 import io.daio.wild.style.styleSpec as newStyleSpec
 
 /**
- * Basic button component.
+ * A labeled or icon-only action button with click semantics and state-dependent styling.
+ *
+ * Use the [Style] overload for value-based styling or pass a [StyleSpec] for ordered
+ * experimental overrides.
  *
  * @param onClick Callback to be invoked when the button is clicked.
  * @param modifier Modifier to be applied to the layout corresponding to the surface.
- * @param enabled Whether the button is enabled.
+ * @param enabled Whether the button accepts interaction.
  * @param onLongClick Callback to be invoked when the button is long clicked.
  * @param onDoubleClick Optional callback to be invoked when the button is double clicked.
  * @param style The style of the button.
@@ -45,7 +48,6 @@ import io.daio.wild.style.styleSpec as newStyleSpec
  *
  * @since 0.2.0
  *
- * Example:
  * ```
  * Button(
  *     style =
@@ -68,6 +70,8 @@ import io.daio.wild.style.styleSpec as newStyleSpec
  *     BasicText(text = title, color = { color })
  * }
  * ```
+ * @guidance Give the button a visible label or an accessible name for icon-only content.
+ * @guidance Use ButtonDefaults.style to customize visuals for focus, press, and disabled states.
  */
 @Composable
 fun Button(
@@ -113,7 +117,6 @@ fun Button(
  * @param interactionSource Optional interaction source; when null, Container owns one.
  * @param content Defines the content inside the button.
  *
- * Example:
  * ```
  * val spec = ButtonDefaults.styleSpec {
  *     if (focused) scale = 1.1f
@@ -124,6 +127,8 @@ fun Button(
  * ```
  *
  * @since 0.8.0
+ * @guidance Give the button a visible label or an accessible name for icon-only content.
+ * @guidance Use ButtonDefaults.style to customize visuals for focus, press, and disabled states.
  */
 @ExperimentalWildApi
 @Composable

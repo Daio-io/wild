@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
  * @param content Caller-laid-out radio buttons and other content.
  *
  * @since 0.8.0
+ * @guidance Keep a single selected option in the caller and choose a Row or Column for the radio buttons.
  */
 @Composable
 fun RadioGroup(

@@ -14,15 +14,25 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
-/** Renders the root component on an A2UI surface.
+/**
+ * Renders the root component on an A2UI surface.
+ *
+ * ```kotlin
+ * val surfaces by processor.surfaces.collectAsState()
+ * surfaces[surfaceId]?.let { surface ->
+ *     A2uiSurface(surface, catalog, processor, onAction = onAction)
+ * }
+ * ```
+ *
  * @param surface surface model to render.
- * @param catalog component catalog matching the surface.
+ * @param catalog Component catalog whose ID must match the surface model.
  * @param processor message processor backing the surface.
  * @param modifier modifier applied to the root component.
- * @param onAction callback for user actions.
- * @param loading content shown while data is unavailable.
- * @param error content shown for render errors.
+ * @param onAction Receives user actions emitted by the surface and its children.
+ * @param loading Content shown while component data is loading.
+ * @param error Content that receives the render error message.
  * @since 0.1.0
+ * @guidance Render protocol-driven UI with A2uiSurface and pass a catalog whose ID matches the surface.
  */
 @Composable
 fun A2uiSurface(
@@ -48,12 +58,20 @@ fun A2uiSurface(
     }
 }
 
-/** Renders a component state from the current catalog and scope.
+/**
+ * Renders a component state from the current catalog and scope.
+ *
+ * ```kotlin
+ * // Inside a catalog component with an A2uiComponentScope receiver
+ * A2uiComponent(state = observeComponentState(childId))
+ * ```
+ *
  * @param state component state to render.
  * @param modifier modifier applied to the component.
- * @param loading content shown while data is unavailable.
- * @param error content shown for render errors.
+ * @param loading Content shown while component data is loading.
+ * @param error Content that receives the render error message.
  * @since 0.1.0
+ * @guidance Render child states inside an existing A2uiSurface so catalog lookup and data bindings use the same surface scope.
  */
 @Composable
 fun A2uiComponent(

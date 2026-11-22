@@ -21,10 +21,17 @@ val LocalTextStyle = compositionLocalOf { TextStyle.Default }
  * Provides a [TextStyle] to the composition, affecting all [Text] components
  * within the [content] block that don't explicitly override their style.
  *
+ * ```kotlin
+ * ProvidesTextStyle(style = headingStyle) {
+ *     Text("Downloads")
+ * }
+ * ```
+ *
  * @param style The [TextStyle] to provide.
  * @param content The composable content that will inherit this text style.
  *
  * @since 0.6.0
+ * @guidance Use ProvidesTextStyle to share text attributes across a subtree and let individual Text calls override specific attributes.
  */
 @Composable
 fun ProvidesTextStyle(

@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
  *   [ProgressIndicatorDefaults.LinearIndicator].
  * @since 0.7.0
  *
- * Example:
  * ```
  * LinearProgressIndicator(progress = { 0.65f })
  *
@@ -32,6 +31,7 @@ import androidx.compose.ui.Modifier
  *     )
  * }
  * ```
+ * @guidance Use a linear indicator across a content region. Use the overload without progress when the total is unknown.
  */
 @Composable
 fun LinearProgressIndicator(
@@ -59,7 +59,6 @@ fun LinearProgressIndicator(
  * @param content Indicator content. Defaults to [ProgressIndicatorDefaults.LinearIndeterminateIndicator].
  * @since 0.7.0
  *
- * Example:
  * ```
  * LinearProgressIndicator()
  *
@@ -67,6 +66,7 @@ fun LinearProgressIndicator(
  *     ProgressIndicatorDefaults.LinearIndeterminateIndicator(strokeHeight = 6.dp)
  * }
  * ```
+ * @guidance Use a linear indicator across a content region. Use the overload without progress when the total is unknown.
  */
 @Composable
 fun LinearProgressIndicator(
@@ -95,7 +95,6 @@ fun LinearProgressIndicator(
  *   [ProgressIndicatorDefaults.CircularIndicator].
  * @since 0.7.0
  *
- * Example:
  * ```
  * CircularProgressIndicator(progress = { 0.7f })
  *
@@ -106,6 +105,7 @@ fun LinearProgressIndicator(
  *     )
  * }
  * ```
+ * @guidance Use a circular indicator when space is limited. Use the overload without progress when the total is unknown.
  */
 @Composable
 fun CircularProgressIndicator(
@@ -134,7 +134,6 @@ fun CircularProgressIndicator(
  *   [ProgressIndicatorDefaults.CircularIndeterminateIndicator].
  * @since 0.7.0
  *
- * Example:
  * ```
  * CircularProgressIndicator()
  *
@@ -142,6 +141,7 @@ fun CircularProgressIndicator(
  *     ProgressIndicatorDefaults.CircularIndeterminateIndicator(strokeWidth = 8.dp)
  * }
  * ```
+ * @guidance Use a circular indicator when space is limited. Use the overload without progress when the total is unknown.
  */
 @Composable
 fun CircularProgressIndicator(

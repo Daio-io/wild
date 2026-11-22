@@ -56,7 +56,37 @@ internal class RangeSliderScopeImpl(
     override val enabled: Boolean,
 ) : RangeSliderScope
 
-/** A controlled, unstyled range slider with separately addressable thumbs. */
+/**
+ * A controlled range slider with separate thumbs for the lower and upper bounds.
+ *
+ * ```kotlin
+ * var priceRange by remember { mutableStateOf(20f..80f) }
+ * RangeSlider(
+ *     value = priceRange,
+ *     onValueChange = { priceRange = it },
+ *     valueRange = 0f..100f,
+ *     steps = 9,
+ *     startThumb = { PriceThumb(label = "Minimum price") },
+ *     endThumb = { PriceThumb(label = "Maximum price") },
+ *     track = { PriceTrack(startFraction, endFraction) },
+ * )
+ * ```
+ *
+ * @param value The selected inclusive range supplied by the caller.
+ * @param onValueChange Receives the proposed range when either thumb moves.
+ * @param modifier Modifier applied to the slider layout.
+ * @param enabled Whether the thumbs accept input and focus.
+ * @param valueRange The inclusive limits for both thumbs. Requires finite increasing endpoints.
+ * @param steps Number of selectable values between the endpoints. Zero allows continuous input.
+ * @param onValueChangeFinished Optional callback when an adjustment completes.
+ * @param startInteractionSource Optional drag interaction source for the lower-value thumb.
+ * @param endInteractionSource Optional drag interaction source for the upper-value thumb.
+ * @param startThumb Content for the lower-value thumb.
+ * @param endThumb Content for the upper-value thumb.
+ * @param track Track content with thumb positions as visual fractions, reversed for right-to-left layouts.
+ * @since 0.7.0
+ * @guidance Hoist the selected range and give each thumb a distinct accessible label, such as Minimum price and Maximum price.
+ */
 @Composable
 fun RangeSlider(
     value: ClosedFloatingPointRange<Float>,

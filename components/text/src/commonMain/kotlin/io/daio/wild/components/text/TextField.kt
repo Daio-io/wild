@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.Density
 import io.daio.wild.content.LocalContentColor
 
 /**
- * An unstyled, state-based text field primitive.
+ * An unstyled text input that uses caller-owned TextFieldState.
  *
  * Wraps Compose Foundation's state-based [BasicTextField] and resolves text color from
  * [textStyle] or [LocalContentColor]. Does not impose background, border, padding, minimum
@@ -37,7 +37,6 @@ import io.daio.wild.content.LocalContentColor
  * cursor brush is also unspecified. Callers should provide an explicit [cursorBrush] in that
  * case.
  *
- * Example:
  * ```
  * val state = rememberTextFieldState()
  * TextField(
@@ -55,8 +54,8 @@ import io.daio.wild.content.LocalContentColor
  * @param enabled Whether the field accepts focus and user input.
  * @param readOnly Whether the field can be focused and selected without accepting edits.
  * @param textStyle The style used to render the field text.
- * @param inputTransformation Transformation applied to user edits.
- * @param outputTransformation Transformation applied when the field is rendered.
+ * @param inputTransformation Optional transformation that filters or changes user edits.
+ * @param outputTransformation Optional display formatting that leaves the stored text unchanged.
  * @param keyboardOptions Options for the software keyboard.
  * @param onKeyboardAction Callback for software keyboard actions.
  * @param lineLimits The single-line or multiline constraints for the field.
@@ -68,6 +67,7 @@ import io.daio.wild.content.LocalContentColor
  * @param decorator Optional visual decoration around the inner field.
  *
  * @since 0.7.0
+ * @guidance Hoist TextFieldState, provide an accessible label, and invoke the inner field exactly once in a custom decorator.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -111,12 +111,11 @@ fun TextField(
 }
 
 /**
- * A multiline configuration of [TextField].
+ * A multiline text input built on [TextField] with configurable visible line limits.
  *
  * Exposes the same parameters as [TextField] except [TextField]'s `lineLimits`, which are
  * derived from [minLines] and [maxLines].
  *
- * Example:
  * ```
  * val state = rememberTextFieldState()
  * TextArea(
@@ -131,7 +130,7 @@ fun TextField(
  * @param enabled Whether the area accepts focus and user input.
  * @param readOnly Whether the area can be focused and selected without accepting edits.
  * @param textStyle The style used to render the area text.
- * @param inputTransformation Transformation applied to user edits.
+ * @param inputTransformation Optional transformation that filters or changes user edits.
  * @param outputTransformation Transformation applied when the area is rendered.
  * @param keyboardOptions Options for the software keyboard.
  * @param onKeyboardAction Callback for software keyboard actions.
@@ -145,6 +144,7 @@ fun TextField(
  * @param decorator Optional visual decoration around the inner field.
  *
  * @since 0.7.0
+ * @guidance Choose TextArea for multiline input with explicit visible line limits and give the editable control an accessible label.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

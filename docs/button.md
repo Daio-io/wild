@@ -1,6 +1,9 @@
 # Button
 
-Primitive unstyled Button component.
+Use `Button` to expose an explicit action with button semantics and
+state-dependent styling. Provide a visible label or an accessible name for
+icon-only buttons. For a row that opens or selects an item, see
+[Choose a Wild component](component-selection.md).
 
 ```kotlin
 implementation("io.daio.wild:button:<version>")

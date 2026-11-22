@@ -37,7 +37,6 @@ import io.daio.wild.style.StyleDefaults
  *
  * @since 0.8.0
  *
- * Example:
  * ```
  * Switch(
  *     checked = isOn,
@@ -46,6 +45,7 @@ import io.daio.wild.style.StyleDefaults
  *     // Render a track and thumb for isChecked.
  * }
  * ```
+ * @guidance Use Switch for an on or off setting and update caller-owned state in onCheckedChange.
  */
 @Composable
 fun Switch(

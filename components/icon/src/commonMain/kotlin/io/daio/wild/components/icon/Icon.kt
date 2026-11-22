@@ -27,13 +27,18 @@ import io.daio.wild.content.LocalContentColor
 import io.daio.wild.modifier.thenIfNotNull
 
 /**
- * Icon component that draws a [Painter] with tinting support.
+ * Displays a graphic from a [Painter], [ImageVector], or [ImageBitmap].
+ * Use this overload when you already have a [Painter], such as a loaded image resource.
  *
  * By default, the icon uses [LocalContentColor] for tinting. Pass [Color.Unspecified]
  * to [tint] to disable tinting and use the painter's original colors.
  *
  * If the painter has an intrinsic size, it will be used. Otherwise, the icon defaults
  * to [IconDefaults.defaultSize].
+ *
+ * ```kotlin
+ * Icon(painter = searchPainter, contentDescription = "Search")
+ * ```
  *
  * @param painter The [Painter] to draw.
  * @param contentDescription Accessibility description for the icon. Should be provided
@@ -43,6 +48,7 @@ import io.daio.wild.modifier.thenIfNotNull
  *   Pass [Color.Unspecified] to disable tinting.
  *
  * @since 0.6.0
+ * @guidance Describe the icon's meaning or action. Pass null for decorative icons or icons inside an already labeled control.
  */
 @Composable
 fun Icon(
@@ -74,12 +80,17 @@ fun Icon(
 /**
  * Icon component that draws an [ImageVector] with tinting support.
  *
+ * ```kotlin
+ * Icon(imageVector = searchVector, contentDescription = "Search")
+ * ```
+ *
  * @param imageVector The [ImageVector] to draw.
  * @param contentDescription Accessibility description for the icon.
  * @param modifier Modifier to apply to the icon.
  * @param tint The tint color to apply. Defaults to [LocalContentColor].
  *
  * @since 0.6.0
+ * @guidance Describe the icon's meaning or action. Pass null for decorative icons or icons inside an already labeled control.
  */
 @Composable
 fun Icon(
@@ -99,12 +110,17 @@ fun Icon(
 /**
  * Icon component that draws an [ImageBitmap] with tinting support.
  *
+ * ```kotlin
+ * Icon(bitmap = avatar, contentDescription = "Profile photo", tint = Color.Unspecified)
+ * ```
+ *
  * @param bitmap The [ImageBitmap] to draw.
  * @param contentDescription Accessibility description for the icon.
  * @param modifier Modifier to apply to the icon.
  * @param tint The tint color to apply. Defaults to [LocalContentColor].
  *
  * @since 0.6.0
+ * @guidance Describe the icon's meaning or action. Pass null for decorative icons or icons inside an already labeled control.
  */
 @Composable
 fun Icon(

@@ -44,7 +44,6 @@ import io.daio.wild.style.StyleDefaults
  *
  * @since 0.8.0
  *
- * Example:
  * ```
  * var selected by remember { mutableStateOf("small") }
  * RadioButton(
@@ -52,6 +51,7 @@ import io.daio.wild.style.StyleDefaults
  *     onClick = { selected = "small" },
  * )
  * ```
+ * @guidance Use RadioButton for one choice in a RadioGroup and keep one selected option in caller-owned state.
  */
 @Composable
 fun RadioButton(

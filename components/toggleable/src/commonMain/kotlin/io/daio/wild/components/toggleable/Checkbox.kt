@@ -49,13 +49,13 @@ import io.daio.wild.style.StyleDefaults
  *
  * @since 0.7.0
  *
- * Example:
  * ```
  * Checkbox(
  *     checked = isChecked,
  *     onCheckedChange = { isChecked = it },
  * )
  * ```
+ * @guidance Use Checkbox for an independent choice and write the emitted Boolean back to the caller-owned state.
  */
 @Composable
 fun Checkbox(
@@ -99,7 +99,6 @@ fun Checkbox(
  *
  * @since 0.7.0
  *
- * Example:
  * ```
  * TriStateCheckbox(
  *     state = state,
@@ -112,6 +111,7 @@ fun Checkbox(
  *     },
  * )
  * ```
+ * @guidance Use Indeterminate to show a partially selected group and let the caller decide the next state on click.
  */
 @Composable
 fun TriStateCheckbox(
