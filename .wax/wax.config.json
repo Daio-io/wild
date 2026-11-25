@@ -1,0 +1,13 @@
+{
+  "design_systems": {
+    "wild": {
+      "name": "Wild",
+      "registries": {
+        "compose": {
+          "source": ".wax/registries/compose.json"
+        }
+      }
+    }
+  },
+  "schema_version": 2
+}
