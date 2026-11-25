@@ -1,0 +1,1764 @@
+{
+  "components": [
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "Button(\nstyle =\nStyleDefaults.style(\ncolors =\nStyleDefaults.colors(\nbackgroundColor = Color.Black,\ncontentColor = Color.White,\nfocusedBackgroundColor = Color.Red,\nfocusedContentColor = Color.Black,\npressedBackgroundColor = Color.Black.copy(alpha = .6f),\n),\nscale = StyleDefaults.scale(focusedScale = 1.2f),\nshapes = StyleDefaults.shapes(RoundedCornerShape(12.dp)),\n),\nmodifier = modifier.width(200.dp),\nonClick = onClick,\n) {\nval color = LocalContentColor.current\nBasicText(text = title, color = { color })\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/button/src/commonMain/kotlin/io/daio/wild/components/button/Button.kt"
+          }
+        ],
+        "documentation": "Basic button component.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Callback to be invoked when the button is clicked.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to be applied to the layout corresponding to the surface.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the button is enabled.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "null",
+              "description": "Callback to be invoked when the button is long clicked.",
+              "name": "onLongClick",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "null",
+              "description": "Optional callback to be invoked when the button is double clicked.",
+              "name": "onDoubleClick",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "ButtonDefaults.style()",
+              "description": "The style of the button.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "ButtonDefaults.contentPadding",
+              "description": "[PaddingValues] to be set on the inner content.",
+              "name": "contentPadding",
+              "package": "androidx.compose.foundation.layout",
+              "required": false,
+              "type_text": "PaddingValues"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing and emitting [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "Defines the [Composable] content inside the button.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun Button(\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    onLongClick: (() -> Unit)? = null,\n    onDoubleClick: (() -> Unit)? = null,\n    style: Style = ButtonDefaults.style(),\n    contentPadding: PaddingValues = ButtonDefaults.contentPadding,\n    interactionSource: MutableInteractionSource? = null,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 95,
+          "path": "components/button/src/commonMain/kotlin/io/daio/wild/components/button/Button.kt",
+          "start_line": 72
+        },
+        "status": "complete"
+      },
+      "id": "ds.button",
+      "package": "io.daio.wild.components.button",
+      "symbol": "Button"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "Checkbox(\nchecked = isChecked,\nonCheckedChange = { isChecked = it },\n)",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Checkbox.kt"
+          }
+        ],
+        "documentation": "An unstyled, caller-controlled checkbox.\nThe checkbox does not store checked state. It emits the inverse of [checked] through\n[onCheckedChange] when enabled, while a disabled checkbox suppresses the callback. The\n[indicator] slot receives the current checked value in the interactive container's\n[BoxScope]. By default it draws [CheckboxDefaults.Indicator]; callers can replace it\nwith custom artwork.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Whether the checkbox is currently checked.",
+              "name": "checked",
+              "required": true,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "description": "Callback receiving the next checked value when the checkbox is clicked.",
+              "name": "onCheckedChange",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "(Boolean) -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the checkbox.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the checkbox accepts interaction.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "CheckboxDefaults.style()",
+              "description": "The [Style] used for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "{\n        CheckboxDefaults.Indicator(checked = it)\n    }",
+              "description": "Content used to render the indicator in the checkbox's [BoxScope].",
+              "name": "indicator",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(checked: Boolean) -> Unit"
+            }
+          ],
+          "type_text": "fun Checkbox(\n    checked: Boolean,\n    onCheckedChange: (Boolean) -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = CheckboxDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    indicator: @Composable BoxScope.(checked: Boolean) -> Unit = {\n        CheckboxDefaults.Indicator(checked = it)\n    },\n)"
+        },
+        "source_evidence": {
+          "end_line": 81,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Checkbox.kt",
+          "start_line": 60
+        },
+        "status": "complete"
+      },
+      "id": "ds.checkbox",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "Checkbox"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "CircularProgressIndicator(progress = { 0.7f })\nCircularProgressIndicator(progress = { 0.7f }) { progress ->\nProgressIndicatorDefaults.CircularIndicator(\nprogress = progress,\nstrokeWidth = 8.dp,\n)\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/progress/src/commonMain/kotlin/io/daio/wild/components/progress/ProgressIndicator.kt"
+          }
+        ],
+        "documentation": "A determinate circular progress indicator.\nProvides progress semantics and passes the normalized progress value to [content]. By default\n[content] draws [ProgressIndicatorDefaults.CircularIndicator]; replace the slot for fully custom\nartwork. A [progress] value outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Current progress from `0f` to `1f`.",
+              "name": "progress",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Float"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier applied to the indicator container.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "{\n        ProgressIndicatorDefaults.CircularIndicator(progress = it)\n    }",
+              "description": "Content receiving the normalized progress value. Defaults to [ProgressIndicatorDefaults.CircularIndicator].",
+              "name": "content",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(progress: Float) -> Unit"
+            }
+          ],
+          "type_text": "fun CircularProgressIndicator(\n    progress: () -> Float,\n    modifier: Modifier = Modifier,\n    content: @Composable BoxScope.(progress: Float) -> Unit = {\n        ProgressIndicatorDefaults.CircularIndicator(progress = it)\n    },\n)"
+        },
+        "source_evidence": {
+          "end_line": 123,
+          "path": "components/progress/src/commonMain/kotlin/io/daio/wild/components/progress/ProgressIndicator.kt",
+          "start_line": 110
+        },
+        "status": "complete"
+      },
+      "id": "ds.circular-progress-indicator",
+      "package": "io.daio.wild.components.progress",
+      "symbol": "CircularProgressIndicator"
+    },
+    {
+      "details": {
+        "documentation": "[Container] is a building block component that can be used for any static element or as an\ninteractive container.",
+        "signature": {
+          "parameters": [
+            {
+              "default": "Modifier",
+              "description": "Modifier to be applied to the container layout for styling and positioning.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "Color.Unspecified",
+              "description": "Background color of the container.",
+              "name": "color",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            },
+            {
+              "default": "Color.Unspecified",
+              "description": "Color for content elements within the container.",
+              "name": "contentColor",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            },
+            {
+              "default": "RectangleShape",
+              "description": "Defines the shape of the container.",
+              "name": "shape",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Shape"
+            },
+            {
+              "default": "BorderDefaults.None",
+              "description": "Optional border to apply around the container.",
+              "name": "border",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Border"
+            },
+            {
+              "description": "A [Composable] lambda that defines the content inside the container.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun Container(\n    modifier: Modifier = Modifier,\n    color: Color = Color.Unspecified,\n    contentColor: Color = Color.Unspecified,\n    shape: Shape = RectangleShape,\n    border: Border = BorderDefaults.None,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 76,
+          "path": "layout/container/src/commonMain/kotlin/io/daio/wild/container/Container.kt",
+          "start_line": 46
+        },
+        "status": "complete"
+      },
+      "id": "ds.container",
+      "package": "io.daio.wild.container",
+      "symbol": "Container"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "ExperimentalContainer(\nstyle =\nStyleDefaults.style(\ncolors = StyleDefaults.colors(\nbackgroundColor = Color.Black,\ncontentColor = Color.White,\nfocusedBackgroundColor = Color.Blue,\nfocusedContentColor = Color.Yellow,\npressedBackgroundColor = Color.Black.copy(alpha = 0.6f)\n),\nscale = StyleDefaults.scale(focusedScale = 1.1f),\nshapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))\n),\nmodifier = Modifier.size(300.dp, 100.dp),\nonClick = { /* Handle click */ },\nonLongClick = { /* Handle long click */ }\n) {\nval color = LocalContentColor.current\nBasicText(text = \"Interactive Container\", color = { color })\n}\nvar selected by remember { mutableStateOf(false) }\nExperimentalContainer(\nonClick = {\nselected = !selected\n},\nselected = selected,\nstyle =\nStyleDefaults.style(\ncolors = StyleDefaults.colors(\nbackgroundColor = if (selected) Color.Green else Color.Black,\ncontentColor = Color.White,\nfocusedBackgroundColor = Color.Red,\nfocusedContentColor = Color.Black,\npressedBackgroundColor = Color.Black.copy(alpha = 0.6f)\n),\nscale = StyleDefaults.scale(focusedScale = 1.1f),\nshapes = StyleDefaults.shapes(RoundedCornerShape(8.dp))\n)\n) {\nval color = LocalContentColor.current\nBasicText(\ntext = if (selected) \"Selected Container\" else \"Unselected Container\",\ncolor = { color },\n)\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "layout/container/src/commonMain/kotlin/io/daio/wild/container/Container.kt"
+          }
+        ],
+        "documentation": "[ExperimentalContainer] is a building block component that can be used for any selectable TV\nelement or on its own as a selectable container. The [Container] handles an additional\nstate compared to [Container] to indicate whether it is currently selected.\nThe experimental version uses the []",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Callback to be called when the container is clicked. If this and [onLongClick] are null, the container will not be focusable on TV.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to be applied to the layout corresponding to the container.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether or not the container is enabled.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "null",
+              "description": "Callback to be called when the container is long clicked. If this and [onClick] are null, the container will not be focusable on TV.",
+              "name": "onLongClick",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "null",
+              "description": "Optional callback to be called when the container is double clicked.",
+              "name": "onDoubleClick",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "StyleDefaults.None",
+              "description": "The [Style] to supply to the Container. See [StyleDefaults.style].",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "An optional hoisted [MutableInteractionSource] for observing and emitting [Interaction]s for this container.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "null",
+              "description": "Whether or not the container is currently selected.",
+              "name": "selected",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean?"
+            },
+            {
+              "description": "Defines the [Composable] content inside the container. Example: Example usage as a selectable container.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun ExperimentalContainer(\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    onLongClick: (() -> Unit)? = null,\n    onDoubleClick: (() -> Unit)? = null,\n    style: Style = StyleDefaults.None,\n    interactionSource: MutableInteractionSource? = null,\n    selected: Boolean? = null,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 408,
+          "path": "layout/container/src/commonMain/kotlin/io/daio/wild/container/Container.kt",
+          "start_line": 376
+        },
+        "status": "complete"
+      },
+      "id": "ds.experimental-container",
+      "package": "io.daio.wild.container",
+      "symbol": "ExperimentalContainer"
+    },
+    {
+      "details": {
+        "documentation": "A horizontal divider line for separating content.\nBy default uses [LocalContentColor] for the divider color, allowing it to\nadapt when placed inside styled containers.",
+        "signature": {
+          "parameters": [
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the divider.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "LocalContentColor.current",
+              "description": "Color of the divider line. Defaults to [LocalContentColor].",
+              "name": "color",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            },
+            {
+              "default": "DividerDefaults.thickness",
+              "description": "Thickness of the divider line.",
+              "name": "thickness",
+              "package": "androidx.compose.ui.unit",
+              "required": false,
+              "type_text": "Dp"
+            }
+          ],
+          "type_text": "fun HorizontalDivider(\n    modifier: Modifier = Modifier,\n    color: Color = LocalContentColor.current,\n    thickness: Dp = DividerDefaults.thickness,\n)"
+        },
+        "source_evidence": {
+          "end_line": 44,
+          "path": "layout/divider/src/commonMain/kotlin/io/daio/wild/layout/divider/Divider.kt",
+          "start_line": 30
+        },
+        "status": "complete"
+      },
+      "id": "ds.horizontal-divider",
+      "package": "io.daio.wild.layout.divider",
+      "symbol": "HorizontalDivider"
+    },
+    {
+      "details": {
+        "documentation": "Icon component that draws a [Painter] with tinting support.\nBy default, the icon uses [LocalContentColor] for tinting. Pass [Color.Unspecified]\nto [tint] to disable tinting and use the painter's original colors.\nIf the painter has an intrinsic size, it will be used. Otherwise, the icon defaults\nto [IconDefaults.defaultSize].",
+        "signature": {
+          "parameters": [
+            {
+              "description": "The [Painter] to draw.",
+              "name": "painter",
+              "package": "androidx.compose.ui.graphics.painter",
+              "required": true,
+              "type_text": "Painter"
+            },
+            {
+              "description": "Accessibility description for the icon. Should be provided unless the icon is purely decorative. Pass null for decorative icons.",
+              "name": "contentDescription",
+              "required": true,
+              "type_kind": "string",
+              "type_text": "String?"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the icon.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "LocalContentColor.current",
+              "description": "The tint color to apply. Defaults to [LocalContentColor]. Pass [Color.Unspecified] to disable tinting.",
+              "name": "tint",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            }
+          ],
+          "type_text": "fun Icon(\n    painter: Painter,\n    contentDescription: String?,\n    modifier: Modifier = Modifier,\n    tint: Color = LocalContentColor.current,\n)"
+        },
+        "source_evidence": {
+          "end_line": 72,
+          "path": "components/icon/src/commonMain/kotlin/io/daio/wild/components/icon/Icon.kt",
+          "start_line": 47
+        },
+        "status": "complete"
+      },
+      "id": "ds.icon",
+      "package": "io.daio.wild.components.icon",
+      "symbol": "Icon"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "LinearProgressIndicator(progress = { 0.65f })\nLinearProgressIndicator(progress = { 0.65f }) { progress ->\nProgressIndicatorDefaults.LinearIndicator(\nprogress = progress,\nstrokeHeight = 6.dp,\n)\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/progress/src/commonMain/kotlin/io/daio/wild/components/progress/ProgressIndicator.kt"
+          }
+        ],
+        "documentation": "A determinate linear progress indicator.\nProvides progress semantics and passes the normalized progress value to [content]. By default\n[content] draws [ProgressIndicatorDefaults.LinearIndicator]; replace the slot for fully custom\nartwork. A [progress] value outside `0f..1f` is coerced into that range; `NaN` is treated as `0f`.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Current progress from `0f` to `1f`.",
+              "name": "progress",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Float"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier applied to the indicator container.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "{\n        ProgressIndicatorDefaults.LinearIndicator(progress = it)\n    }",
+              "description": "Content receiving the normalized progress value. Defaults to [ProgressIndicatorDefaults.LinearIndicator].",
+              "name": "content",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(progress: Float) -> Unit"
+            }
+          ],
+          "type_text": "fun LinearProgressIndicator(\n    progress: () -> Float,\n    modifier: Modifier = Modifier,\n    content: @Composable BoxScope.(progress: Float) -> Unit = {\n        ProgressIndicatorDefaults.LinearIndicator(progress = it)\n    },\n)"
+        },
+        "source_evidence": {
+          "end_line": 49,
+          "path": "components/progress/src/commonMain/kotlin/io/daio/wild/components/progress/ProgressIndicator.kt",
+          "start_line": 36
+        },
+        "status": "complete"
+      },
+      "id": "ds.linear-progress-indicator",
+      "package": "io.daio.wild.components.progress",
+      "symbol": "LinearProgressIndicator"
+    },
+    {
+      "details": {
+        "documentation": "A list item with content only — no leading or trailing slots.",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Callback invoked when the list item is clicked.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the list item.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the list item is enabled.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "false",
+              "description": "Whether the list item is currently selected.",
+              "name": "selected",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "ListItemDefaults.style()",
+              "description": "The [Style] for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "ListItemDefaults.contentPadding",
+              "description": "Padding applied inside the list item.",
+              "name": "contentPadding",
+              "package": "androidx.compose.foundation.layout",
+              "required": false,
+              "type_text": "PaddingValues"
+            },
+            {
+              "default": "Alignment.CenterVertically",
+              "description": "Vertical alignment of the row content.",
+              "name": "verticalAlignment",
+              "required": false,
+              "type_text": "Alignment.Vertical"
+            },
+            {
+              "default": "Arrangement.spacedBy(ListItemDefaults.contentSpacing)",
+              "description": "Horizontal arrangement of the row content.",
+              "name": "horizontalArrangement",
+              "required": false,
+              "type_text": "Arrangement.Horizontal"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "Main content of the list item.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable () -> Unit"
+            }
+          ],
+          "type_text": "fun ListItem(\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    selected: Boolean = false,\n    style: Style = ListItemDefaults.style(),\n    contentPadding: PaddingValues = ListItemDefaults.contentPadding,\n    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,\n    horizontalArrangement: Arrangement.Horizontal =\n        Arrangement.spacedBy(ListItemDefaults.contentSpacing),\n    interactionSource: MutableInteractionSource? = null,\n    content: @Composable () -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 86,
+          "path": "components/list-item/src/commonMain/kotlin/io/daio/wild/components/listitem/ListItem.kt",
+          "start_line": 50
+        },
+        "status": "complete"
+      },
+      "id": "ds.list-item",
+      "package": "io.daio.wild.components.listitem",
+      "symbol": "ListItem"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "var selected by remember { mutableStateOf(\"small\") }\nRadioButton(\nselected = selected == \"small\",\nonClick = { selected = \"small\" },\n)",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/RadioButton.kt"
+          }
+        ],
+        "documentation": "An unstyled, caller-controlled radio button.\nThe radio button does not store or toggle selection state. It invokes [onClick] for every\nenabled click, including clicks on an already-selected item, while a disabled radio button\nsuppresses the callback. Callers enforce single selection by updating their own value and\npassing that value to each button. The [indicator] slot receives the current selected value\nin the interactive container's [BoxScope]. By default it draws [RadioButtonDefaults.Indicator];\ncallers can replace it with custom artwork.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Whether this radio button is currently selected.",
+              "name": "selected",
+              "required": true,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "description": "Callback invoked when the radio button is clicked.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the radio button.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the radio button accepts interaction.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "RadioButtonDefaults.style()",
+              "description": "The [Style] used for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "{\n        RadioButtonDefaults.Indicator(selected = it)\n    }",
+              "description": "Content used to render the indicator in the radio button's [BoxScope].",
+              "name": "indicator",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(selected: Boolean) -> Unit"
+            }
+          ],
+          "type_text": "fun RadioButton(\n    selected: Boolean,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = RadioButtonDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    indicator: @Composable BoxScope.(selected: Boolean) -> Unit = {\n        RadioButtonDefaults.Indicator(selected = it)\n    },\n)"
+        },
+        "source_evidence": {
+          "end_line": 77,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/RadioButton.kt",
+          "start_line": 56
+        },
+        "status": "complete"
+      },
+      "id": "ds.radio-button",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "RadioButton"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "var selected by remember { mutableStateOf(\"small\") }\nRadioGroup {\nColumn {\nlistOf(\"small\", \"medium\").forEach { value ->\nRadioButton(\nselected = selected == value,\nonClick = { selected = value },\n)\n}\n}\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/RadioGroup.kt"
+          }
+        ],
+        "documentation": "Provides group semantics for caller-laid-out radio buttons.\n[RadioGroup] does not own the selected value, rewrite child callbacks, choose a Row or\nColumn layout, or implement directional navigation. Callers enforce single selection and\nchoose the layout themselves, for example:\nCallers are responsible for enforcing valid single-selection state. Empty groups and groups\nwith multiple selected descendants are permitted by this primitive.",
+        "signature": {
+          "parameters": [
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the group.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "description": "Caller-laid-out radio buttons and other content.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun RadioGroup(\n    modifier: Modifier = Modifier,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 49,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/RadioGroup.kt",
+          "start_line": 40
+        },
+        "status": "complete"
+      },
+      "id": "ds.radio-group",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "RadioGroup"
+    },
+    {
+      "details": {
+        "documentation": "A controlled, unstyled range slider with separately addressable thumbs.",
+        "signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "required": true,
+              "type_text": "ClosedFloatingPointRange<Float>"
+            },
+            {
+              "name": "onValueChange",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "(ClosedFloatingPointRange<Float>) -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "0f..1f",
+              "name": "valueRange",
+              "required": false,
+              "type_text": "ClosedFloatingPointRange<Float>"
+            },
+            {
+              "default": "0",
+              "name": "steps",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "null",
+              "name": "onValueChangeFinished",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "null",
+              "name": "startInteractionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "null",
+              "name": "endInteractionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "name": "startThumb",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable RangeSliderScope.() -> Unit"
+            },
+            {
+              "name": "endThumb",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable RangeSliderScope.() -> Unit"
+            },
+            {
+              "name": "track",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable RangeSliderScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun RangeSlider(\n    value: ClosedFloatingPointRange<Float>,\n    onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,\n    steps: Int = 0,\n    onValueChangeFinished: (() -> Unit)? = null,\n    startInteractionSource: MutableInteractionSource? = null,\n    endInteractionSource: MutableInteractionSource? = null,\n    startThumb: @Composable RangeSliderScope.() -> Unit,\n    endThumb: @Composable RangeSliderScope.() -> Unit,\n    track: @Composable RangeSliderScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 214,
+          "path": "components/slider/src/commonMain/kotlin/io/daio/wild/components/slider/RangeSlider.kt",
+          "start_line": 60
+        },
+        "status": "complete"
+      },
+      "id": "ds.range-slider",
+      "package": "io.daio.wild.components.slider",
+      "symbol": "RangeSlider"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "Selectable(\nselected = isSelected,\nonClick = onSelect,\nmodifier = Modifier\n.size(20.dp)\n.semantics { role = Role.RadioButton },\nstyle = myRadioStyle,\n) {\n// Draw your selection indicator here\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Toggleable.kt"
+          }
+        ],
+        "documentation": "Base selectable component for building single-selection controls (radio buttons, tabs).\nUnlike [Toggleable], this does not toggle on click - it only selects. The parent is\nresponsible for managing which item is selected (single-selection semantics).\nExample - building a RadioButton:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Whether this item is currently selected.",
+              "name": "selected",
+              "required": true,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "description": "Callback invoked when the item is clicked.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the selectable.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the control is enabled.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "SelectableDefaults.style()",
+              "description": "The [Style] for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "Visual content of the control.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun Selectable(\n    selected: Boolean,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = SelectableDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 355,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Toggleable.kt",
+          "start_line": 333
+        },
+        "status": "complete"
+      },
+      "id": "ds.selectable",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "Selectable"
+    },
+    {
+      "details": {
+        "documentation": "A controlled, unstyled single-value slider with caller-supplied track and thumb content.",
+        "signature": {
+          "parameters": [
+            {
+              "description": "the externally controlled current value.",
+              "name": "value",
+              "required": true,
+              "type_kind": "number",
+              "type_text": "Float"
+            },
+            {
+              "description": "called with a coerced and, when configured, snapped value.",
+              "name": "onValueChange",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "(Float) -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "the modifier applied to the slider layout.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "whether the slider accepts input and can receive focus.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "0f..1f",
+              "description": "the inclusive range used to coerce values.",
+              "name": "valueRange",
+              "required": false,
+              "type_text": "ClosedFloatingPointRange<Float>"
+            },
+            {
+              "default": "0",
+              "description": "the number of discrete intervals between the range endpoints.",
+              "name": "steps",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "null",
+              "description": "called after a gesture or semantic update finishes.",
+              "name": "onValueChangeFinished",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(() -> Unit)?"
+            },
+            {
+              "default": "null",
+              "description": "the optional source used for drag interactions.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "content for the thumb slot.",
+              "name": "thumb",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable SliderScope.() -> Unit"
+            },
+            {
+              "description": "content for the track slot. Example: `Slider(value = value, onValueChange = { value = it }, thumb = { ... }, track = { ... })`",
+              "name": "track",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable SliderScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun Slider(\n    value: Float,\n    onValueChange: (Float) -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,\n    steps: Int = 0,\n    onValueChangeFinished: (() -> Unit)? = null,\n    interactionSource: MutableInteractionSource? = null,\n    thumb: @Composable SliderScope.() -> Unit,\n    track: @Composable SliderScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 208,
+          "path": "components/slider/src/commonMain/kotlin/io/daio/wild/components/slider/Slider.kt",
+          "start_line": 193
+        },
+        "status": "complete"
+      },
+      "id": "ds.slider",
+      "package": "io.daio.wild.components.slider",
+      "symbol": "Slider"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "Switch(\nchecked = isOn,\nonCheckedChange = { isOn = it },\n) { isChecked ->\n// Render a track and thumb for isChecked.\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Switch.kt"
+          }
+        ],
+        "documentation": "An unstyled, caller-controlled binary switch.\nThe switch does not store checked state. It emits the inverse of [checked] through\n[onCheckedChange] when enabled, while a disabled switch suppresses the callback. The [content]\nslot receives the current checked value in the interactive container's [BoxScope], leaving\ntrack and thumb rendering to the caller. This is a binary click/tap switch; continuous thumb\ndragging is not part of the primitive contract.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Whether the switch is currently on.",
+              "name": "checked",
+              "required": true,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "description": "Callback receiving the next checked value when the switch is clicked.",
+              "name": "onCheckedChange",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "(Boolean) -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the switch.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the switch accepts interaction.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "SwitchDefaults.style()",
+              "description": "The [Style] used for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "Content used to render the track and thumb in the switch's [BoxScope].",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(checked: Boolean) -> Unit"
+            }
+          ],
+          "type_text": "fun Switch(\n    checked: Boolean,\n    onCheckedChange: (Boolean) -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = SwitchDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    content: @Composable BoxScope.(checked: Boolean) -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 69,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Switch.kt",
+          "start_line": 50
+        },
+        "status": "complete"
+      },
+      "id": "ds.switch",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "Switch"
+    },
+    {
+      "details": {
+        "documentation": "Basic text component that integrates with Wild's content color system.\nThe default [style] uses the [LocalTextStyle] provided by parent components. If you are\nsetting your own style, consider first retrieving [LocalTextStyle] and using [TextStyle.copy]\nto keep any inherited attributes, only modifying the specific attributes you want to override.\nFor ease of use, commonly used parameters from [TextStyle] are also present here. The order of\nprecedence is:\n- If a parameter is explicitly set here (i.e., it is not `null` or [TextUnit.Unspecified]),\nthen this parameter will always be used.\n- If a parameter is not set, then the corresponding value from [style] will be used instead.\nFor [color], if [color] is not set, and [style] does not have a color, then\n[LocalContentColor] will be used.",
+        "signature": {
+          "parameters": [
+            {
+              "description": "The text to display.",
+              "name": "text",
+              "required": true,
+              "type_kind": "string",
+              "type_text": "String"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the text.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "Color.Unspecified",
+              "description": "The color of the text. If [Color.Unspecified], and [style] has no color set, this will be [LocalContentColor].",
+              "name": "color",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            },
+            {
+              "default": "TextUnit.Unspecified",
+              "description": "The size of glyphs to use when painting the text. See [TextStyle.fontSize].",
+              "name": "fontSize",
+              "package": "androidx.compose.ui.unit",
+              "required": false,
+              "type_text": "TextUnit"
+            },
+            {
+              "default": "null",
+              "description": "The typeface variant to use when drawing the letters (e.g., italic).",
+              "name": "fontStyle",
+              "package": "androidx.compose.ui.text.font",
+              "required": false,
+              "type_text": "FontStyle?"
+            },
+            {
+              "default": "null",
+              "description": "The typeface thickness to use when painting the text (e.g., [FontWeight.Bold]).",
+              "name": "fontWeight",
+              "package": "androidx.compose.ui.text.font",
+              "required": false,
+              "type_text": "FontWeight?"
+            },
+            {
+              "default": "null",
+              "description": "The font family to be used when rendering the text.",
+              "name": "fontFamily",
+              "package": "androidx.compose.ui.text.font",
+              "required": false,
+              "type_text": "FontFamily?"
+            },
+            {
+              "default": "TextUnit.Unspecified",
+              "description": "The amount of space to add between each letter.",
+              "name": "letterSpacing",
+              "package": "androidx.compose.ui.unit",
+              "required": false,
+              "type_text": "TextUnit"
+            },
+            {
+              "default": "null",
+              "description": "The decorations to paint on the text (e.g., an underline).",
+              "name": "textDecoration",
+              "package": "androidx.compose.ui.text.style",
+              "required": false,
+              "type_text": "TextDecoration?"
+            },
+            {
+              "default": "null",
+              "description": "The alignment of the text within the lines of the paragraph.",
+              "name": "textAlign",
+              "package": "androidx.compose.ui.text.style",
+              "required": false,
+              "type_text": "TextAlign?"
+            },
+            {
+              "default": "TextUnit.Unspecified",
+              "description": "Line height for the text in [TextUnit] unit, e.g. SP or EM.",
+              "name": "lineHeight",
+              "package": "androidx.compose.ui.unit",
+              "required": false,
+              "type_text": "TextUnit"
+            },
+            {
+              "default": "TextDefaults.overflow",
+              "description": "How visual overflow should be handled.",
+              "name": "overflow",
+              "package": "androidx.compose.ui.text.style",
+              "required": false,
+              "type_text": "TextOverflow"
+            },
+            {
+              "default": "true",
+              "description": "Whether the text should break at soft line breaks.",
+              "name": "softWrap",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "TextDefaults.maxLines",
+              "description": "Maximum number of lines for the text to span.",
+              "name": "maxLines",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "TextDefaults.minLines",
+              "description": "Minimum number of lines for the text to span.",
+              "name": "minLines",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "null",
+              "description": "Callback invoked when the text layout is calculated.",
+              "name": "onTextLayout",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "((TextLayoutResult) -> Unit)?"
+            },
+            {
+              "default": "LocalTextStyle.current",
+              "description": "Style configuration for the text such as color, font, line height etc.",
+              "name": "style",
+              "package": "androidx.compose.ui.text",
+              "required": false,
+              "type_text": "TextStyle"
+            }
+          ],
+          "type_text": "fun Text(\n    text: String,\n    modifier: Modifier = Modifier,\n    color: Color = Color.Unspecified,\n    fontSize: TextUnit = TextUnit.Unspecified,\n    fontStyle: FontStyle? = null,\n    fontWeight: FontWeight? = null,\n    fontFamily: FontFamily? = null,\n    letterSpacing: TextUnit = TextUnit.Unspecified,\n    textDecoration: TextDecoration? = null,\n    textAlign: TextAlign? = null,\n    lineHeight: TextUnit = TextUnit.Unspecified,\n    overflow: TextOverflow = TextDefaults.overflow,\n    softWrap: Boolean = true,\n    maxLines: Int = TextDefaults.maxLines,\n    minLines: Int = TextDefaults.minLines,\n    onTextLayout: ((TextLayoutResult) -> Unit)? = null,\n    style: TextStyle = LocalTextStyle.current,\n)"
+        },
+        "source_evidence": {
+          "end_line": 102,
+          "path": "components/text/src/commonMain/kotlin/io/daio/wild/components/text/Text.kt",
+          "start_line": 59
+        },
+        "status": "complete"
+      },
+      "id": "ds.text",
+      "package": "io.daio.wild.components.text",
+      "symbol": "Text"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "val state = rememberTextFieldState()\nTextArea(\nstate = state,\nminLines = 3,\nmaxLines = 6,\n)",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/text/src/commonMain/kotlin/io/daio/wild/components/text/TextField.kt"
+          }
+        ],
+        "documentation": "A multiline configuration of [TextField].\nExposes the same parameters as [TextField] except [TextField]'s `lineLimits`, which are\nderived from [minLines] and [maxLines].\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "The state that owns the area's text, selection, and composition.",
+              "name": "state",
+              "package": "androidx.compose.foundation.text.input",
+              "required": true,
+              "type_text": "TextFieldState"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the area.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the area accepts focus and user input.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "false",
+              "description": "Whether the area can be focused and selected without accepting edits.",
+              "name": "readOnly",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "LocalTextStyle.current",
+              "description": "The style used to render the area text.",
+              "name": "textStyle",
+              "package": "androidx.compose.ui.text",
+              "required": false,
+              "type_text": "TextStyle"
+            },
+            {
+              "default": "null",
+              "description": "Transformation applied to user edits.",
+              "name": "inputTransformation",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "InputTransformation?"
+            },
+            {
+              "default": "null",
+              "description": "Transformation applied when the area is rendered.",
+              "name": "outputTransformation",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "OutputTransformation?"
+            },
+            {
+              "default": "KeyboardOptions.Default",
+              "description": "Options for the software keyboard.",
+              "name": "keyboardOptions",
+              "package": "androidx.compose.foundation.text",
+              "required": false,
+              "type_text": "KeyboardOptions"
+            },
+            {
+              "default": "null",
+              "description": "Callback for software keyboard actions.",
+              "name": "onKeyboardAction",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "KeyboardActionHandler?"
+            },
+            {
+              "default": "TextFieldDefaults.textAreaMinLines",
+              "description": "Minimum number of visible text lines. Must be at least 1.",
+              "name": "minLines",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "Int.MAX_VALUE",
+              "description": "Maximum number of visible text lines. Must be greater than or equal to [minLines].",
+              "name": "maxLines",
+              "required": false,
+              "type_kind": "number",
+              "type_text": "Int"
+            },
+            {
+              "default": "null",
+              "description": "Callback invoked when text layout is calculated.",
+              "name": "onTextLayout",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(Density.(getResult: () -> TextLayoutResult?) -> Unit)?"
+            },
+            {
+              "default": "rememberScrollState()",
+              "description": "Scroll state used by the area.",
+              "name": "scrollState",
+              "package": "androidx.compose.foundation",
+              "required": false,
+              "type_text": "ScrollState"
+            },
+            {
+              "default": "SolidColor(LocalContentColor.current)",
+              "description": "Brush used to draw the cursor.",
+              "name": "cursorBrush",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Brush"
+            },
+            {
+              "default": "null",
+              "description": "Optional source for focus and press interactions.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "null",
+              "description": "Optional visual decoration around the inner field.",
+              "name": "decorator",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "TextFieldDecorator?"
+            }
+          ],
+          "type_text": "fun TextArea(\n    state: TextFieldState,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    readOnly: Boolean = false,\n    textStyle: TextStyle = LocalTextStyle.current,\n    inputTransformation: InputTransformation? = null,\n    outputTransformation: OutputTransformation? = null,\n    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,\n    onKeyboardAction: KeyboardActionHandler? = null,\n    minLines: Int = TextFieldDefaults.textAreaMinLines,\n    maxLines: Int = Int.MAX_VALUE,\n    onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,\n    scrollState: ScrollState = rememberScrollState(),\n    cursorBrush: Brush = SolidColor(LocalContentColor.current),\n    interactionSource: MutableInteractionSource? = null,\n    decorator: TextFieldDecorator? = null,\n)"
+        },
+        "source_evidence": {
+          "end_line": 193,
+          "path": "components/text/src/commonMain/kotlin/io/daio/wild/components/text/TextField.kt",
+          "start_line": 149
+        },
+        "status": "complete"
+      },
+      "id": "ds.text-area",
+      "package": "io.daio.wild.components.text",
+      "symbol": "TextArea"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "val state = rememberTextFieldState()\nTextField(\nstate = state,\ndecorator = TextFieldDecorator { innerTextField ->\nBox(Modifier.padding(8.dp)) {\ninnerTextField()\n}\n},\n)",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/text/src/commonMain/kotlin/io/daio/wild/components/text/TextField.kt"
+          }
+        ],
+        "documentation": "An unstyled, state-based text field primitive.\nWraps Compose Foundation's state-based [BasicTextField] and resolves text color from\n[textStyle] or [LocalContentColor]. Does not impose background, border, padding, minimum\nsize, label, placeholder, or error visuals — supply those through [decorator] if needed.\nA [decorator] must invoke its supplied inner field exactly once.\nWhen [LocalContentColor] is [androidx.compose.ui.graphics.Color.Unspecified], the default\ncursor brush is also unspecified. Callers should provide an explicit [cursorBrush] in that\ncase.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "The state that owns the field's text, selection, and composition.",
+              "name": "state",
+              "package": "androidx.compose.foundation.text.input",
+              "required": true,
+              "type_text": "TextFieldState"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the field.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the field accepts focus and user input.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "false",
+              "description": "Whether the field can be focused and selected without accepting edits.",
+              "name": "readOnly",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "LocalTextStyle.current",
+              "description": "The style used to render the field text.",
+              "name": "textStyle",
+              "package": "androidx.compose.ui.text",
+              "required": false,
+              "type_text": "TextStyle"
+            },
+            {
+              "default": "null",
+              "description": "Transformation applied to user edits.",
+              "name": "inputTransformation",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "InputTransformation?"
+            },
+            {
+              "default": "null",
+              "description": "Transformation applied when the field is rendered.",
+              "name": "outputTransformation",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "OutputTransformation?"
+            },
+            {
+              "default": "KeyboardOptions.Default",
+              "description": "Options for the software keyboard.",
+              "name": "keyboardOptions",
+              "package": "androidx.compose.foundation.text",
+              "required": false,
+              "type_text": "KeyboardOptions"
+            },
+            {
+              "default": "null",
+              "description": "Callback for software keyboard actions.",
+              "name": "onKeyboardAction",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "KeyboardActionHandler?"
+            },
+            {
+              "default": "TextFieldLineLimits.Default",
+              "description": "The single-line or multiline constraints for the field.",
+              "name": "lineLimits",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "TextFieldLineLimits"
+            },
+            {
+              "default": "null",
+              "description": "Callback invoked when text layout is calculated.",
+              "name": "onTextLayout",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "(Density.(getResult: () -> TextLayoutResult?) -> Unit)?"
+            },
+            {
+              "default": "rememberScrollState()",
+              "description": "Scroll state used by the field.",
+              "name": "scrollState",
+              "package": "androidx.compose.foundation",
+              "required": false,
+              "type_text": "ScrollState"
+            },
+            {
+              "default": "SolidColor(LocalContentColor.current)",
+              "description": "Brush used to draw the cursor.",
+              "name": "cursorBrush",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Brush"
+            },
+            {
+              "default": "null",
+              "description": "Optional source for focus and press interactions. Forwarded as-is; a second source is not created for decoration.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "null",
+              "description": "Optional visual decoration around the inner field.",
+              "name": "decorator",
+              "package": "androidx.compose.foundation.text.input",
+              "required": false,
+              "type_text": "TextFieldDecorator?"
+            }
+          ],
+          "type_text": "fun TextField(\n    state: TextFieldState,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    readOnly: Boolean = false,\n    textStyle: TextStyle = LocalTextStyle.current,\n    inputTransformation: InputTransformation? = null,\n    outputTransformation: OutputTransformation? = null,\n    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,\n    onKeyboardAction: KeyboardActionHandler? = null,\n    lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,\n    onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,\n    scrollState: ScrollState = rememberScrollState(),\n    cursorBrush: Brush = SolidColor(LocalContentColor.current),\n    interactionSource: MutableInteractionSource? = null,\n    decorator: TextFieldDecorator? = null,\n)"
+        },
+        "source_evidence": {
+          "end_line": 111,
+          "path": "components/text/src/commonMain/kotlin/io/daio/wild/components/text/TextField.kt",
+          "start_line": 72
+        },
+        "status": "complete"
+      },
+      "id": "ds.text-field",
+      "package": "io.daio.wild.components.text",
+      "symbol": "TextField"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "Toggleable(\nchecked = isOn,\nonCheckedChange = { isOn = it },\nmodifier = Modifier\n.size(width = 48.dp, height = 24.dp)\n.semantics { role = Role.Switch },\nstyle = StyleDefaults.style(\ncolors = StyleDefaults.colors(\nbackgroundColor = Color.Gray,\nselectedBackgroundColor = Color.Green,\n),\n),\n) {\n// Draw your thumb here\n}\nToggleable(\nchecked = isChecked,\nonCheckedChange = { isChecked = it },\nmodifier = Modifier\n.size(20.dp)\n.semantics { role = Role.Checkbox },\nstyle = myCheckboxStyle,\n) {\nif (isChecked) {\nIcon(Icons.Default.Check, contentDescription = null)\n}\n}",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Toggleable.kt"
+          }
+        ],
+        "documentation": "Base toggleable component for building selection controls (switches, checkboxes, radio buttons).\nThis is the selection-control equivalent of [Container] - it handles checked/unchecked state,\nmaps it to the `selected` interaction state in the [Style] system, and applies the appropriate\naccessibility semantics.\nThe [checked] state maps to the `selected` interaction state, allowing different visuals\nfor checked vs unchecked via [Style.colors], [Style.borders], etc.\nThe Boolean overload maps `true` to [ToggleableState.On] and `false` to\n[ToggleableState.Off]. Use the [ToggleableState] overload when an indeterminate state is\nrequired.\nConsumers build specific controls by wrapping this with:\n- A semantic role via `Modifier.semantics { role = Role.Switch }` etc.\n- Default dimensions appropriate to the control type\n- Visual content (thumb, check mark, dot, etc.)\nExample - building a Switch:\nExample - building a Checkbox:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "Whether the control is currently in the \"on\" or \"checked\" state.",
+              "name": "checked",
+              "required": true,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "description": "Callback invoked when the checked state should change.",
+              "name": "onCheckedChange",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "(Boolean) -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the toggleable.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the control is enabled.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "ToggleableDefaults.style()",
+              "description": "The [Style] for interaction states. Use `selected` variants for the checked state.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "description": "Visual content of the control.",
+              "name": "content",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "type_text": "fun Toggleable(\n    checked: Boolean,\n    onCheckedChange: (Boolean) -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = ToggleableDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    content: @Composable BoxScope.() -> Unit,\n)"
+        },
+        "source_evidence": {
+          "end_line": 109,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Toggleable.kt",
+          "start_line": 90
+        },
+        "status": "complete"
+      },
+      "id": "ds.toggleable",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "Toggleable"
+    },
+    {
+      "details": {
+        "attachments": [
+          {
+            "content": "TriStateCheckbox(\nstate = state,\nonClick = {\nstate = when (state) {\nToggleableState.Off -> ToggleableState.On\nToggleableState.On -> ToggleableState.Indeterminate\nToggleableState.Indeterminate -> ToggleableState.Off\n}\n},\n)",
+            "kind": "example",
+            "language": "kotlin",
+            "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Checkbox.kt"
+          }
+        ],
+        "documentation": "An unstyled, caller-controlled tri-state checkbox.\nThe checkbox does not store or cycle state. It invokes [onClick] exactly once for each\nenabled click, leaving the caller responsible for choosing the next [ToggleableState]. A\ndisabled checkbox suppresses the callback. The [indicator] slot receives the current state in\nthe interactive container's [BoxScope]. By default it draws [CheckboxDefaults.Indicator];\ncallers can replace it with custom artwork.\nExample:",
+        "signature": {
+          "parameters": [
+            {
+              "description": "The current [ToggleableState], including [ToggleableState.Indeterminate].",
+              "name": "state",
+              "package": "androidx.compose.ui.state",
+              "required": true,
+              "type_text": "ToggleableState"
+            },
+            {
+              "description": "Callback invoked once when the enabled checkbox is clicked.",
+              "name": "onClick",
+              "required": true,
+              "type_kind": "function",
+              "type_text": "() -> Unit"
+            },
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the checkbox.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "true",
+              "description": "Whether the checkbox accepts interaction.",
+              "name": "enabled",
+              "required": false,
+              "type_kind": "boolean",
+              "type_text": "Boolean"
+            },
+            {
+              "default": "CheckboxDefaults.style()",
+              "description": "The [Style] used for interaction states.",
+              "name": "style",
+              "package": "io.daio.wild.style",
+              "required": false,
+              "type_text": "Style"
+            },
+            {
+              "default": "null",
+              "description": "Optional [MutableInteractionSource] for observing [Interaction]s.",
+              "name": "interactionSource",
+              "package": "androidx.compose.foundation.interaction",
+              "required": false,
+              "type_text": "MutableInteractionSource?"
+            },
+            {
+              "default": "{\n        CheckboxDefaults.Indicator(state = it)\n    }",
+              "description": "Content used to render the indicator in the checkbox's [BoxScope].",
+              "name": "indicator",
+              "required": false,
+              "type_kind": "function",
+              "type_text": "@Composable BoxScope.(state: ToggleableState) -> Unit"
+            }
+          ],
+          "type_text": "fun TriStateCheckbox(\n    state: ToggleableState,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    enabled: Boolean = true,\n    style: Style = CheckboxDefaults.style(),\n    interactionSource: MutableInteractionSource? = null,\n    indicator: @Composable BoxScope.(state: ToggleableState) -> Unit = {\n        CheckboxDefaults.Indicator(state = it)\n    },\n)"
+        },
+        "source_evidence": {
+          "end_line": 137,
+          "path": "components/toggleable/src/commonMain/kotlin/io/daio/wild/components/toggleable/Checkbox.kt",
+          "start_line": 116
+        },
+        "status": "complete"
+      },
+      "id": "ds.tri-state-checkbox",
+      "package": "io.daio.wild.components.toggleable",
+      "symbol": "TriStateCheckbox"
+    },
+    {
+      "details": {
+        "documentation": "A vertical divider line for separating content.\nBy default uses [LocalContentColor] for the divider color, allowing it to\nadapt when placed inside styled containers.",
+        "signature": {
+          "parameters": [
+            {
+              "default": "Modifier",
+              "description": "Modifier to apply to the divider.",
+              "name": "modifier",
+              "package": "androidx.compose.ui",
+              "required": false,
+              "type_text": "Modifier"
+            },
+            {
+              "default": "LocalContentColor.current",
+              "description": "Color of the divider line. Defaults to [LocalContentColor].",
+              "name": "color",
+              "package": "androidx.compose.ui.graphics",
+              "required": false,
+              "type_text": "Color"
+            },
+            {
+              "default": "DividerDefaults.thickness",
+              "description": "Thickness of the divider line.",
+              "name": "thickness",
+              "package": "androidx.compose.ui.unit",
+              "required": false,
+              "type_text": "Dp"
+            }
+          ],
+          "type_text": "fun VerticalDivider(\n    modifier: Modifier = Modifier,\n    color: Color = LocalContentColor.current,\n    thickness: Dp = DividerDefaults.thickness,\n)"
+        },
+        "source_evidence": {
+          "end_line": 72,
+          "path": "layout/divider/src/commonMain/kotlin/io/daio/wild/layout/divider/Divider.kt",
+          "start_line": 58
+        },
+        "status": "complete"
+      },
+      "id": "ds.vertical-divider",
+      "package": "io.daio.wild.layout.divider",
+      "symbol": "VerticalDivider"
+    }
+  ],
+  "schema_version": 1
+}
